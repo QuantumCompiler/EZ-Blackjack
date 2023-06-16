@@ -331,6 +331,78 @@ void Hand::SetDisplayHandsPlayed() {
     currentPlayer.display_hands_played = modified_input;
 }
 
+/*  SetCards - Adds a Card object to the private data member "cards" using the push_back function
+*   Input:
+*       input - Constant Card object passed by reference that is to be added to the private data member "cards"
+*   Algorithm:
+*       * Add the input Card, "input", to the private data member "cards" using the push_back function
+*   Output:
+*       This function does not return a value
+*/
+void Hand::SetCards(const Card& input) {
+    currentPlayer.cards.push_back(input);
+}
+
+/*  SetHandBankTotals - Adds a float value to the private data member "hand_bank_totals" using the push_back function
+*   Input:
+*       input - Constant float value passed by reference that is to be added to the private data member "hand_bank_totals"
+*   Algorithm:
+*       * Add the input float, "input", to the private data member "hand_bank_totals" using the push_back function
+*   Output:
+*       This function does not return a value
+*/
+void Hand::SetHandBankTotals(const float& input) {
+    currentPlayer.hand_bank_totals.push_back(input);
+}
+
+/*  SetHandNets - Adds a float value to the private data member "hand_nets" using the push_back function
+*   Input:
+*       input - Constant float value passed by reference that is to be added to the private data member "hand_nets"
+*   Algorithm:
+*       * Add the input float, "input", to the private data member "hand_nets" using the push_back function
+*   Output:
+*       This function does not return a value
+*/
+void Hand::SetHandNets(const float& input) {
+    currentPlayer.hand_nets.push_back(input);
+}
+
+/*  SetHandWagers - Adds a float value to the private data member "hand_wagers" using the push_back function
+*   Input:
+*       input - Constant float value passed by reference that is to be added to the private data member "hand_wagers"
+*   Algorithm:
+*       * Add the input float, "input", to the private data member "hand_wagers" using the push_back function
+*   Output:
+*       This function does not return a value
+*/
+void Hand::SetHandWagers(const float& input) {
+    currentPlayer.hand_wagers.push_back(input);
+}
+
+/*  SetHandCardTotals - Adds an integer value to the private data member "hand_card_totals" using the push_back function
+*   Input:
+*       input - Constant integer value passed by reference that is to be added to the private data member "hand_card_totals"
+*   Algorithm:
+*       * Add the input integer, "input", to the private data member "hand_card_totals" using the push_back function
+*   Output:
+*       This function does not return a value
+*/
+void Hand::SetHandCardTotals(const int& input) {
+    currentPlayer.hand_card_totals.push_back(input);
+}
+
+/*  SetHandPlayed - Adds an integer value to the private data member "hand_played" using the push_back function
+*   Input:
+*       input - Constant integer value passed by reference that is to be added to the private data member "hand_played"
+*   Algorithm:
+*       * Add the input integer, "input", to the private data member "hand_played" using the push_back function
+*   Output:
+*       This function does not return a value
+*/
+void Hand::SetHandPlayed(const int& input) {
+    currentPlayer.hand_played.push_back(input);
+}
+
 // ----- ----- ----- ----- ----- ----- ----- Getter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 // GetCanBuyInsurance - Retrieves the private data member "can_buy_insurance"
 bool Hand::GetCanBuyInsurance() const {
@@ -450,4 +522,34 @@ std::string Hand::GetDisplayCardsTotal() const {
 // GetDisplayHandsplayed - Retrieves the private data member "display_hands_played"
 std::string Hand::GetDisplayHandsplayed() const {
     return currentPlayer.display_hands_played;
+}
+
+// GetCards - Retrieves the private data member "cards"
+std::vector<Card> Hand::GetCards() const {
+    return currentPlayer.cards;
+}
+
+// GetHandBankTotals - Retrieves the private data member "hand_bank_totals"
+std::vector<float> Hand::GetHandBankTotals() const {
+    return currentPlayer.hand_bank_totals;
+}
+
+// GetHandNets - Retrieves the private data member "hand_nets"
+std::vector<float> Hand::GetHandNets() const {
+    return currentPlayer.hand_nets;
+}
+
+// GetHandWagers - Retrieves the private data member "hand_wagers"
+std::vector<float> Hand::GetHandWagers() const {
+    return currentPlayer.hand_wagers;
+}
+
+// GetHandCardTotals - Retrieves the private data member "hand_card_totals"
+std::vector<int> Hand::GetHandCardTotals() const {
+    return currentPlayer.hand_card_totals;
+}
+
+// GetHandPlayed - Retrieves the private data member "hand_played"
+std::vector<int> Hand::GetHandPlayed() const {
+    return currentPlayer.hand_played;
 }
