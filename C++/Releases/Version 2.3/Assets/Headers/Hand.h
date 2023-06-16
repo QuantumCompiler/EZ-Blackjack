@@ -75,7 +75,7 @@ struct Player {
     std::vector<int> handCardTotals;
     std::vector<float> handNets;
     std::vector<int> handPlayed;
-    std::vector<float> handWagers;
+    std::vector<float> handWagers; 
 };
 class Hand {
 public:
