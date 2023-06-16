@@ -27,7 +27,7 @@ INCLUDE	:= include
 LIB		:= lib
 
 ifeq ($(OS),Windows_NT)
-MAIN	:= main.exe
+MAIN	:= Blackjack-2.3.exe
 SOURCEDIRS	:= $(SRC)
 INCLUDEDIRS	:= $(INCLUDE)
 LIBDIRS		:= $(LIB)
@@ -35,7 +35,7 @@ FIXPATH = $(subst /,\,$1)
 RM			:= del /q /f
 MD	:= mkdir
 else
-MAIN	:= main
+MAIN	:= Blackjack-2.3
 SOURCEDIRS	:= $(shell find $(SRC) -type d)
 INCLUDEDIRS	:= $(shell find $(INCLUDE) -type d)
 LIBDIRS		:= $(shell find $(LIB) -type d)
@@ -67,8 +67,8 @@ DEPS		:= $(OBJECTS:.o=.d)
 
 OUTPUTMAIN	:= $(call FIXPATH,$(OUTPUT)/$(MAIN))
 
-all: $(OUTPUT) $(MAIN)
-	@echo Executing 'all' complete!
+all: $(OUTPUT) $(MAIN) clean
+	@echo Build complete!
 
 $(OUTPUT):
 	$(MD) $(OUTPUT)
@@ -89,7 +89,6 @@ $(MAIN): $(OBJECTS)
 
 .PHONY: clean
 clean:
-	$(RM) $(OUTPUTMAIN)
 	$(RM) $(call FIXPATH,$(OBJECTS))
 	$(RM) $(call FIXPATH,$(DEPS))
 	@echo Cleanup complete!
