@@ -2,12 +2,20 @@
 #ifndef CARD_H
 #define CARD_H
 #include "../HPP/Utility.hpp"
+/*  Structure PlayingCard - Struct to resemble a playing card
+*   Data Members:
+*       rank - String value that represents a cards rank
+*       suit - String value that represents a cards suit
+*       displayCardValue - String value that represents a modified version of the "cardValue" data member
+*       displayRank - String value that represents a modified version of the "rank" data member
+*       displaySuit - String value that represents a modified version of the "suit" data member
+*/
 struct PlayingCard {
-    std::string displayRank;
     std::string rank;
-    std::string displaySuit;
     std::string suit;
     std::string displayCardValue;
+    std::string displayRank;
+    std::string displaySuit;
     int cardValue;
 };
 class Card {
