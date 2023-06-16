@@ -2,6 +2,13 @@
 #ifndef SHOE_H
 #define SHOE_
 #include "../HPP/Card.hpp"
+/*  Structure Deck - Struct that resembles a deck of cards
+*   Data Members:
+*       numOfDecks - Integer value that represents the number of decks in a shoe
+*       cardsInShoe - Vector of Card objects that represents the number of cards in a shoe / deck
+*       returnedCards - Vector of Card objects that represents the number of cards in a shoe / deck
+*       riggedCards - Vector of Card objects that represents the number of cards in a rigged shoe / deck
+*/
 struct Deck {
     int numOfDecks;
     std::vector<Card> cardsInShoe;
