@@ -59,69 +59,69 @@ public:
     Hand UpdateBank(const std::string choice, Hand& inputHand, const float& wager);
     // Setter Functions
     // Boolean Values
-    void SetCanBuyInsurance(const bool input); //
-    void SetCanDoubleDown(const bool input); //
-    void SetCanSplitAces(const bool input); //
-    void SetCanSplitHand(const bool input); //
-    void SetChoseBuyInsurace(const bool input); //
-    void SetChoseDoubleDown(const bool input); //
-    void SetChoseSplitAces(const bool input); //
-    void SetChoseSplitHand(const bool input); //
-    void SetHasHit(const bool input); //
+    void SetCanBuyInsurance(const bool input);
+    void SetCanDoubleDown(const bool input);
+    void SetCanSplitAces(const bool input);
+    void SetCanSplitHand(const bool input);
+    void SetChoseBuyInsurace(const bool input);
+    void SetChoseDoubleDown(const bool input);
+    void SetChoseSplitAces(const bool input);
+    void SetChoseSplitHand(const bool input);
+    void SetHasHit(const bool input);
     // Float Values
-    void SetBankTotal(const float& input); //
-    void SetNet(const float& input); //
-    void SetWager(const float& input); //
-    void SetInsuranceWager(const float& input); //
+    void SetBankTotal(const float& input);
+    void SetNet(const float& input);
+    void SetWager(const float& input);
+    void SetInsuranceWager(const float& input);
     // Integer Values
-    void SetCardsTotal(const int& input); //
-    void SetIndividualHands(const int& input); //
-    void SetHandsPlayed(const int& input); //
+    void SetCardsTotal(const int& input);
+    void SetIndividualHands(const int& input);
+    void SetHandsPlayed(const int& input);
     // String Values
-    void SetName(const std::string& input); //
-    void SetDisplayName(); //
-    void SetDisplayBankTotal(); //
-    void SetDisplayNet(); //
-    void SetDisplayWager(); //
-    void SetDisplayInsuranceWager(); //
-    void SetDisplayCardsTotal(); //
-    void SetDisplayHandsPlayed(); //
+    void SetName(const std::string& input);
+    void SetDisplayName();
+    void SetDisplayBankTotal();
+    void SetDisplayNet();
+    void SetDisplayWager();
+    void SetDisplayInsuranceWager();
+    void SetDisplayCardsTotal();
+    void SetDisplayHandsPlayed();
     // Vector Values
     void SetCards(const Card& input);
-    void SetHandBankTotals(const float& input);
+    void SetHandBankTotals(const float& input); 
     void SetHandNets(const float& input);
     void SetHandWagers(const float& input);
     void SetHandCardTotals(const int& input);
     void SetHandPlayed(const int& input);
     // Getter Functionss
     // Boolean Values
-    bool GetCanBuyInsurance() const; //
-    bool GetCanDoubleDown() const; //
-    bool GetCanSplitAces() const; //
-    bool GetCanSplitHand() const; //
-    bool GetChoseBuyInsurance() const; //
-    bool GetChoseDoubleDown() const; //
-    bool GetChoseSplitAces() const; //
-    bool GetChoseSplitHand() const; //
-    bool GetHasHit() const; //
+    bool GetCanBuyInsurance() const;
+    bool GetCanDoubleDown() const;
+    bool GetCanSplitAces() const;
+    bool GetCanSplitHand() const;
+    bool GetChoseBuyInsurance() const;
+    bool GetChoseDoubleDown() const;
+    bool GetChoseSplitAces() const;
+    bool GetChoseSplitHand() const;
+    bool GetHasHit() const;
     // Float Values
-    float GetBankTotal() const; //
-    float GetNet() const; //
-    float GetWager() const; //
-    float GetInsuranceWager() const; //
+    float GetBankTotal() const;
+    float GetNet() const;
+    float GetWager() const;
+    float GetInsuranceWager() const;
     // Integer Values
-    int GetCardsTotal() const; //
-    int GetIndividualHands() const; //
-    int GetHandsPlayed() const; //
+    int GetCardsTotal() const;
+    int GetIndividualHands() const;
+    int GetHandsPlayed() const;
     // String Values
-    std::string GetName() const; //
-    std::string GetDisplayName() const; //
-    std::string GetDisplayBankTotal() const; //
-    std::string GetDisplayNet() const; //
-    std::string GetDisplayWager() const; //
-    std::string GetDisplayInsuranceWager() const; //
-    std::string GetDisplayCardsTotal() const; //
-    std::string GetDisplayHandsplayed() const; //
+    std::string GetName() const;
+    std::string GetDisplayName() const;
+    std::string GetDisplayBankTotal() const;
+    std::string GetDisplayNet() const;
+    std::string GetDisplayWager() const;
+    std::string GetDisplayInsuranceWager() const;
+    std::string GetDisplayCardsTotal() const;
+    std::string GetDisplayHandsplayed() const;
     // Vector Values
     std::vector<Card> GetCards() const;
     std::vector<float> GetHandBankTotals() const;
