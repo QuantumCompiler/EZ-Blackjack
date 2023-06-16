@@ -2,45 +2,81 @@
 #ifndef HAND_H
 #define HAND_H
 #include "../HPP/Shoe.hpp"
-
+/*  Structure Player - Struct to resemble a playing card
+*   Data Members:
+*     Boolean Values:
+*       canBuyInsurance - Boolean value that represents if a player is able to buy insurance on a hand
+*       canDoubleDown - Boolean value that represents if a player is able to double down on a hand
+*       canSplitHand - Boolean value that represents if a player is able to split on a hand
+*       canSplitAces - Boolean value that represents if a player is able to split aces on a hand
+*       choseBuyInsurance - Boolean value that represents if a player has chosen to buy insurance on a hand
+*       choseDoubleDown - Boolean value that represents if a player has chosen to double down on a hand
+*       choseSplitAces - Boolean value that represents if a player has chosen to split aces on a hand
+*       choseSplitHand - Boolean value that represents if a player has chosen to split on a hand
+*       hasHit - Boolean value that represents if a player has chosen to hit on their hand
+*     Float Values:
+*       bankTotal - Float value that represents the total value of a players currency they can play with
+*       insuranceWager - Float value that represents the wager of which a player places for insurance
+*       net - Float value that represents the net of a hand that has been played
+*       wager - Float value that represents the wager that is placed on a hand that is being played
+*     Integer Values:
+*       cardsTotal - Integer value that represents the total value of a players hand of cards
+*       handsPlayed - Integer value that represents the number of total hands played by a player
+*       individualHands - Integer value that represents the number of individual hands (Split hands included) played by a player
+*     String Values:
+*       displayBankTotal - String value that represents the modified private data member "bankTotal"
+*       displayCardsTotal - String value that represents the modified private data member "cardsTotal"
+*       displayHandsPlayed - String value that represents the modified private data member "handsPlayed"
+*       displayInsuranceWager - String value that represents the modified private data member "insuranceWager"
+*       displayName - String value that represents the modified private data member "name"
+*       displayNet - String value that represents the modified private data member "net"
+*       displayWager - String value that represents the modified private data member "wager"
+*       name - String value that represents the name of a player
+*     Vector Values:
+*       cards - Vector of Card objects that represents the cards in a hand of a player
+*       handBankTotals - Vector of floats that represents a players bank totals after each hand
+*       handCardTotals - Vector of integers that represents a players card totals after each hand
+*       handNets - Vector of floats that represents a players nets after a hand
+*       handPlayed - Vector of integers that represents the total of hands played by a player
+*       handWagers - Vector of floats that represents the original wager placed for each hand
+*/
 struct Player {
     // Boolean Value
-    bool can_buy_insurance;
-    bool can_double_down;
-    bool can_split_hand;
-    bool can_split_aces;
-    bool chose_buy_insurance;
-    bool chose_double_down;
-    bool chose_split_aces;
-    bool chose_split_hand;
-    bool has_hit;
+    bool canBuyInsurance;
+    bool canDoubleDown;
+    bool canSplitAces;
+    bool canSplitHand;
+    bool choseBuyInsurance;
+    bool choseDoubleDown;
+    bool choseSplitAces;
+    bool choseSplitHand;
+    bool hasHit;
     // Float Values
-    float bank_total;
+    float bankTotal;
+    float insuranceWager;
     float net;
     float wager;
-    float insurance_wager;
     // Integer Values
-    int cards_total;
+    int cardsTotal;
+    int handsPlayed;
     int individual_hands;
-    int hands_played;
     // Strings
+    std::string displayBankTotal;
+    std::string displayCardsTotal;
+    std::string displayHandsPlayed;
+    std::string displayInsuranceWager;
+    std::string displayName;
+    std::string displayNet;
+    std::string displayWager;
     std::string name;
-    std::string display_name;
-    std::string display_bank_total;
-    std::string display_net;
-    std::string display_wager;
-    std::string display_insurance_wager;
-    std::string display_cards_total;
-    std::string display_hands_played;
     // Vectors
     std::vector<Card> cards;
-    std::vector<float> hand_bank_totals;
-    std::vector<float> hand_nets;
-    std::vector<float> hand_wagers;
-    std::vector<int> hand_card_totals;
-    std::vector<int> hand_played;
+    std::vector<float> handBankTotals;
+    std::vector<int> handCardTotals;
+    std::vector<float> handNets;
+    std::vector<int> handPlayed;
+    std::vector<float> handWagers;
 };
-
 class Hand {
 public:
     // Constructor
@@ -70,15 +106,14 @@ public:
     void SetHasHit(const bool input);
     // Float Values
     void SetBankTotal(const float& input);
+    void SetInsuranceWager(const float& input);
     void SetNet(const float& input);
     void SetWager(const float& input);
-    void SetInsuranceWager(const float& input);
     // Integer Values
     void SetCardsTotal(const int& input);
-    void SetIndividualHands(const int& input);
     void SetHandsPlayed(const int& input);
+    void SetIndividualHands(const int& input);
     // String Values
-    void SetName(const std::string& input);
     void SetDisplayName();
     void SetDisplayBankTotal();
     void SetDisplayNet();
@@ -86,13 +121,14 @@ public:
     void SetDisplayInsuranceWager();
     void SetDisplayCardsTotal();
     void SetDisplayHandsPlayed();
+    void SetName(const std::string& input);
     // Vector Values
     void SetCards(const Card& input);
-    void SetHandBankTotals(const float& input); 
-    void SetHandNets(const float& input);
-    void SetHandWagers(const float& input);
+    void SetHandBankTotals(const float& input);
     void SetHandCardTotals(const int& input);
+    void SetHandNets(const float& input);
     void SetHandPlayed(const int& input);
+    void SetHandWagers(const float& input);
     // Getter Functionss
     // Boolean Values
     bool GetCanBuyInsurance() const;
@@ -106,29 +142,29 @@ public:
     bool GetHasHit() const;
     // Float Values
     float GetBankTotal() const;
+    float GetInsuranceWager() const;
     float GetNet() const;
     float GetWager() const;
-    float GetInsuranceWager() const;
     // Integer Values
     int GetCardsTotal() const;
-    int GetIndividualHands() const;
     int GetHandsPlayed() const;
+    int GetIndividualHands() const;
     // String Values
-    std::string GetName() const;
-    std::string GetDisplayName() const;
     std::string GetDisplayBankTotal() const;
-    std::string GetDisplayNet() const;
-    std::string GetDisplayWager() const;
-    std::string GetDisplayInsuranceWager() const;
     std::string GetDisplayCardsTotal() const;
     std::string GetDisplayHandsplayed() const;
+    std::string GetDisplayInsuranceWager() const;
+    std::string GetDisplayName() const;
+    std::string GetDisplayNet() const;
+    std::string GetDisplayWager() const;
+    std::string GetName() const;
     // Vector Values
     std::vector<Card> GetCards() const;
     std::vector<float> GetHandBankTotals() const;
-    std::vector<float> GetHandNets() const;
-    std::vector<float> GetHandWagers() const;
     std::vector<int> GetHandCardTotals() const;
+    std::vector<float> GetHandNets() const;
     std::vector<int> GetHandPlayed() const;
+    std::vector<float> GetHandWagers() const;
 private:
     Player currentPlayer;
 };
