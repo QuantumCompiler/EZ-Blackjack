@@ -2,7 +2,52 @@
 #include "../Headers/Hand.h"
 
 // ----- ----- ----- ----- ----- ----- ----- Class Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
+/*  Constructor for Hand Class
+*   Input:
+*       There is no input required for constructing this class
+*   Initialization:
+*       Boolean Values - All boolean values set to false
+*       Float Values - All float values set to zero
+*       Integer Values - All integer values set to zero
+*       String Values - All string values set to empty
+*       Vector Values - All vector values set to empty
+*/
 Hand::Hand() {
+    // Boolean Values Initialization
+    SetCanBuyInsurance(false);
+    SetCanDoubleDown(false);
+    SetCanSplitAces(false);
+    SetCanSplitHand(false);
+    SetChoseBuyInsurace(false);
+    SetChoseDoubleDown(false);
+    SetChoseSplitAces(false);
+    SetChoseSplitHand(false);
+    SetHasHit(false);
+    // Float Values Initialization
+    SetBankTotal(0.00);
+    SetInsuranceWager(0.00);
+    SetNet(0.00);
+    SetWager(0.00);
+    // Intever Values Initialization
+    SetCardsTotal(0);
+    SetHandsPlayed(0);
+    SetIndividualHands(0);
+    // String Values Initialization
+    GetDisplayBankTotal().clear();
+    GetDisplayCardsTotal().clear();
+    GetDisplayHandsplayed().clear();
+    GetDisplayInsuranceWager().clear();
+    GetDisplayName().clear();
+    GetDisplayNet().clear();
+    GetDisplayWager().clear();
+    GetName().clear();
+    // Vector Values Initialization
+    GetCards().clear();
+    GetHandBankTotals().clear();
+    GetHandCardTotals().clear();
+    GetHandNets().clear();
+    GetHandPlayed().clear();
+    GetHandWagers().clear();
 }
 
 // ----- ----- ----- ----- ----- ----- ----- Setter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
