@@ -278,23 +278,17 @@ void Shoe::SetRiggedCards(const Card inputCard) {
 
 // ----- ----- ----- ----- ----- ----- ----- Getter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 
-/*
-*   GetNumOfDecks - Function that retrieves the private data member "gameDeck.numOfDecks"
-*/
+// GetNumOfDecks - Retrieves the private data member "numOfDecks"
 int Shoe::GetNumOfDecks() const {
     return gameDeck.numOfDecks;
 }
 
-/*
-*   GetCardsInShoe - Function that retrieves the private data member "gameDeck.cardsInShoe"
-*/
+// GetCardsInShoe - Retrieves the private data member "cardsInShoe"
 std::vector<Card> Shoe::GetCardsInShoe() const {
     return gameDeck.cardsInShoe;
 }
 
-/*
-*   GetRiggedCards - Function that retrieves the private data member "gameDeck.riggedCards"
-*/
+// GetRiggedCards - Retrieves the private data member "riggedCards"
 std::vector<Card> Shoe::GetRiggedCards() const {
     return gameDeck.riggedCards;
 }
