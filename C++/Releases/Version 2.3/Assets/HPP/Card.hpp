@@ -24,6 +24,10 @@ Card::Card(const std::string inputRank, const std::string inputSuit) {
 /*  SetDisplayRank - Sets the diplay value of a cards rank
 *   Input:
 *       inputCard: PlayingCard struct passed by reference to make changes to private data member "displayRank"
+*   Algorithm:
+*       * Set the private data member "displayRank" equal to the modified version of "rank"
+*   Output:
+*       This function does not return a value
 */
 void Card::SetDisplayRank(PlayingCard& inputCard) {
     card.displayRank = color_text(32, inputCard.rank);
@@ -33,10 +37,12 @@ void Card::SetDisplayRank(PlayingCard& inputCard) {
 *   Input:
 *       inputCard: PlayingCard struct passed by reference to make changes to private data member "displaySuit"
 *   Algorithm:
-*       Function checks for it a suit is a of a specific kind:
-*           (0,3): Card is a Club or Spade - Console output is changed to purple
-*           (1,2): Card is a Diamond or Heart - Console output is changed to red
-*           Other: Card is an undefined suit - Console output is white
+*       * Function checks for it a suit is a of a specific kind:
+*           * (0,3): Card is a Club or Spade - Console output is changed to purple
+*           * (1,2): Card is a Diamond or Heart - Console output is changed to red
+*           * Other: Card is an undefined suit - Console output is white
+*   Output:
+*       This function does not return a value
 */
 void Card::SetDisplaySuit(PlayingCard& inputCard) {
     for (int i = 0; i < 4; i++) {
@@ -63,6 +69,10 @@ void Card::SetDisplaySuit(PlayingCard& inputCard) {
 /*  SetDisplayCardValue - Sets the display value of a cards value
 *   Input:
 *       inputCard: PlayingCard struct passed by reference to make changes to the private data member "displayCardValue"
+*   Algorithm:
+*       * Set the private data member "displayCardValue" to the modified version of "cardValue"
+*   Output:
+*       This function does not return a value
 */
 void Card::SetDisplayCardValue(PlayingCard& inputCard) {
     card.displayCardValue = color_text(31, std::to_string(inputCard.cardValue));
@@ -72,10 +82,12 @@ void Card::SetDisplayCardValue(PlayingCard& inputCard) {
 *   Input:
 *       inputCard: PlayingCard struct passed by reference to make changes to private data member "cardValue"
 *   Algorithm:
-*       Function checks for what rank a card is:
-*           Ace: Card value is defaulted to a value of (11) - This can be mutated with another function
-*           (2,3,4,5,6,7,8,9): Card value is defaulted to the integer value of the card
-*           (10,Jack,Queen,King): Card value is defaulted to a value of (10)
+*       * Function checks for what rank a card is:
+*           * Ace: Card value is defaulted to a value of (11) - This can be mutated with another function
+*           * (2,3,4,5,6,7,8,9): Card value is defaulted to the integer value of the card
+*           * (10,Jack,Queen,King): Card value is defaulted to a value of (10)
+*   Output:
+*       This function does not return a value
 */
 void Card::SetCardValue(PlayingCard& inputCard) {
     for (int i = 0; i < 13; i++) {
@@ -111,6 +123,11 @@ void Card::SetCardValue(PlayingCard& inputCard) {
 /*  SetNewCardValue - Mutates the private data member "cardValue" to a new integer value
 *   Input:
 *       input: Integer value that private data member "cardValue" is to be changed to
+*   Algorithm:
+*       * Set the private data member "cardValue" equal to the input parameter "input"
+*       * Set the display card value with the function "SetDisplayCardValue"
+*   Output:
+*       This function does not return a value
 */
 void Card::SetNewCardValue(const int input) {
     card.cardValue = input;
