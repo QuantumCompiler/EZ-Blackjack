@@ -21,5 +21,5 @@ This program is designed to be a fully functional implementation of all the rule
 - [Version 2.1](https://github.com/RelativiBit/Blackjack/releases/tag/v2.1) - Version 2.1 of this application was built using C++. Users have an option at the beginning of the game to view the specific rules that are layed out for players. Along with this new information that is presented at the beginning of the game, users can now choose to continue playing at their own will after a hand has completed. If users run out of currency in their bank, they can choose if they would like to re-deposit money into their bank to continue playing.
 - [Version 2.2](https://github.com/RelativiBit/Blackjack/releases/tag/v2.2) - Version 2.2 of this application was built using C++. Users will be given hints to how they should play their hand at every moment. Using Blackjack logic, players now can make the best decisions when playing to maximize their odds at winning each hand. The Blackjack strategy that has been implemented into this version can be seen below. 
     <div style="text-align: center;">
-        <img src="C++/Releases/Version 2.2.0/Assets/Blackjack Chart.PNG" style="max-width: 40%;">
+        <img src="C++/Releases/Version 2.2/Assets/Blackjack Chart.PNG" style="max-width: 40%;">
     </div> 
