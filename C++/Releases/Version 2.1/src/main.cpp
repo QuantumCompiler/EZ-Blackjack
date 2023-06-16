@@ -1,6 +1,8 @@
-#include <iostream>
+#include "../Assets/Structure.h"
+using namespace std;
 
-int main(int argc, char *argv[])
-{
-    std::cout << "Hello world!" << std::endl;
+int main() {
+    game_rules();
+    play_game();
+    return 0;
 }
