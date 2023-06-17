@@ -50,6 +50,187 @@ Hand::Hand() {
     GetHandWagers().clear();
 }
 
+/*  AddCardToHand - Adds a card to a players hand
+*   Input:
+*       input - Constant card passed by reference that is to be added to a players hand
+*   Algorithm:
+*       * Calls the "SetCards" function and adds the input parameter "input" to the private data member "cards"
+*       * Call "AddHandTotal" function to add up the total in the hand of the player
+*   Output:
+*       This function returns a Hand object
+*/
+Hand Hand::AddCardToHand(const Card& input) {
+    // Add card to players hand and update hand total
+    SetCards(input);
+    AddHandTotal();
+    return *this;
+}
+
+/*  AddHandTotal - Adds the hand total of a current player
+*   Input:
+*       This function does not have any input parameters
+*   Algorithm:
+*       * Create two integer vaues; ace_count (Represents the number of aces in a hand), running_hand_value (A running hand value)
+*       * Iterate through the cards in a players hand and count how many Aces are present in a players hand
+*       * Iterate through the cards in a players hand and do the following:
+*           * If the number of Aces in the hand is 1, then set the value of the Ace to 11
+*           * If the number of Aces in the hand is greater than 1, then set the current value of the Ace to 1
+*           * Update the "running_hand_value" by adding the current cards value to it
+*           * Decrease the value of "ace_count" by one, then repeat the loop
+*       * Iterate through the cards in a players hand if the "running_hand_value" is greater than 21
+*           * If the current card is an Ace, set its value to 1, and add that card value to "running_hand_value"
+*           * If the current card is not an Ace, then just add its value to "running_hand_value"
+*       * Set the private data member "cardsTotal" to "running_hand_value" using SetCardsTotal
+*   Output:
+*       This function returns a Hand object after iterating through all the cards in a hand
+*/
+Hand Hand::AddHandTotal() {
+    int ace_count = 0;
+    int running_hand_value = 0;
+    // Count number of Aces in hand
+    for (const Card& current_card : currentPlayer.cards) {
+        if (check_card_parameter(current_card.GetRank(), "Ace")) {
+            ace_count += 1;
+        }
+        else {}
+    }
+    // Change Ace values
+    for (Card& current_card : currentPlayer.cards) {
+        if (ace_count == 1) {
+            // Change Ace value to 11
+            if (check_card_parameter(current_card.GetRank(), "Ace")) {
+                current_card.SetNewCardValue(11);
+            }
+            else {}
+        }
+        else if (ace_count > 1) {
+            // Change Ace value to 1
+            if (check_card_parameter(current_card.GetRank(), "Ace")) {
+                current_card.SetNewCardValue(1);
+            }
+            else {}
+        }
+        else {}
+        running_hand_value += current_card.GetCardValue();
+        ace_count -= 1;
+    }
+    // Check if current hand is over 21
+    if (running_hand_value > 21) {
+        running_hand_value = 0;
+        for (Card& current_card : currentPlayer.cards)
+        {
+            // If the card is an Ace, change the value of it to 1
+            if (check_card_parameter(current_card.GetRank(), "Ace")) {
+                current_card.SetNewCardValue(1);
+                running_hand_value += current_card.GetCardValue();
+            }
+            // If the card is not an Ace, just add value to running_hand_value
+            else if (!(check_card_parameter(current_card.GetRank(), "Ace"))) {
+                running_hand_value += current_card.GetCardValue();
+            }
+            else {}
+        }
+    }
+    else {}
+    SetCardsTotal(running_hand_value);
+    return *this;
+}
+
+/*  BankDeposit - Updates the private data member "bankTotal" to represent a players bank total
+*   Input:
+*       This function does not have any input parameters
+*   Algorithm:
+*       * First create a float value that represents the bank total of a player prior to depositing
+*       * Enter an error catching block that will help us determine if a player has entered a correct value for a bank total
+*           * If the value entered is not a float, then we output an error message and clear the inputs
+*           * If the value entered is a float or an integer
+*               * We check to see if it is less than or equal to zero, if it is, we output an error message and require another input
+*               * If it is greater than zero, then we set the private data member "bankTotal" to the "input" with SetBankTotal
+*       * We then initialize some values for the statistics tracking of the player
+*   Output:
+*       This function returns a Hand object after depositing currency into a players bank
+*/
+Hand Hand::BankDeposit() {
+    while (true) {
+        float input;
+        // Prompt user for deposit
+        std::cout << std::endl << "Please enter the amount you'd like to deposit into your bank: "; time_sleep(1000);
+        std::cin >> input; time_sleep(1000);
+        const std::type_info& result = typeid(input);
+        std::string checkResult = result.name();
+        // Check if value is not a float or integer
+        if (checkResult != "f" || checkResult != "i") {
+            std::cout << std::endl << color_text(31, "Invalid Response") << ". Please re-enter your submission." << std::endl; time_sleep(1000);
+            clear_terminal();
+            checkResult.clear();
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            continue;
+        }
+        // Check if value is a float or integer
+        else if (checkResult == "f" || checkResult == "i") {
+            if (input <= 0) {
+                std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(round_input(input))) << ". Please re-enter a positive value." << std::endl; time_sleep(1000);
+                clear_terminal();
+                checkResult.clear();
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                continue;
+            }
+            else {
+                SetBankTotal(input);
+                break;
+            }
+        }
+        else {}
+    }
+    std::cout << std::endl << GetDisplayName() << " has decided to start with: " << GetDisplayBankTotal() << std::endl; time_sleep(1000);
+    // Add handsPlayed value to handPlayed
+    if (GetHandsPlayed() == 0) {
+        SetHandPlayed(GetHandsPlayed());
+    }
+    else if (GetHandsPlayed() > 0) {
+        SetHandPlayed(GetHandsPlayed()+1);
+    }
+    else {}
+    // Add other statistics to their respective vectors
+    SetHandWagers(GetWager());
+    SetHandNets(GetNet());
+    SetHandCardTotals(GetCardsTotal());
+    SetHandBankTotals(GetBankTotal());
+    return *this;
+}
+
+/*  CopyVariables - Copies select data members from one hand to the current hand
+*   Input:
+*       input - Hand object passed by reference that is used to copy data members from
+*   Algorithm:
+*       * Copy the name of "input" for the current hand with SetName
+*       * Copy the bank total of "input" for the current hand with SetBankTotal
+*       * Copy the wager of "input" for the current hand with SetWager
+*   Output:
+*       This function returns a Hand object after copying select variables
+*/
+Hand Hand::CopyVariables(Hand& input) {
+    SetName(input.GetName());
+    SetBankTotal(input.GetBankTotal());
+    SetWager(input.GetWager());
+    return *this;
+}
+
+/*  HitHand - Removes a hand from a given show and adds it a players hand
+*   Input:
+*       input - Shoe object that is passed by reference where a Card object is being pulled from
+*   Algorithm:
+*       * Call AddCardToHand() to add a card to the current players hand
+*   Output:
+*       This function returns a Hand object after adding a card to it
+*/
+Hand Hand::HitHand(Shoe& input) {
+    AddCardToHand(input.Draw());
+    return *this;
+}
+
 // ----- ----- ----- ----- ----- ----- ----- Setter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 /*  SetCanBuyInsurance - Sets the private data member "canBuyInsurance" to the input parameter "input"
 *   Input:
