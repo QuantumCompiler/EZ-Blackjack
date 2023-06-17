@@ -82,13 +82,14 @@ public:
     // Constructor
     Hand();
     // Class Functions
-    Hand AddCardToHand(const Card card);
-    Hand AddHandTotal();
-    Hand BankDeposit();
-    Hand CopyVariables(Hand& inputHand);
-    Hand Hit(Shoe& inputShoe);
+    Hand AddCardToHand(const Card& input); //
+    Hand AddHandTotal(); //
+    Hand BankDeposit(); //
+    Hand CopyVariables(Hand& input); //
+    Hand HitHand(Shoe& input); //
     Hand Insurance();
     Hand Name();
+    Hand ParametersCheck();
     Hand PlaceWager();
     Hand ResetHand();
     Hand ShowHand(const std::string option = "", const std::string dealer_show = "");
