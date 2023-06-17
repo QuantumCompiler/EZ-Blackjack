@@ -151,15 +151,15 @@ Hand Hand::AddHandTotal() {
 *       This function returns a Hand object after depositing currency into a players bank
 */
 Hand Hand::BankDeposit() {
+    float input;
     while (true) {
-        float input;
         // Prompt user for deposit
         std::cout << std::endl << "Please enter the amount you'd like to deposit into your bank: "; time_sleep(1000);
         std::cin >> input; time_sleep(1000);
         const std::type_info& result = typeid(input);
         std::string checkResult = result.name();
         // Check if value is not a float or integer
-        if (checkResult != "f" || checkResult != "i") {
+        if (checkResult != "f" && checkResult != "i") {
             std::cout << std::endl << color_text(31, "Invalid Response") << ". Please re-enter your submission." << std::endl; time_sleep(1000);
             clear_terminal();
             checkResult.clear();
@@ -230,6 +230,288 @@ Hand Hand::HitHand(Shoe& input) {
     AddCardToHand(input.Draw());
     return *this;
 }
+
+/*  InsurancePrompt - Prompts a player if they would like to buy insurance
+*   Input:
+*       This function does not have any input parameters
+*   Algorithm:
+*       * Create a string and prompt the user if they would like to buy insurance
+*       * Check to see if the input is yes or no
+*           * If the input is yes, set the private data member "choseBuyInsurance" to true with "SetChoseBuyInsurace"
+*           * If the input is no, set the private data member "choseBuyInsurance" to false with "SetChoseBuyInsurace"
+*       * If the answer is not yes or no
+*           * Through an output message
+*           * Clear the inputs and go back to the beginning of the loop
+*   Output:
+*       This function returns a Hand object after prompting the user about buying insurance
+*/
+Hand Hand::InsurancePrompt() {
+    std::string input;
+    while (true) {
+        // Prompt user for insurance
+        std::cout << std::endl << "Would you like to buy insurance? Insurance pays (2:1). (y/n): "; time_sleep(1000);
+        std::cin >> input; time_sleep(1000);
+        // User has chosen to buy insurance, set insurance wager
+        if (input == "y") {
+            SetChoseBuyInsurace(true);
+            SetInsuranceWager(round_input(0.5*GetWager()));
+            UpdateBank(0,GetInsuranceWager());
+            return *this;
+        }
+        // User has chosen to not buy insurance, do not take insurance wager
+        else if (input == "n") {
+            SetChoseBuyInsurace(false);
+            return *this;
+        }
+        // Player did not enter a valid input for a response
+        else {
+            std::cout << std::endl << color_text(31, "Invalid Response") << ". Please re-enter your insurance decision." << std::endl;
+            input.clear();
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            continue;
+        }
+    }
+}
+
+/*  NamePrompt - Prompts a user to input a name for their player
+*   Input:
+*       This function does not have any input parameters
+*   Algorithm:
+*       * Create a string value "input" and prompt the user for what they want their name to be
+*       * Call the "SetName" function to set the private data member "name" to "input"
+*   Output:
+*       This function returns a Hand object after prompting the user about what their name will be
+*/
+Hand Hand::NamePrompt() {
+    std::string input;
+    // Prompt user for their name
+    std::cout << std::endl << "Please enter a name for your player: "; time_sleep(1000);
+    std::getline(std::cin, input); time_sleep(1000);
+    // Set the players name to "input"
+    SetName(input);
+    return *this;
+}
+
+/*  ParametersCheck
+*
+*/
+Hand Hand::ParametersCheck() {
+
+    return *this;
+}
+
+/*  PlaceWager - Prompts the user to input a wager for their hand
+*   Input:
+*       This function does not have any input parameters
+*   Algorithm:
+*       * Create a float value "input" and prompt the user for their wager they would like to place
+*       * Check to see if the input is valid
+*       * If the input is not a float or an integer
+*           * Throw an error, return to the beginning of the while loop while clearing inputs
+*       * If the input is a float or an integer
+*           * Check to see if the value entered is greater than zero
+*               * If it is not, throw an error, return to the beginning of the while loop clearing inputs
+*               * If it is, check to see if the input is greater than the bank total
+*                   * If it is, then throw an error, return to the beginning of the while loop clearing inputs
+*                   * If it is not, set the private data member "wager" to "input" with "SetWager"
+*   Output:
+*       This function returns a Hand object after setting the wager of a players hand
+*/
+Hand Hand::PlaceWager() {
+    float input;
+    while (true) {
+        // Prompt user for the wager that they would like place for their hand
+        std::cout << std::endl << "Please enter a wager for this hand. Current bank total: " << GetDisplayBankTotal() << ": "; time_sleep(1000);
+        std::cin >> input; time_sleep(1000);
+        const std::type_info& result = typeid(input);
+        std::string checkResult = result.name();
+        // Check if the input is not a float or integer
+        if (checkResult != "f" && checkResult != "i") {
+            std::cout << std::endl << color_text(31, "Invalid Response") << ". Please re-enter your submission." << std::endl; time_sleep(1000);
+            clear_terminal();
+            checkResult.clear();
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            continue;
+        }
+        // Check if a the input is a float or an integer
+        else if (checkResult == "f" || checkResult == "i") {
+            // User has entered a value that is less than zero, return to beginning of while loop
+            if (input <= 0) {
+                std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(round_input(input))) << ". Please re-enter a positive value." << std::endl; time_sleep(1000);
+                clear_terminal();
+                checkResult.clear();
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                continue;
+            }
+            // User has entered a value that is greater than zero
+            else if (input > 0) {
+                // User has entered a wager that is greater than their bank, return to beginning of while loop
+                if (input > GetBankTotal()) {
+                    std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(round_input(input))) << ". You must enter a wager that is less than or equal to your bank total "
+                    << GetDisplayBankTotal() << ". Please re-enter your submission." << std::endl; time_sleep(1000);
+                    clear_terminal();
+                    checkResult.clear();
+                    std::cin.clear();
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    continue;
+                }
+                // User has entered a valid input for a wager, set the private data member "wager" to "input"
+                else if (input <= GetBankTotal()) {
+                    SetWager(input);
+                    UpdateBank(0,GetWager());
+                    std::cout << std::endl << GetDisplayName() << " has wagered: " << GetDisplayWager() << " with a current bank total " << GetDisplayBankTotal() << "." << std::endl; time_sleep(1000);
+                    return *this;
+                }
+                else {}
+            }
+            else {}
+        }
+        else {}
+    }
+}
+
+/*  ResetHand - Resets some private data members of a player
+*   Input:
+*       This function does not have any input parameters
+*   Algorithm:
+*       * Resets all boolean values to false
+*       * Resets all float values to 0.00
+*       * Resets all integer values to 0
+*       * Clears all string values
+*       * Clears all vector values
+*   Output:
+*       This function returns a Hand object after resetting select private data members
+*/
+Hand Hand::ResetHand() {
+    // Boolean Values
+    SetCanBuyInsurance(false);
+    SetCanDoubleDown(false);
+    SetCanSplitAces(false);
+    SetCanSplitHand(false);
+    SetChoseBuyInsurace(false);
+    SetChoseDoubleDown(false);
+    SetChoseSplitAces(false);
+    SetChoseSplitHand(false);
+    SetHasHit(false);
+    // Float Values
+    SetInsuranceWager(0.00);
+    SetNet(0.00);
+    SetWager(0.00);
+    // Integer Values
+    SetCardsTotal(0);
+    SetIndividualHands(0);
+    // String Values
+    GetDisplayCardsTotal().clear();
+    GetDisplayInsuranceWager().clear();
+    GetDisplayNet().clear();
+    GetDisplayWager().clear();
+    // Vector Values
+    GetCards().clear();
+    return *this;
+}
+
+/*  ShowHand - 
+*   
+*/
+Hand Hand::ShowHand(const std::string option, const std::string dealerShow) {
+
+}
+
+/*  UpdateBank - Updates the bank of a player
+*   Input:
+*       choice - Constant integer that is supposed to represent the outcome of a hand
+*       wager - Constant float passed by reference that is the wager being used to update the bank
+*   Algorithm:
+*       * Grab the prior bank value with "prior_bank"
+*       * The following codes represent what the choices mean
+*           * 0 - Player withdraws money from bank (placing wager)
+*           * 1 - Player wins hand
+*           * 2 - Player loses hand
+*           * 3 - Player pushes hand
+*           * 4 - Player wins blackjack
+*           * 5 - Player wins insurance
+*   Output:
+*       This function returns a Hand object after updating the players bank
+*/
+Hand Hand::UpdateBank(const int choice, const float& wager) {
+    float prior_bank = GetBankTotal();
+    switch (choice) {
+    // 0 - Player withdraws money from bank (places wager)
+    case 0:
+        SetBankTotal(prior_bank - wager);
+        return *this;
+    // 1 - Player wins hand
+    case 1:
+        SetBankTotal(GetBankTotal() + (2.0 * wager));
+        SetNet(GetBankTotal() - (prior_bank + wager));
+        return *this;
+    // 2 - Player loses hand
+    case 2:
+        SetBankTotal(prior_bank);
+        SetNet(GetBankTotal() - (prior_bank + wager));
+        return *this;
+    // 3 - Player pushes hand
+    case 3:
+        SetBankTotal(GetBankTotal() + wager);
+        SetNet(GetBankTotal() - (prior_bank + wager));
+        return *this;
+    // 4 - Player wins blackjack
+    case 4:
+        SetBankTotal(GetBankTotal() + wager + (1.5 * wager));
+        SetNet(GetBankTotal() - (prior_bank + wager));
+        return *this;
+    // 5 - Player wins insurance
+    case 5:
+        SetBankTotal(GetBankTotal() + (2 * wager));
+        return *this;
+    default:
+        break;
+    }
+}
+// {
+//     float prior_bank = hand.player.bank_total;
+//     switch (choice[0])
+//     {
+//     case 'W':
+//         hand.player.bank_total += 2.0 * wager;
+//         hand.player.display_bank_total = color_text(33, round_to_string(hand.player.bank_total));
+//         hand.player.net = hand.player.bank_total - (prior_bank + hand.player.wager);
+//         hand.player.display_net = color_text(31, round_to_string(hand.player.net));
+//         return *this;
+//     case 'L':
+//         hand.player.display_bank_total = color_text(33, round_to_string(hand.player.bank_total));
+//         hand.player.net = hand.player.bank_total - (prior_bank + hand.player.wager);
+//         hand.player.display_net = color_text(31, round_to_string(hand.player.net));
+//         return *this;
+//     case 'P':
+//         hand.player.bank_total += wager;
+//         hand.player.display_bank_total = color_text(33, round_to_string(hand.player.bank_total));
+//         hand.player.net = hand.player.bank_total - (prior_bank + hand.player.wager);
+//         hand.player.display_net = color_text(31, round_to_string(hand.player.net));
+//         return *this;
+//     case 'B':
+//         hand.player.bank_total += wager + 1.5 * wager;
+//         hand.player.display_bank_total = color_text(33, round_to_string(hand.player.bank_total));
+//         hand.player.net = hand.player.bank_total - (prior_bank + hand.player.wager);
+//         hand.player.display_net = color_text(31, round_to_string(hand.player.net));
+//         return *this;
+//     case 'I':
+//         hand.player.bank_total += 3.0 * wager;
+//         hand.player.display_bank_total = color_text(33, round_to_string(hand.player.bank_total));
+//         hand.player.net = hand.player.bank_total - (prior_bank + hand.player.wager);
+//         hand.player.display_net = color_text(31, round_to_string(hand.player.net));
+//         return *this;
+//     default:
+//         hand.player.bank_total += wager;
+//         hand.player.display_bank_total = color_text(33, round_to_string(hand.player.bank_total));
+//         hand.player.net = hand.player.bank_total - (prior_bank + hand.player.wager);
+//         hand.player.display_net = color_text(31, round_to_string(hand.player.net));
+//         return *this;
+//     }
+// }
 
 // ----- ----- ----- ----- ----- ----- ----- Setter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 /*  SetCanBuyInsurance - Sets the private data member "canBuyInsurance" to the input parameter "input"
