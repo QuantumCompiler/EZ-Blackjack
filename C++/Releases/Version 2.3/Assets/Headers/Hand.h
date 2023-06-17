@@ -63,7 +63,7 @@ struct Player {
     // Strings
     std::string displayBankTotal;
     std::string displayCardsTotal;
-    std::string displayHandsPlayed;
+    std::string displayHandsPlayed; 
     std::string displayInsuranceWager;
     std::string displayName;
     std::string displayNet;
@@ -87,13 +87,13 @@ public:
     Hand BankDeposit(); //
     Hand CopyVariables(Hand& input); //
     Hand HitHand(Shoe& input); //
-    Hand Insurance();
-    Hand Name();
+    Hand InsurancePrompt(); //
+    Hand NamePrompt(); //
     Hand ParametersCheck();
-    Hand PlaceWager();
-    Hand ResetHand();
-    Hand ShowHand(const std::string option = "", const std::string dealer_show = "");
-    Hand UpdateBank(const std::string choice, Hand& inputHand, const float& wager);
+    Hand PlaceWager(); //
+    Hand ResetHand(); //
+    Hand ShowHand(const std::string option = "", const std::string dealerShow = "");
+    Hand UpdateBank(const int choice, const float& wager); //
     // Setter Functions
     // Boolean Values
     void SetCanBuyInsurance(const bool input);
