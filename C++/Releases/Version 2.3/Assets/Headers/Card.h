@@ -24,7 +24,7 @@ public:
     Card(const std::string inputRank, const std::string inputSuit);
     // Class methods
     friend std::ostream &operator<<(std::ostream &os, const Card& currentCard) {
-        os << currentCard.GetDisplayRank() << " of " << currentCard.GetDisplaySuit() << ": " << currentCard.GetDisplayCardValue() << std::endl;
+        os << currentCard.GetDisplayRank() << " of " << currentCard.GetDisplaySuit();
         return os;
     }
     // Setter Functions
