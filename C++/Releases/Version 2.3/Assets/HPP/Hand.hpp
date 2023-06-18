@@ -297,7 +297,6 @@ Hand Hand::NamePrompt() {
 *
 */
 Hand Hand::ParametersCheck() {
-
     return *this;
 }
 
@@ -413,11 +412,84 @@ Hand Hand::ResetHand() {
     return *this;
 }
 
-/*  ShowHand - 
-*   
+/*  ShowHand - This function displays the cards that are present in a players hand
+*   Input:
+*       option - String value that represents a custom hand tracker (e.g. First, Second, etc.)
+*       dealerShow - Constant string value that determines if the dealer is to show both hands
+*   Algorithm:
+*       * Begin by checking to see if the "option" string is empty
+*           * If it is, set it to current
+*       * Create string objects that represent certain trackers for the output
+*       * Check to see if the player is not the dealer
+*           * If it is, create some more string objects to represent parameters
+*           * Iterate through the cards in the players hand
+*           * Add the hand total and display the other hand parameters
+*       * If the player is the dealer
+*           * If the dealer is hiding a card, output a special message to console
+*           * If the dealer is showing both cards, do the same as a non dealer player
+*   Output:
+*       This function returns a Hand object after displaying what cards they have
 */
-Hand Hand::ShowHand(const std::string option, const std::string dealerShow) {
-
+Hand Hand::ShowHand(std::string option, const std::string dealerShow) {
+    // Test to see if the option value is empty
+    if (option.empty()) {
+        option = "current";
+    }
+    else {}
+    // Modify the string values
+    std::string optionMod = color_text(34, option);
+    std::string handTotalMod = color_text(36, "Hand Total");
+    // The player is not the dealer
+    if (GetName() != "Dealer") {
+        // Modify more string values
+        std::string handWager = color_text(32, "Hand Wager");
+        std::string bankTotal = color_text(33, "Bank Total");
+        std::cout << GetDisplayName() << "'s " << optionMod << " hand: [";
+        // Iterate through the cards in players hand
+        for (int i = 0; i < GetCards().size(); i++) {
+            if (i == GetCards().size() - 1) {
+                std::cout << GetCards().at(i) << "] ";
+            }
+            else {
+                std::cout << GetCards().at(i) << " , ";
+            }
+        }
+        // Add hand total and display players hand parameters
+        AddHandTotal();
+        std::cout << handTotalMod << ": " << GetDisplayCardsTotal() << " , " << handWager << ": " << GetDisplayWager() << " , " << bankTotal << ": " << GetDisplayBankTotal() << std::endl; time_sleep(1000);
+    }
+    // The player is the dealer
+    else if (GetName() == "Dealer") {
+        // Dealer is hiding a card
+        if (dealerShow.empty()) {
+            std::string backCardMod = color_text(36, std::to_string(GetCards().back().GetCardValue()));
+            std::cout << GetDisplayName() << "'s " << optionMod << " hand : [Hidden, " << GetCards().back() << "] " << handTotalMod << ": " << backCardMod << std::endl;
+        }
+        // Dealer is showing both cards
+        else {
+            if (dealerShow != "cards") {
+                std::cout << GetDisplayName() << "'s " << optionMod << " hand: [";
+            }
+            // Specialized display of cards
+            else {
+                std::cout << "[";
+            }
+            // Iterate through the cards in players hand
+            for (int i = 0; i < GetCards().size(); i++) {
+                if (i == GetCards().size() - 1) {
+                    std::cout << GetCards().at(i) << "] ";
+                }
+                else {
+                    std::cout << GetCards().at(i) << " , ";
+                }
+            }
+            // Add hand total and display players hand parameters
+            AddHandTotal();
+            std::cout << handTotalMod << ": " << GetDisplayCardsTotal() << std::endl; time_sleep(1000);
+        }
+    }
+    else {}
+    return *this;
 }
 
 /*  UpdateBank - Updates the bank of a player
@@ -446,72 +518,32 @@ Hand Hand::UpdateBank(const int choice, const float& wager) {
     // 1 - Player wins hand
     case 1:
         SetBankTotal(GetBankTotal() + (2.0 * wager));
-        SetNet(GetBankTotal() - (prior_bank + wager));
+        SetNet(GetNet() + (GetBankTotal() - (prior_bank + wager)));
         return *this;
     // 2 - Player loses hand
     case 2:
         SetBankTotal(prior_bank);
-        SetNet(GetBankTotal() - (prior_bank + wager));
+        SetNet(GetNet() + (GetBankTotal() - (prior_bank + wager)));
         return *this;
     // 3 - Player pushes hand
     case 3:
         SetBankTotal(GetBankTotal() + wager);
-        SetNet(GetBankTotal() - (prior_bank + wager));
+        SetNet(GetNet() + (GetBankTotal() - (prior_bank + wager)));
         return *this;
     // 4 - Player wins blackjack
     case 4:
         SetBankTotal(GetBankTotal() + wager + (1.5 * wager));
-        SetNet(GetBankTotal() - (prior_bank + wager));
+        SetNet(GetNet() + (GetBankTotal() - (prior_bank + wager)));
         return *this;
     // 5 - Player wins insurance
     case 5:
-        SetBankTotal(GetBankTotal() + (2 * wager));
+        SetBankTotal(GetBankTotal() + (3 * wager));
+        SetNet(GetNet() + (GetBankTotal() - (prior_bank + wager)));
         return *this;
     default:
         break;
     }
 }
-// {
-//     float prior_bank = hand.player.bank_total;
-//     switch (choice[0])
-//     {
-//     case 'W':
-//         hand.player.bank_total += 2.0 * wager;
-//         hand.player.display_bank_total = color_text(33, round_to_string(hand.player.bank_total));
-//         hand.player.net = hand.player.bank_total - (prior_bank + hand.player.wager);
-//         hand.player.display_net = color_text(31, round_to_string(hand.player.net));
-//         return *this;
-//     case 'L':
-//         hand.player.display_bank_total = color_text(33, round_to_string(hand.player.bank_total));
-//         hand.player.net = hand.player.bank_total - (prior_bank + hand.player.wager);
-//         hand.player.display_net = color_text(31, round_to_string(hand.player.net));
-//         return *this;
-//     case 'P':
-//         hand.player.bank_total += wager;
-//         hand.player.display_bank_total = color_text(33, round_to_string(hand.player.bank_total));
-//         hand.player.net = hand.player.bank_total - (prior_bank + hand.player.wager);
-//         hand.player.display_net = color_text(31, round_to_string(hand.player.net));
-//         return *this;
-//     case 'B':
-//         hand.player.bank_total += wager + 1.5 * wager;
-//         hand.player.display_bank_total = color_text(33, round_to_string(hand.player.bank_total));
-//         hand.player.net = hand.player.bank_total - (prior_bank + hand.player.wager);
-//         hand.player.display_net = color_text(31, round_to_string(hand.player.net));
-//         return *this;
-//     case 'I':
-//         hand.player.bank_total += 3.0 * wager;
-//         hand.player.display_bank_total = color_text(33, round_to_string(hand.player.bank_total));
-//         hand.player.net = hand.player.bank_total - (prior_bank + hand.player.wager);
-//         hand.player.display_net = color_text(31, round_to_string(hand.player.net));
-//         return *this;
-//     default:
-//         hand.player.bank_total += wager;
-//         hand.player.display_bank_total = color_text(33, round_to_string(hand.player.bank_total));
-//         hand.player.net = hand.player.bank_total - (prior_bank + hand.player.wager);
-//         hand.player.display_net = color_text(31, round_to_string(hand.player.net));
-//         return *this;
-//     }
-// }
 
 // ----- ----- ----- ----- ----- ----- ----- Setter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 /*  SetCanBuyInsurance - Sets the private data member "canBuyInsurance" to the input parameter "input"
