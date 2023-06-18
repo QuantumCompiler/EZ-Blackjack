@@ -92,7 +92,7 @@ public:
     Hand ParametersCheck();
     Hand PlaceWager(); //
     Hand ResetHand(); //
-    Hand ShowHand(const std::string option = "", const std::string dealerShow = "");
+    Hand ShowHand(std::string option = "", const std::string dealerShow = "");
     Hand UpdateBank(const int choice, const float& wager); //
     // Setter Functions
     // Boolean Values
