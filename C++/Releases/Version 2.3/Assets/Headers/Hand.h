@@ -13,7 +13,9 @@
 *       choseDoubleDown - Boolean value that represents if a player has chosen to double down on a hand
 *       choseSplitAces - Boolean value that represents if a player has chosen to split aces on a hand
 *       choseSplitHand - Boolean value that represents if a player has chosen to split on a hand
+*       hasBlackJack - Boolean value that represents if a player has blackjack
 *       hasHit - Boolean value that represents if a player has chosen to hit on their hand
+*       paramInHand - Boolean value that represents if a player has a select parameter in their hand
 *     Float Values:
 *       bankTotal - Float value that represents the total value of a players currency they can play with
 *       insuranceWager - Float value that represents the wager of which a player places for insurance
@@ -50,7 +52,10 @@ struct Player {
     bool choseDoubleDown;
     bool choseSplitAces;
     bool choseSplitHand;
+    bool hasBlackJack;
     bool hasHit;
+    bool paramInHand;
+    bool sameParamInHand;
     // Float Values
     float bankTotal;
     float insuranceWager;
@@ -82,18 +87,21 @@ public:
     // Constructor
     Hand();
     // Class Functions
-    Hand AddCardToHand(const Card& input); //
-    Hand AddHandTotal(); //
-    Hand BankDeposit(); //
-    Hand CopyVariables(Hand& input); //
-    Hand HitHand(Shoe& input); //
-    Hand InsurancePrompt(); //
-    Hand NamePrompt(); //
+    Hand AddCardToHand(const Card& input);
+    Hand AddHandTotal();
+    Hand BankDeposit();
+    Hand CheckBlackJack();
+    Hand CheckParamInHand(const std::string referenceParameter, const std::string checkingParameter);
+    Hand CheckSameParamInHand(const std::string referenceParameter, const std::string checkingParameter = "");
+    Hand CopyVariables(Hand& input);
+    Hand HitHand(Shoe& input);
+    Hand InsurancePrompt();
+    Hand NamePrompt();
+    Hand PlaceWager();
+    Hand ResetHand();
     Hand ParametersCheck();
-    Hand PlaceWager(); //
-    Hand ResetHand(); //
     Hand ShowHand(std::string option = "", const std::string dealerShow = "");
-    Hand UpdateBank(const int choice, const float& wager); //
+    Hand UpdateBank(const int choice, const float& wager);
     // Setter Functions
     // Boolean Values
     void SetCanBuyInsurance(const bool input);
@@ -104,7 +112,10 @@ public:
     void SetChoseDoubleDown(const bool input);
     void SetChoseSplitAces(const bool input);
     void SetChoseSplitHand(const bool input);
+    void SetHasBlackJack(const bool input);
     void SetHasHit(const bool input);
+    void SetParamInHand(const bool input);
+    void SetSameParamInHand(const bool input);
     // Float Values
     void SetBankTotal(const float& input);
     void SetInsuranceWager(const float& input);
@@ -140,7 +151,10 @@ public:
     bool GetChoseDoubleDown() const;
     bool GetChoseSplitAces() const;
     bool GetChoseSplitHand() const;
+    bool GetHasBlackJack() const;
     bool GetHasHit() const;
+    bool GetParamInHand() const;
+    bool GetSameParamInHand() const;
     // Float Values
     float GetBankTotal() const;
     float GetInsuranceWager() const;

@@ -22,7 +22,10 @@ Hand::Hand() {
     SetChoseDoubleDown(false);
     SetChoseSplitAces(false);
     SetChoseSplitHand(false);
+    SetHasBlackJack(false);
     SetHasHit(false);
+    SetParamInHand(false);
+    SetSameParamInHand(false);
     // Float Values Initialization
     SetBankTotal(0.00);
     SetInsuranceWager(0.00);
@@ -201,6 +204,118 @@ Hand Hand::BankDeposit() {
     return *this;
 }
 
+/*  CheckBlackJack - Checks to see if a player has blackjack
+*   Input:
+*       This function does not have any input parameters
+*   Algorithm:
+*       * Check to see if the player has an Ace in their hand first
+*       * Begin by iterating through a hands cards
+*       * First, check to see if the current card value in the hand has a value of 10
+*           * If it does, proceed to return true if an Ace is also present and the hands size is only two
+*           * Otherwise, continue through the hand
+*       * Otherwise, proceed to check the next card in hand
+*   Output:
+*       This function returns a boolean value that determines if a player has a blackjack on deal
+*/
+Hand Hand::CheckBlackJack() {
+    SetHasBlackJack(false);
+    CheckParamInHand("R",Ranks[0]);
+    for (Card current_card : GetCards()) {
+        if (current_card.GetCardValue() == 10) {
+            if (GetParamInHand() && GetCards().size() == 2) {
+                SetHasBlackJack(true);
+                break;
+            }
+            else {continue;}
+        }
+        else {continue;}
+    }
+    return *this;
+}
+
+/*  CheckParamInHand - Checks to see if there is a specific parameter found in a players hand
+*   Input:
+*       referenceParameter - Constant string value that represents the type of parameter we are looking for
+*           "R" - This parameter represents rank
+*           "S" - This parameter represents suit
+*       checkingParameter - Constant string value that represents the parameter that we are searching for in a players hand
+*   Algorithm:
+*       * Start iterating through the cards of the player
+*       * If the reference parameter that we are looking for is a rank
+*           * We check to see if the current card matches the rank we are looking for by calling "check_card_parameter"
+*           * Otherwise, we move on to the next card in the players hand
+*       * If the reference parameter that we are looking for is a suit
+*           * We check to see if the current card matches the suit we are looking for by calling "check_card_parameter"
+*           * Otherwise, we move on to the next card in the players hand
+*   Output:
+*       This function returns a Hand object after checking if a specific parameter is present in a players hand
+*/
+Hand Hand::CheckParamInHand(const std::string referenceParameter, const std::string checkingParameter) {
+    SetParamInHand(false);
+    for (Card current_card : GetCards()) {
+        if (referenceParameter == "R") {
+            if (check_card_parameter(current_card.GetRank(), checkingParameter)) {
+                SetParamInHand(true);
+                break;
+            }
+            else {continue;}
+        }
+        else if (referenceParameter == "S") {
+            if (check_card_parameter(current_card.GetSuit(), checkingParameter)) {
+                SetParamInHand(true);
+                break;
+            }
+            else {continue;}
+        }
+        else {}
+    }
+    return *this;
+}
+
+/*  CheckSameParamInHand - Checks to see if the same parameter is present in a players hand
+*   Input:
+*       referenceParameter - Constant string value that represents the type of parameter we are looking for
+*           "R" - This parameter represents rank
+*           "S" - This parameter represents suit
+*       checkingParameter - Constant string value that represents the parameter that we are searching for in a players hand
+*   Algorithm:
+*       * Begin by iterating through the players hand, one card from the beginning of their hand
+*       * Set the current card to the index of the vector
+*       * If the "referenceParameter" is a Rank
+*           * Return false if the current cards rank does not match the first cards rank or if the specific rank that is designated with "checkingParameter"
+*             does not match that of the current card
+*           * Otherwise, continue to the next card in the players hand
+*       * If the "referenceParameter" is a Suit
+*           * Return false if the current cards rank does not match the first cards suit or if the specific suit that is designated with "checkingParameter"
+*             does not match that of the current card
+*           * Otherwise, continue to the next card in the players hand
+*       * Otherwise, if all the previous tests pass, then return true
+*   Output:
+*       This function returns a Hand object after checking if a specific parameter is the same in a players hand
+*/
+Hand Hand::CheckSameParamInHand(const std::string referenceParameter, const std::string checkingParameter) {
+    SetSameParamInHand(true);
+    for (int i = 1; i < GetCards().size(); ++i) {
+        Card currentCard = GetCards().at(i);
+        if (referenceParameter == "R") {
+            if (!check_card_parameter(currentCard.GetRank(), GetCards().at(0).GetRank()) || (!checkingParameter.empty() && !check_card_parameter(currentCard.GetRank(), checkingParameter))) {
+                SetSameParamInHand(false);
+                break;
+            }
+            else {continue;}
+        }
+        else if (referenceParameter == "S") {
+            if (!check_card_parameter(currentCard.GetSuit(), GetCards().at(0).GetSuit()) || (!checkingParameter.empty() && !check_card_parameter(currentCard.GetRank(), checkingParameter))) {
+                SetSameParamInHand(false);
+                break;
+            }
+            else {continue;}
+        }
+        else {}
+    }
+    return *this;
+}
+
 /*  CopyVariables - Copies select data members from one hand to the current hand
 *   Input:
 *       input - Hand object passed by reference that is used to copy data members from
@@ -290,13 +405,6 @@ Hand Hand::NamePrompt() {
     std::getline(std::cin, input); time_sleep(1000);
     // Set the players name to "input"
     SetName(input);
-    return *this;
-}
-
-/*  ParametersCheck
-*
-*/
-Hand Hand::ParametersCheck() {
     return *this;
 }
 
@@ -394,7 +502,10 @@ Hand Hand::ResetHand() {
     SetChoseDoubleDown(false);
     SetChoseSplitAces(false);
     SetChoseSplitHand(false);
+    SetHasBlackJack(false);
     SetHasHit(false);
+    SetParamInHand(false);
+    SetSameParamInHand(false);
     // Float Values
     SetInsuranceWager(0.00);
     SetNet(0.00);
@@ -642,6 +753,18 @@ void Hand::SetChoseSplitHand(const bool input) {
     currentPlayer.choseSplitHand = input;
 }
 
+/*  SetHasBlackJack - Sets the private data member "hasBlackJack" to the input parameter "input"
+*   Input:
+*       input - Constant boolean value that is assigned to the private data member "hasBlackJack"
+*   Algorithm:
+*       * Set the private data member "hasBlackJack" to the input parameter "input"
+*   Output:
+*       This function does not return a value
+*/
+void Hand::SetHasBlackJack(const bool input) {
+    currentPlayer.hasBlackJack = input;
+}
+
 /*  SetChoseSplitHand - Sets the private data member "hasHit" to the input parameter "input"
 *   Input:
 *       input - Constant boolean value that is assigned to the private data member "hasHit"
@@ -652,6 +775,30 @@ void Hand::SetChoseSplitHand(const bool input) {
 */
 void Hand::SetHasHit(const bool input) {
     currentPlayer.hasHit = input;
+}
+
+/*  SetParamInHand - Sets the private data member "paramInHand" to the input parameter "input"
+*   Input:
+*       input - Constant boolean value that is assigned to the private data member "paramInHand"
+*   Algorithm:
+*       * Set the private data member "paramInHand" to the input parameter "input"
+*   Output:
+*       This function does not return a value
+*/
+void Hand::SetParamInHand(const bool input) {
+    currentPlayer.paramInHand = input;
+}
+
+/*  SetSameParamInHand - Sets the private data member "sameParamInHand" to the input parameter "input"
+*   Input:
+*       input - Constant boolean value that is assigned to the private data member "sameParamInHand"
+*   Algorithm:
+*       * Set the private data member "sameParamInHand" to the input parameter "input"
+*   Output:
+*       This function does not return a value
+*/
+void Hand::SetSameParamInHand(const bool input) {
+    currentPlayer.sameParamInHand = input;
 }
 
 /*  SetBankTotal - Sets the private data member "bankTotal" to the rounded input parameter "input"
@@ -985,9 +1132,24 @@ bool Hand::GetChoseSplitHand() const {
     return currentPlayer.choseSplitHand;
 }
 
+// GetHasBlackJack - Retrieves the private data member "hasBlackJack"
+bool Hand::GetHasBlackJack() const {
+    return currentPlayer.hasBlackJack;
+}
+
 // GetHasHit - Retrieves the private data member "hasHit"
 bool Hand::GetHasHit() const {
     return currentPlayer.hasHit;
+}
+
+// GetParamInHand - Retrieves the private data member "paramInHand"
+bool Hand::GetParamInHand() const {
+    return currentPlayer.paramInHand;
+}
+
+// GetSameParamInHand - Retrieves the private data member "sameParamInHand"
+bool Hand::GetSameParamInHand() const {
+    return currentPlayer.sameParamInHand;
 }
 
 // GetBankTotal - Retrieves the private data member "bankTotal"
