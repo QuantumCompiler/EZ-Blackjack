@@ -91,8 +91,8 @@ Hand Hand::AddHandTotal() {
     int ace_count = 0;
     int running_hand_value = 0;
     // Count number of Aces in hand
-    for (const Card& current_card : currentPlayer.cards) {
-        if (check_card_parameter(current_card.GetRank(), "Ace")) {
+    for (Card& current_card : currentPlayer.cards) {
+        if (current_card.CheckCardParam(current_card.GetRank(), Ranks[0])) {
             ace_count += 1;
         }
         else {}
@@ -101,14 +101,14 @@ Hand Hand::AddHandTotal() {
     for (Card& current_card : currentPlayer.cards) {
         if (ace_count == 1) {
             // Change Ace value to 11
-            if (check_card_parameter(current_card.GetRank(), "Ace")) {
+            if (current_card.CheckCardParam(current_card.GetRank(), Ranks[0])) {
                 current_card.SetNewCardValue(11);
             }
             else {}
         }
         else if (ace_count > 1) {
             // Change Ace value to 1
-            if (check_card_parameter(current_card.GetRank(), "Ace")) {
+            if (current_card.CheckCardParam(current_card.GetRank(), Ranks[0])) {
                 current_card.SetNewCardValue(1);
             }
             else {}
@@ -123,12 +123,12 @@ Hand Hand::AddHandTotal() {
         for (Card& current_card : currentPlayer.cards)
         {
             // If the card is an Ace, change the value of it to 1
-            if (check_card_parameter(current_card.GetRank(), "Ace")) {
+            if (current_card.CheckCardParam(current_card.GetRank(), Ranks[0])) {
                 current_card.SetNewCardValue(1);
                 running_hand_value += current_card.GetCardValue();
             }
             // If the card is not an Ace, just add value to running_hand_value
-            else if (!(check_card_parameter(current_card.GetRank(), "Ace"))) {
+            else if (!(current_card.CheckCardParam(current_card.GetRank(),Ranks[0]))) {
                 running_hand_value += current_card.GetCardValue();
             }
             else {}
@@ -242,10 +242,10 @@ Hand Hand::CheckBlackJack() {
 *   Algorithm:
 *       * Start iterating through the cards of the player
 *       * If the reference parameter that we are looking for is a rank
-*           * We check to see if the current card matches the rank we are looking for by calling "check_card_parameter"
+*           * We check to see if the current card matches the rank we are looking for by calling "CheckCardParam"
 *           * Otherwise, we move on to the next card in the players hand
 *       * If the reference parameter that we are looking for is a suit
-*           * We check to see if the current card matches the suit we are looking for by calling "check_card_parameter"
+*           * We check to see if the current card matches the suit we are looking for by calling "CheckCardParam"
 *           * Otherwise, we move on to the next card in the players hand
 *   Output:
 *       This function returns a Hand object after checking if a specific parameter is present in a players hand
@@ -254,14 +254,14 @@ Hand Hand::CheckParamInHand(const std::string referenceParameter, const std::str
     SetParamInHand(false);
     for (Card current_card : GetCards()) {
         if (referenceParameter == "R") {
-            if (check_card_parameter(current_card.GetRank(), checkingParameter)) {
+            if (current_card.CheckCardParam(current_card.GetRank(), checkingParameter)) {
                 SetParamInHand(true);
                 break;
             }
             else {continue;}
         }
         else if (referenceParameter == "S") {
-            if (check_card_parameter(current_card.GetSuit(), checkingParameter)) {
+            if (current_card.CheckCardParam(current_card.GetSuit(), checkingParameter)) {
                 SetParamInHand(true);
                 break;
             }
@@ -298,14 +298,14 @@ Hand Hand::CheckSameParamInHand(const std::string referenceParameter, const std:
     for (int i = 1; i < GetCards().size(); ++i) {
         Card currentCard = GetCards().at(i);
         if (referenceParameter == "R") {
-            if (!check_card_parameter(currentCard.GetRank(), GetCards().at(0).GetRank()) || (!checkingParameter.empty() && !check_card_parameter(currentCard.GetRank(), checkingParameter))) {
+            if (!currentCard.CheckCardParam(currentCard.GetRank(), GetCards().at(0).GetRank()) || (!checkingParameter.empty() && !currentCard.CheckCardParam(currentCard.GetRank(), checkingParameter))) {
                 SetSameParamInHand(false);
                 break;
             }
             else {continue;}
         }
         else if (referenceParameter == "S") {
-            if (!check_card_parameter(currentCard.GetSuit(), GetCards().at(0).GetSuit()) || (!checkingParameter.empty() && !check_card_parameter(currentCard.GetRank(), checkingParameter))) {
+            if (!currentCard.CheckCardParam(currentCard.GetSuit(), GetCards().at(0).GetSuit()) || (!checkingParameter.empty() && !currentCard.CheckCardParam(currentCard.GetSuit(), checkingParameter))) {
                 SetSameParamInHand(false);
                 break;
             }
