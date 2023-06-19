@@ -17,12 +17,7 @@ std::string Ranks[13] = {"Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J
 *       result - Boolean value that is returned after algorithm is ran checking both input parameters
 */
 bool check_card_parameter(const std::string feeding, const std::string checking) {
-    bool result = false;
-    if (feeding == checking) {
-        result = true;
-        return result;
-    }
-    else { return result; }
+    return feeding == checking;
 }
 
 /*  clear_terminal - Clears the terminal of a machine
