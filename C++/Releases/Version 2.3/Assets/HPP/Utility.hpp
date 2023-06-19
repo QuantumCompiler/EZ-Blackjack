@@ -4,22 +4,6 @@
 std::string Suits[4] = {"Clubs", "Diamonds", "Hearts", "Spades"};
 std::string Ranks[13] = {"Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"};
 // ---- ---- ---- ---- ---- ---- ---- ---- ---- Class Independent Methods ---- ---- ---- ---- ---- ---- ---- ---- //
-/*  check_card_parameter - Checks to see if one parameter matches another parameter
-*   Input:
-*       feeding - Constant string value that is being fed into function to check if it matches another
-*       checking - Constant string value that is being checked agains the feeding parameter
-*   Algorithm:
-*       Boolean value "result" is initialized to false
-*       The parameter "feeding" is checked against "checking" to see if the two match
-*           If the parameters that are checked against one another are equal, result is set to true
-*           If the parameters that are checked against one another do not match, result is kept at false
-*   Output:
-*       result - Boolean value that is returned after algorithm is ran checking both input parameters
-*/
-bool check_card_parameter(const std::string feeding, const std::string checking) {
-    return feeding == checking;
-}
-
 /*  clear_terminal - Clears the terminal of a machine
 *   Algorithm:
 *       If the machine is a Windows machine, then "cls" is passed as a system command

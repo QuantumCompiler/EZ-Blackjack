@@ -3,7 +3,6 @@
 #define PREFUNC_H
 #include "Includes.h"
 
-bool check_card_parameter(const std::string checking, const std::string feeding);
 void clear_terminal();
 std::string color_text(const int codeInput, const std::string textInput);
 std::string round_to_string(const float input);
