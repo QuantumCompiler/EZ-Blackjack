@@ -23,6 +23,7 @@ public:
     // Constructor
     Card(const std::string inputRank, const std::string inputSuit);
     // Class methods
+    bool CheckCardParam(const std::string checking, const std::string feeding);
     friend std::ostream &operator<<(std::ostream &os, const Card& currentCard) {
         os << currentCard.GetDisplayRank() << " of " << currentCard.GetDisplaySuit();
         return os;

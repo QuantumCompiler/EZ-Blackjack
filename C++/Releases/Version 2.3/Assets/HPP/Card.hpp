@@ -20,6 +20,19 @@ Card::Card(const std::string inputRank, const std::string inputSuit) {
     SetDisplayCardValue(card);
 }
 
+/*  CheckCardParam - Checks to see if a specific parameter is present for a card
+*   Input:
+*       checkingParam - Constant string value that is being fed into function to check if it matches another
+*       feedingParam - Constant string value that is being checked against the feeding parameter
+*   Algorithm:
+*       * Check to see if the "checkingParam" matches with the "checkingParam"
+*   Output:
+*       This function returns a boolean value indicating if the two parameters match
+*/
+bool Card::CheckCardParam(const std::string checkingParam, const std::string feedingParam) {
+    return checkingParam == feedingParam;
+}
+
 // ----- ----- ----- ----- ----- ----- ----- Setter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 /*  SetDisplayRank - Sets the diplay value of a cards rank
 *   Input:
@@ -46,7 +59,7 @@ void Card::SetDisplayRank(PlayingCard& inputCard) {
 */
 void Card::SetDisplaySuit(PlayingCard& inputCard) {
     for (int i = 0; i < 4; i++) {
-        if (check_card_parameter(inputCard.suit, Suits[i])) {
+        if (CheckCardParam(inputCard.suit, Suits[i])) {
             switch (i)
             {
             case 0:
@@ -91,7 +104,7 @@ void Card::SetDisplayCardValue(PlayingCard& inputCard) {
 */
 void Card::SetCardValue(PlayingCard& inputCard) {
     for (int i = 0; i < 13; i++) {
-        if (check_card_parameter(inputCard.rank, Ranks[i])) {
+        if (CheckCardParam(inputCard.rank, Ranks[i])) {
             switch (i)
             {
             case 0:
