@@ -22,10 +22,12 @@ Hand::Hand() {
     SetChoseDoubleDown(false);
     SetChoseSplitAces(false);
     SetChoseSplitHand(false);
+    SetDoubleDownResponse(false);
     SetHasBlackJack(false);
     SetHasHit(false);
     SetParamInHand(false);
     SetSameParamInHand(false);
+    SetSplitHandResponse(false);
     // Float Values Initialization
     SetBankTotal(0.00);
     SetInsuranceWager(0.00);
@@ -408,6 +410,35 @@ Hand Hand::NamePrompt() {
     return *this;
 }
 
+/*  ParametersCheck - Checks to see if certain parameters in regards to wagering are met
+*   Input:
+*       playerHand - Hand object passed by reference that represents the player's hand
+*       dealerHand - Hand object passed by reference that represents the dealer's hand
+*   Algorithm:
+*       * This algorithm checks for specific parameters that pertain to how the player can play their hand
+*       * The parameters that are checked are the following:
+*           * Blackjack Check - Checks to see if the players have blackjack or not
+*           * Insurance Check - Checks to see if the player is able to buy insurance for their hand
+*/
+Hand Hand::ParametersCheck(Hand& playerHand, Hand& dealerHand) {
+    // Blackjack Check
+    playerHand.CheckBlackJack();
+    dealerHand.CheckBlackJack();
+    // Insurance Check
+    if (dealerHand.GetCards().at(1).CheckCardParam(dealerHand.GetCards().at(1).GetRank(), Ranks[0])) {
+        if (playerHand.GetBankTotal() >= 0.5*playerHand.GetWager()) {
+            playerHand.SetCanBuyInsurance(true);
+        }
+        else {
+            playerHand.SetCanBuyInsurance(false);
+        }
+    }
+    else {
+        playerHand.SetCanBuyInsurance(false);
+    }
+    return *this;
+}
+
 /*  PlaceWager - Prompts the user to input a wager for their hand
 *   Input:
 *       This function does not have any input parameters
@@ -502,10 +533,12 @@ Hand Hand::ResetHand() {
     SetChoseDoubleDown(false);
     SetChoseSplitAces(false);
     SetChoseSplitHand(false);
+    SetDoubleDownResponse(false);
     SetHasBlackJack(false);
     SetHasHit(false);
     SetParamInHand(false);
     SetSameParamInHand(false);
+    SetSplitHandResponse(false);
     // Float Values
     SetInsuranceWager(0.00);
     SetNet(0.00);
@@ -574,7 +607,7 @@ Hand Hand::ShowHand(std::string option, const std::string dealerShow) {
         // Dealer is hiding a card
         if (dealerShow.empty()) {
             std::string backCardMod = color_text(36, std::to_string(GetCards().back().GetCardValue()));
-            std::cout << GetDisplayName() << "'s " << optionMod << " hand : [Hidden, " << GetCards().back() << "] " << handTotalMod << ": " << backCardMod << std::endl;
+            std::cout << GetDisplayName() << "'s " << optionMod << " hand : [Hidden, " << GetCards().back() << "] " << handTotalMod << ": " << backCardMod << std::endl; time_sleep(1000);
         }
         // Dealer is showing both cards
         else {
@@ -753,6 +786,18 @@ void Hand::SetChoseSplitHand(const bool input) {
     currentPlayer.choseSplitHand = input;
 }
 
+/*  SetDoubleDownResponse - Sets the private data member "doubleDownResponse" to the input parameter "input"
+*   Input:
+*       input - Constant boolean value that is assigned to the private data member "doubleDownResponse"
+*   Algorithm:
+*       * Set the private data member "doubleDownResponse" to the input parameter "input"
+*   Output:
+*       This function does not return a value
+*/
+void Hand::SetDoubleDownResponse(const bool input) {
+    currentPlayer.doubleDownResponse = input;
+}
+
 /*  SetHasBlackJack - Sets the private data member "hasBlackJack" to the input parameter "input"
 *   Input:
 *       input - Constant boolean value that is assigned to the private data member "hasBlackJack"
@@ -799,6 +844,18 @@ void Hand::SetParamInHand(const bool input) {
 */
 void Hand::SetSameParamInHand(const bool input) {
     currentPlayer.sameParamInHand = input;
+}
+
+/*  SetSplitHandResponse - Sets the private data member "splitHandResponse" to the input parameter "input"
+*   Input:
+*       input - Constant boolean value that is assigned to the private data member "splitHandResponse"
+*   Algorithm:
+*       * Set the private data member "splitHandResponse" to the input parameter "input"
+*   Output:
+*       This function does not return a value
+*/
+void Hand::SetSplitHandResponse(const bool input) {
+    currentPlayer.splitHandResponse = input;
 }
 
 /*  SetBankTotal - Sets the private data member "bankTotal" to the rounded input parameter "input"
@@ -1132,6 +1189,11 @@ bool Hand::GetChoseSplitHand() const {
     return currentPlayer.choseSplitHand;
 }
 
+// GetDoubleDownResponse - Retrieves the private data member "doubleDownResponse"
+bool Hand::GetDoubleDownResponse() const {
+    return currentPlayer.doubleDownResponse;
+}
+
 // GetHasBlackJack - Retrieves the private data member "hasBlackJack"
 bool Hand::GetHasBlackJack() const {
     return currentPlayer.hasBlackJack;
@@ -1150,6 +1212,11 @@ bool Hand::GetParamInHand() const {
 // GetSameParamInHand - Retrieves the private data member "sameParamInHand"
 bool Hand::GetSameParamInHand() const {
     return currentPlayer.sameParamInHand;
+}
+
+// GetSplitHandResponse - Retrieves the private data member "splitHandResponse"
+bool Hand::GetSplitHandResponse() const {
+    return currentPlayer.splitHandResponse;
 }
 
 // GetBankTotal - Retrieves the private data member "bankTotal"
