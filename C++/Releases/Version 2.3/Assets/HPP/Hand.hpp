@@ -27,6 +27,7 @@ Hand::Hand() {
     SetHasHit(false);
     SetParamInHand(false);
     SetSameParamInHand(false);
+    SetSplitAcesResponse(false);
     SetSplitHandResponse(false);
     // Float Values Initialization
     SetBankTotal(0.00);
@@ -40,7 +41,7 @@ Hand::Hand() {
     // String Values Initialization
     GetDisplayBankTotal().clear();
     GetDisplayCardsTotal().clear();
-    GetDisplayHandsplayed().clear();
+    GetDisplayHandsPlayed().clear();
     GetDisplayInsuranceWager().clear();
     GetDisplayName().clear();
     GetDisplayNet().clear();
@@ -421,14 +422,45 @@ Hand Hand::NamePrompt() {
 *           * Insurance Check - Checks to see if the player is able to buy insurance for their hand
 */
 Hand Hand::ParametersCheck(Hand& playerHand, Hand& dealerHand) {
-    // Blackjack Check
+    // Player Checks
+    playerHand.CheckSameParamInHand("R", "");
     playerHand.CheckBlackJack();
+    // Dealer Checks
     dealerHand.CheckBlackJack();
+    // Can Split Hand Check
+    if (playerHand.GetSameParamInHand()) {
+        // Player has enough money to split
+        if (playerHand.GetBankTotal() >= playerHand.GetWager()) {
+            // Checking if player has aces
+            bool aces = playerHand.GetCards().at(0).CheckCardParam(playerHand.GetCards().at(0).GetRank(), Ranks[0]);
+            // Player doesn't have Aces, can still split hand
+            if (!aces) {
+                playerHand.SetCanSplitAces(false);
+                playerHand.SetCanSplitHand(true);
+            }
+            // Player has Aces, can split Aces, can't split regular hand
+            else {
+                playerHand.SetCanSplitAces(true);
+                playerHand.SetCanSplitHand(false);
+            }
+        }
+        // Player does not have enough money to split, can't split Aces or hand
+        else {
+            playerHand.SetCanSplitAces(false);
+            playerHand.SetCanSplitHand(false);
+        }
+    }
+    else {
+        playerHand.SetCanSplitAces(false);
+        playerHand.SetCanSplitHand(false);
+    }
     // Insurance Check
     if (dealerHand.GetCards().at(1).CheckCardParam(dealerHand.GetCards().at(1).GetRank(), Ranks[0])) {
+        // Player has enough money to buy insurance
         if (playerHand.GetBankTotal() >= 0.5*playerHand.GetWager()) {
             playerHand.SetCanBuyInsurance(true);
         }
+        // Player does not have enough money to buy insurance
         else {
             playerHand.SetCanBuyInsurance(false);
         }
@@ -538,6 +570,7 @@ Hand Hand::ResetHand() {
     SetHasHit(false);
     SetParamInHand(false);
     SetSameParamInHand(false);
+    SetSplitAcesResponse(false);
     SetSplitHandResponse(false);
     // Float Values
     SetInsuranceWager(0.00);
@@ -844,6 +877,18 @@ void Hand::SetParamInHand(const bool input) {
 */
 void Hand::SetSameParamInHand(const bool input) {
     currentPlayer.sameParamInHand = input;
+}
+
+/*  SetSplitAcesResponse - Sets the private data member "splitAcesResponse" to the input parameter "input"
+*   Input:
+*       input - Constant boolean value that is assigned to the private data member "splitAcesResponse"
+*   Algorithm:
+*       * Set the private data member "splitAcesResponse" to the input parameter "input"
+*   Output:
+*       This function does not return a value
+*/
+void Hand::SetSplitAcesResponse(const bool input) {
+    currentPlayer.splitAcesResponse = input;
 }
 
 /*  SetSplitHandResponse - Sets the private data member "splitHandResponse" to the input parameter "input"
@@ -1214,6 +1259,11 @@ bool Hand::GetSameParamInHand() const {
     return currentPlayer.sameParamInHand;
 }
 
+// GetSplitAcesResponse - Retrieves the private data member "splitAcesResponse"
+bool Hand::GetSplitAcesResponse() const {
+    return currentPlayer.splitAcesResponse;
+}
+
 // GetSplitHandResponse - Retrieves the private data member "splitHandResponse"
 bool Hand::GetSplitHandResponse() const {
     return currentPlayer.splitHandResponse;
@@ -1264,8 +1314,8 @@ std::string Hand::GetDisplayCardsTotal() const {
     return currentPlayer.displayCardsTotal;
 }
 
-// GetDisplayHandsplayed - Retrieves the private data member "displayHandsPlayed"
-std::string Hand::GetDisplayHandsplayed() const {
+// GetDisplayHandsPlayed - Retrieves the private data member "displayHandsPlayed"
+std::string Hand::GetDisplayHandsPlayed() const {
     return currentPlayer.displayHandsPlayed;
 }
 

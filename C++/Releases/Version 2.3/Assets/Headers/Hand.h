@@ -17,6 +17,7 @@
 *       hasBlackJack - Boolean value that represents if a player has blackjack
 *       hasHit - Boolean value that represents if a player has chosen to hit on their hand
 *       paramInHand - Boolean value that represents if a player has a select parameter in their hand
+*       splitAcesResponse - Boolean value that represents if a player has chosen to split their aces or not
 *       splitHandResponse - Boolean value that represents if a player has chosen to split their hand or not
 *     Float Values:
 *       bankTotal - Float value that represents the total value of a players currency they can play with
@@ -59,6 +60,7 @@ struct Player {
     bool hasHit;
     bool paramInHand;
     bool sameParamInHand;
+    bool splitAcesResponse;
     bool splitHandResponse;
     // Float Values
     float bankTotal;
@@ -121,6 +123,7 @@ public:
     void SetHasHit(const bool input);
     void SetParamInHand(const bool input);
     void SetSameParamInHand(const bool input);
+    void SetSplitAcesResponse(const bool input);
     void SetSplitHandResponse(const bool input);
     // Float Values
     void SetBankTotal(const float& input);
@@ -147,7 +150,7 @@ public:
     void SetHandNets(const float& input);
     void SetHandPlayed(const int& input);
     void SetHandWagers(const float& input);
-    // Getter Functionss
+    // Getter Functions
     // Boolean Values
     bool GetCanBuyInsurance() const;
     bool GetCanDoubleDown() const;
@@ -162,6 +165,7 @@ public:
     bool GetHasHit() const;
     bool GetParamInHand() const;
     bool GetSameParamInHand() const;
+    bool GetSplitAcesResponse() const;
     bool GetSplitHandResponse() const;
     // Float Values
     float GetBankTotal() const;
@@ -175,7 +179,7 @@ public:
     // String Values
     std::string GetDisplayBankTotal() const;
     std::string GetDisplayCardsTotal() const;
-    std::string GetDisplayHandsplayed() const;
+    std::string GetDisplayHandsPlayed() const;
     std::string GetDisplayInsuranceWager() const;
     std::string GetDisplayName() const;
     std::string GetDisplayNet() const;
