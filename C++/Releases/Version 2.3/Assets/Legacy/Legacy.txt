@@ -647,29 +647,6 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand, bool override)
     }
     
 }
-// Split Hand Method - split_hand
-/*
-* This method splits the hand of a user
-* This method takes in one input, a Hand object, and returns a vector of hands
-*   - FuncInput(1): inputHand - Hand, this is the hand object that is fed into the method to be split
-*   - FuncOutput(1): hands - Vector, this is the vector of hands that is created after the original hand is split
-*/
-std::vector<Hand> split_hand(Hand& inputHand)
-{
-    std::vector<Hand> hands;
-    inputHand.player.bank_total -= inputHand.player.wager;
-    inputHand.player.display_bank_total = color_text(33, round_to_string(inputHand.player.bank_total));
-    for (Card card : inputHand.player.cards)
-    {
-        Hand current_hand;
-        current_hand.player.cards.push_back(card);
-        hands.push_back(current_hand);
-    }
-    for (Hand& current_hand : hands) {
-        current_hand.Copy_Variables(inputHand);
-    }
-    return hands;
-}
 // Player Same Rank Method - player_same_rank
 /*
 * This method determines if a player has the same rank of a card in their hand
