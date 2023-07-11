@@ -107,7 +107,11 @@ float round_input(float input) {
 *       This function utilitizes the "sleep_for" built in function to cause the console to sleep
 */
 void time_sleep(const long input) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(input));
+    long time = input;
+    // if (input > 0) {
+    //     time = 0;
+    // }
+    std::this_thread::sleep_for(std::chrono::milliseconds(time));
 }
 
 /* measure_time - This function measures the time that a function runs for
