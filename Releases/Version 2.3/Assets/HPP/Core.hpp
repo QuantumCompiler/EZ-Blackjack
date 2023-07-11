@@ -705,14 +705,12 @@ void test_game() {
     Hand dealerTest;
     Shoe testShoe;
     testShoe.SetRiggedCards(Card(Ranks[8], Suits[3]));
-    testShoe.SetRiggedCards(Card(Ranks[8], Suits[2]));
+    testShoe.SetRiggedCards(Card(Ranks[0], Suits[2]));
     testShoe.SetRiggedCards(Card(Ranks[0], Suits[1]));
     testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
     playerTest.SetName("Player 1");
     dealerTest.SetName("Dealer");
     playerTest.SetBankTotal(100);
     dealer_showing_ace(playerTest, dealerTest, testShoe);
-    std::cout << std::endl;
-    std::vector<Hand> split_hands = split_hand(playerTest);
-    
+    same_rank_check(playerTest, dealerTest, testShoe);
 }
