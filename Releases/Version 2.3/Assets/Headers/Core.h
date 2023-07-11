@@ -9,7 +9,7 @@ std::tuple<Hand, Hand, Shoe> deal_hand(Hand& playerHand, Hand& dealerHand, Shoe&
 void blackjack_strategy(Hand& playerHand, Hand& dealerHand); // 12
 std::tuple<Hand, Hand, Shoe, bool> dealer_showing_ace(Hand& playerHand, Hand& dealerHand, Shoe& shoe); // 2 - Finished
 std::vector<Hand> split_hand(Hand& input); // 3 - Finished
-std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playerHand, Hand& dealerHand, Shoe& shoe); // 4
+std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playerHand, Hand& dealerHand, Shoe& shoe); // 4 - Finished
 std::tuple<Hand, Hand, Shoe> player_hand_logic(Hand& playerHand, Hand& dealerHand, Hand& referenceHand, Shoe& shoe, int& hand_counter); // 5
 std::tuple<Hand, Shoe> dealer_hand_logic(std::vector<Hand>& playerHands, Hand& dealerHand, Shoe& shoe); // 6
 std::tuple<Hand, Hand, Shoe> hand_comparison_logic(Hand& playerHand, Hand& dealerHand, Shoe& shoe, int& playerHandCount, int& currentHandCounter); // 7

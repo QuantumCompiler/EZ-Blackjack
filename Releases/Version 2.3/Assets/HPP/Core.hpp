@@ -248,6 +248,23 @@ std::vector<Hand> split_hand(Hand& input) {
     return split_hands;
 }
 
+/*  same_rank_check - Checks to see if the player has the same rank in their hand and if they want to split their hand
+*   Input:
+*       playerHand - Hand object passed by reference that represents the players hand that is being checked for the below conditions
+*       dealerHand - Hand object passed by reference that represents the dealers hand that is being checked against the players
+*       shoe - Shoe object passed by reference that represents the shoe in the game that is being played with
+*   Algorithm:
+*       * First check if the player is able to split their hand or not
+*           * Proceed to check if they can split aces, if they can, prompt them if they would like to and process the logic after that (See inline comments)
+*           * Check if they can split other cards than aces, prompt them if they would like to and process the logic after that (See inline comments)
+*       * Otherwise, return the values and continue with the logic of the game
+*   Output:
+*       new_hand - Vector of Hand objects, this can either be singular or multiple depending on the checks and choices of the players hand
+*       playerHand - Hand object that represents the players hand and variables that originally were fed into the function that are now modified
+*       dealerHand - Hand object that represents the dealers hand with all of their variables
+*       shoe - Shoe object that represents the shoe that is being played with by the player and dealer
+*       hand_count - Integer value that represents that number of individual hands that the player has after this function has completed
+*/
 std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playerHand, Hand& dealerHand, Shoe& shoe)
 {
     int hand_count = 1;
@@ -255,7 +272,7 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
     // Check if player can split their hand
     if (playerHand.GetCanSplitAces() || playerHand.GetCanSplitHand()) {
         // Player can split aces
-        if (playerHand.GetCanSplitAces() && !playerHand.GetCanSplitHand()) {
+        if (playerHand.GetCanSplitAces()) {
             std::string aces_response;
             while (aces_response.empty()) {
                 // Prompt player to enter response to split aces
@@ -263,13 +280,13 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
                 std::cout << std::endl << "Would you like to split your hand? You may only split your hand once." << std::endl; time_sleep(1000);
                 // blackjack_strategy(playerHand, dealerHand, false);
                 std::cout << std::endl << "Enter (y) for yes and (n) for no: "; time_sleep(1000);
-                std::cin >> aces_response;
-                std::cout << std::endl;
+                std::cin >> aces_response; std::cout << std::endl;
                 // Player has chosen to split aces
                 if (aces_response == "y") {
                     playerHand.SetChoseSplitAces(true);
                     playerHand.SetSplitAcesResponse(true);
-                    std::cout << playerHand.GetDisplayName() << " has chosen to split their " << playerHand.GetCards().at(0).GetDisplayRank() << "'s." << std::endl; time_sleep(1000);
+                    std::cout << playerHand.GetDisplayName() << " has chosen to split their " << playerHand.GetCards().at(0).GetDisplayRank() << "'s." << std::endl; time_sleep(3000);
+                    clear_terminal();
                     std::cout << std::endl << "Here are the current hands of both players: " << std::endl; time_sleep(1000);
                     std::vector<Hand> split_aces = split_hand(playerHand);
                     Hand player_hand_1 = split_aces.at(0);
@@ -300,417 +317,626 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
                 else if (aces_response == "n") {
                     playerHand.SetChoseSplitAces(false);
                     playerHand.SetSplitAcesResponse(true);
-                    std::cout << playerHand.GetDisplayName() << " has chosen not to split their " << playerHand.GetCards().at(0).GetDisplayRank() << "'s." << std::endl; time_sleep(1000);
+                    std::cout << playerHand.GetDisplayName() << " has chosen not to split their " << playerHand.GetCards().at(0).GetDisplayRank() << "'s." << std::endl; time_sleep(3000);
+                    clear_terminal();
+                    std::cout << std::endl << "Here are the current hands of both players: " << std::endl; time_sleep(1000);
+                    playerHand.ShowHand();
+                    dealerHand.ShowHand();
                     new_hand.push_back(playerHand);
                     playerHand.CopyVariables(new_hand.back());
                     return std::make_tuple(new_hand, playerHand, dealerHand, shoe, hand_count);
                 }
+                // Player has entered an invalid response
                 else {
-                    std::cout << color_text(31, "Invalid choice") + " of " + color_text(31, aces_response) + ". Plese re-enter your decision." << std::endl << std::endl; time_sleep(1000);
+                    std::cout << color_text(31, "Invalid choice") + " of " + color_text(31, aces_response) + ". Plese re-enter your decision." << std::endl; time_sleep(1000);
                     aces_response.clear();
                 }
             }
         }
-        else if (!playerHand.GetCanSplitAces() && playerHand.GetCanSplitHand()) {
-
+        // Player can split normal hand
+        else if (playerHand.GetCanSplitHand()) {
+            std::string same_rank_response;
+            while (same_rank_response.empty()) {
+                // Prompt player to enter response to split hand
+                std::cout << std::endl << "You have the same rank of " << playerHand.GetCards().at(0).GetDisplayRank() << " in your hand." << std::endl; time_sleep(1000);
+                std::cout << std::endl << "Would you like to split your hand? You can split up to four times." << std::endl; time_sleep(1000);
+                // blackjack_strategy(playerHand, dealerHand, false);
+                std::cout << std::endl << "Enter (y) for yes and (n) for no: "; time_sleep(1000);
+                std::cin >> same_rank_response; std::cout << std::endl; 
+                // Player has chosen to split their hand
+                if (same_rank_response == "y") {
+                    playerHand.SetChoseSplitHand(true);
+                    playerHand.SetSplitHandResponse(false);
+                    std::cout << playerHand.GetDisplayName() << " has chosen to split their " << playerHand.GetCards().at(0).GetDisplayRank() << "'s." << std::endl; time_sleep(3000);
+                    clear_terminal();
+                    std::cout << std::endl << "Here are the current hands of both players: " << std::endl; time_sleep(1000);
+                    std::vector<Hand> splitHand = split_hand(playerHand);
+                    std::vector<Hand> splitHands;
+                    std::vector<Hand> tempHands;
+                    Hand playerHand1 = splitHand.at(0);
+                    Hand playerHand2 = splitHand.at(1);
+                    Hand checkingHand;
+                    playerHand2.HitHand(shoe);
+                    tempHands.push_back(playerHand2);
+                    tempHands.push_back(playerHand1);
+                    checkingHand = playerHand2;
+                    checkingHand.CopyVariables(playerHand2);
+                    checkingHand.ParametersCheck(checkingHand, dealerHand);
+                    int split_counter = 1;
+                    hand_count++;
+                    int loop_counter = 1;
+                    std::string hand_tracker;
+                    for (Hand& current_hand : tempHands) {
+                        if (loop_counter == 1) {
+                            hand_tracker = "first";
+                        }
+                        else if (loop_counter == 2) {
+                            hand_tracker = "second";
+                        }
+                        else {}
+                        current_hand.ShowHand(hand_tracker);
+                        loop_counter++;
+                    }
+                    dealerHand.ShowHand();
+                    // Player can split hand again
+                    if (checkingHand.GetCanSplitHand()) {
+                        while (split_counter < 4 && checkingHand.GetCanSplitHand()) {
+                            std::string split_again;
+                            // Prompt player if they want to split again
+                            while (split_again != "y" || split_again != "n") {
+                                std::cout << std::endl << "You have pulled the same rank of " << checkingHand.GetCards().at(0).GetDisplayRank() << " again." << std::endl; time_sleep(1000);
+                                std::cout << std::endl << "Would you like to split your current hand again?" << std::endl; time_sleep(1000);
+                                // blackjack_strategy(checking_hand, dealerHand, false);
+                                std::cout << std::endl << "Enter (y) for yes and (n) for no: "; time_sleep(1000);
+                                std::cin >> split_again; std::cout << std::endl;
+                                if (split_again == "y") {
+                                    split_counter++;
+                                    hand_count++;
+                                    std::vector<Hand> new_split = split_hand(checkingHand);
+                                    Hand newPlayerHand1 = new_split.at(0);
+                                    Hand newPlayerHand2 = new_split.at(1);
+                                    newPlayerHand2.HitHand(shoe);
+                                    splitHands.insert(splitHands.begin(), newPlayerHand1);
+                                    checkingHand = newPlayerHand2;
+                                    checkingHand.CopyVariables(newPlayerHand2);
+                                    checkingHand.ParametersCheck(checkingHand, dealerHand);
+                                    break;
+                                }
+                                else if (split_again == "n") {
+                                    break;
+                                }
+                                else {
+                                    std::cout << color_text(31, "Invalid Entry") << ". Please enter a valid choice." << std::endl; time_sleep(1000);
+                                    split_again.clear();
+                                }
+                            }
+                            splitHands.insert(splitHands.begin(), checkingHand);
+                            splitHands.insert(splitHands.end(), playerHand1);
+                            for (int i = 0; i < splitHands.size(); i++) {
+                                splitHands.at(i).CopyVariables(checkingHand);
+                            }
+                            // Player has chosen to split their hand again
+                            if (checkingHand.GetCanSplitHand() && split_again == "y") {
+                                // Player is eligible to split their hand again
+                                if (split_counter < 4 && checkingHand.GetCanSplitHand()) {
+                                    std::cout << playerHand.GetDisplayName() << " has chosen to split their hand again." << std::endl; time_sleep(1000);
+                                    std::cout << std::endl << "Total times split: " << color_text(31, std::to_string(split_counter)) << ". Your current hand(s) are:" << std::endl; time_sleep(1000);
+                                    int loop_counter = 1;
+                                    std::string hand_tracker;
+                                    for (Hand& current_hand : splitHands) {
+                                        if (loop_counter == 1) {
+                                            hand_tracker = "first";
+                                        }
+                                        else if (loop_counter == 2) {
+                                            hand_tracker = "second";
+                                        }
+                                        else if (loop_counter == 3) {
+                                            hand_tracker = "third";
+                                        }
+                                        else if (loop_counter == 4) {
+                                            hand_tracker = "fourth";
+                                        }
+                                        else {
+                                            hand_tracker = "current";
+                                        }
+                                        current_hand.ShowHand(hand_tracker);
+                                        loop_counter++;
+                                    }
+                                    splitHands.erase(splitHands.begin());
+                                    splitHands.pop_back();
+                                    continue;
+                                }
+                                // Player cannot split their hand again
+                                else if (split_counter == 4 || !checkingHand.GetCanSplitHand()) {
+                                    checkingHand.CheckSameParamInHand("R");
+                                    // Max split count has occurred 
+                                    if (split_counter == 4) {
+                                        std::cout << playerHand.GetDisplayName() << " has reached the max amount of times to split. You can no longer split your hands." << std::endl; time_sleep(1000);
+                                        std::cout << std::endl << "Total times split: " << color_text(31, std::to_string(split_counter)) << ". The current hands of each player are:" << std::endl; time_sleep(1000);
+                                        int loop_counter = 1;
+                                        std::string hand_tracker;
+                                        for (Hand& current_hand : splitHands) {
+                                            if (loop_counter == 1) {
+                                                hand_tracker = "first";
+                                            }
+                                            else if (loop_counter == 2) {
+                                                hand_tracker = "second";
+                                            }
+                                            else if (loop_counter == 3) {
+                                                hand_tracker = "third";
+                                            }
+                                            else if (loop_counter == 4) {
+                                                hand_tracker = "fourth";
+                                            }
+                                            else if (loop_counter == 5) {
+                                                hand_tracker = "fifth";
+                                            }
+                                            else {
+                                                hand_tracker = "current";
+                                            }
+                                            current_hand.ShowHand(hand_tracker);
+                                            loop_counter++;
+                                        }
+                                        dealerHand.ShowHand();
+                                    }
+                                    // Player is ineligible to split hand again
+                                    else if (!checkingHand.GetCanSplitHand()) {
+                                        checkingHand.CheckSameParamInHand("R");
+                                        // Player does not have the currency to split again
+                                        if (checkingHand.GetBankTotal() < checkingHand.GetWager())  {
+                                            std::cout << "You pulled the same rank of " << checkingHand.GetCards().at(0).GetDisplayRank() << " again but you do not have enough currency to continue splitting. You can no longer split your hands." << std::endl; time_sleep(1000);
+                                            std::cout << std::endl << "Total times split: " << color_text(31, std::to_string(split_counter)) << ". The current hands of each player are:" << std::endl; time_sleep(1000);
+                                        }
+                                        // Player did not pull the same rank again
+                                        else if (!checkingHand.GetSameParamInHand()) {
+                                            std::cout << "You did not pull the same rank of " << checkingHand.GetCards().at(0).GetDisplayRank() << " again. You can no longer split your hands." << std::endl; time_sleep(1000);
+                                            std::cout << std::endl << "Total times split: " << color_text(31, std::to_string(split_counter)) << ". The current hands of each player are:" << std::endl; time_sleep(1000);
+                                        }
+                                        else {}
+                                        int loop_counter = 1;
+                                        std::string hand_tracker;
+                                        for (Hand& current_hand : splitHands) {
+                                            if (loop_counter == 1) {
+                                                hand_tracker = "first";
+                                            }
+                                            else if (loop_counter == 2) {
+                                                hand_tracker = "second";
+                                            }
+                                            else if (loop_counter == 3) {
+                                                hand_tracker = "third";
+                                            }
+                                            else if (loop_counter == 4) {
+                                                hand_tracker = "fourth";
+                                            }
+                                            else {
+                                                hand_tracker = "current";
+                                            }
+                                            current_hand.ShowHand(hand_tracker);
+                                            loop_counter++;
+                                        }
+                                        dealerHand.ShowHand();
+                                    }
+                                    else {}
+                                    break;
+                                }
+                                else {}
+                            }
+                            // Player has chosen to not split their hand again or can't
+                            else if (!checkingHand.GetCanSplitHand() || split_again == "n") {
+                                checkingHand.CheckSameParamInHand("R");
+                                // Player cannot split their hand again
+                                if (!checkingHand.GetCanSplitHand()) {
+                                    // Player doesn't have the currency to split their hand again
+                                    if (checkingHand.GetBankTotal() < checkingHand.GetWager()) {
+                                        std::cout << "You pulled the same rank of " << checkingHand.GetCards().at(0).GetDisplayRank() << " again but you do not have enough currency to continue splitting. You can no longer split your hands." << std::endl; time_sleep(1000);
+                                        std::cout << std::endl << "Total times split: " << color_text(31, std::to_string(split_counter)) << ". The current hands of each player are:" << std::endl; time_sleep(1000);
+                                    }
+                                    // Player did not pull the same rank again
+                                    else if (!checkingHand.GetSameParamInHand()) {
+                                        std::cout << "You did not pull the same rank of " << checkingHand.GetCards().at(0).GetDisplayRank() << " again. You can no longer split your hands." << std::endl; time_sleep(1000);
+                                        std::cout << std::endl << "Total times split: " << color_text(31, std::to_string(split_counter)) << ". The current hands of each player are:" << std::endl; time_sleep(1000);
+                                    }
+                                    else {}
+                                    int loop_counter = 1;
+                                    std::string hand_tracker;
+                                    for (Hand& current_hand : splitHands) {
+                                        if (loop_counter == 1) {
+                                            hand_tracker = "first";
+                                        }
+                                        else if (loop_counter == 2) {
+                                            hand_tracker = "second";
+                                        }
+                                        else if (loop_counter == 3) {
+                                            hand_tracker = "third";
+                                        }
+                                        else if (loop_counter == 4) {
+                                            hand_tracker = "fourth";
+                                        }
+                                        else {
+                                            hand_tracker = "current";
+                                        }
+                                        current_hand.ShowHand(hand_tracker);
+                                        loop_counter++;
+                                    }
+                                    dealerHand.ShowHand();
+                                }
+                                // Player has chosen to not split their hand
+                                else if (split_again == "n") {
+                                    std::cout << playerHand.GetDisplayName() << " has chosen not to split their hand again." << std::endl; time_sleep(1000);
+                                    std::cout << std::endl << "Total times split: " << color_text(31, std::to_string(split_counter)) << ". The current hands of each player are:" << std::endl; time_sleep(1000);
+                                    int loop_counter = 1;
+                                    std::string hand_tracker;
+                                    for (Hand &current_hand : splitHands) {
+                                        if (loop_counter == 1) {
+                                            hand_tracker = "first";
+                                        }
+                                        else if (loop_counter == 2) {
+                                            hand_tracker = "second";
+                                        }
+                                        else if (loop_counter == 3) {
+                                            hand_tracker = "third";
+                                        }
+                                        else if (loop_counter == 4) {
+                                            hand_tracker = "fourth";
+                                        }
+                                        else {
+                                            hand_tracker = "current";
+                                        }
+                                        current_hand.ShowHand(hand_tracker);
+                                        loop_counter++;
+                                    }
+                                    dealerHand.ShowHand();
+                                }
+                                else {}
+                                break;
+                            }
+                        }                        
+                    }
+                    // Player can't split hand again
+                    else if (!checkingHand.GetCanSplitHand()) {
+                        checkingHand.CheckSameParamInHand("R");
+                        // Player doesn't have the currency to split again
+                        if (checkingHand.GetSameParamInHand()) {
+                            std::cout << "You pulled the same rank of " << checkingHand.GetCards().at(0).GetDisplayRank() << " again but you do not have enough currency to continue splitting. You can no longer split your hands." << std::endl; time_sleep(1000);
+                            std::cout << std::endl << "Total times split: " << color_text(31, std::to_string(split_counter)) << ". The current hands of each player are:" << std::endl; time_sleep(1000);
+                            int loop_counter = 1;
+                            std::string hand_tracker;
+                            for (Hand& current_hand : tempHands)
+                            {
+                                if (loop_counter == 1) {
+                                    hand_tracker = "first";
+                                }
+                                else if (loop_counter == 2) {
+                                    hand_tracker = "second";
+                                }
+                                else {
+                                    hand_tracker = "current";
+                                }
+                                current_hand.ShowHand(hand_tracker);
+                                loop_counter++; 
+                            }
+                            dealerHand.ShowHand();
+                            new_hand = tempHands;
+                            playerHand.CopyVariables(new_hand.back());
+                            return std::make_tuple(new_hand, playerHand, dealerHand, shoe, hand_count);
+                        }
+                        // Player did not pull the same card again
+                        else {
+                            std::cout << "You did not pull the same rank of " << checkingHand.GetCards().at(0).GetDisplayRank() << " again. You can no longer split your hands." << std::endl; time_sleep(1000);
+                            std::cout << std::endl << "Total times split: " << color_text(31, std::to_string(split_counter)) << ". The current hands of each player are:" << std::endl; time_sleep(1000);
+                            int loop_counter = 1;
+                            std::string hand_tracker;
+                            for (Hand& current_hand : tempHands) {
+                                if (loop_counter == 1) {
+                                    hand_tracker = "first";
+                                }
+                                else if (loop_counter == 2) {
+                                    hand_tracker = "second";
+                                }
+                                else {
+                                    hand_tracker = "current";
+                                }
+                                current_hand.ShowHand(hand_tracker);
+                                loop_counter++; 
+                            }
+                            dealerHand.ShowHand();
+                            new_hand = tempHands;
+                            playerHand.CopyVariables(new_hand.back());
+                            return std::make_tuple(new_hand, playerHand, dealerHand, shoe, hand_count);
+                        }
+                    }
+                    else {}
+                }
+                // Player has chosen to not split their hand
+                else if (same_rank_response == "n") {
+                    playerHand.SetChoseSplitHand(false);
+                    playerHand.SetSplitHandResponse(true);
+                    std::cout << playerHand.GetDisplayName() << " has chosen not to split their " << playerHand.GetCards().at(0).GetDisplayRank() << "'s." << std::endl; time_sleep(3000);
+                    clear_terminal();
+                    std::cout << std::endl << "Here are the current hands of both players: " << std::endl; time_sleep(1000);
+                    playerHand.ShowHand();
+                    dealerHand.ShowHand();
+                    new_hand.push_back(playerHand);
+                    playerHand.CopyVariables(new_hand.back());
+                    return std::make_tuple(new_hand, playerHand, dealerHand, shoe, hand_count);
+                }
+                // Player has entered an invalid response
+                else {
+                    std::cout << color_text(31, "Invalid choice") + " of " + color_text(31, same_rank_response) + ". Plese re-enter your decision." << std::endl; time_sleep(1000);
+                    same_rank_response.clear();
+                }
+                return std::make_tuple(new_hand, playerHand, dealerHand, shoe, hand_count);
+            }
         }
-        // if (check_same_parameter_in_hand(playerHand, "R", "Ace")) {
-        // }
-        // else if (check_same_parameter_in_hand(playerHand, "R") && !check_card_parameter(playerHand.player.cards[0].card.rank, "Ace"))
-        // {
-        //     std::string same_rank_response;
-        //     while (same_rank_response.empty())
-        //     {
-        //         std::cout << std::endl << "You have the same rank of " << playerHand.player.cards[0].display_rank << " in your hand." << std::endl; 
-        //         std::cout << std::endl << "Would you like to split your hand? You may split up to a total of four times." << std::endl; 
-        //         blackjack_strategy(playerHand, dealerHand, false);
-        //         std::cout << std::endl << "Enter (y) for yes and (n) for no: ";
-        //         std::cin >> same_rank_response;
-        //         if (same_rank_response == "y")
-        //         {
-        //             playerHand.player.chose_split_hand = true;
-        //             playerHand.player.split_decision = true;
-        //             std::cout << std::endl << playerHand.player.display_name << " has chosen to split their hand." << std::endl; 
-        //             int split_counter = 1;
-        //             hand_count++;
-        //             std::vector<Hand> initial_split = split_hand(playerHand);
-        //             std::vector<Hand> split_hands;
-        //             std::vector<Hand> temp_hands;
-        //             Hand player_hand_1 = initial_split.at(0);
-        //             Hand player_hand_2 = initial_split.at(1);
-        //             player_hand_2.Hit(shoe);
-        //             temp_hands.push_back(player_hand_2);
-        //             temp_hands.push_back(player_hand_1);
-        //             Hand checking_hand;
-        //             checking_hand = player_hand_2;
-        //             checking_hand.Copy_Variables(player_hand_2);
-        //             special_options(checking_hand, dealerHand, false);
-        //             if (check_same_parameter_in_hand(checking_hand, "R"))
-        //             {
-        //                 if (checking_hand.player.can_split_hand)
-        //                 {
-        //                     std::cout << std::endl << "Total times split: " << color_text(31, std::to_string(split_counter)) << ". Your current hand(s) are:" << std::endl; 
-        //                     int loop_counter = 1;
-        //                     std::string hand_tracker;
-        //                     for (Hand& current_hand : temp_hands)
-        //                     {
-        //                         if (loop_counter == 1)
-        //                         {
-        //                             hand_tracker = "first";
-        //                         }
-        //                         else if (loop_counter == 2)
-        //                         {
-        //                             hand_tracker = "second";
-        //                         }
-        //                         else {}
-        //                         current_hand.Show_Hand(hand_tracker);
-        //                         loop_counter++;
-        //                     }
-        //                     temp_hands.clear();
-        //                     while (split_counter < 4 && checking_hand.player.can_split_hand)
-        //                     {
-        //                         std::string split_again;
-        //                         while (split_again != "y" || split_again != "n")
-        //                         {
-        //                             std::cout << std::endl << std::endl << "You have pulled the same rank of " << checking_hand.player.cards[0].display_rank 
-        //                             << " again." << std::endl; 
-        //                             std::cout << std::endl << "Would you like to split your current hand again?" << std::endl; 
-        //                             blackjack_strategy(checking_hand, dealerHand, false);
-        //                             std::cout << std::endl << "Enter (y) for yes and (n) for no: ";
-        //                             std::cin >> split_again;
-        //                             std::cout << std::endl;
-        //                             if (split_again == "y")
-        //                             {
-        //                                 split_counter++;
-        //                                 hand_count++;
-        //                                 std::vector<Hand> new_split = split_hand(checking_hand);
-        //                                 Hand new_player_hand_1 = new_split.at(0);
-        //                                 Hand new_player_hand_2 = new_split.at(1);
-        //                                 new_player_hand_2.Hit(shoe);
-        //                                 split_hands.insert(split_hands.begin(), new_player_hand_1);
-        //                                 checking_hand = new_player_hand_2;
-        //                                 checking_hand.Copy_Variables(new_player_hand_2);
-        //                                 special_options(checking_hand, dealerHand, false);
-        //                                 break;
-        //                             }
-        //                             else if (split_again == "n")
-        //                             {
-        //                                 break;
-        //                             }
-        //                             else
-        //                             {
-        //                                 std::cout << color_text(31, "Invalid Entry") << ". Please enter a valid choice." << std::endl; 
-        //                                 split_again.clear();
-        //                             }
-        //                         }
-        //                         split_hands.insert(split_hands.begin(), checking_hand);
-        //                         split_hands.insert(split_hands.end(), player_hand_1);
-        //                         for (int i = 0; i < split_hands.size(); i++)
-        //                         {
-        //                             split_hands.at(i).Copy_Variables(checking_hand);
-        //                         }
-        //                         if (checking_hand.player.can_split_hand && split_again == "y")
-        //                         {
-        //                             if (split_counter < 4 && checking_hand.player.can_split_hand)
-        //                             {
-        //                                 std::cout << playerHand.player.display_name << " has chosen to split their hand again." << std::endl; 
-        //                                 std::cout << std::endl << "Total times split: " << color_text(31, std::to_string(split_counter)) << ". Your current hand(s) are:" << std::endl; 
-        //                                 int loop_counter = 1;
-        //                                 std::string hand_tracker;
-        //                                 for (Hand& current_hand : split_hands)
-        //                                 {
-        //                                     if (loop_counter == 1)
-        //                                     {
-        //                                         hand_tracker = "first";
-        //                                     }
-        //                                     else if (loop_counter == 2)
-        //                                     {
-        //                                         hand_tracker = "second";
-        //                                     }
-        //                                     else if (loop_counter == 3)
-        //                                     {
-        //                                         hand_tracker = "third";
-        //                                     }
-        //                                     else if (loop_counter == 4)
-        //                                     {
-        //                                         hand_tracker = "fourth";
-        //                                     }
-        //                                     else
-        //                                     {
-        //                                         hand_tracker = "current";
-        //                                     }
-        //                                     current_hand.Show_Hand(hand_tracker);
-        //                                     loop_counter++;
-        //                                 }
-        //                                 split_hands.erase(split_hands.begin());
-        //                                 split_hands.pop_back();
-        //                                 continue;
-        //                             }
-        //                             else if (split_counter == 4 || !checking_hand.player.can_split_hand)
-        //                             {
-        //                                 if (split_counter == 4)
-        //                                 {
-        //                                     std::cout << playerHand.player.display_name << " has reached the max amount of times to split." << std::endl; 
-        //                                     std::cout << std::endl << "Total times split: " << color_text(31, std::to_string(split_counter)) << ". Your current hand(s) are:" << std::endl; 
-        //                                     int loop_counter = 1;
-        //                                     std::string hand_tracker;
-        //                                     for (Hand& current_hand : split_hands)
-        //                                     {
-        //                                         if (loop_counter == 1)
-        //                                         {
-        //                                             hand_tracker = "first";
-        //                                         }
-        //                                         else if (loop_counter == 2)
-        //                                         {
-        //                                             hand_tracker = "second";
-        //                                         }
-        //                                         else if (loop_counter == 3)
-        //                                         {
-        //                                             hand_tracker = "third";
-        //                                         }
-        //                                         else if (loop_counter == 4)
-        //                                         {
-        //                                             hand_tracker = "fourth";
-        //                                         }
-        //                                         else if (loop_counter == 5)
-        //                                         {
-        //                                             hand_tracker = "fifth";
-        //                                         }
-        //                                         else
-        //                                         {
-        //                                             hand_tracker = "current";
-        //                                         }
-        //                                         current_hand.Show_Hand(hand_tracker);
-        //                                         loop_counter++;
-        //                                     }
-        //                                     std::cout << std::endl << std::endl;
-        //                                 }
-        //                                 else if (!checking_hand.player.can_split_hand)
-        //                                 {
-        //                                     if (checking_hand.player.bank_total < checking_hand.player.wager) 
-        //                                     {
-        //                                         std::cout << "Your current bank balance of " << checking_hand.player.display_bank_total << " is not greater than"
-        //                                         << " your wager of " << checking_hand.player.display_wager << ". You can no longer split your hands. Total times split: " 
-        //                                         << color_text(31, std::to_string(split_counter)) << ". Your current hand(s) are:" << std::endl; 
-        //                                     }
-        //                                     else {}
-        //                                     int loop_counter = 1;
-        //                                     std::string hand_tracker;
-        //                                     for (Hand& current_hand : split_hands)
-        //                                     {
-        //                                         if (loop_counter == 1)
-        //                                         {
-        //                                             hand_tracker = "first";
-        //                                         }
-        //                                         else if (loop_counter == 2)
-        //                                         {
-        //                                             hand_tracker = "second";
-        //                                         }
-        //                                         else if (loop_counter == 3)
-        //                                         {
-        //                                             hand_tracker = "third";
-        //                                         }
-        //                                         else if (loop_counter == 4)
-        //                                         {
-        //                                             hand_tracker = "fourth";
-        //                                         }
-        //                                         else
-        //                                         {
-        //                                             hand_tracker = "current";
-        //                                         }
-        //                                         current_hand.Show_Hand(hand_tracker);
-        //                                         loop_counter++;
-        //                                     }
-        //                                     std::cout << std::endl << std::endl;
-        //                                 }
-        //                                 break;
-        //                             }
-        //                             else {}
-        //                         }
-        //                         else if (!checking_hand.player.can_split_hand || split_again == "n")
-        //                         {
-        //                             if (!checking_hand.player.can_split_hand)
-        //                             {
-        //                                 if (checking_hand.player.bank_total < checking_hand.player.wager) {
-        //                                     std::cout << "You pulled the same rank of " << checking_hand.player.cards[0].display_rank << " again but you do not have enough currency to continue splitting. ";
-        //                                     std::cout << std::endl << std::endl << "Total times split: " << color_text(31, std::to_string(split_counter)) << ". Your current hand(s) are: " << std::endl; 
-        //                                 }
-        //                                 else if (checking_hand.player.bank_total >= checking_hand.player.wager) {
-        //                                     std::cout << "You did not pull the same rank of " << checking_hand.player.cards[0].display_rank << " again. You can no longer split your hands."; 
-        //                                     std::cout << std::endl << std::endl << "Total times split: " << color_text(31, std::to_string(split_counter)) << ". Your current hand(s) are: " << std::endl; 
-        //                                 }
-        //                                 else {}
-        //                                 int loop_counter = 1;
-        //                                 std::string hand_tracker;
-        //                                 for (Hand& current_hand : split_hands)
-        //                                 {
-        //                                     if (loop_counter == 1)
-        //                                     {
-        //                                         hand_tracker = "first";
-        //                                     }
-        //                                     else if (loop_counter == 2)
-        //                                     {
-        //                                         hand_tracker = "second";
-        //                                     }
-        //                                     else if (loop_counter == 3)
-        //                                     {
-        //                                         hand_tracker = "third";
-        //                                     }
-        //                                     else if (loop_counter == 4)
-        //                                     {
-        //                                         hand_tracker = "fourth";
-        //                                     }
-        //                                     else
-        //                                     {
-        //                                         hand_tracker = "current";
-        //                                     }
-        //                                     current_hand.Show_Hand(hand_tracker);
-        //                                     loop_counter++;
-        //                                 }
-        //                                 std::cout << std::endl << std::endl;
-        //                             }
-        //                             else if (split_again == "n")
-        //                             {
-        //                                 std::cout << playerHand.player.display_name << " has chosen not to split their hand again." << std::endl << std::endl << "Total times split: " 
-        //                                 << color_text(31, std::to_string(split_counter)) << ". Your current hand(s) are:" << std::endl; 
-        //                                 int loop_counter = 1;
-        //                                 std::string hand_tracker;
-        //                                 for (Hand &current_hand : split_hands)
-        //                                 {
-        //                                     if (loop_counter == 1)
-        //                                     {
-        //                                         hand_tracker = "first";
-        //                                     }
-        //                                     else if (loop_counter == 2)
-        //                                     {
-        //                                         hand_tracker = "second";
-        //                                     }
-        //                                     else if (loop_counter == 3)
-        //                                     {
-        //                                         hand_tracker = "third";
-        //                                     }
-        //                                     else if (loop_counter == 4)
-        //                                     {
-        //                                         hand_tracker = "fourth";
-        //                                     }
-        //                                     else
-        //                                     {
-        //                                         hand_tracker = "current";
-        //                                     }
-        //                                     current_hand.Show_Hand(hand_tracker);
-        //                                     loop_counter++;
-        //                                 }
-        //                                 std::cout << std::endl << std::endl;
-        //                             }
-        //                             else {}
-        //                             break;
-        //                         }
-        //                     }
-        //                     new_hand = split_hands;
-        //                     playerHand.Copy_Variables(new_hand.back());
-        //                     return std::make_tuple(new_hand, playerHand, dealerHand, shoe, hand_count);
-        //                 }
-        //                 else if (!checking_hand.player.can_split_hand)
-        //                 {
-        //                     std::cout << std::endl << "You have pulled the same rank of " << checking_hand.player.cards[0].display_rank << " again." << std::endl;
-        //                     int loop_counter = 1;
-        //                     std::string hand_tracker;
-        //                     for (Hand& current_hand : temp_hands)
-        //                     {
-        //                         if (loop_counter == 1)
-        //                         {
-        //                             hand_tracker = "first";
-        //                         }
-        //                         else if (loop_counter == 2)
-        //                         {
-        //                             hand_tracker = "second";
-        //                         }
-        //                         else
-        //                         {
-        //                             hand_tracker = "current";
-        //                         }
-        //                         current_hand.Show_Hand(hand_tracker);
-        //                         loop_counter++; 
-        //                     }
-        //                     std::cout << std::endl << "Your current bank balance of " << checking_hand.player.display_bank_total << " is not  greater than your wager of " 
-        //                     << checking_hand.player.display_wager << ". You can no longer split your hands. Total times split: " << color_text(31, std::to_string(split_counter)) << std::endl;
-        //                     new_hand = temp_hands;
-        //                     playerHand.Copy_Variables(new_hand.back());
-        //                     return std::make_tuple(new_hand, playerHand, dealerHand, shoe, hand_count);
-        //                 }
-        //                 else {}
-        //             }
-        //             else if (!check_same_parameter_in_hand(checking_hand, "R"))
-        //             {
-        //                 new_hand.insert(new_hand.begin(), checking_hand);
-        //                 new_hand.push_back(player_hand_1);
-        //                 std::cout << std::endl << "Total times split: " << color_text(31, std::to_string(split_counter)) << ". Your current hand(s) are:" << std::endl; 
-        //                 int loop_counter = 1;
-        //                 std::string hand_tracker;
-        //                 for (Hand &current_hand : new_hand)
-        //                 {
-        //                     if (loop_counter == 1)
-        //                     {
-        //                         hand_tracker = "first";
-        //                     }
-        //                     else if (loop_counter == 2)
-        //                     {
-        //                         hand_tracker = "second";
-        //                     }
-        //                     else {}
-        //                     current_hand.Show_Hand(hand_tracker);
-        //                     loop_counter++;
-        //                 }
-        //                 std::cout << std::endl;
-        //                 playerHand.Copy_Variables(new_hand.back());
-        //                 return std::make_tuple(new_hand, playerHand, dealerHand, shoe, hand_count);
-        //             }
-        //             else {}
-        //         }
-        //         else if (same_rank_response == "n")
-        //         {
-        //             playerHand.player.chose_split_hand = false;
-        //             playerHand.player.split_decision = true;
-        //             new_hand.push_back(playerHand);
-        //             std::cout << std::endl << playerHand.player.display_name << " has chosen not to split their hand." << std::endl; 
-        //             playerHand.Copy_Variables(new_hand.back());
-        //             return std::make_tuple(new_hand, playerHand, dealerHand, shoe, hand_count);
-        //         }
-        //         else
-        //         {
-        //             std::cout << std::endl << color_text(31, "Invalid choice") + " of " + color_text(31, same_rank_response) + ". Plese re-enter your decision." << std::endl; 
-        //             same_rank_response.clear();
-        //         }
-        //     }
-        // }
-        // else if (!check_same_parameter_in_hand(playerHand, "R"))
-        // {
-        //     new_hand.push_back(playerHand);
-        //     playerHand.Copy_Variables(new_hand.back());
-        //     return std::make_tuple(new_hand, playerHand, dealerHand, shoe, hand_count);
-        // }
-        // else {}
+        else {}
     }
-    // else if (!playerHand.player.can_split_hand)
-    // {
-    //     new_hand.push_back(playerHand);
-    //     playerHand.Copy_Variables(new_hand.back());
-    //     return std::make_tuple(new_hand, playerHand, dealerHand, shoe, hand_count);
-    // }
-    else {}
+    else {
+        new_hand.push_back(playerHand);
+        playerHand.CopyVariables(new_hand.back());
+        return std::make_tuple(new_hand, playerHand, dealerHand, shoe, hand_count);
+    }
 }
+
+std::tuple<Hand, Hand, Shoe> player_hand_logic(Hand& playerHand, Hand& dealerHand, Hand& referenceHand, Shoe& shoe, int& hand_counter) {
+
+}
+// {
+//     if (!referenceHand.player.chose_split_aces) 
+//     {
+//         std::string response;
+//         std::string hand_tracker;
+//         if (hand_counter == 1)
+//         {
+//             hand_tracker = "first";
+//         }
+//         else if (hand_counter == 2)
+//         {
+//             hand_tracker = "second";
+//         }
+//         else if (hand_counter == 3)
+//         {
+//             hand_tracker = "third";
+//         }
+//         else if (hand_counter == 4)
+//         {
+//             hand_tracker = "fourth";
+//         }
+//         else if (hand_counter == 5)
+//         {
+//             hand_tracker = "fifth";
+//         }
+//         else
+//         {
+//             hand_tracker = "current";
+//         }
+//         if (hand_counter > 1)
+//         {
+//             playerHand.Hit(shoe);
+//         }
+//         else {}
+//         while ((response != "h" && response != "s" && response != "d") && playerHand.player.cards_total < 21)
+//         {
+//             if (!playerHand.player.has_hit)
+//             {
+//                 if (referenceHand.player.chose_split_hand)
+//                 {
+//                     std::cout << std::endl << "Here are the initial hands of each player for hand " << std::to_string(hand_counter) << ":" << std::endl; 
+//                     playerHand.Show_Hand("initial " + hand_tracker);
+//                     dealerHand.Show_Hand("initial");
+//                     std::cout << std::endl << "Would you like to hit, stand, or double down for hand " << std::to_string(hand_counter) << "?" << std::endl; 
+//                     blackjack_strategy(playerHand, dealerHand, true);
+//                     std::cout << std::endl << "Enter (h) to hit, (s) to stand, and (d) to double down for " << std::to_string(hand_counter) << ": ";
+//                     std::cin >> response;
+//                     std::cout << std::endl;
+//                 }
+//                 else if (!referenceHand.player.chose_split_hand)
+//                 {
+//                     std::cout << std::endl << "Would you like to hit, stand, or double down?" << std::endl; 
+//                     blackjack_strategy(playerHand, dealerHand, true);
+//                     std::cout << std::endl << "Enter (h) to hit, (s) to stand, and (d) to double down: ";
+//                     std::cin >> response;
+//                     std::cout << std::endl;
+//                 }
+//                 else {}            
+//             }
+//             else if (playerHand.player.has_hit)
+//             {
+                
+//                 if (referenceHand.player.chose_split_hand)
+//                 {
+//                     playerHand.Show_Hand("current " + hand_tracker);
+//                 }
+//                 else if (!referenceHand.player.chose_split_hand)
+//                 {
+//                     playerHand.Show_Hand("current");
+//                 }
+//                 else {}
+//                 dealerHand.Show_Hand("initial");
+//                 std::cout << std::endl << "Would you like to hit (h) or stand (s)?" << std::endl; 
+//                 blackjack_strategy(playerHand, dealerHand, true);
+//                 std::cout << std::endl << "Enter (h) to hit and (s) to stand: ";
+//                 std::cin >> response;
+//                 std::cout << std::endl;
+//             }
+//             else {}
+//             if (response == "h")
+//             {
+//                 playerHand.player.has_hit = true;
+//                 playerHand.Hit(shoe);
+//                 if (playerHand.player.cards_total > 21)
+//                 {
+//                     std::cout << playerHand.player.display_name << " has chosen to hit and busted. Final hand total: " << playerHand.player.display_cards_total << "." << std::endl; 
+//                     if (referenceHand.player.chose_split_hand)
+//                     {
+//                         std::cout << std::endl << "Here is " << playerHand.player.display_name << "'s final hand for hand " << std::to_string(hand_counter)
+//                         << " and the " << dealerHand.player.display_name << "'s current hand:" << std::endl; 
+//                         playerHand.Show_Hand("final " + hand_tracker);
+//                         dealerHand.Show_Hand("current");
+//                     }
+//                     else if (!referenceHand.player.chose_split_hand)
+//                     {
+//                         std::cout << std::endl << "Here is the final hand for " << playerHand.player.display_name << " and the final hand of the " << dealerHand.player.display_name << ":" << std::endl; 
+//                         playerHand.Show_Hand("final");
+//                         dealerHand.Show_Hand("final", "show");
+//                     }
+//                     else {}
+//                     std::cout << std::endl;
+                    
+//                     break;
+//                 }
+//                 else if (playerHand.player.cards_total < 21)
+//                 {
+//                     std::cout << playerHand.player.display_name << " has chosen to hit. Current hand total: " << playerHand.player.display_cards_total << "." << std::endl; 
+//                     if (referenceHand.player.chose_split_hand)
+//                     {
+//                         std::cout << std::endl << "Here are the current hands of each player for hand " << std::to_string(hand_counter) << ":" << std::endl;
+//                     }
+//                     else if (!referenceHand.player.chose_split_hand)
+//                     {
+//                         std::cout << std::endl << "Here are the current hands of each player:" << std::endl;
+//                     }
+//                     else {}
+//                 }
+//                 else if (playerHand.player.cards_total == 21)
+//                 {
+//                     std::cout << playerHand.player.display_name << " has chosen to hit. Final hand total: " << playerHand.player.display_cards_total << "." << std::endl; 
+//                     if (referenceHand.player.chose_split_hand)
+//                     {
+//                         std::cout << std::endl << "Here is " << playerHand.player.display_name << "'s final hand for hand " << std::to_string(hand_counter) << " and the " 
+//                         << dealerHand.player.display_name << "'s current hand:" << std::endl; 
+//                         playerHand.Show_Hand("final " + hand_tracker);
+//                         dealerHand.Show_Hand("current", "");
+//                     }
+//                     else if (!referenceHand.player.chose_split_hand)
+//                     {
+//                         std::cout << std::endl << "Here is the final hand for " << playerHand.player.display_name << " and the initial hand of the " 
+//                         << dealerHand.player.display_name << ":" << std::endl; 
+//                         playerHand.Show_Hand("final");
+//                         dealerHand.Show_Hand("initial", "show");
+//                     }
+//                     else
+//                     std::cout << std::endl;
+                    
+//                 }
+//                 else {}
+//                 response.clear();
+//             }
+//             else if (response == "s")
+//             {
+//                 std::cout << playerHand.player.display_name << " has chosen to stand. Final hand total: " << playerHand.player.display_cards_total << "." << std::endl; 
+//                 if (referenceHand.player.chose_split_hand)
+//                 {
+//                     std::cout << std::endl << "Here is " << playerHand.player.display_name << "'s final hand for hand " << std::to_string(hand_counter)
+//                     << " and the " << dealerHand.player.display_name << "'s current hand:" << std::endl; 
+//                     playerHand.Show_Hand("final " + hand_tracker);
+//                     dealerHand.Show_Hand("current", "");
+//                 }
+//                 else if (!referenceHand.player.chose_split_hand)
+//                 {
+//                     std::cout << std::endl << "Here is the final hand for " << playerHand.player.display_name << " and the initial hand of the " 
+//                     << dealerHand.player.display_name << ":" << std::endl; 
+//                     playerHand.Show_Hand("final");
+//                     dealerHand.Show_Hand("initial", "show");
+//                 }
+//                 else
+//                 std::cout << std::endl;
+                
+//                 break;
+//             }
+//             else if (response == "d" && !playerHand.player.has_hit)
+//             {
+//                 if (playerHand.player.bank_total >= playerHand.player.wager)
+//                 {
+//                     playerHand.player.bank_total -= playerHand.player.wager;
+//                     playerHand.player.wager *= 2;
+//                     playerHand.Hit(shoe);
+//                     if (playerHand.player.cards_total > 21)
+//                     {
+//                         playerHand.Update_Bank("L", playerHand, playerHand.player.wager);
+//                         std::cout << playerHand.player.display_name << " has doubled down and busted. Final hand total: " 
+//                         << playerHand.player.display_cards_total << "." << std::endl; 
+//                         if (referenceHand.player.chose_split_hand)
+//                         {
+//                             std::cout << std::endl << "Here is " << playerHand.player.display_name << "'s final hand for hand " << std::to_string(hand_counter)
+//                             << " and the " << dealerHand.player.display_name << "'s current hand:" << std::endl; 
+//                             playerHand.Show_Hand("final " + hand_tracker);
+//                             dealerHand.Show_Hand("current");
+//                         }
+//                         else if (!referenceHand.player.chose_split_hand)
+//                         {
+//                             std::cout << std::endl << "Here is the final hand for " << playerHand.player.display_name << " and the final hand of the " 
+//                             << dealerHand.player.display_name << ":" << std::endl; 
+//                             playerHand.Show_Hand("final");
+//                             dealerHand.Show_Hand("final", "show");
+//                         }
+//                         else
+//                         std::cout << std::endl;
+                        
+//                         break;
+//                     }
+//                     else if (playerHand.player.cards_total <= 21)
+//                     {
+//                         std::cout << playerHand.player.display_name << " has doubled down. Final hand total: " << playerHand.player.display_cards_total << "." << std::endl; 
+//                         if (referenceHand.player.chose_split_hand)
+//                         {
+//                             std::cout << std::endl << "Here is " << playerHand.player.display_name << "'s final hand for hand " << std::to_string(hand_counter) << " and the " 
+//                             << dealerHand.player.display_name << "'s current hand:" << std::endl; 
+//                             playerHand.Show_Hand("final " + hand_tracker);
+//                             dealerHand.Show_Hand("current");
+//                         }
+//                         else if (!referenceHand.player.chose_split_hand)
+//                         {
+//                             std::cout << std::endl << "Here is the final hand for " << playerHand.player.display_name << " and the initial hand of the " 
+//                             << dealerHand.player.display_name << ":" << std::endl; 
+//                             playerHand.Show_Hand("final");
+//                             dealerHand.Show_Hand("initial", "show");
+//                         }
+//                         else {}
+//                         std::cout << std::endl;
+                        
+//                         break;
+//                     }
+//                     else {}
+//                 }
+//                 else if (playerHand.player.bank_total < playerHand.player.wager)
+//                 {
+//                     std::cout << "Your current bank total of " << playerHand.player.display_bank_total << " is not greater than your wager of "
+//                     << playerHand.player.display_wager << ". You cannot double down." << std::endl;
+//                     response.clear();
+//                     continue;
+//                 }
+//                 else {}
+//             }
+//             else if (response != "h" && response != "s" && response != "d")
+//             {
+//                 if (!referenceHand.player.chose_split_hand)
+//                 {
+//                     std::cout << color_text(31, "Invalid choice") << "." << std::endl; 
+//                 }
+//                 else if (referenceHand.player.chose_split_hand)
+//                 {
+//                     std::cout << color_text(31, "Invalid choice") << "." << std::endl << std::endl; 
+//                 }
+//                 else {}            
+//                 response.clear();
+//                 continue;
+//             }
+//             else {}
+//         }
+//         referenceHand.Copy_Variables(playerHand);
+//         return std::make_tuple(playerHand, dealerHand, referenceHand, shoe);
+//     }
+//     else if (referenceHand.player.chose_split_aces) {
+//         referenceHand.Copy_Variables(playerHand);
+//         return std::make_tuple(playerHand, dealerHand, referenceHand, shoe);
+//     }
+//     else {}
+// }
 
 void test_game() {
     Hand playerTest;
     Hand dealerTest;
     Shoe testShoe;
-    testShoe.SetRiggedCards(Card(Ranks[8], Suits[3]));
-    testShoe.SetRiggedCards(Card(Ranks[0], Suits[2]));
-    testShoe.SetRiggedCards(Card(Ranks[0], Suits[1]));
-    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
     playerTest.SetName("Player 1");
     dealerTest.SetName("Dealer");
-    playerTest.SetBankTotal(100);
-    dealer_showing_ace(playerTest, dealerTest, testShoe);
-    same_rank_check(playerTest, dealerTest, testShoe);
 }
