@@ -18,7 +18,7 @@ Hand::Hand() {
     SetCanDoubleDown(false);
     SetCanSplitAces(false);
     SetCanSplitHand(false);
-    SetChoseBuyInsurace(false);
+    SetChoseBuyInsurance(false);
     SetChoseDoubleDown(false);
     SetChoseSplitAces(false);
     SetChoseSplitHand(false);
@@ -76,7 +76,7 @@ Hand Hand::AddCardToHand(const Card& input) {
 *   Input:
 *       This function does not have any input parameters
 *   Algorithm:
-*       * Create two integer vaues; ace_count (Represents the number of aces in a hand), running_hand_value (A running hand value)
+*       * Create two integer values; ace_count (Represents the number of aces in a hand), running_hand_value (A running hand value)
 *       * Iterate through the cards in a players hand and count how many Aces are present in a players hand
 *       * Iterate through the cards in a players hand and do the following:
 *           * If the number of Aces in the hand is 1, then set the value of the Ace to 11
@@ -355,8 +355,8 @@ Hand Hand::HitHand(Shoe& input) {
 *   Algorithm:
 *       * Create a string and prompt the user if they would like to buy insurance
 *       * Check to see if the input is yes or no
-*           * If the input is yes, set the private data member "choseBuyInsurance" to true with "SetChoseBuyInsurace"
-*           * If the input is no, set the private data member "choseBuyInsurance" to false with "SetChoseBuyInsurace"
+*           * If the input is yes, set the private data member "choseBuyInsurance" to true with "SetChoseBuyInsurance"
+*           * If the input is no, set the private data member "choseBuyInsurance" to false with "SetChoseBuyInsurance"
 *       * If the answer is not yes or no
 *           * Through an output message
 *           * Clear the inputs and go back to the beginning of the loop
@@ -371,14 +371,14 @@ Hand Hand::InsurancePrompt() {
         std::cin >> input; time_sleep(1000);
         // User has chosen to buy insurance, set insurance wager
         if (input == "y") {
-            SetChoseBuyInsurace(true);
+            SetChoseBuyInsurance(true);
             SetInsuranceWager(round_input(0.5*GetWager()));
             UpdateBank(0,GetInsuranceWager());
             return *this;
         }
         // User has chosen to not buy insurance, do not take insurance wager
         else if (input == "n") {
-            SetChoseBuyInsurace(false);
+            SetChoseBuyInsurance(false);
             return *this;
         }
         // Player did not enter a valid input for a response
@@ -467,6 +467,18 @@ Hand Hand::ParametersCheck(Hand& playerHand, Hand& dealerHand) {
     }
     else {
         playerHand.SetCanBuyInsurance(false);
+    }
+    // Can Double Down Check
+    if (playerHand.GetBankTotal() >= playerHand.GetWager()) {
+        if (!playerHand.GetHasHit()) {
+            playerHand.SetCanDoubleDown(true);
+        }
+        else {
+            playerHand.SetCanDoubleDown(false);
+        }
+    }
+    else {
+        playerHand.SetCanDoubleDown(false);
     }
     return *this;
 }
@@ -561,7 +573,7 @@ Hand Hand::ResetHand() {
     SetCanDoubleDown(false);
     SetCanSplitAces(false);
     SetCanSplitHand(false);
-    SetChoseBuyInsurace(false);
+    SetChoseBuyInsurance(false);
     SetChoseDoubleDown(false);
     SetChoseSplitAces(false);
     SetChoseSplitHand(false);
@@ -772,7 +784,7 @@ void Hand::SetCanSplitHand(const bool input) {
     currentPlayer.canSplitHand = input;
 }
 
-/*  SetChoseBuyInsurace - Sets the private data member "choseBuyInsurance" to the input parameter "input"
+/*  SetChoseBuyInsurance - Sets the private data member "choseBuyInsurance" to the input parameter "input"
 *   Input:
 *       input - Constant boolean value that is assigned to the private data member "choseBuyInsurance"
 *   Algorithm:
@@ -780,7 +792,7 @@ void Hand::SetCanSplitHand(const bool input) {
 *   Output:
 *       This function does not return a value
 */
-void Hand::SetChoseBuyInsurace(const bool input) {
+void Hand::SetChoseBuyInsurance(const bool input) {
     currentPlayer.choseBuyInsurance = input;
 }
 

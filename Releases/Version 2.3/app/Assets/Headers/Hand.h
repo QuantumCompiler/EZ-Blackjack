@@ -103,7 +103,7 @@ public:
     Hand HitHand(Shoe& input);
     Hand InsurancePrompt();
     Hand NamePrompt();
-    Hand ParametersCheck(Hand& playerhand, Hand& dealerHand);
+    Hand ParametersCheck(Hand& playerHand, Hand& dealerHand);
     Hand PlaceWager();
     Hand ResetHand();
     Hand ShowHand(std::string option = "", const std::string dealerShow = "");
@@ -114,7 +114,7 @@ public:
     void SetCanDoubleDown(const bool input);
     void SetCanSplitAces(const bool input);
     void SetCanSplitHand(const bool input);
-    void SetChoseBuyInsurace(const bool input);
+    void SetChoseBuyInsurance(const bool input);
     void SetChoseDoubleDown(const bool input);
     void SetChoseSplitAces(const bool input);
     void SetChoseSplitHand(const bool input);
