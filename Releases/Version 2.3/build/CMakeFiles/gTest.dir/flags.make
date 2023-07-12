@@ -4,7 +4,7 @@
 # compile CXX with /Library/Developer/CommandLineTools/usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -isystem "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-src/googletest/include" -isystem "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-src/googletest"
+CXX_INCLUDES = -isystem "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-src/googletest/include" -isystem "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-src/googletest"
 
 CXX_FLAGSarm64 =  -std=c++17 -Wall -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk
 

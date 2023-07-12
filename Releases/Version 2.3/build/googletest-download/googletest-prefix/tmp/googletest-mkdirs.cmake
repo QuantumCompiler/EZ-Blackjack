@@ -4,19 +4,19 @@
 cmake_minimum_required(VERSION 3.5)
 
 file(MAKE_DIRECTORY
-  "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-src"
-  "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-build"
-  "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-download/googletest-prefix"
-  "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-download/googletest-prefix/tmp"
-  "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-download/googletest-prefix/src/googletest-stamp"
-  "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-download/googletest-prefix/src"
-  "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-download/googletest-prefix/src/googletest-stamp"
+  "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-src"
+  "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-build"
+  "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-download/googletest-prefix"
+  "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-download/googletest-prefix/tmp"
+  "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-download/googletest-prefix/src/googletest-stamp"
+  "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-download/googletest-prefix/src"
+  "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-download/googletest-prefix/src/googletest-stamp"
 )
 
 set(configSubDirs )
 foreach(subDir IN LISTS configSubDirs)
-    file(MAKE_DIRECTORY "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-download/googletest-prefix/src/googletest-stamp/${subDir}")
+    file(MAKE_DIRECTORY "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-download/googletest-prefix/src/googletest-stamp/${subDir}")
 endforeach()
 if(cfgdir)
-  file(MAKE_DIRECTORY "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-download/googletest-prefix/src/googletest-stamp${cfgdir}") # cfgdir has leading slash
+  file(MAKE_DIRECTORY "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-download/googletest-prefix/src/googletest-stamp${cfgdir}") # cfgdir has leading slash
 endif()

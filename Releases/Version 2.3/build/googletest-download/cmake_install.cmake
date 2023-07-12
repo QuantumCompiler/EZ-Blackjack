@@ -1,4 +1,4 @@
-# Install script for directory: /Users/taylor/Documents/Flurdbop/Hello World/build/googletest-download
+# Install script for directory: /Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-download
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-download/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-download/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

@@ -53,10 +53,10 @@ RM = /opt/homebrew/Cellar/cmake/3.26.4/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "/Users/taylor/Documents/Flurdbop/Hello World"
+CMAKE_SOURCE_DIR = "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "/Users/taylor/Documents/Flurdbop/Hello World/build"
+CMAKE_BINARY_DIR = "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build"
 
 # Include any dependencies generated for this target.
 include googletest-build/googlemock/CMakeFiles/gmock.dir/depend.make
@@ -72,16 +72,16 @@ include googletest-build/googlemock/CMakeFiles/gmock.dir/flags.make
 googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o: googletest-build/googlemock/CMakeFiles/gmock.dir/flags.make
 googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o: googletest-src/googlemock/src/gmock-all.cc
 googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o: googletest-build/googlemock/CMakeFiles/gmock.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/Users/taylor/Documents/Flurdbop/Hello World/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o"
-	cd "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-build/googlemock" && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o -MF CMakeFiles/gmock.dir/src/gmock-all.cc.o.d -o CMakeFiles/gmock.dir/src/gmock-all.cc.o -c "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-src/googlemock/src/gmock-all.cc"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o"
+	cd "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-build/googlemock" && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o -MF CMakeFiles/gmock.dir/src/gmock-all.cc.o.d -o CMakeFiles/gmock.dir/src/gmock-all.cc.o -c "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-src/googlemock/src/gmock-all.cc"
 
 googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/gmock.dir/src/gmock-all.cc.i"
-	cd "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-build/googlemock" && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-src/googlemock/src/gmock-all.cc" > CMakeFiles/gmock.dir/src/gmock-all.cc.i
+	cd "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-build/googlemock" && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-src/googlemock/src/gmock-all.cc" > CMakeFiles/gmock.dir/src/gmock-all.cc.i
 
 googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/gmock.dir/src/gmock-all.cc.s"
-	cd "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-build/googlemock" && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-src/googlemock/src/gmock-all.cc" -o CMakeFiles/gmock.dir/src/gmock-all.cc.s
+	cd "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-build/googlemock" && /Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-src/googlemock/src/gmock-all.cc" -o CMakeFiles/gmock.dir/src/gmock-all.cc.s
 
 # Object files for target gmock
 gmock_OBJECTS = \
@@ -93,19 +93,19 @@ gmock_EXTERNAL_OBJECTS =
 lib/libgmockd.a: googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
 lib/libgmockd.a: googletest-build/googlemock/CMakeFiles/gmock.dir/build.make
 lib/libgmockd.a: googletest-build/googlemock/CMakeFiles/gmock.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="/Users/taylor/Documents/Flurdbop/Hello World/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library ../../lib/libgmockd.a"
-	cd "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-build/googlemock" && $(CMAKE_COMMAND) -P CMakeFiles/gmock.dir/cmake_clean_target.cmake
-	cd "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-build/googlemock" && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/gmock.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library ../../lib/libgmockd.a"
+	cd "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-build/googlemock" && $(CMAKE_COMMAND) -P CMakeFiles/gmock.dir/cmake_clean_target.cmake
+	cd "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-build/googlemock" && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/gmock.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 googletest-build/googlemock/CMakeFiles/gmock.dir/build: lib/libgmockd.a
 .PHONY : googletest-build/googlemock/CMakeFiles/gmock.dir/build
 
 googletest-build/googlemock/CMakeFiles/gmock.dir/clean:
-	cd "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-build/googlemock" && $(CMAKE_COMMAND) -P CMakeFiles/gmock.dir/cmake_clean.cmake
+	cd "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-build/googlemock" && $(CMAKE_COMMAND) -P CMakeFiles/gmock.dir/cmake_clean.cmake
 .PHONY : googletest-build/googlemock/CMakeFiles/gmock.dir/clean
 
 googletest-build/googlemock/CMakeFiles/gmock.dir/depend:
-	cd "/Users/taylor/Documents/Flurdbop/Hello World/build" && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" "/Users/taylor/Documents/Flurdbop/Hello World" "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-src/googlemock" "/Users/taylor/Documents/Flurdbop/Hello World/build" "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-build/googlemock" "/Users/taylor/Documents/Flurdbop/Hello World/build/googletest-build/googlemock/CMakeFiles/gmock.dir/DependInfo.cmake" --color=$(COLOR)
+	cd "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build" && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3" "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-src/googlemock" "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build" "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-build/googlemock" "/Users/taylor/Documents/Flurdbop/Blackjack/Releases/Version 2.3/build/googletest-build/googlemock/CMakeFiles/gmock.dir/DependInfo.cmake" --color=$(COLOR)
 .PHONY : googletest-build/googlemock/CMakeFiles/gmock.dir/depend
 
