@@ -221,6 +221,21 @@ void Shoe::DealCards() {
     else {}
 }
 
+/*  EmptyShoe - Empties the shoe that is in question
+*   Input:
+*       This function does not have any input parameters
+*   Algorithm:
+*       * Set all struct data members to empty or zero
+*   Output:
+*       This function does not return a value, but it modifies the data structure elements
+*/
+void Shoe::EmptyShoe() {
+    gameDeck.numOfDecks = 0;
+    gameDeck.cardsInShoe.clear();
+    gameDeck.returnedCards.clear();
+    gameDeck.riggedCards.clear();
+}
+
 /*  Shuffle - This function shuffles the "gameDeck.cardsInShoe" vector
 *   Input:
 *       This function does not have any input parameters

@@ -23,6 +23,7 @@ public:
     Shoe& CreateShoe();
     Card Draw();
     void DealCards();
+    void EmptyShoe();
     void Shuffle();
     // Setter Functions
     void SetNumOfDecks(const int input);
