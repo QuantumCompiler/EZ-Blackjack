@@ -265,8 +265,7 @@ std::vector<Hand> split_hand(Hand& input) {
 *       shoe - Shoe object that represents the shoe that is being played with by the player and dealer
 *       hand_count - Integer value that represents that number of individual hands that the player has after this function has completed
 */
-std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playerHand, Hand& dealerHand, Shoe& shoe)
-{
+std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playerHand, Hand& dealerHand, Shoe& shoe) {
     int hand_count = 1;
     std::vector<Hand> new_hand;
     // Check if player can split their hand
@@ -311,7 +310,6 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
                     }
                     dealerHand.ShowHand();
                     playerHand.CopyVariables(new_hand.back());
-                    return std::make_tuple(new_hand, playerHand, dealerHand, shoe, hand_count);
                 }
                 // Player has chosen to not split aces
                 else if (aces_response == "n") {
@@ -324,7 +322,6 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
                     dealerHand.ShowHand();
                     new_hand.push_back(playerHand);
                     playerHand.CopyVariables(new_hand.back());
-                    return std::make_tuple(new_hand, playerHand, dealerHand, shoe, hand_count);
                 }
                 // Player has entered an invalid response
                 else {
@@ -346,7 +343,7 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
                 // Player has chosen to split their hand
                 if (same_rank_response == "y") {
                     playerHand.SetChoseSplitHand(true);
-                    playerHand.SetSplitHandResponse(false);
+                    playerHand.SetSplitHandResponse(true);
                     std::cout << playerHand.GetDisplayName() << " has chosen to split their " << playerHand.GetCards().at(0).GetDisplayRank() << "'s." << std::endl; time_sleep(3000);
                     clear_terminal();
                     std::cout << std::endl << "Here are the current hands of both players: " << std::endl; time_sleep(1000);
@@ -616,9 +613,6 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
                                 loop_counter++; 
                             }
                             dealerHand.ShowHand();
-                            new_hand = tempHands;
-                            playerHand.CopyVariables(new_hand.back());
-                            return std::make_tuple(new_hand, playerHand, dealerHand, shoe, hand_count);
                         }
                         // Player did not pull the same card again
                         else {
@@ -639,13 +633,11 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
                                 current_hand.ShowHand(hand_tracker);
                                 loop_counter++; 
                             }
-                            dealerHand.ShowHand();
-                            new_hand = tempHands;
-                            playerHand.CopyVariables(new_hand.back());
-                            return std::make_tuple(new_hand, playerHand, dealerHand, shoe, hand_count);
                         }
                     }
                     else {}
+                    new_hand = splitHands;
+                    playerHand.CopyVariables(new_hand.back());
                 }
                 // Player has chosen to not split their hand
                 else if (same_rank_response == "n") {
@@ -658,14 +650,12 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
                     dealerHand.ShowHand();
                     new_hand.push_back(playerHand);
                     playerHand.CopyVariables(new_hand.back());
-                    return std::make_tuple(new_hand, playerHand, dealerHand, shoe, hand_count);
                 }
                 // Player has entered an invalid response
                 else {
                     std::cout << color_text(31, "Invalid choice") + " of " + color_text(31, same_rank_response) + ". Plese re-enter your decision." << std::endl; time_sleep(1000);
                     same_rank_response.clear();
                 }
-                return std::make_tuple(new_hand, playerHand, dealerHand, shoe, hand_count);
             }
         }
         else {}
@@ -673,271 +663,343 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
     else {
         new_hand.push_back(playerHand);
         playerHand.CopyVariables(new_hand.back());
-        return std::make_tuple(new_hand, playerHand, dealerHand, shoe, hand_count);
     }
     return std::make_tuple(new_hand, playerHand, dealerHand, shoe, hand_count);
 }
 
-std::tuple<Hand, Hand, Shoe> player_hand_logic(Hand& playerHand, Hand& dealerHand, Hand& referenceHand, Shoe& shoe, int& hand_counter) {
-    return std::make_tuple(playerHand, dealerHand, shoe);
+/*  player_hand_logic - Processes the possible options of what a player can do on their current hand
+*   Input:
+*       currentPlayerHand - Hand object that is passed by reference to be the current hand that is being played with
+*       dealerHand - Hand object that is passed by reference that resembles the dealers hand
+*       masterPlayerHand - Hand object that is passed by reference that resembles the players original hand
+*       shoe - Shoe object that is passed by reference that resembles the current game shoe that is being played with
+*       hand_counter - Integer value that represents the current hand of a player out of their total hands
+*   Algorithm:
+*       * Check the parameters of the current hand
+*       * If the player has not split aces
+*           * Create a label indicating what hand is being played with
+*           * Process the logic of what a player can do with their hand
+*           * Prompt the player if they would like to hit, stand, or double down, given that they can double down
+*           * Proceed to process the logic of how the player has played and if they can continue to play their current hand
+*           * See individual line comments for more detail
+*       * If the player has split aces, simply bypass all options of hitting, standing, and doubling down
+*       * Return all hand objects and shoe
+*   Output:
+*       currentPlayerHand - Returns the current player hand that is being played with
+*       dealerHand - Returns the dealers hand
+*       shoe - Returns the modified shoe object that is being used for the players to play with
+*/
+std::tuple<Hand, Hand, Shoe> player_hand_logic(Hand& currentPlayerHand, Hand& dealerHand, Hand& masterPlayerHand, Shoe& shoe, int& hand_counter) {
+    // Check the parameters of the given hand
+    currentPlayerHand.ParametersCheck(currentPlayerHand, dealerHand);
+    // Player did not split Aces
+    if (!masterPlayerHand.GetChoseSplitAces()) {
+        // Correctly label the current hand of the player
+        std::string response;
+        std::string hand_tracker;
+        if (hand_counter == 1) {
+            hand_tracker = "first";
+        }
+        else if (hand_counter == 2) {
+            hand_tracker = "second";
+        }
+        else if (hand_counter == 3) {
+            hand_tracker = "third";
+        }
+        else if (hand_counter == 4) {
+            hand_tracker = "fourth";
+        }
+        else if (hand_counter == 5) {
+            hand_tracker = "fifth";
+        }
+        else {
+            hand_tracker = "current";
+        }
+        if (hand_counter > 1) {
+            currentPlayerHand.HitHand(shoe);
+        }
+        else {}
+        // Process the logic of if a player needs to be prompted for what they should do in a hand
+        while ((response != "h" && response != "s" && response != "d") && currentPlayerHand.GetCardsTotal() < 21) {
+            // Prompts for if the player has not hit their current hand yet
+            if (!currentPlayerHand.GetHasHit()) {
+                // Player is playing a split hand
+                if (masterPlayerHand.GetChoseSplitHand()) {
+                    // Show current hand of player and dealer hand
+                    std::cout << std::endl << "Here are the initial hands of each player for hand " << std::to_string(hand_counter) << ":" << std::endl; time_sleep(1000);
+                    currentPlayerHand.ShowHand("initial " + hand_tracker);
+                    dealerHand.ShowHand("initial");
+                    // Player can double down their current split hand
+                    if (currentPlayerHand.GetCanDoubleDown()) {
+                        // Prompt player what they would like to do
+                        std::cout << std::endl << "Would you like to hit, stand, or double down for hand " << std::to_string(hand_counter) << "?" << std::endl; time_sleep(1000);
+                        // blackjack_strategy(playerHand, dealerHand, true);
+                        std::cout << std::endl << "Enter (h) to hit, (s) to stand, and (d) to double down for " << std::to_string(hand_counter) << ": "; time_sleep(1000);
+                    }
+                    // Player can't double down their current split hand
+                    else {
+                        // Prompt player what they would like to do
+                        std::cout << std::endl << "Would you like to hit or stand for hand " << std::to_string(hand_counter) << "?" << std::endl; time_sleep(1000);
+                        // blackjack_strategy(playerHand, dealerHand, true);
+                        std::cout << std::endl << "Enter (h) to hit and (s) to stand for " << std::to_string(hand_counter) << ": "; time_sleep(1000);
+                    }
+                    std::cin >> response;
+                    std::cout << std::endl; time_sleep(1000);
+                }
+                // Player is not playing a split hand
+                else if (!masterPlayerHand.GetChoseSplitHand()) {
+                    // Player can double down their current hand
+                    if (currentPlayerHand.GetCanDoubleDown()) {
+                        // Prompt player what they would like to do
+                        std::cout << std::endl << "Would you like to hit, stand, or double down?" << std::endl; time_sleep(1000);
+                        // blackjack_strategy(playerHand, dealerHand, true);
+                        std::cout << std::endl << "Enter (h) to hit, (s) to stand, and (d) to double down: "; time_sleep(1000);
+                    }
+                    // Player can't double down their current hand
+                    else {
+                        // Prompt player what they would like to do
+                        std::cout << std::endl << "Would you like to hit or stand?" << std::endl; time_sleep(1000);
+                        // blackjack_strategy(playerHand, dealerHand, true);
+                        std::cout << std::endl << "Enter (h) to hit and (s) to stand: "; time_sleep(1000);
+                    }
+                    std::cin >> response;
+                    std::cout << std::endl; time_sleep(1000);
+                }
+                else {}            
+            }
+            // Player has hit their current hand
+            else if (currentPlayerHand.GetHasHit()) {
+                // Show hand of current player in their split hands
+                if (masterPlayerHand.GetChoseSplitHand()) {
+                    currentPlayerHand.ShowHand("current " + hand_tracker);
+                }
+                // Show hand of current player
+                else if (!masterPlayerHand.GetChoseSplitHand()) {
+                    currentPlayerHand.ShowHand("current");
+                }
+                else {}
+                // Show dealer hand
+                dealerHand.ShowHand("initial");
+                // Prompt player what they would like to do
+                std::cout << std::endl << "Would you like to hit (h) or stand (s)?" << std::endl; time_sleep(1000);
+                // blackjack_strategy(playerHand, dealerHand, true);
+                std::cout << std::endl << "Enter (h) to hit and (s) to stand: "; time_sleep(1000);
+                std::cin >> response;
+                std::cout << std::endl; time_sleep(1000);
+            }
+            else {}
+            // Player has chosen to hit their hand
+            if (response == "h") {
+                // Set has hit to be true and hit the current hand
+                currentPlayerHand.SetHasHit(true);
+                currentPlayerHand.HitHand(shoe);
+                // Player has busted their current hand
+                if (currentPlayerHand.GetCardsTotal() > 21) {
+                    // Tell player they have busted on their current hand
+                    std::cout << currentPlayerHand.GetDisplayName() << " has chosen to hit and busted. Final hand total: " << currentPlayerHand.GetDisplayCardsTotal() << "." << std::endl; time_sleep(1000);
+                    // Show hand of current split hand and hide dealers hand
+                    if (masterPlayerHand.GetChoseSplitHand()) {
+                        std::cout << std::endl << "Here is " << currentPlayerHand.GetDisplayName() << "'s final hand for hand " << std::to_string(hand_counter)
+                        << " and the " << dealerHand.GetDisplayName() << "'s current hand:" << std::endl; time_sleep(1000);
+                        currentPlayerHand.ShowHand("final " + hand_tracker);
+                        dealerHand.ShowHand("current");
+                    }
+                    // Show hand of current hand and show dealer hand
+                    else if (!masterPlayerHand.GetChoseSplitHand()) {
+                        std::cout << std::endl << "Here is the final hand for " << currentPlayerHand.GetDisplayName() << " and the final hand of the " << dealerHand.GetDisplayName() << ":" << std::endl; time_sleep(1000);
+                        currentPlayerHand.ShowHand("initial");
+                        dealerHand.ShowHand("final", "show");
+                    }
+                    else {}
+                    std::cout << std::endl; time_sleep(1000);
+                    break;
+                }
+                // Player has a hand total of less than 21
+                else if (currentPlayerHand.GetCardsTotal() < 21) {
+                    // Tell player they have hit their current hand
+                    std::cout << currentPlayerHand.GetDisplayName() << " has chosen to hit. Current hand total: " << currentPlayerHand.GetDisplayCardsTotal() << "." << std::endl; time_sleep(1000);
+                    // Prompt for if this is a split hand
+                    if (masterPlayerHand.GetChoseSplitHand()) {
+                        std::cout << std::endl << "Here are the current hands of each player for hand " << std::to_string(hand_counter) << ":" << std::endl; time_sleep(1000);
+                    }
+                    // Prompt for if this is a singular hand
+                    else if (!masterPlayerHand.GetChoseSplitHand()) {
+                        std::cout << std::endl << "Here are the current hands of each player:" << std::endl; time_sleep(1000);
+                    }
+                    else {}
+                }
+                // Players current hand is 21
+                else if (currentPlayerHand.GetCardsTotal() == 21) {
+                    // Tell player they have achieved 21
+                    std::cout << currentPlayerHand.GetDisplayName() << " has chosen to hit. Final hand total: " << currentPlayerHand.GetDisplayCardsTotal() << "." << std::endl; time_sleep(1000);
+                    // Show hand of current split hand
+                    if (masterPlayerHand.GetChoseSplitHand()) {
+                        std::cout << std::endl << "Here is " << masterPlayerHand.GetDisplayName() << "'s final hand for hand " << std::to_string(hand_counter) << " and the " 
+                        << dealerHand.GetDisplayName() << "'s current hand:" << std::endl; time_sleep(1000);
+                        currentPlayerHand.ShowHand("final " + hand_tracker);
+                        dealerHand.ShowHand("current", "");
+                    }
+                    // Show hand of singular hand
+                    else if (!masterPlayerHand.GetChoseSplitHand()) {
+                        std::cout << std::endl << "Here is the final hand for " << currentPlayerHand.GetDisplayName() << " and the initial hand of the " 
+                        << dealerHand.GetDisplayName() << ":" << std::endl; time_sleep(1000);
+                        currentPlayerHand.ShowHand("final");
+                        dealerHand.ShowHand("initial", "show");
+                    }
+                    else {}
+                    std::cout << std::endl; time_sleep(1000);
+                }
+                else {}
+                response.clear();
+            }
+            // Player has chosen to stay on their current hand
+            else if (response == "s") {
+                // Tell player they have chosen to stay
+                std::cout << currentPlayerHand.GetDisplayName() << " has chosen to stand. Final hand total: " << currentPlayerHand.GetDisplayCardsTotal() << "." << std::endl; time_sleep(1000);
+                // Show hands of current hand in split hands
+                if (masterPlayerHand.GetChoseSplitHand()) {
+                    std::cout << std::endl << "Here is " << currentPlayerHand.GetDisplayName() << "'s final hand for hand " << std::to_string(hand_counter)
+                    << " and the " << dealerHand.GetDisplayName() << "'s current hand:" << std::endl; time_sleep(1000);
+                    currentPlayerHand.ShowHand("final " + hand_tracker);
+                    dealerHand.ShowHand("current" , "");
+                }
+                // Show hand of singular hand
+                else if (!masterPlayerHand.GetChoseSplitHand()) {
+                    std::cout << std::endl << "Here is the final hand for " << currentPlayerHand.GetDisplayName() << " and the initial hand of the " 
+                    << dealerHand.GetDisplayName() << ":" << std::endl; time_sleep(1000);
+                    currentPlayerHand.ShowHand("final");
+                    dealerHand.ShowHand("initial" , "show");
+                }
+                else {}
+                std::cout << std::endl; time_sleep(1000);
+                break;
+            }
+            // Player has chosen to double down
+            else if (response == "d") {
+                // Player can double down
+                if (currentPlayerHand.GetCanDoubleDown()) {
+                    // Update bank totals of player and hit hand
+                    currentPlayerHand.UpdateBank(0, currentPlayerHand.GetWager());
+                    currentPlayerHand.SetWager(2 * currentPlayerHand.GetWager());
+                    currentPlayerHand.HitHand(shoe);
+                    // Player has busted
+                    if (currentPlayerHand.GetCardsTotal() > 21) {
+                        // Tell player they have busted on their current hand
+                        std::cout << currentPlayerHand.GetDisplayName() << " has doubled down and busted. Final hand total: " << currentPlayerHand.GetDisplayCardsTotal() << "." << std::endl; time_sleep(1000);
+                        // Show current hand of split hand
+                        if (masterPlayerHand.GetChoseSplitHand()) {
+                            std::cout << std::endl << "Here is " << currentPlayerHand.GetDisplayName() << "'s final hand for hand " << std::to_string(hand_counter)
+                            << " and the " << dealerHand.GetDisplayName() << "'s current hand:" << std::endl; time_sleep(1000);
+                            currentPlayerHand.ShowHand("final " + hand_tracker);
+                            dealerHand.ShowHand("current");
+                        }
+                        // Show singular hand
+                        else if (!masterPlayerHand.GetChoseSplitHand()) {
+                            std::cout << std::endl << "Here is the final hand for " << currentPlayerHand.GetDisplayName() << " and the final hand of the " 
+                            << dealerHand.GetDisplayName() << ":" << std::endl; time_sleep(1000);
+                            currentPlayerHand.ShowHand("final");
+                            dealerHand.ShowHand("final", "show");
+                        }
+                        else
+                        std::cout << std::endl; time_sleep(1000);
+                        break;
+                    }
+                    // Player has reached 21
+                    else if (currentPlayerHand.GetCardsTotal() <= 21) {
+                        // Tell player they have reached 21
+                        std::cout << currentPlayerHand.GetDisplayName() << " has doubled down. Final hand total: " << currentPlayerHand.GetDisplayCardsTotal() << "." << std::endl; 
+                        // Show current hand of split hand
+                        if (masterPlayerHand.GetChoseSplitHand()) {
+                            std::cout << std::endl << "Here is " << currentPlayerHand.GetDisplayName() << "'s final hand for hand " << std::to_string(hand_counter) << " and the " 
+                            << dealerHand.GetDisplayName() << "'s current hand:" << std::endl; time_sleep(1000);
+                            currentPlayerHand.ShowHand("final " + hand_tracker);
+                            dealerHand.ShowHand("current");
+                        }
+                        // Show singular hand
+                        else if (!masterPlayerHand.GetChoseSplitHand()) {
+                            std::cout << std::endl << "Here is the final hand for " << currentPlayerHand.GetDisplayName() << " and the initial hand of the " 
+                            << dealerHand.GetDisplayName() << ":" << std::endl; time_sleep(1000);
+                            currentPlayerHand.ShowHand("final");
+                            dealerHand.ShowHand("initial", "show");
+                        }
+                        else {}
+                        std::cout << std::endl; time_sleep(1000);
+                        break;
+                    }
+                    else {}
+                }
+                // Player cannot double down
+                else {
+                    // Tell player they cannot double down, return to choices for player
+                    std::cout << "Your current bank total of " << currentPlayerHand.GetDisplayBankTotal() << " is not greater than your wager of "
+                    << currentPlayerHand.GetDisplayWager() << ". You cannot double down." << std::endl; time_sleep(1000);
+                    response.clear();
+                    continue;
+                }
+            }
+            // Player has entered and incorrect value for a choice
+            else if (response != "h" && response != "s" && response != "d") {
+                if (!masterPlayerHand.GetChoseSplitHand()) {
+                    std::cout << color_text(31, "Invalid choice") << "." << std::endl; 
+                }
+                else if (masterPlayerHand.GetChoseSplitHand()) {
+                    std::cout << color_text(31, "Invalid choice") << "." << std::endl << std::endl; 
+                }
+                else {}            
+                response.clear();
+                continue;
+            }
+            else {}
+        }
+        // Copy variables of current hand to master hand
+        masterPlayerHand.CopyVariables(currentPlayerHand);
+    }
+    // Player has chosen to split aces
+    else if (masterPlayerHand.GetChoseSplitAces()) {
+        masterPlayerHand.CopyVariables(currentPlayerHand);
+    }
+    else {}
+    // Return hands of player
+    return std::make_tuple(currentPlayerHand, dealerHand, shoe);
 }
-// {
-//     if (!referenceHand.player.chose_split_aces) 
-//     {
-//         std::string response;
-//         std::string hand_tracker;
-//         if (hand_counter == 1)
-//         {
-//             hand_tracker = "first";
-//         }
-//         else if (hand_counter == 2)
-//         {
-//             hand_tracker = "second";
-//         }
-//         else if (hand_counter == 3)
-//         {
-//             hand_tracker = "third";
-//         }
-//         else if (hand_counter == 4)
-//         {
-//             hand_tracker = "fourth";
-//         }
-//         else if (hand_counter == 5)
-//         {
-//             hand_tracker = "fifth";
-//         }
-//         else
-//         {
-//             hand_tracker = "current";
-//         }
-//         if (hand_counter > 1)
-//         {
-//             playerHand.Hit(shoe);
-//         }
-//         else {}
-//         while ((response != "h" && response != "s" && response != "d") && playerHand.player.cards_total < 21)
-//         {
-//             if (!playerHand.player.has_hit)
-//             {
-//                 if (referenceHand.player.chose_split_hand)
-//                 {
-//                     std::cout << std::endl << "Here are the initial hands of each player for hand " << std::to_string(hand_counter) << ":" << std::endl; 
-//                     playerHand.Show_Hand("initial " + hand_tracker);
-//                     dealerHand.Show_Hand("initial");
-//                     std::cout << std::endl << "Would you like to hit, stand, or double down for hand " << std::to_string(hand_counter) << "?" << std::endl; 
-//                     blackjack_strategy(playerHand, dealerHand, true);
-//                     std::cout << std::endl << "Enter (h) to hit, (s) to stand, and (d) to double down for " << std::to_string(hand_counter) << ": ";
-//                     std::cin >> response;
-//                     std::cout << std::endl;
-//                 }
-//                 else if (!referenceHand.player.chose_split_hand)
-//                 {
-//                     std::cout << std::endl << "Would you like to hit, stand, or double down?" << std::endl; 
-//                     blackjack_strategy(playerHand, dealerHand, true);
-//                     std::cout << std::endl << "Enter (h) to hit, (s) to stand, and (d) to double down: ";
-//                     std::cin >> response;
-//                     std::cout << std::endl;
-//                 }
-//                 else {}            
-//             }
-//             else if (playerHand.player.has_hit)
-//             {
-                
-//                 if (referenceHand.player.chose_split_hand)
-//                 {
-//                     playerHand.Show_Hand("current " + hand_tracker);
-//                 }
-//                 else if (!referenceHand.player.chose_split_hand)
-//                 {
-//                     playerHand.Show_Hand("current");
-//                 }
-//                 else {}
-//                 dealerHand.Show_Hand("initial");
-//                 std::cout << std::endl << "Would you like to hit (h) or stand (s)?" << std::endl; 
-//                 blackjack_strategy(playerHand, dealerHand, true);
-//                 std::cout << std::endl << "Enter (h) to hit and (s) to stand: ";
-//                 std::cin >> response;
-//                 std::cout << std::endl;
-//             }
-//             else {}
-//             if (response == "h")
-//             {
-//                 playerHand.player.has_hit = true;
-//                 playerHand.Hit(shoe);
-//                 if (playerHand.player.cards_total > 21)
-//                 {
-//                     std::cout << playerHand.player.display_name << " has chosen to hit and busted. Final hand total: " << playerHand.player.display_cards_total << "." << std::endl; 
-//                     if (referenceHand.player.chose_split_hand)
-//                     {
-//                         std::cout << std::endl << "Here is " << playerHand.player.display_name << "'s final hand for hand " << std::to_string(hand_counter)
-//                         << " and the " << dealerHand.player.display_name << "'s current hand:" << std::endl; 
-//                         playerHand.Show_Hand("final " + hand_tracker);
-//                         dealerHand.Show_Hand("current");
-//                     }
-//                     else if (!referenceHand.player.chose_split_hand)
-//                     {
-//                         std::cout << std::endl << "Here is the final hand for " << playerHand.player.display_name << " and the final hand of the " << dealerHand.player.display_name << ":" << std::endl; 
-//                         playerHand.Show_Hand("final");
-//                         dealerHand.Show_Hand("final", "show");
-//                     }
-//                     else {}
-//                     std::cout << std::endl;
-                    
-//                     break;
-//                 }
-//                 else if (playerHand.player.cards_total < 21)
-//                 {
-//                     std::cout << playerHand.player.display_name << " has chosen to hit. Current hand total: " << playerHand.player.display_cards_total << "." << std::endl; 
-//                     if (referenceHand.player.chose_split_hand)
-//                     {
-//                         std::cout << std::endl << "Here are the current hands of each player for hand " << std::to_string(hand_counter) << ":" << std::endl;
-//                     }
-//                     else if (!referenceHand.player.chose_split_hand)
-//                     {
-//                         std::cout << std::endl << "Here are the current hands of each player:" << std::endl;
-//                     }
-//                     else {}
-//                 }
-//                 else if (playerHand.player.cards_total == 21)
-//                 {
-//                     std::cout << playerHand.player.display_name << " has chosen to hit. Final hand total: " << playerHand.player.display_cards_total << "." << std::endl; 
-//                     if (referenceHand.player.chose_split_hand)
-//                     {
-//                         std::cout << std::endl << "Here is " << playerHand.player.display_name << "'s final hand for hand " << std::to_string(hand_counter) << " and the " 
-//                         << dealerHand.player.display_name << "'s current hand:" << std::endl; 
-//                         playerHand.Show_Hand("final " + hand_tracker);
-//                         dealerHand.Show_Hand("current", "");
-//                     }
-//                     else if (!referenceHand.player.chose_split_hand)
-//                     {
-//                         std::cout << std::endl << "Here is the final hand for " << playerHand.player.display_name << " and the initial hand of the " 
-//                         << dealerHand.player.display_name << ":" << std::endl; 
-//                         playerHand.Show_Hand("final");
-//                         dealerHand.Show_Hand("initial", "show");
-//                     }
-//                     else
-//                     std::cout << std::endl;
-                    
-//                 }
-//                 else {}
-//                 response.clear();
-//             }
-//             else if (response == "s")
-//             {
-//                 std::cout << playerHand.player.display_name << " has chosen to stand. Final hand total: " << playerHand.player.display_cards_total << "." << std::endl; 
-//                 if (referenceHand.player.chose_split_hand)
-//                 {
-//                     std::cout << std::endl << "Here is " << playerHand.player.display_name << "'s final hand for hand " << std::to_string(hand_counter)
-//                     << " and the " << dealerHand.player.display_name << "'s current hand:" << std::endl; 
-//                     playerHand.Show_Hand("final " + hand_tracker);
-//                     dealerHand.Show_Hand("current", "");
-//                 }
-//                 else if (!referenceHand.player.chose_split_hand)
-//                 {
-//                     std::cout << std::endl << "Here is the final hand for " << playerHand.player.display_name << " and the initial hand of the " 
-//                     << dealerHand.player.display_name << ":" << std::endl; 
-//                     playerHand.Show_Hand("final");
-//                     dealerHand.Show_Hand("initial", "show");
-//                 }
-//                 else
-//                 std::cout << std::endl;
-                
-//                 break;
-//             }
-//             else if (response == "d" && !playerHand.player.has_hit)
-//             {
-//                 if (playerHand.player.bank_total >= playerHand.player.wager)
-//                 {
-//                     playerHand.player.bank_total -= playerHand.player.wager;
-//                     playerHand.player.wager *= 2;
-//                     playerHand.Hit(shoe);
-//                     if (playerHand.player.cards_total > 21)
-//                     {
-//                         playerHand.Update_Bank("L", playerHand, playerHand.player.wager);
-//                         std::cout << playerHand.player.display_name << " has doubled down and busted. Final hand total: " 
-//                         << playerHand.player.display_cards_total << "." << std::endl; 
-//                         if (referenceHand.player.chose_split_hand)
-//                         {
-//                             std::cout << std::endl << "Here is " << playerHand.player.display_name << "'s final hand for hand " << std::to_string(hand_counter)
-//                             << " and the " << dealerHand.player.display_name << "'s current hand:" << std::endl; 
-//                             playerHand.Show_Hand("final " + hand_tracker);
-//                             dealerHand.Show_Hand("current");
-//                         }
-//                         else if (!referenceHand.player.chose_split_hand)
-//                         {
-//                             std::cout << std::endl << "Here is the final hand for " << playerHand.player.display_name << " and the final hand of the " 
-//                             << dealerHand.player.display_name << ":" << std::endl; 
-//                             playerHand.Show_Hand("final");
-//                             dealerHand.Show_Hand("final", "show");
-//                         }
-//                         else
-//                         std::cout << std::endl;
-                        
-//                         break;
-//                     }
-//                     else if (playerHand.player.cards_total <= 21)
-//                     {
-//                         std::cout << playerHand.player.display_name << " has doubled down. Final hand total: " << playerHand.player.display_cards_total << "." << std::endl; 
-//                         if (referenceHand.player.chose_split_hand)
-//                         {
-//                             std::cout << std::endl << "Here is " << playerHand.player.display_name << "'s final hand for hand " << std::to_string(hand_counter) << " and the " 
-//                             << dealerHand.player.display_name << "'s current hand:" << std::endl; 
-//                             playerHand.Show_Hand("final " + hand_tracker);
-//                             dealerHand.Show_Hand("current");
-//                         }
-//                         else if (!referenceHand.player.chose_split_hand)
-//                         {
-//                             std::cout << std::endl << "Here is the final hand for " << playerHand.player.display_name << " and the initial hand of the " 
-//                             << dealerHand.player.display_name << ":" << std::endl; 
-//                             playerHand.Show_Hand("final");
-//                             dealerHand.Show_Hand("initial", "show");
-//                         }
-//                         else {}
-//                         std::cout << std::endl;
-                        
-//                         break;
-//                     }
-//                     else {}
-//                 }
-//                 else if (playerHand.player.bank_total < playerHand.player.wager)
-//                 {
-//                     std::cout << "Your current bank total of " << playerHand.player.display_bank_total << " is not greater than your wager of "
-//                     << playerHand.player.display_wager << ". You cannot double down." << std::endl;
-//                     response.clear();
-//                     continue;
-//                 }
-//                 else {}
-//             }
-//             else if (response != "h" && response != "s" && response != "d")
-//             {
-//                 if (!referenceHand.player.chose_split_hand)
-//                 {
-//                     std::cout << color_text(31, "Invalid choice") << "." << std::endl; 
-//                 }
-//                 else if (referenceHand.player.chose_split_hand)
-//                 {
-//                     std::cout << color_text(31, "Invalid choice") << "." << std::endl << std::endl; 
-//                 }
-//                 else {}            
-//                 response.clear();
-//                 continue;
-//             }
-//             else {}
-//         }
-//         referenceHand.Copy_Variables(playerHand);
-//         return std::make_tuple(playerHand, dealerHand, referenceHand, shoe);
-//     }
-//     else if (referenceHand.player.chose_split_aces) {
-//         referenceHand.Copy_Variables(playerHand);
-//         return std::make_tuple(playerHand, dealerHand, referenceHand, shoe);
-//     }
-//     else {}
-// }
+
+
 
 void test_game() {
     Hand playerTest;
     Hand dealerTest;
     Shoe testShoe;
+    testShoe.SetNumOfDecks(1);
+    testShoe.CreateShoe();
+    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
     playerTest.SetName("Player 1");
     dealerTest.SetName("Dealer");
+    playerTest.SetBankTotal(100);
+    auto dealerAce = dealer_showing_ace(playerTest, dealerTest, testShoe);
+    if (std::get<3>(dealerAce)) {
+        auto sameRank = same_rank_check(std::get<0>(dealerAce), std::get<1>(dealerAce), std::get<2>(dealerAce));
+        int hand_counter = 0;
+        std::vector<Hand> playerHandsPL;
+        for (Hand& current_hand : std::get<0>(sameRank)) {
+            hand_counter++;
+            auto playerHandLogic = player_hand_logic(current_hand, std::get<2>(sameRank), std::get<1>(sameRank), std::get<3>(sameRank), hand_counter);
+            playerHandsPL.insert(playerHandsPL.begin(), std::get<0>(playerHandLogic));
+            playerTest = std::get<0>(playerHandLogic);
+        }
+    }
+    else {
+
+    }
 }
