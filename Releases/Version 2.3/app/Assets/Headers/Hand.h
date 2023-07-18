@@ -17,6 +17,7 @@
 *       hasBlackJack - Boolean value that represents if a player has blackjack
 *       hasHit - Boolean value that represents if a player has chosen to hit on their hand
 *       paramInHand - Boolean value that represents if a player has a select parameter in their hand
+*       softSeventeen - Boolean value that represents if a player has a soft 17 or not
 *       splitAcesResponse - Boolean value that represents if a player has chosen to split their aces or not
 *       splitHandResponse - Boolean value that represents if a player has chosen to split their hand or not
 *     Float Values:
@@ -60,6 +61,7 @@ struct Player {
     bool hasHit;
     bool paramInHand;
     bool sameParamInHand;
+    bool softSeventeen;
     bool splitAcesResponse;
     bool splitHandResponse;
     // Float Values
@@ -103,7 +105,7 @@ public:
     Hand HitHand(Shoe& input);
     Hand InsurancePrompt();
     Hand NamePrompt();
-    Hand ParametersCheck(Hand& playerHand, Hand& dealerHand);
+    Hand ParametersCheck(Hand& checkingHand, Hand& dealerHand);
     Hand PlaceWager();
     Hand ResetHand();
     Hand ShowHand(std::string option = "", const std::string dealerShow = "");
@@ -123,6 +125,7 @@ public:
     void SetHasHit(const bool input);
     void SetParamInHand(const bool input);
     void SetSameParamInHand(const bool input);
+    void SetSoftSeventeen(const bool input);
     void SetSplitAcesResponse(const bool input);
     void SetSplitHandResponse(const bool input);
     // Float Values
@@ -165,6 +168,7 @@ public:
     bool GetHasHit() const;
     bool GetParamInHand() const;
     bool GetSameParamInHand() const;
+    bool GetSoftSeventeen() const;
     bool GetSplitAcesResponse() const;
     bool GetSplitHandResponse() const;
     // Float Values

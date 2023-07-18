@@ -27,6 +27,7 @@ Hand::Hand() {
     SetHasHit(false);
     SetParamInHand(false);
     SetSameParamInHand(false);
+    SetSoftSeventeen(false);
     SetSplitAcesResponse(false);
     SetSplitHandResponse(false);
     // Float Values Initialization
@@ -413,72 +414,93 @@ Hand Hand::NamePrompt() {
 
 /*  ParametersCheck - Checks to see if certain parameters in regards to wagering are met
 *   Input:
-*       playerHand - Hand object passed by reference that represents the player's hand
+*       checkingHand - Hand object passed by reference that represents the hand that is being examine
 *       dealerHand - Hand object passed by reference that represents the dealer's hand
 *   Algorithm:
 *       * This algorithm checks for specific parameters that pertain to how the player can play their hand
 *       * The parameters that are checked are the following:
 *           * Blackjack Check - Checks to see if the players have blackjack or not
 *           * Insurance Check - Checks to see if the player is able to buy insurance for their hand
+*           * Double Down Check - Checks to see if the player is able to double down for their hand
+*   Output:
+*       This function returns a Hand object after checking the parameters in the current hand
 */
-Hand Hand::ParametersCheck(Hand& playerHand, Hand& dealerHand) {
+Hand Hand::ParametersCheck(Hand& checkingHand, Hand& dealerHand) {
     // Player Checks
-    playerHand.CheckSameParamInHand("R", "");
-    playerHand.CheckBlackJack();
+    checkingHand.CheckSameParamInHand("R", "");
+    checkingHand.CheckBlackJack();
     // Dealer Checks
     dealerHand.CheckBlackJack();
     // Can Split Hand Check
-    if (playerHand.GetSameParamInHand()) {
+    if (checkingHand.GetSameParamInHand()) {
         // Player has enough money to split
-        if (playerHand.GetBankTotal() >= playerHand.GetWager()) {
+        if (checkingHand.GetBankTotal() >= checkingHand.GetWager()) {
             // Checking if player has aces
-            bool aces = playerHand.GetCards().at(0).CheckCardParam(playerHand.GetCards().at(0).GetRank(), Ranks[0]);
+            bool aces = checkingHand.GetCards().at(0).CheckCardParam(checkingHand.GetCards().at(0).GetRank(), Ranks[0]);
             // Player doesn't have Aces, can still split hand
             if (!aces) {
-                playerHand.SetCanSplitAces(false);
-                playerHand.SetCanSplitHand(true);
+                checkingHand.SetCanSplitAces(false);
+                checkingHand.SetCanSplitHand(true);
             }
             // Player has Aces, can split Aces, can't split regular hand
             else {
-                playerHand.SetCanSplitAces(true);
-                playerHand.SetCanSplitHand(false);
+                checkingHand.SetCanSplitAces(true);
+                checkingHand.SetCanSplitHand(false);
             }
         }
         // Player does not have enough money to split, can't split Aces or hand
         else {
-            playerHand.SetCanSplitAces(false);
-            playerHand.SetCanSplitHand(false);
+            checkingHand.SetCanSplitAces(false);
+            checkingHand.SetCanSplitHand(false);
         }
     }
     else {
-        playerHand.SetCanSplitAces(false);
-        playerHand.SetCanSplitHand(false);
+        checkingHand.SetCanSplitAces(false);
+        checkingHand.SetCanSplitHand(false);
     }
     // Insurance Check
     if (dealerHand.GetCards().at(1).CheckCardParam(dealerHand.GetCards().at(1).GetRank(), Ranks[0])) {
         // Player has enough money to buy insurance
-        if (playerHand.GetBankTotal() >= 0.5*playerHand.GetWager()) {
-            playerHand.SetCanBuyInsurance(true);
+        if (checkingHand.GetBankTotal() >= 0.5*checkingHand.GetWager()) {
+            checkingHand.SetCanBuyInsurance(true);
         }
         // Player does not have enough money to buy insurance
         else {
-            playerHand.SetCanBuyInsurance(false);
+            checkingHand.SetCanBuyInsurance(false);
         }
     }
     else {
-        playerHand.SetCanBuyInsurance(false);
+        checkingHand.SetCanBuyInsurance(false);
     }
     // Can Double Down Check
-    if (playerHand.GetBankTotal() >= playerHand.GetWager()) {
-        if (!playerHand.GetHasHit()) {
-            playerHand.SetCanDoubleDown(true);
+    if (checkingHand.GetBankTotal() >= checkingHand.GetWager()) {
+        if (!checkingHand.GetHasHit()) {
+            checkingHand.SetCanDoubleDown(true);
         }
         else {
-            playerHand.SetCanDoubleDown(false);
+            checkingHand.SetCanDoubleDown(false);
         }
     }
     else {
-        playerHand.SetCanDoubleDown(false);
+        checkingHand.SetCanDoubleDown(false);
+    }
+    // Soft Seventeen Check
+    if (checkingHand.GetCardsTotal() == 17) {
+        checkingHand.CheckParamInHand("R", Ranks[0]);
+        for (Card& current_card : checkingHand.GetCards()) {
+            if (checkingHand.GetParamInHand() && current_card.GetCardValue() == 11) {
+                checkingHand.SetSoftSeventeen(true);
+                break;
+            }
+            else if (!checkingHand.GetParamInHand() || current_card.GetCardValue() == 1) {
+                checkingHand.SetSoftSeventeen(false);
+                continue;
+            }
+            else {}
+        }
+    }
+    else {
+        checkingHand.SetSoftSeventeen(false);
     }
     return *this;
 }
@@ -582,6 +604,7 @@ Hand Hand::ResetHand() {
     SetHasHit(false);
     SetParamInHand(false);
     SetSameParamInHand(false);
+    SetSoftSeventeen(false);
     SetSplitAcesResponse(false);
     SetSplitHandResponse(false);
     // Float Values
@@ -890,6 +913,18 @@ void Hand::SetParamInHand(const bool input) {
 */
 void Hand::SetSameParamInHand(const bool input) {
     currentPlayer.sameParamInHand = input;
+}
+
+/*  SetSoftSeventeen - Sets the private data member "softSeventeen" to the input parameter "input"
+*   Input:
+*       input - Constant boolean value that is assigned to the private data member "softSeventeen"
+*   Algorithm:
+*       * Set the private data member "softSeventeen" to the input parameter "input"
+*   Output:
+*       This function does not return a value
+*/
+void Hand::SetSoftSeventeen(const bool input) {
+    currentPlayer.softSeventeen = input;
 }
 
 /*  SetSplitAcesResponse - Sets the private data member "splitAcesResponse" to the input parameter "input"
@@ -1270,6 +1305,11 @@ bool Hand::GetParamInHand() const {
 // GetSameParamInHand - Retrieves the private data member "sameParamInHand"
 bool Hand::GetSameParamInHand() const {
     return currentPlayer.sameParamInHand;
+}
+
+// GetSoftSeventeen - Retrieves the private data member "softSeventeen"
+bool Hand::GetSoftSeventeen() const {
+    return currentPlayer.softSeventeen;
 }
 
 // GetSplitAcesResponse - Retrieves the private data member "splitAcesResponse"
