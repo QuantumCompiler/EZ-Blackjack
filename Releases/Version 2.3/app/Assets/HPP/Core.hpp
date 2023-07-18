@@ -285,7 +285,6 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
                     playerHand.SetChoseSplitAces(true);
                     playerHand.SetSplitAcesResponse(true);
                     std::cout << playerHand.GetDisplayName() << " has chosen to split their " << playerHand.GetCards().at(0).GetDisplayRank() << "'s." << std::endl; time_sleep(3000);
-                    clear_terminal();
                     std::cout << std::endl << "Here are the current hands of both players: " << std::endl; time_sleep(1000);
                     std::vector<Hand> split_aces = split_hand(playerHand);
                     Hand player_hand_1 = split_aces.at(0);
@@ -316,7 +315,6 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
                     playerHand.SetChoseSplitAces(false);
                     playerHand.SetSplitAcesResponse(true);
                     std::cout << playerHand.GetDisplayName() << " has chosen not to split their " << playerHand.GetCards().at(0).GetDisplayRank() << "'s." << std::endl; time_sleep(3000);
-                    clear_terminal();
                     std::cout << std::endl << "Here are the current hands of both players: " << std::endl; time_sleep(1000);
                     playerHand.ShowHand();
                     dealerHand.ShowHand();
@@ -345,7 +343,6 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
                     playerHand.SetChoseSplitHand(true);
                     playerHand.SetSplitHandResponse(true);
                     std::cout << playerHand.GetDisplayName() << " has chosen to split their " << playerHand.GetCards().at(0).GetDisplayRank() << "'s." << std::endl; time_sleep(3000);
-                    clear_terminal();
                     std::cout << std::endl << "Here are the current hands of both players: " << std::endl; time_sleep(1000);
                     std::vector<Hand> splitHand = split_hand(playerHand);
                     std::vector<Hand> splitHands;
@@ -644,7 +641,6 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
                     playerHand.SetChoseSplitHand(false);
                     playerHand.SetSplitHandResponse(true);
                     std::cout << playerHand.GetDisplayName() << " has chosen not to split their " << playerHand.GetCards().at(0).GetDisplayRank() << "'s." << std::endl; time_sleep(3000);
-                    clear_terminal();
                     std::cout << std::endl << "Here are the current hands of both players: " << std::endl; time_sleep(1000);
                     playerHand.ShowHand();
                     dealerHand.ShowHand();
@@ -811,7 +807,6 @@ std::tuple<Hand, Hand, Shoe> player_hand_logic(Hand& currentPlayerHand, Hand& de
                         dealerHand.ShowHand("final", "show");
                     }
                     else {}
-                    std::cout << std::endl; time_sleep(1000);
                     break;
                 }
                 // Player has a hand total of less than 21
@@ -847,7 +842,6 @@ std::tuple<Hand, Hand, Shoe> player_hand_logic(Hand& currentPlayerHand, Hand& de
                         dealerHand.ShowHand("initial", "show");
                     }
                     else {}
-                    std::cout << std::endl; time_sleep(1000);
                 }
                 else {}
                 response.clear();
@@ -871,7 +865,6 @@ std::tuple<Hand, Hand, Shoe> player_hand_logic(Hand& currentPlayerHand, Hand& de
                     dealerHand.ShowHand("initial" , "show");
                 }
                 else {}
-                std::cout << std::endl; time_sleep(1000);
                 break;
             }
             // Player has chosen to double down
@@ -901,7 +894,6 @@ std::tuple<Hand, Hand, Shoe> player_hand_logic(Hand& currentPlayerHand, Hand& de
                             dealerHand.ShowHand("final", "show");
                         }
                         else
-                        std::cout << std::endl; time_sleep(1000);
                         break;
                     }
                     // Player has reached 21
@@ -923,7 +915,6 @@ std::tuple<Hand, Hand, Shoe> player_hand_logic(Hand& currentPlayerHand, Hand& de
                             dealerHand.ShowHand("initial", "show");
                         }
                         else {}
-                        std::cout << std::endl; time_sleep(1000);
                         break;
                     }
                     else {}
@@ -963,7 +954,162 @@ std::tuple<Hand, Hand, Shoe> player_hand_logic(Hand& currentPlayerHand, Hand& de
     return std::make_tuple(currentPlayerHand, dealerHand, shoe);
 }
 
+std::tuple<Hand, Shoe> dealer_hand_logic(std::vector<Hand>& playerHands, Hand& dealerHand, Shoe& shoe) {
+    bool all_over_21 = true;
+    for (Hand current_hand : playerHands) {
+        if (current_hand.GetCardsTotal() <= 21) {
+            all_over_21 = false;
+            break;
+        }
+        else if (current_hand.GetCardsTotal() > 21) {
+            all_over_21 = true;
+            continue;
+        }
+        else {}
+    }
+    if (!all_over_21) {
+        dealerHand.CheckParamInHand("R", Ranks[0]);
+        if ((dealerHand.GetCardsTotal() >= 17 && !dealerHand.GetParamInHand()) || (dealerHand.GetCardsTotal() > 17 && dealerHand.GetParamInHand())) {
+            int total_hands = playerHands.size();
+            if (total_hands > 1) {
+                int hand_counter = 0;
+                std::string hand_tracker;
+                std::cout << std::endl << "Here are the final hand(s) of " << playerHands.at(0).GetDisplayName() << " and the " << dealerHand.GetDisplayName() << ":" << std::endl; time_sleep(1000);
+                for (Hand current_hand : playerHands) {
+                    hand_counter++;
+                    if (hand_counter == 1) {
+                        hand_tracker = " first";
+                    }
+                    else if (hand_counter == 2) {
+                        hand_tracker = " second";
+                    }
+                    else if (hand_counter == 3) {
+                        hand_tracker = " third";
+                    }
+                    else if (hand_counter == 4) {
+                        hand_tracker = " fourth";
+                    }
+                    else if (hand_counter == 5) {
+                        hand_tracker = " fifth";
+                    }
+                    else {}
+                    current_hand.ShowHand("final " + hand_tracker);
+                }
+                dealerHand.ShowHand("final", "show");
+                std::cout << "The " << dealerHand.GetDisplayName() << " does not need to play their hand with a final total of " << dealerHand.GetDisplayCardsTotal() << "." << std::endl; time_sleep(1000);
+            }
+            else {
+                std::cout << "The " << dealerHand.GetDisplayName() << " does not need to play their hand with a final total of " << dealerHand.GetDisplayCardsTotal() << "." << std::endl; time_sleep(1000);
+            }
+        }
+        else if (dealerHand.GetCardsTotal() < 17 || (dealerHand.GetCardsTotal() == 17 && dealerHand.GetParamInHand())) {
+            int total_hands = playerHands.size();
+            if (total_hands > 1) {
+                int hand_counter = 0;
+                std::string hand_tracker;
+                std::cout << std::endl << "Here are the final hand(s) of " << playerHands.at(0).GetDisplayName() << " and the initial hand of the " << dealerHand.GetDisplayName() << ":" << std::endl; time_sleep(1000);
+                for (Hand current_hand : playerHands) {
+                    hand_counter++;
+                    if (hand_counter == 1) {
+                        hand_tracker = " first";
+                    }
+                    else if (hand_counter == 2) {
+                        hand_tracker = " second";
+                    }
+                    else if (hand_counter == 3) {
+                        hand_tracker = " third";
+                    }
+                    else if (hand_counter == 4) {
+                        hand_tracker = " fourth";
+                    }
+                    else if (hand_counter == 5) {
+                        hand_tracker = " fifth";
+                    }
+                    else {}
+                    current_hand.ShowHand("final " + hand_tracker);
+                }
+                dealerHand.ShowHand("initial", "show");
+                std::cout << std::endl << "The " << dealerHand.GetDisplayName() << " will now play their hand." << std::endl; time_sleep(1000);
+            }
+            else {
+                std::cout << std::endl << "The " << dealerHand.GetDisplayName() << " will now play their hand." << std::endl; time_sleep(1000);
+            }
+            std::cout << std::endl; time_sleep(1000);
+            while ((dealerHand.GetCardsTotal() < 17 || (dealerHand.GetCardsTotal() == 17 && dealerHand.GetParamInHand()))) {
+                bool soft_17 = false;
+                for (Card current_card : dealerHand.GetCards()) {
+                    if (current_card.CheckCardParam(current_card.GetRank(), Ranks[0]) && current_card.GetCardValue() == 11) {
+                        soft_17 = true;
+                        break;
+                    }
+                    else if (current_card.CheckCardParam(current_card.GetRank(), Ranks[0]) && current_card.GetCardValue() == 1) {
+                        soft_17 = false;
+                        continue;
+                    }
+                    else {}
+                }
+                if (soft_17 || dealerHand.GetCardsTotal() < 17) {
+                    dealerHand.HitHand(shoe);
+                    std::cout << dealerHand.GetDisplayName() << " hits hand: ";
+                    dealerHand.ShowHand("", "cards");
+                    continue;
+                }
+                else if (!soft_17 || dealerHand.GetCardsTotal() >= 17) {
+                    std::cout << std::endl << dealerHand.GetDisplayName() << " final hand ";
+                    dealerHand.ShowHand("", "cards");
+                    break;
+                }
+                else {}
+            }
+            std::cout << std::endl;
+        }
+        else {}
+    }
+    return std::make_tuple(dealerHand, shoe);
+}
 
+//     else if (all_over_21)
+//     {
+//         std::cout << playerHands.at(0).player.display_name << " has busted on all of their hands. " << dealerHand.player.display_name << " does not need to play their hand." << std::endl << std::endl;
+//         int total_hands = playerHands.size();
+//         if (total_hands > 1)
+//         {
+//             int hand_counter = 0;
+//             std::string hand_tracker;
+//             std::cout << "The final hands of " << playerHands.at(0).player.display_name << " and the " << dealerHand.player.display_name << " are:" << std::endl;
+//             for (Hand current_hand : playerHands)
+//             {
+//                 hand_counter++;
+//                 if (hand_counter == 1)
+//                 {
+//                     hand_tracker = " first";
+//                 }
+//                 else if (hand_counter == 2)
+//                 {
+//                     hand_tracker = " second";
+//                 }
+//                 else if (hand_counter == 3)
+//                 {
+//                     hand_tracker = " third";
+//                 }
+//                 else if (hand_counter == 4)
+//                 {
+//                     hand_tracker = " fourth";
+//                 }
+//                 else if (hand_counter == 5)
+//                 {
+//                     hand_tracker = " fifth";
+//                 }
+//                 else {}
+//                 current_hand.Show_Hand("final" + hand_tracker);
+//             }
+//             dealerHand.Show_Hand("final", "show");
+//         }
+//         else {}
+//     }
+//     else {}
+//     return std::make_tuple(dealerHand, shoe);
+// }
 
 void test_game() {
     Hand playerTest;
@@ -971,19 +1117,26 @@ void test_game() {
     Shoe testShoe;
     testShoe.SetNumOfDecks(1);
     testShoe.CreateShoe();
-    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
-    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
-    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
-    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
-    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
-    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
-    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
-    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
-    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
-    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
-    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
-    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
-    // testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
+    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
+    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
+    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
+    testShoe.SetRiggedCards(Card(Ranks[5], Suits[0]));
+    testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
+    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
+    testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
     playerTest.SetName("Player 1");
     dealerTest.SetName("Dealer");
     playerTest.SetBankTotal(100);
@@ -997,9 +1150,15 @@ void test_game() {
             auto playerHandLogic = player_hand_logic(current_hand, std::get<2>(sameRank), std::get<1>(sameRank), std::get<3>(sameRank), hand_counter);
             playerHandsPL.insert(playerHandsPL.begin(), std::get<0>(playerHandLogic));
             playerTest = std::get<0>(playerHandLogic);
+            dealerTest = std::get<1>(playerHandLogic);
+            testShoe = std::get<2>(playerHandLogic);
         }
+        std::reverse(playerHandsPL.begin(), playerHandsPL.end());
+        auto dealerHandLogic = dealer_hand_logic(playerHandsPL, dealerTest, testShoe);
     }
     else {
 
     }
 }
+
+// Fix soft 17 in dealer hand
