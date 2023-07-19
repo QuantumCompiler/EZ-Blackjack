@@ -104,7 +104,7 @@ float round_input(float input) {
 *   Input:
 *       input - Constant long value that resembles the time in milliseconds to have the console sleep
 *   Algorithm:
-*       This function utilitizes the "sleep_for" built in function to cause the console to sleep
+*       This function utilizes the "sleep_for" built in function to cause the console to sleep
 */
 void time_sleep(const long input) {
     long time = input;
