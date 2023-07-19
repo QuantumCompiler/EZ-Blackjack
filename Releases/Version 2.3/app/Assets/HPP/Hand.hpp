@@ -124,8 +124,7 @@ Hand Hand::AddHandTotal() {
     // Check if current hand is over 21
     if (running_hand_value > 21) {
         running_hand_value = 0;
-        for (Card& current_card : currentPlayer.cards)
-        {
+        for (Card& current_card : currentPlayer.cards) {
             // If the card is an Ace, change the value of it to 1
             if (current_card.CheckCardParam(current_card.GetRank(), Ranks[0])) {
                 current_card.SetNewCardValue(1);
