@@ -34,7 +34,7 @@ bool Card::CheckCardParam(const std::string checkingParam, const std::string fee
 }
 
 // ----- ----- ----- ----- ----- ----- ----- Setter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
-/*  SetDisplayRank - Sets the diplay value of a cards rank
+/*  SetDisplayRank - Sets the display value of a cards rank
 *   Input:
 *       inputCard: PlayingCard struct passed by reference to make changes to private data member "displayRank"
 *   Algorithm:
@@ -60,8 +60,7 @@ void Card::SetDisplayRank(PlayingCard& inputCard) {
 void Card::SetDisplaySuit(PlayingCard& inputCard) {
     for (int i = 0; i < 4; i++) {
         if (CheckCardParam(inputCard.suit, Suits[i])) {
-            switch (i)
-            {
+            switch (i) {
             case 0:
             case 3:
                 card.displaySuit = color_text(35, inputCard.suit);
