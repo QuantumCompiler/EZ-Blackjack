@@ -11,7 +11,7 @@ std::tuple<Hand, Hand, Shoe, bool> dealer_showing_ace(Hand& playerHand, Hand& de
 std::vector<Hand> split_hand(Hand& input); // 3 - Finished
 std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playerHand, Hand& dealerHand, Shoe& shoe); // 4 - Finished
 std::tuple<Hand, Hand, Shoe> player_hand_logic(Hand& currentPlayerHand, Hand& dealerHand, Hand& masterPlayerHand, Shoe& shoe, int& hand_counter); // 5 - Finished
-std::tuple<Hand, Shoe> dealer_hand_logic(std::vector<Hand>& playerHands, Hand& dealerHand, Shoe& shoe); // 6 
+std::tuple<Hand, Shoe> dealer_hand_logic(std::vector<Hand>& playerHands, Hand& dealerHand, Shoe& shoe); // 6 - Finished
 std::tuple<Hand, Hand, Shoe> hand_comparison_logic(Hand& playerHand, Hand& dealerHand, Shoe& shoe, int& playerHandCount, int& currentHandCounter); // 7
 std::tuple<Hand, Hand, Shoe> game_logic(Hand& playerHand, Hand& dealerHand, Shoe& shoe); // 8
 void play_game(); // 9
