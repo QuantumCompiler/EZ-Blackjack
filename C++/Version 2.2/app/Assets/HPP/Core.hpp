@@ -1277,6 +1277,31 @@ std::tuple<Hand, Hand, Shoe> hand_logic(Hand& playerHand, Hand& dealerHand, Shoe
     return std::make_tuple(playerHand, dealerHand, shoe);
 }
 
+/*  play_game - Processes all the logic that is required for a game of blackjack to be played
+*   Input:
+*       This function does not have any input parameters
+*   Algorithm:
+*       * Create hand objects for the players
+*       * Set the names of the players in the game
+*       * Deposit currency into the players bank
+*       * Create a shoe object for the game
+*       * Set the minimum cards that need to be left in the shoe to continue playing
+*       * Proceed to play a new hand while the cards left in the shoe is greater than "min_card_count" and the player has a positive bank total left
+*       * Process the "hand_logic" function
+*       * Prompt the player if they would like to continue playing if their bank total is greater than zero
+*           * If they choose to continue playing, check to see if the number of cards is greater than "min_card_count"
+*               * If it is, continue on to the next hand
+*               * If it isn't, shuffle a new shoe
+*           * If they choose to stop playing, break the while loop and end the game
+*       * If the players bank total is zero, prompt the player if they would like re-deposit currency into their bank
+*           * If they choose to re-deposit, check to see if the number of cards is greater than "min_card_count"
+*               * If it is, continue on to the next hand
+*               * If it isn't, shuffle a new shoe
+*           * If they choose to not re-deposit, break the while loop and end the game
+*       * After the player has chosen to stop playing, create a csv of the stats for the player
+*   Output:
+*       This function does not return a value
+*/
 void play_game() {
     clear_terminal();
     // Create Hand objects
@@ -1290,25 +1315,33 @@ void play_game() {
     // Create Shoe object
     Shoe gameShoe;
     gameShoe.CreateShoe();
+    // Card count minimum
+    int min_card_count = 13;
     // Play game while the cards in the shoe is greater than 13 and the users bank total is greater than 0
-    while (gameShoe.GetCardsInShoe().size() >= 13 && humanHand.GetBankTotal() > 0) {
+    while (gameShoe.GetCardsInShoe().size() >= min_card_count && humanHand.GetBankTotal() > 0) {
+        // Process the hand_logic function
         auto gameLogic = hand_logic(humanHand, dealerHand, gameShoe);
         humanHand.CopyVariables(std::get<0>(gameLogic));
         dealerHand.CopyVariables(std::get<1>(gameLogic));
         gameShoe = std::get<2>(gameLogic);
         bool continue_playing = false;
+        // Continue playing if the player has a bank total of greater than zero
         if (humanHand.GetBankTotal() > 0) {
             std::string cont_play;
+            // Prompt the player if they want to continue playing, force them to enter either y or n
             while (true) {
                 std::cout << std::endl << "Would you like to continue playing? (y/n): "; time_sleep(1000);
                 std::cin >> cont_play; time_sleep(1000);
+                // Player has chosen to continue playing
                 if (cont_play == "y") {
-                    if (gameShoe.GetCardsInShoe().size() >= 13) {
+                    // Ample enough cards left in shoe to continue playing
+                    if (gameShoe.GetCardsInShoe().size() >= min_card_count) {
                         std::cout << std::endl << gameShoe.GetCardsInShoe().size() << " cards left in shoe." << std::endl; time_sleep(1000);
                         std::cout << std::endl << "Dealing new hands." << std::endl; time_sleep(3000);
                         clear_terminal();
                         break;
                     }
+                    // Shoe must be reshuffled
                     else {
                         std::cout << std::endl << gameShoe.GetCardsInShoe().size() << " cards left in shoe." << std::endl; time_sleep(1000);
                         std::cout << std::endl << "Shuffling a new shoe." << std::endl; time_sleep(3000);
@@ -1319,75 +1352,108 @@ void play_game() {
                         break;
                     }
                 }
+                // Player has chosen to stop playing
                 else if (cont_play == "n") {
                     std::cout << std::endl << humanHand.GetDisplayName() << " has chosen to quit playing. Final bank total: " << humanHand.GetDisplayBankTotal() << std::endl; time_sleep(1000);
                     std::cout << std::endl << "Thank you for playing " << humanHand.GetDisplayName() << "!" << std::endl; time_sleep(3000);
                     clear_terminal();
                     break;
                 }
+                // Player has entered an incorrect response to the prompt
                 else {
                     clear_terminal();
                     cont_play.clear();
                     continue;
                 }
             }
+            // Set "continue_playing" to true if the player has chosen to continue playing
             if (cont_play == "y") {
                 continue_playing = true;
             }
+            // Set "continue_playing" to false if the player has chosen to stop playing
             else {
                 cont_play = false;
             }
         }
+        // Player has run out of currency in their bank
         else {
             std::string redeposit;
             std::cout << std::endl << humanHand.GetDisplayName() << " has run out of currency in their bank." << std::endl; time_sleep(1000);
+            // Prompt the player if they want to re-deposit currency into their bank, require them to enter y or n
             while (true) {
                 std::cout << std::endl << "Would you like to deposit more currency into your bank? (y/n): "; time_sleep(1000);
                 std::cin >> redeposit; time_sleep(1000);
+                // Player has chosen to re-deposit currency into their bank
                 if (redeposit == "y") {
                     humanHand.BankDeposit(); time_sleep(3000);
+                    // Create new shoe if the current card count in the shoe is less than "min_card_count"
+                    if (gameShoe.GetCardsInShoe().size() < min_card_count) {
+                        gameShoe.GetCardsInShoe().clear();
+                        gameShoe.SetNumOfDecks(gameShoe.GetNumOfDecks());
+                        gameShoe.CreateShoe();
+                    }
                     clear_terminal();
                     break;
                 }
+                // Player has chosen not to re-deposit currency into their bank
                 else if (redeposit == "n") {
                     std::cout << humanHand.GetDisplayName() << " has chosen to not redeposit more currency into their bank. Game over." << std::endl; time_sleep(1000);
                     std::cout << std::endl << "Thank you for playing " << humanHand.GetDisplayName() << "!" << std::endl; time_sleep(3000);
                     clear_terminal();
                     break;
                 }
+                // Player has entered an incorrect response to the prompt
                 else {
                     clear_terminal();
                     redeposit.clear();
                     continue;;
                 }
             }
+            // Set "continue_playing" to true if the player has chosen to re-deposit currency
             if (redeposit == "y") {
                 continue_playing = true;
             }
+            // Set "continue_playing" to false if the player has chosen not to re-deposit currency
             else {
                 continue_playing = false;
             }
         }
+        // End the while loop if "continue_playing" has been set to false
         if (!continue_playing) {
             break;
         }
+        // Continue the while loop if "continue_playing" has been set to true
         else {
             continue;
         }
     }
+    // Create csv of stats for user
     // csv_stats(playerHand);
 }
 
+/*  test_game - Tests certain aspects of classes and methods for the game
+*   Input:
+*       This function does not have any input parameters
+*   Algorithm:
+*       * Create test objects
+*       * Set data members of test objects
+*       * Test a singular hand
+*   Output:
+*       This function does not return a value
+*/
 void test_game() {
+    // Create test hands
     Hand playerTest;
     Hand dealerTest;
+    // Create test shoe
     Shoe testShoe;
     testShoe.SetNumOfDecks(1);
     testShoe.CreateShoe();
+    // Set names of player
     playerTest.SetName("Player 1");
     dealerTest.SetName("Dealer");
-    playerTest.SetBankTotal(100);
+    // Deposit bank total for player
+    playerTest.BankDeposit();
+    // Test singular hand of the functions and classes
     hand_logic(playerTest, dealerTest, testShoe);
 }
-
-// Finish comments of play game
