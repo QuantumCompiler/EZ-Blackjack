@@ -614,12 +614,12 @@ Hand Hand::ResetHand() {
     SetCardsTotal(0);
     SetIndividualHands(0);
     // String Values
-    GetDisplayCardsTotal().clear();
-    GetDisplayInsuranceWager().clear();
-    GetDisplayNet().clear();
-    GetDisplayWager().clear();
+    currentPlayer.displayCardsTotal.clear();
+    currentPlayer.displayInsuranceWager.clear();
+    currentPlayer.displayNet.clear();
+    currentPlayer.displayWager.clear();
     // Vector Values
-    GetCards().clear();
+    currentPlayer.cards.clear();
     return *this;
 }
 
