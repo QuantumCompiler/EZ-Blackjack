@@ -962,76 +962,10 @@ std::tuple<Hand, Shoe> dealer_hand_logic(std::vector<Hand>& playerHands, Hand& d
         dealerHand.CheckParamInHand("R", Ranks[0]);
         // Dealer has a hand total of seventeen or greater with no Ace in hand
         if (dealerHand.GetCardsTotal() >= 17 && !dealerHand.GetParamInHand()) {
-            int total_hands = playerHands.size();
-            // Display all the hands of the player that they have split and played
-            if (total_hands > 1) {
-                int hand_counter = 0;
-                std::string hand_tracker;
-                std::cout << std::endl << "Here are the final hand(s) of " << playerHands.at(0).GetDisplayName() << " and the " << dealerHand.GetDisplayName() << ":" << std::endl; time_sleep(1000);
-                for (Hand current_hand : playerHands) {
-                    hand_counter++;
-                    if (hand_counter == 1) {
-                        hand_tracker = "first";
-                    }
-                    else if (hand_counter == 2) {
-                        hand_tracker = "second";
-                    }
-                    else if (hand_counter == 3) {
-                        hand_tracker = "third";
-                    }
-                    else if (hand_counter == 4) {
-                        hand_tracker = "fourth";
-                    }
-                    else if (hand_counter == 5) {
-                        hand_tracker = "fifth";
-                    }
-                    else {}
-                    current_hand.ShowHand("final " + hand_tracker);
-                }
-            }
-            // Display the singular hand of the player
-            else {
-                playerHands.at(0).ShowHand("final");
-            }
-            // Show the hand of the dealer
-            dealerHand.ShowHand("final", "show");
             std::cout << std::endl << "The " << dealerHand.GetDisplayName() << " does not need to play their hand with a final total of " << dealerHand.GetDisplayCardsTotal() << "." << std::endl; time_sleep(1000);
         }
         // Dealer has less than 17 or has a soft 17
         else if (dealerHand.GetCardsTotal() < 17 || dealerHand.GetSoftSeventeen()) {
-            int total_hands = playerHands.size();
-            // Display all the hands of the player that they have split and played
-            if (total_hands > 1) {
-                int hand_counter = 0;
-                std::string hand_tracker;
-                std::cout << std::endl << "Here are the final hand(s) of " << playerHands.at(0).GetDisplayName() << " and the initial hand of the " << dealerHand.GetDisplayName() << ":" << std::endl; time_sleep(1000);
-                for (Hand current_hand : playerHands) {
-                    hand_counter++;
-                    if (hand_counter == 1) {
-                        hand_tracker = " first";
-                    }
-                    else if (hand_counter == 2) {
-                        hand_tracker = " second";
-                    }
-                    else if (hand_counter == 3) {
-                        hand_tracker = " third";
-                    }
-                    else if (hand_counter == 4) {
-                        hand_tracker = " fourth";
-                    }
-                    else if (hand_counter == 5) {
-                        hand_tracker = " fifth";
-                    }
-                    else {}
-                    current_hand.ShowHand("final " + hand_tracker);
-                }
-            }
-            // Display the singular hand of the player
-            else {
-                playerHands.at(0).ShowHand("final");
-            }
-            // Show the hand of the dealer
-            dealerHand.ShowHand("initial", "show");
             std::cout << std::endl << "The " << dealerHand.GetDisplayName() << " will now play their hand." << std::endl; time_sleep(1000);
             // Dealer must continue to play and will hit on soft seventeen
             while ((dealerHand.GetCardsTotal() < 17 || dealerHand.GetSoftSeventeen())) {
@@ -1057,44 +991,232 @@ std::tuple<Hand, Shoe> dealer_hand_logic(std::vector<Hand>& playerHands, Hand& d
     }
     // All hands of player are over 21
     else if (all_over_21) {
-        std::cout << std::endl << playerHands.at(0).GetDisplayName() << " has busted on all of their hands. " << dealerHand.GetDisplayName() << " does not need to play their hand." << std::endl; time_sleep(1000);
-        std::cout << std::endl << "The final hands of " << playerHands.at(0).GetDisplayName() << " and the " << dealerHand.GetDisplayName() << " are:" << std::endl; time_sleep(1000);
-        int total_hands = playerHands.size();
-        // Display all the hands of the player that they have split and played
-        if (total_hands > 1) {
-            int hand_counter = 0;
-            std::string hand_tracker;
-            for (Hand current_hand : playerHands) {
-                hand_counter++;
-                if (hand_counter == 1) {
-                    hand_tracker = "first";
-                }
-                else if (hand_counter == 2) {
-                    hand_tracker = "second";
-                }
-                else if (hand_counter == 3) {
-                    hand_tracker = "third";
-                }
-                else if (hand_counter == 4) {
-                    hand_tracker = "fourth";
-                }
-                else if (hand_counter == 5) {
-                    hand_tracker = "fifth";
-                }
-                else {}
-                current_hand.ShowHand("final " + hand_tracker);
-            }
+        if (playerHands.size() > 1) {
+            std::cout << std::endl << playerHands.at(0).GetDisplayName() << " has busted on all of their hands. " << dealerHand.GetDisplayName() << " does not need to play their hand." << std::endl; time_sleep(1000);
         }
-        // Display the singular hand of the player
         else {
-            playerHands.at(0).ShowHand("final");
+            std::cout << std::endl << playerHands.at(0).GetDisplayName() << " has busted on their hand. " << dealerHand.GetDisplayName() << " does not need to play their hand." << std::endl; time_sleep(1000);
         }
-        // Show the final hand of the dealer
-        dealerHand.ShowHand("final", "show");
     }
     else {}
     // Return the dealer hand and the modified shoe
     return std::make_tuple(dealerHand, shoe);
+}
+
+/*  hand_comparison_logic - Compares the hand of a player to that of the dealer and determines if they push, win, or lose
+*   Input:
+*       playerHand - Hand object that is passed by reference that represents the current hand that is being examined
+*       dealerHand - Hand object that is passed by reference that represents the dealers hand that is being examined against for the players hand
+*       playerHandCount - Integer value that is passed by reference that represents the number of hands that player has
+*       currentHandCounter - Integer value that represents the current hand of the total hands of a player that is being examined
+*   Algorithm:
+*       * Create a "hand_tracker" string value that keeps track of the current hand that is being examined
+*       * Check to first see if players current hand is less than or equal to 21
+*           * If it is less than or equal to 21, check to see if the players hand is equal to that of the dealers
+*               * If it is, then update the players bank so that it is a push for the player
+*               * Show the final hand of the player (or current hand if multiple) and output a message showing the result of the hand
+*           * Check to see if the dealers hand is greater than the players and less than or equal to 21
+*               * If it is, then update the players bank so that it is a loss for the player
+*               * Show the final hand of the player (or current hand if multiple) and output a message showing the result of the hand
+*           * Check to see if the players hand is greater than that of the dealers
+*               * If it is, then update the players bank so that it is a win for the player
+*               * Show the final hand of the player (or current hand if multiple) and output a message showing the result of the hand
+*       * Check to see if the players current hand is greater than 21
+*           * If it is, then update the players bank so that it is a loss for the player
+*           * Show the final hand of the player (or current hand if multiple) and output a message showing the result of the hand
+*       * Update the stat tracking for the current hand of the player
+*       * Return the player hand and dealer hand
+*   Output:
+*       playerHand - Hand object that represents the updated player hand after the function is done executing
+*       dealerHand - Hand object that represents the dealers hand after the function is done executing
+*/
+std::tuple<Hand, Hand> hand_comparison_logic(Hand& playerHand, Hand& dealerHand, int& playerHandCount, int& currentHandCounter) {
+    // Keep track of the number of hands of a player
+    std::string hand_tracker;
+    bool multiple_hands = false;
+    if (playerHandCount > 1) {
+        multiple_hands = true;
+        if (currentHandCounter == 1) {
+            hand_tracker = "first";
+        }
+        else if (currentHandCounter == 2) {
+            hand_tracker = "second";
+        }
+        else if (currentHandCounter == 3) {
+            hand_tracker = "third";
+        }
+        else if (currentHandCounter == 4) {
+            hand_tracker = "fourth";
+        }
+        else if (currentHandCounter == 5) {
+            hand_tracker = "fifth";
+        }
+        else {
+            hand_tracker.clear();
+        }
+    }
+    else {}
+    // Player has a hand total of less than or equal to 21
+    if (playerHand.GetCardsTotal() <= 21) {
+        // Player and dealer have the same hand total
+        if (playerHand.GetCardsTotal() == dealerHand.GetCardsTotal()) {
+            // Player pushes their current hand
+            playerHand.UpdateBank(3, playerHand.GetWager());
+            // Player has a singular hand, show their hand
+            if (!multiple_hands) { 
+                std::cout << "Both players have the same final value of " << playerHand.GetDisplayCardsTotal() << "." << std::endl; time_sleep(1000);
+                std::cout << std::endl << "The final hands of each player are:" << std::endl; time_sleep(1000);
+                playerHand.ShowHand("final");
+            }
+            // Player has multiple hands, show the current hand
+            else if (multiple_hands) {
+                std::cout << "Both players have the same final value of " << playerHand.GetDisplayCardsTotal() << " for hand " << std::to_string(currentHandCounter) << ". " << std::endl; time_sleep(1000);
+                std::cout << std::endl << "The final hands of each player for hand " << std::to_string(currentHandCounter) << " are:" << std::endl; time_sleep(1000);
+                playerHand.ShowHand("final " + hand_tracker);
+            }
+            else {} 
+            // Show the dealers final hand
+            dealerHand.ShowHand("final", "show");
+            // Tell the user the result of their singular hand
+            if (!multiple_hands) {
+                std::cout << std::endl << "This hand is a push. " << playerHand.GetDisplayName() << " nets " << playerHand.GetDisplayNet() << " this hand." << std::endl; time_sleep(1000);
+            }
+            // Tell the user the result of their current hand
+            else if (multiple_hands) {
+                std::cout << std::endl << "Hand " << std::to_string(currentHandCounter) << " is a push. " << playerHand.GetDisplayName() << " nets " << playerHand.GetDisplayNet()
+                << " for hand " << std::to_string(currentHandCounter) << "." << std::endl << std::endl; time_sleep(1000);
+            }
+            else {}
+        }
+        // Dealer wins
+        else if (dealerHand.GetCardsTotal() > playerHand.GetCardsTotal() && dealerHand.GetCardsTotal() <= 21) {
+            // Player loses their current hand
+            playerHand.UpdateBank(2, playerHand.GetWager());
+            // Player has a singular hand, show their hand
+            if (!multiple_hands) {
+                std::cout << dealerHand.GetDisplayName() << " has a greater final value of " << dealerHand.GetDisplayCardsTotal() << " compared to " << playerHand.GetDisplayName() << "'s final value of " 
+                << playerHand.GetDisplayCardsTotal() << "." << std::endl; time_sleep(1000);
+                std::cout << std::endl << "The final hands of each player are:" << std::endl; time_sleep(1000);
+                playerHand.ShowHand("final");
+            }
+            // Player has multiple hands, show their current hand
+            else if (multiple_hands) {
+                std::cout << dealerHand.GetDisplayName() << " has a greater final value of " << dealerHand.GetDisplayCardsTotal() << " for hand " << std::to_string(currentHandCounter) << " compared to " 
+                << playerHand.GetDisplayName() << "'s final value of " << playerHand.GetDisplayCardsTotal() << "." << std::endl; time_sleep(1000);
+                std::cout << std::endl << "The final hands of each player for hand " << std::to_string(currentHandCounter) << " are:" << std::endl; time_sleep(1000);
+                playerHand.ShowHand("final " + hand_tracker);
+            }
+            else {}
+            // Show the dealers hand
+            dealerHand.ShowHand("final", "show");
+            // Tell the user the result of their singular hand
+            if (!multiple_hands) {
+                std::cout << std::endl << playerHand.GetDisplayName() << " loses the current hand. " << playerHand.GetDisplayName() << " nets " << playerHand.GetDisplayNet() << " this hand." << std::endl; time_sleep(1000);
+            }
+            // Tell the user the result of their current hand
+            else if (multiple_hands) {
+                std::cout << std::endl << playerHand.GetDisplayName() << " loses hand " << std::to_string(currentHandCounter) << ". " << playerHand.GetDisplayName() << " nets " << playerHand.GetDisplayNet()
+                << " for hand " << std::to_string(currentHandCounter) << "." << std::endl << std::endl; time_sleep(1000);
+            }
+            else {}
+        }
+        // Player wins
+        else if (dealerHand.GetCardsTotal() < playerHand.GetCardsTotal()) {
+            // Player wins their current hand
+            playerHand.UpdateBank(1, playerHand.GetWager());
+            // Player has a singular hand, show their hand
+            if (!multiple_hands) {
+                std::cout << playerHand.GetDisplayName() << " has a greater final value of " << playerHand.GetDisplayCardsTotal() << " compared to " << dealerHand.GetDisplayName() << "'s final value of " 
+                << dealerHand.GetDisplayCardsTotal() << "." << std::endl; time_sleep(1000);
+                std::cout << std::endl << "The final hands of each player are:" << std::endl; time_sleep(1000);
+                playerHand.ShowHand("final");
+            }
+            // Player has multiple hands, show their current hand
+            else if (multiple_hands) {
+                std::cout << playerHand.GetDisplayName() << " has a greater final value of " << playerHand.GetDisplayCardsTotal() << " for hand " << std::to_string(currentHandCounter) << " compared to " 
+                << dealerHand.GetDisplayName() << "'s final value of " << dealerHand.GetDisplayCardsTotal() << "." << std::endl; time_sleep(1000);
+                std::cout << std::endl << "The final hands of each player for hand " << std::to_string(currentHandCounter) << " are:" << std::endl; time_sleep(1000);
+                playerHand.ShowHand("final " + hand_tracker);
+            }
+            else {}
+            // Show the dealers hand
+            dealerHand.ShowHand("final", "show");
+            // Tell the user the result of their singular hand
+            if (!multiple_hands) {
+                std::cout << std::endl << playerHand.GetDisplayName() << " wins the current hand. " << playerHand.GetDisplayName() << " nets " << playerHand.GetDisplayNet() << " this hand." << std::endl; time_sleep(1000);
+            }
+            // Tell the user the result of their current hand
+            else if (multiple_hands) {
+                std::cout << std::endl << playerHand.GetDisplayName() << " wins hand " << std::to_string(currentHandCounter) << ". " << playerHand.GetDisplayName() << " nets " << playerHand.GetDisplayNet()
+                << " for hand " << std::to_string(currentHandCounter) << "." << std::endl << std::endl; time_sleep(1000);
+            }
+            else {}
+        }
+        // Dealer has busted on their current hand
+        else if (dealerHand.GetCardsTotal() > 21) {
+            // Player wins their current hand
+            playerHand.UpdateBank(1, playerHand.GetWager());
+            // Player has a singular hand, show their hand
+            if (!multiple_hands) {
+                std::cout << dealerHand.GetDisplayName() << " has busted with a final value of " << dealerHand.GetDisplayCardsTotal() << "." << std::endl; time_sleep(1000);
+                std::cout << std::endl << "The final hands of each player for the current hand are:" << std::endl; time_sleep(1000);
+                playerHand.ShowHand("final");
+            }
+            // Player has multiple hands, show their current hand
+            else if (multiple_hands) {
+                std::cout << dealerHand.GetDisplayName() << " has busted with a final value of " << dealerHand.GetDisplayCardsTotal() << "." << std::endl; time_sleep(1000);
+                std::cout << std::endl << "The final hands of each player for hand " << std::to_string(currentHandCounter) << " are:" << std::endl; time_sleep(1000);
+                playerHand.ShowHand("final " + hand_tracker);
+            }
+            else {}
+            // Show the dealers hand
+            dealerHand.ShowHand("final", "show");
+            // Tell the user the result of their singular hand
+            if (!multiple_hands) {
+                std::cout << std::endl << playerHand.GetDisplayName() << " wins the current hand. " << playerHand.GetDisplayName() << " nets " << playerHand.GetDisplayNet() << " this hand." << std::endl; time_sleep(1000);
+            }
+            // Tell the user the result of their current hand
+            else if (multiple_hands) {
+                std::cout << std::endl << playerHand.GetDisplayName() << " wins hand " << std::to_string(currentHandCounter) << ". " << playerHand.GetDisplayName() << " nets " << playerHand.GetDisplayNet()
+                << " for hand " << std::to_string(currentHandCounter) << "." << std::endl; time_sleep(1000);
+            }
+            else {}
+        }
+        else {}
+    }
+    // Player has busted on their current hand
+    else if (playerHand.GetCardsTotal() > 21) {
+        // Player loses on their current hand
+        playerHand.UpdateBank(2, playerHand.GetWager());
+        // Player has a singular hand, show their hand
+        if (!multiple_hands) {
+            std::cout << std::endl << "The final hands of each player for the current hand are:" << std::endl; time_sleep(1000);
+            playerHand.ShowHand("final");
+        }
+        // Player has multiple hands, show their current hand
+        else if (multiple_hands) {
+            std::cout << std::endl << "The final hands of each player for hand " << std::to_string(currentHandCounter) << " are:" << std::endl; time_sleep(1000);
+            playerHand.ShowHand("final" + hand_tracker);
+        }
+        else {}
+        // Show the dealers hand
+        dealerHand.ShowHand("final", "show");
+        // Tell the user the result of their singular hand
+        if (!multiple_hands) {
+            std::cout << std::endl << playerHand.GetDisplayName() << " loses the current hand. " << playerHand.GetDisplayName() << " nets " << playerHand.GetDisplayNet() << " this hand." << std::endl; time_sleep(1000);
+        }
+        // Tell the user the result of their current hand
+        else if (multiple_hands) {
+            std::cout << std::endl << playerHand.GetDisplayName() << " loses hand " << std::to_string(currentHandCounter) << ". " << playerHand.GetDisplayName() << " nets " << playerHand.GetDisplayNet()
+            << " for hand " << std::to_string(currentHandCounter) << "." << std::endl; time_sleep(1000);
+        }
+        else {}
+    }
+    else {}
+    // Update the stats of the current hand for the player
+    // update_stats(playerHand);
+    // Return the player hand, dealer hand, and the shoe
+    return std::make_tuple(playerHand, dealerHand);
 }
 
 void test_game() {
@@ -1103,30 +1225,6 @@ void test_game() {
     Shoe testShoe;
     testShoe.SetNumOfDecks(1);
     testShoe.CreateShoe();
-    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
-    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
-    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
-    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
-    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
-    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
-    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
-    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
-    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
-    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
-    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
-    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
-    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
-    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
-    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
-    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
-    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
-    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
-    testShoe.SetRiggedCards(Card(Ranks[11], Suits[0]));
-    testShoe.SetRiggedCards(Card(Ranks[11], Suits[0]));
-    testShoe.SetRiggedCards(Card(Ranks[5], Suits[0]));
-    testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
-    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
-    testShoe.SetRiggedCards(Card(Ranks[12], Suits[0]));
     playerTest.SetName("Player 1");
     dealerTest.SetName("Dealer");
     playerTest.SetBankTotal(100);
@@ -1145,10 +1243,19 @@ void test_game() {
         }
         std::reverse(playerHandsPL.begin(), playerHandsPL.end());
         auto dealerHandLogic = dealer_hand_logic(playerHandsPL, dealerTest, testShoe);
+        int current_hand_counter = 1;
+        int totalHands = playerHandsPL.size();
+        std::vector<Hand> playerHandsHCL;
+        int test = 0;
+        for (Hand& current_hand : playerHandsPL) {
+            test++;
+            auto handComparisonLogic = hand_comparison_logic(current_hand, dealerTest, totalHands, current_hand_counter);
+            playerTest = std::get<0>(handComparisonLogic);
+            dealerTest = std::get<1>(handComparisonLogic);
+            current_hand_counter++;
+        }
     }
     else {
 
     }
 }
-
-// Finish dealer hand logic
