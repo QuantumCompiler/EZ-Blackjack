@@ -6,8 +6,8 @@
 *   2 - dealer_showing_ace
 *   3 - split_hand
 *   4 - same_rank_check
-*   5 - player_hand_logic
-*   6 - dealer_hand_logic
+*   5 - player_logic
+*   6 - dealer_logic
 *   7 - hand_comparison_logic
 *   8 - game_logic
 *   9 - play_game
@@ -156,12 +156,7 @@ std::tuple<Hand, Hand, Shoe, bool> dealer_showing_ace(Hand& playerHand, Hand& de
                 std::cout << std::endl << "Neither player has blackjack. " << playerHand.GetDisplayName() << " loses their insurance wager. The hand will continue." << std::endl << std::endl;
                 playerHand.UpdateBank(2, playerHand.GetInsuranceWager());
             }
-            else {
-                std::cout << std::endl << "Neither player has blackjack. The hand will continue." << std::endl << std::endl; time_sleep(1000);
-            }
-            std::cout << "Here are the current hands of the players:" << std::endl; time_sleep(1000);
-            playerHand.ShowHand("initial");
-            dealerHand.ShowHand("initial");
+            else {}
             hand_continue = true;
         }
     }
@@ -213,12 +208,12 @@ std::tuple<Hand, Hand, Shoe, bool> dealer_showing_ace(Hand& playerHand, Hand& de
         }
         // Neither player has blackjack, hand continues
         else {
-            std::cout << std::endl << "Neither player has blackjack. The hand will continue." << std::endl << std::endl; time_sleep(1000);
-            std::cout << "Here are the current hands of the players:" << std::endl; time_sleep(1000);
-            playerHand.ShowHand("initial");
-            dealerHand.ShowHand("initial");
             hand_continue = true;
         }
+    }
+    if (!hand_continue) {
+        playerHand.ResetHand();
+        dealerHand.ResetHand();
     }
     return std::make_tuple(playerHand, dealerHand, inputShoe, hand_continue);
 }
@@ -284,7 +279,7 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
                 if (aces_response == "y") {
                     playerHand.SetChoseSplitAces(true);
                     playerHand.SetSplitAcesResponse(true);
-                    std::cout << playerHand.GetDisplayName() << " has chosen to split their " << playerHand.GetCards().at(0).GetDisplayRank() << "'s." << std::endl; time_sleep(3000);
+                    std::cout << playerHand.GetDisplayName() << " has chosen to split their " << playerHand.GetCards().at(0).GetDisplayRank() << "'s." << std::endl; time_sleep(1000);
                     std::cout << std::endl << "Here are the current hands of both players: " << std::endl; time_sleep(1000);
                     std::vector<Hand> split_aces = split_hand(playerHand);
                     Hand player_hand_1 = split_aces.at(0);
@@ -342,7 +337,7 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
                 if (same_rank_response == "y") {
                     playerHand.SetChoseSplitHand(true);
                     playerHand.SetSplitHandResponse(true);
-                    std::cout << playerHand.GetDisplayName() << " has chosen to split their " << playerHand.GetCards().at(0).GetDisplayRank() << "'s." << std::endl; time_sleep(3000);
+                    std::cout << playerHand.GetDisplayName() << " has chosen to split their " << playerHand.GetCards().at(0).GetDisplayRank() << "'s." << std::endl; time_sleep(1000);
                     std::cout << std::endl << "Here are the current hands of both players: " << std::endl; time_sleep(1000);
                     std::vector<Hand> splitHand = split_hand(playerHand);
                     std::vector<Hand> splitHands;
@@ -467,8 +462,8 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
                                         }
                                         current_hand.ShowHand(hand_tracker);
                                         loop_counter++;
-                                        dealerHand.ShowHand();
                                     }
+                                    dealerHand.ShowHand();
                                     break;
                                 }
                                 else {}
@@ -480,12 +475,12 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
                                 if (!checkingHand.GetCanSplitHand()) {
                                     // Player doesn't have the currency to split their hand again
                                     if (checkingHand.GetBankTotal() < checkingHand.GetWager()) {
-                                        std::cout << std::endl << "You pulled the same rank of " << checkingHand.GetCards().at(0).GetDisplayRank() << " again but you do not have enough currency to continue splitting. You can no longer split your hands." << std::endl; time_sleep(1000);
+                                        std::cout << "You pulled the same rank of " << checkingHand.GetCards().at(0).GetDisplayRank() << " again but you do not have enough currency to continue splitting. You can no longer split your hands." << std::endl; time_sleep(1000);
                                         std::cout << std::endl << "Total times split: " << color_text(31, std::to_string(split_counter)) << ". The current hands of each player are:" << std::endl; time_sleep(1000);
                                     }
                                     // Player did not pull the same rank again
                                     else if (!checkingHand.GetSameParamInHand()) {
-                                        std::cout << std::endl << "You did not pull the same rank of " << checkingHand.GetCards().at(0).GetDisplayRank() << " again. You can no longer split your hands." << std::endl; time_sleep(1000);
+                                        std::cout << "You did not pull the same rank of " << checkingHand.GetCards().at(0).GetDisplayRank() << " again. You can no longer split your hands." << std::endl; time_sleep(1000);
                                         std::cout << std::endl << "Total times split: " << color_text(31, std::to_string(split_counter)) << ". The current hands of each player are:" << std::endl; time_sleep(1000);
                                     }
                                     else {}
@@ -624,7 +619,7 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
     return std::make_tuple(new_hand, playerHand, dealerHand, shoe, hand_count);
 }
 
-/*  player_hand_logic - Processes the possible options of what a player can do on their current hand
+/*  player_logic - Processes the possible options of what a player can do on their current hand
 *   Input:
 *       currentPlayerHand - Hand object that is passed by reference to be the current hand that is being played with
 *       dealerHand - Hand object that is passed by reference that resembles the dealers hand
@@ -646,7 +641,7 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
 *       dealerHand - Returns the dealers hand
 *       shoe - Returns the modified shoe object that is being used for the players to play with
 */
-std::tuple<Hand, Hand, Shoe> player_hand_logic(Hand& currentPlayerHand, Hand& dealerHand, Hand& masterPlayerHand, Shoe& shoe, int& hand_counter) {
+std::tuple<Hand, Hand, Shoe> player_logic(Hand& currentPlayerHand, Hand& dealerHand, Hand& masterPlayerHand, Shoe& shoe, int& hand_counter) {
     // Check the parameters of the given hand
     currentPlayerHand.ParametersCheck(currentPlayerHand, dealerHand);
     // Player did not split Aces
@@ -920,7 +915,7 @@ std::tuple<Hand, Hand, Shoe> player_hand_logic(Hand& currentPlayerHand, Hand& de
     return std::make_tuple(currentPlayerHand, dealerHand, shoe);
 }
 
-/*  dealer_hand_logic - Processes the logic for how the dealer should play their current hands
+/*  dealer_logic - Processes the logic for how the dealer should play their current hands
 *   Input:
 *       playerHands - Vector of Hand objects that are passed by reference that represent all of the hands of a player
 *       dealerHand - Hand object passed by reference that represents the dealers hand
@@ -940,7 +935,7 @@ std::tuple<Hand, Hand, Shoe> player_hand_logic(Hand& currentPlayerHand, Hand& de
 *       dealerHand - Hand object that represents the modified hand of the dealer after being played with
 *       shoe - Shoe object that represents the modified shoe in the game
 */
-std::tuple<Hand, Shoe> dealer_hand_logic(std::vector<Hand>& playerHands, Hand& dealerHand, Shoe& shoe) {
+std::tuple<Hand, Shoe> dealer_logic(std::vector<Hand>& playerHands, Hand& dealerHand, Shoe& shoe) {
     // Check the parameters of the dealers hand
     dealerHand.ParametersCheck(dealerHand, dealerHand);
     // Check if all hands of the player are over 21
@@ -1219,6 +1214,170 @@ std::tuple<Hand, Hand> hand_comparison_logic(Hand& playerHand, Hand& dealerHand,
     return std::make_tuple(playerHand, dealerHand);
 }
 
+/*  game_logic - Processes the logic required for a single hand of blackjack amongst players and dealer
+*   Input:
+*       playerHand - Hand object that is passed by reference that represents the users hand that is being played with
+*       dealerHand - Hand object that is passed by reference that represents the dealers hand that is being played with
+*       shoe - Shoe object that is passed by reference that represents the game shoe that is being played with
+*   Algorithm:
+*       * Process the dealer_showing_ace function and return its values
+*       * Determine if the hand must continue after dealer_showing_ace
+*           * If it continues, process the following functions: same_rank_check, player_logic, dealer_logic, hand_comparison_logic
+*           * If it does not continue, proceed to return the objects that have been modified
+*       * Return the playerHand, dealerHand, and shoe objects
+*   Output:
+*       playerHand - Hand object that represents the modified hand object that represents the player after a hand has been played
+*       dealerHand - Hand object that represents the modified hand object that represents the dealer after a hand has been played
+*       shoe - Shoe object that represents the game shoe that represents the shoe after a hand has been played
+*/
+std::tuple<Hand, Hand, Shoe> hand_logic(Hand& playerHand, Hand& dealerHand, Shoe& shoe) {
+    // Process the dealer_showing_ace function
+    auto dealerAce = dealer_showing_ace(playerHand, dealerHand, shoe);
+    // If neither player has blackjack, continue
+    if (std::get<3>(dealerAce)) {
+        // Process the same_rank_check function
+        auto sameRank = same_rank_check(std::get<0>(dealerAce), std::get<1>(dealerAce), std::get<2>(dealerAce));
+        int hand_counter = 0;
+        std::vector<Hand> playerHandsPL;
+        // Iterate over all hands of the user and process the player_logic function
+        for (Hand& current_hand : std::get<0>(sameRank)) {
+            hand_counter++;
+            auto playerHandLogic = player_logic(current_hand, std::get<2>(sameRank), std::get<1>(sameRank), std::get<3>(sameRank), hand_counter);
+            playerHandsPL.insert(playerHandsPL.begin(), std::get<0>(playerHandLogic));
+            playerHand = std::get<0>(playerHandLogic);
+            dealerHand = std::get<1>(playerHandLogic);
+            shoe = std::get<2>(playerHandLogic);
+        }
+        std::reverse(playerHandsPL.begin(), playerHandsPL.end());
+        // Process the dealer_logic function
+        auto dealerHandLogic = dealer_logic(playerHandsPL, dealerHand, shoe);
+        shoe = std::get<1>(dealerHandLogic);
+        int current_hand_counter = 1;
+        int totalHands = playerHandsPL.size();
+        std::vector<Hand> playerHandsHCL;
+        // Iterate over all hands of the user and process the hand_comparison_logic function
+        for (Hand& current_hand : playerHandsPL) {
+            current_hand.CopyVariables(playerHand);
+            auto handComparisonLogic = hand_comparison_logic(current_hand, dealerHand, totalHands, current_hand_counter);
+            playerHand = std::get<0>(handComparisonLogic);
+            dealerHand = std::get<1>(handComparisonLogic);
+            playerHandsHCL.insert(playerHandsHCL.begin(), std::get<0>(handComparisonLogic));
+            current_hand_counter++;
+        }
+        // Reset all individual hands 
+        for (Hand& current_hand : playerHandsHCL) {
+            current_hand.ResetHand();
+        }
+        playerHand.ResetHand();
+        dealerHand.ResetHand();
+    }
+    // If a player has blackjack return the player and dealer hand along with the game shoe
+    else {}
+    // Return the player and dealer hand and the game shoe
+    return std::make_tuple(playerHand, dealerHand, shoe);
+}
+
+void play_game() {
+    clear_terminal();
+    // Create Hand objects
+    Hand humanHand;
+    Hand dealerHand;
+    // Set the names of the players
+    dealerHand.SetName("Dealer");
+    humanHand.NamePrompt();
+    // Deposit currency for users
+    humanHand.BankDeposit();
+    // Create Shoe object
+    Shoe gameShoe;
+    gameShoe.CreateShoe();
+    // Play game while the cards in the shoe is greater than 13 and the users bank total is greater than 0
+    while (gameShoe.GetCardsInShoe().size() >= 13 && humanHand.GetBankTotal() > 0) {
+        auto gameLogic = hand_logic(humanHand, dealerHand, gameShoe);
+        humanHand.CopyVariables(std::get<0>(gameLogic));
+        dealerHand.CopyVariables(std::get<1>(gameLogic));
+        gameShoe = std::get<2>(gameLogic);
+        bool continue_playing = false;
+        if (humanHand.GetBankTotal() > 0) {
+            std::string cont_play;
+            while (true) {
+                std::cout << std::endl << "Would you like to continue playing? (y/n): "; time_sleep(1000);
+                std::cin >> cont_play; time_sleep(1000);
+                if (cont_play == "y") {
+                    if (gameShoe.GetCardsInShoe().size() >= 13) {
+                        std::cout << std::endl << gameShoe.GetCardsInShoe().size() << " cards left in shoe." << std::endl; time_sleep(1000);
+                        std::cout << std::endl << "Dealing new hands." << std::endl; time_sleep(3000);
+                        clear_terminal();
+                        break;
+                    }
+                    else {
+                        std::cout << std::endl << gameShoe.GetCardsInShoe().size() << " cards left in shoe." << std::endl; time_sleep(1000);
+                        std::cout << std::endl << "Shuffling a new shoe." << std::endl; time_sleep(3000);
+                        gameShoe.GetCardsInShoe().clear();
+                        gameShoe.SetNumOfDecks(gameShoe.GetNumOfDecks());
+                        gameShoe.CreateShoe();
+                        clear_terminal();
+                        break;
+                    }
+                }
+                else if (cont_play == "n") {
+                    std::cout << std::endl << humanHand.GetDisplayName() << " has chosen to quit playing. Final bank total: " << humanHand.GetDisplayBankTotal() << std::endl; time_sleep(1000);
+                    std::cout << std::endl << "Thank you for playing " << humanHand.GetDisplayName() << "!" << std::endl; time_sleep(3000);
+                    clear_terminal();
+                    break;
+                }
+                else {
+                    clear_terminal();
+                    cont_play.clear();
+                    continue;
+                }
+            }
+            if (cont_play == "y") {
+                continue_playing = true;
+            }
+            else {
+                cont_play = false;
+            }
+        }
+        else {
+            std::string redeposit;
+            std::cout << std::endl << humanHand.GetDisplayName() << " has run out of currency in their bank." << std::endl; time_sleep(1000);
+            while (true) {
+                std::cout << std::endl << "Would you like to deposit more currency into your bank? (y/n): "; time_sleep(1000);
+                std::cin >> redeposit; time_sleep(1000);
+                if (redeposit == "y") {
+                    humanHand.BankDeposit(); time_sleep(3000);
+                    clear_terminal();
+                    break;
+                }
+                else if (redeposit == "n") {
+                    std::cout << humanHand.GetDisplayName() << " has chosen to not redeposit more currency into their bank. Game over." << std::endl; time_sleep(1000);
+                    std::cout << std::endl << "Thank you for playing " << humanHand.GetDisplayName() << "!" << std::endl; time_sleep(3000);
+                    clear_terminal();
+                    break;
+                }
+                else {
+                    clear_terminal();
+                    redeposit.clear();
+                    continue;;
+                }
+            }
+            if (redeposit == "y") {
+                continue_playing = true;
+            }
+            else {
+                continue_playing = false;
+            }
+        }
+        if (!continue_playing) {
+            break;
+        }
+        else {
+            continue;
+        }
+    }
+    // csv_stats(playerHand);
+}
+
 void test_game() {
     Hand playerTest;
     Hand dealerTest;
@@ -1228,34 +1387,7 @@ void test_game() {
     playerTest.SetName("Player 1");
     dealerTest.SetName("Dealer");
     playerTest.SetBankTotal(100);
-    auto dealerAce = dealer_showing_ace(playerTest, dealerTest, testShoe);
-    if (std::get<3>(dealerAce)) {
-        auto sameRank = same_rank_check(std::get<0>(dealerAce), std::get<1>(dealerAce), std::get<2>(dealerAce));
-        int hand_counter = 0;
-        std::vector<Hand> playerHandsPL;
-        for (Hand& current_hand : std::get<0>(sameRank)) {
-            hand_counter++;
-            auto playerHandLogic = player_hand_logic(current_hand, std::get<2>(sameRank), std::get<1>(sameRank), std::get<3>(sameRank), hand_counter);
-            playerHandsPL.insert(playerHandsPL.begin(), std::get<0>(playerHandLogic));
-            playerTest = std::get<0>(playerHandLogic);
-            dealerTest = std::get<1>(playerHandLogic);
-            testShoe = std::get<2>(playerHandLogic);
-        }
-        std::reverse(playerHandsPL.begin(), playerHandsPL.end());
-        auto dealerHandLogic = dealer_hand_logic(playerHandsPL, dealerTest, testShoe);
-        int current_hand_counter = 1;
-        int totalHands = playerHandsPL.size();
-        std::vector<Hand> playerHandsHCL;
-        int test = 0;
-        for (Hand& current_hand : playerHandsPL) {
-            test++;
-            auto handComparisonLogic = hand_comparison_logic(current_hand, dealerTest, totalHands, current_hand_counter);
-            playerTest = std::get<0>(handComparisonLogic);
-            dealerTest = std::get<1>(handComparisonLogic);
-            current_hand_counter++;
-        }
-    }
-    else {
-
-    }
+    hand_logic(playerTest, dealerTest, testShoe);
 }
+
+// Finish comments of play game
