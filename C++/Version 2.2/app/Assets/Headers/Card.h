@@ -29,18 +29,18 @@ public:
         return os;
     }
     // Setter Functions
+    void SetCardValue(PlayingCard& inputCard);
     void SetDisplayRank(PlayingCard& inputCard);
     void SetDisplaySuit(PlayingCard& inputCard);
     void SetDisplayCardValue(PlayingCard& inputCard);
-    void SetCardValue(PlayingCard& inputCard);
     void SetNewCardValue(const int input);
     // Getter Functions
-    std::string GetDisplayRank() const;
-    std::string GetRank() const;
-    std::string GetDisplaySuit() const;
-    std::string GetSuit() const;
-    std::string GetDisplayCardValue() const;
     int GetCardValue() const;
+    std::string GetDisplayRank() const;
+    std::string GetDisplaySuit() const;
+    std::string GetDisplayCardValue() const;
+    std::string GetRank() const;
+    std::string GetSuit() const;
 private:
     PlayingCard card;
 };

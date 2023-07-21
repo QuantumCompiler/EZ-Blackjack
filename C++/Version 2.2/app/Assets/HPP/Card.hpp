@@ -58,23 +58,26 @@ void Card::SetDisplayRank(PlayingCard& inputCard) {
 *       This function does not return a value
 */
 void Card::SetDisplaySuit(PlayingCard& inputCard) {
+    // Iterate through all possible suits of cards
     for (int i = 0; i < 4; i++) {
         if (CheckCardParam(inputCard.suit, Suits[i])) {
             switch (i) {
+            // Set the color to purple for Clubs and Spades
             case 0:
             case 3:
                 card.displaySuit = color_text(35, inputCard.suit);
                 break;
+            // Set the color to red for Diamonds and Hearts
             case 1:
             case 2:
                 card.displaySuit = color_text(31, inputCard.suit);
                 break;
+            // Default to white for all other suits
             default:
                 card.displaySuit = color_text(37, inputCard.suit);
                 break;
             }
         }
-        else {}
     }
 }
 
@@ -96,19 +99,21 @@ void Card::SetDisplayCardValue(PlayingCard& inputCard) {
 *   Algorithm:
 *       * Function checks for what rank a card is:
 *           * Ace: Card value is defaulted to a value of (11) - This can be mutated with another function
-*           * (2,3,4,5,6,7,8,9): Card value is defaulted to the integer value of the card
-*           * (10,Jack,Queen,King): Card value is defaulted to a value of (10)
+*           * (2,3,4,5,6,7,8,9,10): Card value is defaulted to the integer value of the card
+*           * (Jack,Queen,King): Card value is defaulted to a value of (10)
 *   Output:
 *       This function does not return a value
 */
 void Card::SetCardValue(PlayingCard& inputCard) {
+    // Iterate through all possible ranks of cards
     for (int i = 0; i < 13; i++) {
         if (CheckCardParam(inputCard.rank, Ranks[i])) {
-            switch (i)
-            {
+            switch (i) {
+            // Set the default value of an Ace to 11
             case 0:
                 card.cardValue = 11;
                 break;
+            // Set the value of 2 through 9 to their respective rank
             case 1:
             case 2:
             case 3:
@@ -117,9 +122,10 @@ void Card::SetCardValue(PlayingCard& inputCard) {
             case 6:
             case 7:
             case 8:
+            case 9:
                 card.cardValue = std::stoi(Ranks[i]);
                 break;
-            case 9:
+            // Set the value of Jack, Queen, and King to 10
             case 10:
             case 11:
             case 12:
@@ -128,7 +134,6 @@ void Card::SetCardValue(PlayingCard& inputCard) {
                 break;
             }
         }
-        else {}
     }
 }
 
