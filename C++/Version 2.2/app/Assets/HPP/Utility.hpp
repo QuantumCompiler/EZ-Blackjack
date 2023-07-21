@@ -38,7 +38,7 @@ void clear_terminal() {
 *       The function returns the string combination of "code + textInput + "\033[0m""
 *           code is what is changed to according to codeInput
 *           textInput is the string parameter that is fed into the function to be colored
-*           \033[0m" is the edning of the unicode phrase to change the output in console
+*           \033[0m" is the ending of the unicode phrase to change the output in console
 */
 std::string color_text(const int codeInput, const std::string textInput) {
     std::string code;
@@ -108,9 +108,9 @@ float round_input(float input) {
 */
 void time_sleep(const long input) {
     long time = input;
-    if (input > 0) {
-        time = 0;
-    }
+    // if (input == 1000) {
+    //     time = 0;
+    // }
     std::this_thread::sleep_for(std::chrono::milliseconds(time));
 }
 
