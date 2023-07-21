@@ -1,6 +1,6 @@
 #include "../Assets/HPP/Core.hpp"
 
-int main() {
+int main() {   
     play_game();
     return 0;
 }
