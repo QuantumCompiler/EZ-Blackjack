@@ -33,16 +33,19 @@ Shoe::Shoe() {
 */
 Shoe& Shoe::CreateShoe() {
     bool needInput = false;
-    if (gameDeck.numOfDecks == 0) {
+    // If "numOfDecks" is greater than zero, no need to prompt for how many decks to play with
+    if (GetNumOfDecks() == 0) {
         needInput = true;
     }
-    else {}
+    // Continue to prompt for the number of decks if it "numOfDecks" has not been set
     while(needInput) {
         int input;
+        // Prompt player for the number of decks that they would like to play with
         std::cout << std::endl << "Please enter the number of decks you would like to play with: "; time_sleep(1000);
         std::cin >> input; time_sleep(1000);
         const std::type_info& result = typeid(input);
         std::string checkResult = result.name();
+        // Check that the result is an integer, if it isn't, require a response again
         if (checkResult != "i") {
             std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(input)) << ". Please re-enter your submission." << std::endl; time_sleep(1000);
             clear_terminal();
@@ -51,7 +54,9 @@ Shoe& Shoe::CreateShoe() {
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             continue;
         }
+        // The result is an integer
         else if (checkResult == "i") {
+            // Result is less than zero, require user to re-enter prompt
             if (input <= 0) {
                 std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(input)) << ". Please re-enter a positive value." << std::endl; time_sleep(1000);
                 clear_terminal();
@@ -60,22 +65,34 @@ Shoe& Shoe::CreateShoe() {
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 continue;
             }
-            else { 
-                gameDeck.numOfDecks = input; 
-                std::cout << std::endl << "This shoe will be comprised of " << color_text(31, std::to_string(input)) << " decks of cards." << std::endl; time_sleep(1000);
+            // Result is a positive integer, set "input" to "numOfDecks"
+            else {
+                SetNumOfDecks(input);
+                // Prompt for multiple decks
+                if (GetNumOfDecks() > 1) {
+                    std::cout << std::endl << "This shoe will be comprised of " << color_text(31, std::to_string(input)) << " decks of cards. " << color_text(31, std::to_string(input * 52))
+                    << " cards total." << std::endl; time_sleep(1000);
+                }
+                // Prompt for singular deck
+                else {
+                    std::cout << std::endl << "This shoe will be comprised of " << color_text(31, std::to_string(input)) << " deck of cards. " << color_text(31, std::to_string(input * 52))
+                    << " cards total." << std::endl; time_sleep(1000);
+                }
                 break;
             }
         }
-        else {}
     }
-    for (int i = 1; i <= gameDeck.numOfDecks; i++) {
+    // Construct the deck of cards
+    for (int i = 1; i <= GetNumOfDecks(); i++) {
         for (const auto& rank : Ranks) {
             for (const auto& suit : Suits) {
                 SetCardsInShoe(Card(rank, suit));
             }
         }
     }
+    // Shuffle the shoe of cards
     this->Shuffle();
+    // Return the shoe of cards
     return *this;
 }
 
@@ -92,133 +109,24 @@ Shoe& Shoe::CreateShoe() {
 *       This function returns a Card object that is pulled from one of two possible vectors
 */
 Card Shoe::Draw() {
+    // Remove card for back of "cardsInShoe"
     if (gameDeck.riggedCards.empty()) {
         Card cardDrawn = gameDeck.cardsInShoe.back();
         gameDeck.cardsInShoe.pop_back();
         return cardDrawn;
     }
+    // Remove card from back of "riggedCards"
     else if (gameDeck.riggedCards.size() > 0) {
         Card cardDrawn = gameDeck.riggedCards.back();
         gameDeck.riggedCards.pop_back();
         return cardDrawn;
     }
+    // Default to removing from "cardsInShoe"
     else {
         Card cardDrawn = gameDeck.cardsInShoe.back();
+        gameDeck.cardsInShoe.pop_back();
         return cardDrawn;
     }
-}
-
-/*  DealCards - This function shows the cards that are presently in the shoe that is being played with
-*   Input:
-*       This function does not have any input parameters
-*   Algorithm:
-*       * We begin by initializing some parameters that will be used in the algorithm
-*           * cardDealt - This is an integer that keeps track of the present card that is being dealt from the shoe
-*           * deckCounter - This is an integer that represents the number of decks that are present in the shoe
-*           * cardsInShoe - This is an integer that represents the number of cards that are in the shoe that is being played with
-*           * riggedCards - This is an integer that represents the number of cards that are in the rigged shoe
-*           * cardDealtDisplay - This is a string that represents the present card that has been dealt from the top of the shoe
-*           * cardsInShoeDisplay - This is a string that represents the number of cards that are in the shoe that are being played with
-*           * riggedCardsDisplay - This is a string that represents the number of cards that are in the rigged shoe
-*           * deckCounterDisplay - This is a string that represents the number of decks that are in the game shoe
-*       * We then check if the number of rigged cards is zero, if it is, then we do the following
-*           * We first remove a card from the "gameDeck.cardsInShoe" vector
-*           * Next we color the display values (cardDealtDisplay, cardsInShoeDisplay) and begin showing the cards that are in the game shoe
-*           * We check to see if the current cardDealt number mods to zero, if it does, we increment deckCounter by one and output a special
-*             console message
-*           * If the current cardDealt number does not mod to zero, then we output a different console message
-*           * We repeat this process until we have reached the end of the game shoe
-*       * If the number of rigged cards is not zero, then we repeat the same process as above but with the rigged cards parameters
-*   Output:
-8       This function does not return a value
-*/
-void Shoe::DealCards() {
-    std::cout << std::endl << "Here are the cards in the shoe:" << std::endl; time_sleep(1000);
-    int cardDealt = 1;
-    int deckCounter = 0;
-    int cardsInShoe = gameDeck.cardsInShoe.size();
-    int riggedCards = gameDeck.riggedCards.size();
-    std::string cardDealtDisplay = color_text(33, std::to_string(cardDealt));
-    std::string cardsInShoeDisplay = color_text(33, std::to_string(gameDeck.cardsInShoe.size()));
-    std::string riggedCardsDisplay = color_text(33, std::to_string(gameDeck.riggedCards.size()));
-    std::string deckCounterDisplay = color_text(33, std::to_string(deckCounter));
-    if (riggedCards == 0) {
-        gameDeck.returnedCards.clear();
-        for (int i = 1; i <= cardsInShoe; i++) {
-            if (i == 1) {
-                std::cout << std::endl << "Dealing the deck(s):" << std::endl << std::endl; time_sleep(1000);
-            }
-            else {}
-            Card drawnCard = Draw();
-            gameDeck.returnedCards.push_back(drawnCard);
-            cardDealtDisplay = color_text(33, std::to_string(cardDealt));
-            cardsInShoeDisplay = color_text(33, std::to_string(gameDeck.cardsInShoe.size()));
-            std::cout << "Card dealt number: " << cardDealtDisplay << " - " << drawnCard << std::endl; time_sleep(50);
-            if (cardDealt % 52 == 0) {
-                deckCounter++;
-                deckCounterDisplay = color_text(33, std::to_string(deckCounter));
-                if (gameDeck.cardsInShoe.size() > 0) {
-                    std::cout << "End of remaining deck " << deckCounterDisplay << ". " << cardDealtDisplay << " cards dealt, " << cardsInShoeDisplay 
-                    << " cards remaining in shoe." << std::endl << std::endl; time_sleep(2000);
-                }
-                else if (gameDeck.cardsInShoe.empty()) {
-                    std::cout << std::endl << "End of shoe. Total cards dealt: " << cardDealtDisplay << "." << std::endl << std::endl; time_sleep(2000);
-                }
-                else {}
-            }
-            else if (cardDealt % 52 != 0) {
-                if (gameDeck.cardsInShoe.empty()) {
-                    std::cout << std::endl << "End of shoe. Total cards dealt: " << cardDealtDisplay << "." << std::endl << std::endl; time_sleep(2000);
-                }
-                else {}
-            }
-            else {}
-            cardDealt += 1;
-        }
-        gameDeck.cardsInShoe = gameDeck.returnedCards;
-        reverse(gameDeck.cardsInShoe.begin(), gameDeck.cardsInShoe.end());
-        cardsInShoeDisplay = color_text(33, std::to_string(gameDeck.cardsInShoe.size()));
-        std::cout << cardsInShoeDisplay << " cards left in shoe." << std::endl; time_sleep(1000);
-    }
-    else if (riggedCards > 0) {
-        gameDeck.returnedCards.clear();
-        for (int i = 1; i <= riggedCards; i++) {
-            if (i == 1) {
-                std::cout << std::endl << "Dealing the rigged deck:" << std::endl << std::endl; time_sleep(1000);
-            }
-            else {}
-            Card drawnCard = Draw();
-            gameDeck.returnedCards.push_back(drawnCard);
-            cardDealtDisplay = color_text(33, std::to_string(cardDealt));
-            riggedCardsDisplay = color_text(33, std::to_string(gameDeck.cardsInShoe.size()));
-            std::cout << "Card dealt number: " << cardDealtDisplay << " - " << drawnCard << std::endl; time_sleep(50);
-            if (cardDealt % 52 == 0) {
-                deckCounter++;
-                deckCounterDisplay = color_text(33, std::to_string(deckCounter));
-                if (gameDeck.riggedCards.size() > 0) {
-                    std::cout << "End of remaining deck " << deckCounterDisplay << ". " << cardDealtDisplay << " cards dealt, " << riggedCardsDisplay 
-                    << " cards remaining in shoe." << std::endl << std::endl; time_sleep(2000);
-                }
-                else if (gameDeck.riggedCards.empty()) {
-                    std::cout << std::endl << "End of shoe." << std::endl << std::endl; time_sleep(2000);
-                }
-                else {}
-            }
-            else if (cardDealt % 52 != 0) {
-                if (gameDeck.riggedCards.empty()) {
-                    std::cout << std::endl << "End of shoe." << std::endl << std::endl; time_sleep(2000);
-                }
-                else {}
-            }
-            else {}
-            cardDealt += 1;
-        }
-        gameDeck.riggedCards = gameDeck.returnedCards;
-        reverse(gameDeck.riggedCards.begin(), gameDeck.riggedCards.end());
-        riggedCardsDisplay = color_text(33, std::to_string(gameDeck.riggedCards.size()));
-        std::cout << riggedCardsDisplay << " cards left in shoe." << std::endl; time_sleep(1000);
-    }
-    else {}
 }
 
 /*  EmptyShoe - Empties the shoe that is in question
@@ -230,7 +138,7 @@ void Shoe::DealCards() {
 *       This function does not return a value, but it modifies the data structure elements
 */
 void Shoe::EmptyShoe() {
-    gameDeck.numOfDecks = 0;
+    // Clear all vectors of cards
     gameDeck.cardsInShoe.clear();
     gameDeck.returnedCards.clear();
     gameDeck.riggedCards.clear();
@@ -247,6 +155,7 @@ void Shoe::EmptyShoe() {
 *       This function does not return a value
 */
 void Shoe::Shuffle() {
+    // Choose random number
     std::random_device random;
     std::mt19937 g(random());
     shuffle(gameDeck.cardsInShoe.begin(), gameDeck.cardsInShoe.end(), g);
@@ -254,11 +163,10 @@ void Shoe::Shuffle() {
 
 // ----- ----- ----- ----- ----- ----- ----- Setter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 
-/*
-*   SetNumOfDecks - Function that sets the private data member "gameDeck.numOfDecks" to the input parameter "input"
+/*  SetNumOfDecks - Function that sets the private data member "gameDeck.numOfDecks" to the input parameter "input"
 *                   to represent the number of decks that will be played with in the game
 *   Input:
-*       input - Integer value that is to be set to the afforementioned private data member of the current Shoe object
+*       input - Integer value that is to be set to the aforementioned private data member of the current Shoe object
 *   Algorithm:
 *       * We set the private data member previously mentioned to the input parameter "input"
 *   Output:
@@ -273,7 +181,7 @@ void Shoe::SetNumOfDecks(const int input) {
 *   Input:
 *       inputCard - Card object that is to be pushed to the back of the private data member "gameDeck.cardsInShoe"
 *   Algorithm:
-*       * We use the "push_back" function to insert the input parameter to the back of the afforementioned private data member
+*       * We use the "push_back" function to insert the input parameter to the back of the aforementioned private data member
 *   Output:
 *       This function does not return a value
 */
@@ -286,7 +194,7 @@ void Shoe::SetCardsInShoe(const Card inputCard) {
 *   Input:
 *       inputCard - Card object that is to be pushed to the back of the private data member "gameDeck.riggedCards"
 *   Algorithm:
-*       * We use the "push_back" function to insert the input parameter to the back of the afforementioned private data member
+*       * We use the "push_back" function to insert the input parameter to the back of the aforementioned private data member
 *   Output:
 *       This function does not return a value
 */

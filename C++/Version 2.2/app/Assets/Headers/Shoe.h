@@ -22,7 +22,6 @@ public:
     // Class Functions
     Shoe& CreateShoe();
     Card Draw();
-    void DealCards();
     void EmptyShoe();
     void Shuffle();
     // Setter Functions
