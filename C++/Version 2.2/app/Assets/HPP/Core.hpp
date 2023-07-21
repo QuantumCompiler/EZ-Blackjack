@@ -1,20 +1,90 @@
 // ----- ----- ----- ----- ----- ----- ----- Includes ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 #include "../Headers/Core.h"
 
-/*  Importance of order implementation
-*   1 - deal_hand
-*   2 - dealer_showing_ace
-*   3 - split_hand
-*   4 - same_rank_check
-*   5 - player_logic
-*   6 - dealer_logic
-*   7 - hand_comparison_logic
-*   8 - game_logic
-*   9 - play_game
-*   10 - update_stats
-*   11 - csv_stats
-*   12 - blackjack_strategy
-*/
+void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
+    // Check the parameters of "playerHand"
+    playerHand.ParametersCheck(playerHand, dealerHand);
+    // Check if "playerHand" has the same rank or if they have an Ace in their hand
+    playerHand.CheckSameParamInHand("R","");
+    playerHand.CheckParamInHand("R", Ranks[0]);
+    // Grabbing the card that is face up for the dealer
+    std::string dealer_showing = dealerHand.GetCards().at(1).GetRank();
+    // Player `should' statements
+    std::string should_double_down = "Blackjack strategy suggests that " + playerHand.GetDisplayName() + " should " + color_text(31, "double down") + ".";
+    std::string should_double_down_or_hit = "Blackjack strategy suggests that " + playerHand.GetDisplayName() + " should " + color_text(31, "hit") + " or " + color_text(31, "double down") + ".";
+    std::string should_double_down_or_stand = "Blackjack strategy suggests that " + playerHand.GetDisplayName() + " should " + color_text(31, "stand") + " or " + color_text(31, "double down") + ".";
+    std::string should_hit = "Blackjack strategy suggests that " + playerHand.GetDisplayName() + " should " + color_text(31, "hit") + ".";
+    std::string should_split = "Blackjack strategy suggests that " + playerHand.GetDisplayName() + " should " + color_text(31, "split") + ".";
+    std::string should_split_or_hit = "Blackjack strategy suggests that " + playerHand.GetDisplayName() + " should " + color_text(31, "hit") + " or " + color_text(31, "split") + ".";
+    std::string should_stand = "Blackjack strategy suggests that " + playerHand.GetDisplayName() + " should " + color_text(31, "stand") + ".";
+    // Logic for if a player is dealt the same rank and only two cards are in the hand
+    if (playerHand.GetSameParamInHand() && playerHand.GetCards().size() == 2) {
+        
+    }
+    // Logic for if a player is dealt an Ace and only two cards are in the hand
+    else if (playerHand.GetParamInHand() && playerHand.GetCards().size() == 2) {
+        
+    }
+    // Logic for all other scenarios
+    else {
+        switch (playerHand.GetCardsTotal()) {
+            // Player card total is 4-8
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+                // Player should hit no matter what the dealer has showing
+                playerHand.SetShouldHit(true);
+                // Should hit statement
+                break;
+            // Player card total is 9
+            case 9:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealerHand.GetCards().at(1).GetCardValue()) {
+                    // Dealer is showing 2-6
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                        // Check if someone can double down
+                        if (playerHand.GetCanDoubleDown()) {
+                            playerHand.SetShouldDoubleDown(true);
+                            playerHand.SetShouldHit(true);
+                            // Should double down or hit statement
+                        }
+                        // Player cannot double down
+                        else {
+                            playerHand.SetShouldDoubleDown(false);
+                            playerHand.SetShouldHit(true);
+                            // Should hit statement
+                        }
+                        break;
+                    // Dealer is showing 7-Face or Ace
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 11:
+                    case 1:
+                        playerHand.SetShouldHit(true);
+                        // Should hit statement
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            // Player card total is 10 - Resume here
+            case 10:
+                break;
+            default:
+                break;
+        }
+    }
+    playerHand.SetSameParamInHand(false);
+    playerHand.SetParamInHand(false);
+}
 
 /*  deal_hand - Deals cards to players and shows the hands of each player after the deal
 *   Input:
@@ -33,7 +103,9 @@
 */
 std::tuple<Hand, Hand, Shoe> deal_hand(Hand& playerHand, Hand& dealerHand, Shoe& inputShoe) {
     // Have player place wager
-    playerHand.PlaceWager();
+    if (playerHand.GetWager() == 0) {
+        playerHand.PlaceWager();
+    }
     // Deal cards to players
     for (int i = 0; i < 4; i++) {
         if (i % 2 == 0) {
@@ -1412,7 +1484,7 @@ void play_game() {
 *   Algorithm:
 *       * Create test objects
 *       * Set data members of test objects
-*       * Test a singular hand
+*       * Test functions
 *   Output:
 *       This function does not return a value
 */
@@ -1422,13 +1494,17 @@ void test_game() {
     Hand dealerTest;
     // Create test shoe
     Shoe testShoe;
-    testShoe.SetNumOfDecks(1);
-    testShoe.CreateShoe();
+    // testShoe.SetNumOfDecks(1);
+    // testShoe.CreateShoe();
+    testShoe.SetRiggedCards(Card(Ranks[12], Suits[3]));
+    testShoe.SetRiggedCards(Card(Ranks[12], Suits[2]));
+    testShoe.SetRiggedCards(Card(Ranks[12], Suits[1]));
+    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
     // Set names of player
     playerTest.SetName("Player 1");
     dealerTest.SetName("Dealer");
     // Deposit bank total for player
-    playerTest.BankDeposit();
-    // Test singular hand of the functions and classes
-    hand_logic(playerTest, dealerTest, testShoe);
+    playerTest.SetBankTotal(100);
+    playerTest.SetWager(10);
+    // Test functions
 }
