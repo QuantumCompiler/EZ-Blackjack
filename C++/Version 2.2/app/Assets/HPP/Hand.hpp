@@ -27,6 +27,10 @@ Hand::Hand() {
     SetHasHit(false);
     SetParamInHand(false);
     SetSameParamInHand(false);
+    SetShouldDoubleDown(false);
+    SetShouldHit(false);
+    SetShouldSplit(false);
+    SetShouldStand(false);
     SetSoftSeventeen(false);
     SetSplitAcesResponse(false);
     SetSplitHandResponse(false);
@@ -590,6 +594,10 @@ Hand Hand::ResetHand() {
     SetHasHit(false);
     SetParamInHand(false);
     SetSameParamInHand(false);
+    SetShouldDoubleDown(false);
+    SetShouldHit(false);
+    SetShouldSplit(false);
+    SetShouldStand(false);
     SetSoftSeventeen(false);
     SetSplitAcesResponse(false);
     SetSplitHandResponse(false);
@@ -897,6 +905,54 @@ void Hand::SetParamInHand(const bool input) {
 */
 void Hand::SetSameParamInHand(const bool input) {
     currentPlayer.sameParamInHand = input;
+}
+
+/*  SetShouldDoubleDown - Sets the private data member "shouldDoubleDown" to the input parameter "input"
+*   Input:
+*       input - Constant boolean value that is assigned to the private data member "shouldDoubleDown"
+*   Algorithm:
+*       * Set the private data member "shouldDoubleDown" to the input parameter "input"
+*   Output:
+*       This function does not return a value
+*/
+void Hand::SetShouldDoubleDown(const bool input) {
+    currentPlayer.shouldDoubleDown = input;
+}
+
+/*  SetShouldHit - Sets the private data member "shouldHit" to the input parameter "input"
+*   Input:
+*       input - Constant boolean value that is assigned to the private data member "shouldHit"
+*   Algorithm:
+*       * Set the private data member "shouldHit" to the input parameter "input"
+*   Output:
+*       This function does not return a value
+*/
+void Hand::SetShouldHit(const bool input) {
+    currentPlayer.shouldHit = input;
+}
+
+/*  SetShouldSplit - Sets the private data member "shouldSplit" to the input parameter "input"
+*   Input:
+*       input - Constant boolean value that is assigned to the private data member "shouldSplit"
+*   Algorithm:
+*       * Set the private data member "shouldSplit" to the input parameter "input"
+*   Output:
+*       This function does not return a value
+*/
+void Hand::SetShouldSplit(const bool input) {
+    currentPlayer.shouldSplit = input;
+}
+
+/*  SetShouldStand - Sets the private data member "shouldStand" to the input parameter "input"
+*   Input:
+*       input - Constant boolean value that is assigned to the private data member "shouldStand"
+*   Algorithm:
+*       * Set the private data member "shouldStand" to the input parameter "input"
+*   Output:
+*       This function does not return a value
+*/
+void Hand::SetShouldStand(const bool input) {
+    currentPlayer.shouldStand = input;
 }
 
 /*  SetSoftSeventeen - Sets the private data member "softSeventeen" to the input parameter "input"
@@ -1289,6 +1345,26 @@ bool Hand::GetParamInHand() const {
 // GetSameParamInHand - Retrieves the private data member "sameParamInHand"
 bool Hand::GetSameParamInHand() const {
     return currentPlayer.sameParamInHand;
+}
+
+// GetShouldDoubleDown - Retrieves the private data member "shouldDoubleDown"
+bool Hand::GetShouldDoubleDown() const {
+    return currentPlayer.shouldDoubleDown;
+}
+
+// GetShouldHit - Retrieves the private data member "shouldHit"
+bool Hand::GetShouldHit() const {
+    return currentPlayer.shouldHit;
+}
+
+// GetShouldSplit - Retrieves the private data member "shouldSplit"
+bool Hand::GetShouldSplit() const {
+    return currentPlayer.shouldSplit;
+}
+
+// GetShouldStand - Retrieves the private data member "shouldStand"
+bool Hand::GetShouldStand() const {
+    return currentPlayer.shouldStand;
 }
 
 // GetSoftSeventeen - Retrieves the private data member "softSeventeen"

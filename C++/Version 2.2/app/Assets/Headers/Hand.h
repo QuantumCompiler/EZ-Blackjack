@@ -17,6 +17,10 @@
 *       hasBlackJack - Boolean value that represents if a player has blackjack
 *       hasHit - Boolean value that represents if a player has chosen to hit on their hand
 *       paramInHand - Boolean value that represents if a player has a select parameter in their hand
+*       shouldDoubleDown - Boolean value that represents if a player should double down according to blackjack strategy
+*       shouldHit - Boolean value that represents if a player should hit according to blackjack strategy
+*       shouldSplit - Boolean value that represents if a player should split according to blackjack strategy
+*       shouldStand - Boolean value that represents if a player should stand according to blackjack strategy
 *       softSeventeen - Boolean value that represents if a player has a soft 17 or not
 *       splitAcesResponse - Boolean value that represents if a player has chosen to split their aces or not
 *       splitHandResponse - Boolean value that represents if a player has chosen to split their hand or not
@@ -61,6 +65,10 @@ struct Player {
     bool hasHit;
     bool paramInHand;
     bool sameParamInHand;
+    bool shouldDoubleDown;
+    bool shouldHit;
+    bool shouldSplit;
+    bool shouldStand;
     bool softSeventeen;
     bool splitAcesResponse;
     bool splitHandResponse;
@@ -125,6 +133,10 @@ public:
     void SetHasHit(const bool input);
     void SetParamInHand(const bool input);
     void SetSameParamInHand(const bool input);
+    void SetShouldDoubleDown(const bool input);
+    void SetShouldHit(const bool input);
+    void SetShouldSplit(const bool input);
+    void SetShouldStand(const bool input);
     void SetSoftSeventeen(const bool input);
     void SetSplitAcesResponse(const bool input);
     void SetSplitHandResponse(const bool input);
@@ -168,6 +180,10 @@ public:
     bool GetHasHit() const;
     bool GetParamInHand() const;
     bool GetSameParamInHand() const;
+    bool GetShouldDoubleDown() const;
+    bool GetShouldHit() const;
+    bool GetShouldSplit() const;
+    bool GetShouldStand() const;
     bool GetSoftSeventeen() const;
     bool GetSplitAcesResponse() const;
     bool GetSplitHandResponse() const;
