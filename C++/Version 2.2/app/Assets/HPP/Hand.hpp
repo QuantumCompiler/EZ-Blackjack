@@ -35,26 +35,26 @@ Hand::Hand() {
     SetInsuranceWager(0.00);
     SetNet(0.00);
     SetWager(0.00);
-    // Intever Values Initialization
+    // Integer Values Initialization
     SetCardsTotal(0);
     SetHandsPlayed(0);
     SetIndividualHands(0);
     // String Values Initialization
-    GetDisplayBankTotal().clear();
-    GetDisplayCardsTotal().clear();
-    GetDisplayHandsPlayed().clear();
-    GetDisplayInsuranceWager().clear();
-    GetDisplayName().clear();
-    GetDisplayNet().clear();
-    GetDisplayWager().clear();
-    GetName().clear();
+    currentPlayer.displayBankTotal.clear();
+    currentPlayer.displayCardsTotal.clear();
+    currentPlayer.displayHandsPlayed.clear();
+    currentPlayer.displayInsuranceWager.clear();
+    currentPlayer.displayName.clear();
+    currentPlayer.displayNet.clear();
+    currentPlayer.displayWager.clear();
+    currentPlayer.name.clear();
     // Vector Values Initialization
-    GetCards().clear();
-    GetHandBankTotals().clear();
-    GetHandCardTotals().clear();
-    GetHandNets().clear();
-    GetHandPlayed().clear();
-    GetHandWagers().clear();
+    currentPlayer.cards.clear();
+    currentPlayer.handBankTotals.clear();
+    currentPlayer.handCardTotals.clear();
+    currentPlayer.handNets.clear();
+    currentPlayer.handPlayed.clear();
+    currentPlayer.handWagers.clear();
 }
 
 /*  AddCardToHand - Adds a card to a players hand
@@ -99,7 +99,6 @@ Hand Hand::AddHandTotal() {
         if (current_card.CheckCardParam(current_card.GetRank(), Ranks[0])) {
             ace_count += 1;
         }
-        else {}
     }
     // Change Ace values
     for (Card& current_card : currentPlayer.cards) {
@@ -108,16 +107,13 @@ Hand Hand::AddHandTotal() {
             if (current_card.CheckCardParam(current_card.GetRank(), Ranks[0])) {
                 current_card.SetNewCardValue(11);
             }
-            else {}
         }
         else if (ace_count > 1) {
             // Change Ace value to 1
             if (current_card.CheckCardParam(current_card.GetRank(), Ranks[0])) {
                 current_card.SetNewCardValue(1);
             }
-            else {}
         }
-        else {}
         running_hand_value += current_card.GetCardValue();
         ace_count -= 1;
     }
@@ -131,13 +127,11 @@ Hand Hand::AddHandTotal() {
                 running_hand_value += current_card.GetCardValue();
             }
             // If the card is not an Ace, just add value to running_hand_value
-            else if (!(current_card.CheckCardParam(current_card.GetRank(),Ranks[0]))) {
+            else {
                 running_hand_value += current_card.GetCardValue();
             }
-            else {}
         }
     }
-    else {}
     SetCardsTotal(running_hand_value);
     return *this;
 }
@@ -188,22 +182,9 @@ Hand Hand::BankDeposit() {
                 break;
             }
         }
-        else {}
     }
     std::cout << std::endl << GetDisplayName() << " has decided to start with: " << GetDisplayBankTotal() << std::endl; time_sleep(1000);
-    // Add handsPlayed value to handPlayed
-    if (GetHandsPlayed() == 0) {
-        SetHandPlayed(GetHandsPlayed());
-    }
-    else if (GetHandsPlayed() > 0) {
-        SetHandPlayed(GetHandsPlayed()+1);
-    }
-    else {}
-    // Add other statistics to their respective vectors
-    SetHandWagers(GetWager());
-    SetHandNets(GetNet());
-    SetHandCardTotals(GetCardsTotal());
-    SetHandBankTotals(GetBankTotal());
+    // Update stats of player
     return *this;
 }
 
@@ -223,8 +204,11 @@ Hand Hand::BankDeposit() {
 Hand Hand::CheckBlackJack() {
     SetHasBlackJack(false);
     CheckParamInHand("R",Ranks[0]);
+    // Iterate over cards
     for (Card current_card : GetCards()) {
+        // Check if there is a card in hand that has a value of 10
         if (current_card.GetCardValue() == 10) {
+            // Check if there is an Ace in the hand and the hand only has 2 cards
             if (GetParamInHand() && GetCards().size() == 2) {
                 SetHasBlackJack(true);
                 break;
@@ -255,7 +239,9 @@ Hand Hand::CheckBlackJack() {
 */
 Hand Hand::CheckParamInHand(const std::string referenceParameter, const std::string checkingParameter) {
     SetParamInHand(false);
+    // Iterate over cards
     for (Card current_card : GetCards()) {
+        // If the "referenceParameter" is a rank, check for a rank
         if (referenceParameter == "R") {
             if (current_card.CheckCardParam(current_card.GetRank(), checkingParameter)) {
                 SetParamInHand(true);
@@ -263,6 +249,7 @@ Hand Hand::CheckParamInHand(const std::string referenceParameter, const std::str
             }
             else {continue;}
         }
+        // If the "referenceParameter" is a suit, check for a suit
         else if (referenceParameter == "S") {
             if (current_card.CheckCardParam(current_card.GetSuit(), checkingParameter)) {
                 SetParamInHand(true);
@@ -270,7 +257,6 @@ Hand Hand::CheckParamInHand(const std::string referenceParameter, const std::str
             }
             else {continue;}
         }
-        else {}
     }
     return *this;
 }
@@ -298,8 +284,10 @@ Hand Hand::CheckParamInHand(const std::string referenceParameter, const std::str
 */
 Hand Hand::CheckSameParamInHand(const std::string referenceParameter, const std::string checkingParameter) {
     SetSameParamInHand(true);
-    for (int i = 1; i < GetCards().size(); ++i) {
+    // Iterate over the cards in a players hand
+    for (int i = 1; i < GetCards().size(); i++) {
         Card currentCard = GetCards().at(i);
+        // If the "referenceParameter" is a rank, check for the same rank in a hand
         if (referenceParameter == "R") {
             if (!currentCard.CheckCardParam(currentCard.GetRank(), GetCards().at(0).GetRank()) || (!checkingParameter.empty() && !currentCard.CheckCardParam(currentCard.GetRank(), checkingParameter))) {
                 SetSameParamInHand(false);
@@ -307,6 +295,7 @@ Hand Hand::CheckSameParamInHand(const std::string referenceParameter, const std:
             }
             else {continue;}
         }
+        // If the "referenceParameter" is a suit, check for the same suit in a hand
         else if (referenceParameter == "S") {
             if (!currentCard.CheckCardParam(currentCard.GetSuit(), GetCards().at(0).GetSuit()) || (!checkingParameter.empty() && !currentCard.CheckCardParam(currentCard.GetSuit(), checkingParameter))) {
                 SetSameParamInHand(false);
@@ -314,7 +303,6 @@ Hand Hand::CheckSameParamInHand(const std::string referenceParameter, const std:
             }
             else {continue;}
         }
-        else {}
     }
     return *this;
 }
@@ -330,6 +318,7 @@ Hand Hand::CheckSameParamInHand(const std::string referenceParameter, const std:
 *       This function returns a Hand object after copying select variables
 */
 Hand Hand::CopyVariables(Hand& input) {
+    // Copy name, bank total, and wager to respective hand
     SetName(input.GetName());
     SetBankTotal(input.GetBankTotal());
     SetWager(input.GetWager());
@@ -345,6 +334,7 @@ Hand Hand::CopyVariables(Hand& input) {
 *       This function returns a Hand object after adding a card to it
 */
 Hand Hand::HitHand(Shoe& input) {
+    // Add card to current hand
     AddCardToHand(input.Draw());
     return *this;
 }
@@ -421,6 +411,7 @@ Hand Hand::NamePrompt() {
 *           * Blackjack Check - Checks to see if the players have blackjack or not
 *           * Insurance Check - Checks to see if the player is able to buy insurance for their hand
 *           * Double Down Check - Checks to see if the player is able to double down for their hand
+*           * Soft Seventeen Check - Checks to see if the player possesses a soft seventeen in their hand
 *   Output:
 *       This function returns a Hand object after checking the parameters in the current hand
 */
@@ -495,7 +486,6 @@ Hand Hand::ParametersCheck(Hand& checkingHand, Hand& dealerHand) {
                 checkingHand.SetSoftSeventeen(false);
                 continue;
             }
-            else {}
         }
     }
     else {
@@ -550,7 +540,7 @@ Hand Hand::PlaceWager() {
                 continue;
             }
             // User has entered a value that is greater than zero
-            else if (input > 0) {
+            else {
                 // User has entered a wager that is greater than their bank, return to beginning of while loop
                 if (input > GetBankTotal()) {
                     std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(round_input(input))) << ". You must enter a wager that is less than or equal to your bank total "
@@ -562,17 +552,14 @@ Hand Hand::PlaceWager() {
                     continue;
                 }
                 // User has entered a valid input for a wager, set the private data member "wager" to "input"
-                else if (input <= GetBankTotal()) {
+                else {
                     SetWager(input);
                     UpdateBank(0,GetWager());
                     std::cout << std::endl << GetDisplayName() << " has wagered: " << GetDisplayWager() << " with a current bank total " << GetDisplayBankTotal() << "." << std::endl; time_sleep(1000);
                     return *this;
                 }
-                else {}
             }
-            else {}
         }
-        else {}
     }
 }
 
@@ -646,7 +633,6 @@ Hand Hand::ShowHand(std::string option, const std::string dealerShow) {
     if (option.empty()) {
         option = "current";
     }
-    else {}
     // Modify the string values
     std::string optionMod = color_text(34, option);
     std::string handTotalMod = color_text(36, "Hand Total");
@@ -699,7 +685,6 @@ Hand Hand::ShowHand(std::string option, const std::string dealerShow) {
             std::cout << handTotalMod << ": " << GetDisplayCardsTotal() << std::endl; time_sleep(1000);
         }
     }
-    else {}
     return *this;
 }
 
