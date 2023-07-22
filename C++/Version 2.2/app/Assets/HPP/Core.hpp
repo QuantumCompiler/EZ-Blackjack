@@ -18,11 +18,11 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
     std::string should_stand = "Blackjack strategy suggests that " + playerHand.GetDisplayName() + " should " + color_text(31, "stand") + ".";
     // Logic for if a player is dealt the same rank and only two cards are in the hand with them having not decided if they want to split or not
     if ((playerHand.GetCanSplitHand() || playerHand.GetCanSplitAces()) && (!playerHand.GetSplitHandResponse() && !playerHand.GetSplitHandResponse()) && playerHand.GetCards().size() == 2) {
-        
+        std::cout << "Fuck" << std::endl;
     }
     // Logic for if a player is dealt an Ace and only two cards are in the hand
     else if (playerHand.GetParamInHand() && playerHand.GetCards().size() == 2) {
-        
+        std::cout << "Fucker" << std::endl;
     }
     // Logic for all other scenarios
     else {
@@ -133,12 +133,13 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                         break;
                 }
                 break;
+            // Resume here
+            case 11:
+                break;
             default:
                 break;
         }
     }
-    playerHand.SetSameParamInHand(false);
-    playerHand.SetParamInHand(false);
 }
 
 /*  deal_hand - Deals cards to players and shows the hands of each player after the deal
