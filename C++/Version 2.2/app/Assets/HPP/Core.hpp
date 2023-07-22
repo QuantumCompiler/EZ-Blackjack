@@ -1,5 +1,5 @@
 // ----- ----- ----- ----- ----- ----- ----- Includes ----- ----- ----- ----- ----- ----- ----- ----- ----- //
-#include "../Headers/Core.h"
+#include "Hand.hpp"
 
 void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
     // Check the parameters of "playerHand"
