@@ -23,7 +23,7 @@ TEST_F(test_x, BlackjackStrat){
     dealerHand.SetCards(Card(Ranks[0], Suits[0]));
     // Add dummy cards to user hand
     userHand.SetCards(Card(Ranks[1], Suits[0]));
-    userHand.SetCards(Card(Ranks[2], Suits[0]));
+    userHand.SetCards(Card(Ranks[12], Suits[0]));
     // Player has a card total of 4 through 8
     for (int i = 4; i < 9; i++) {
         // Calculate random number
