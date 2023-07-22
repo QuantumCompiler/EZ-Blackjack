@@ -5,13 +5,11 @@
 *   Initialization:
 *       gameDeck.numOfDecks is initialized to be zero
 *       gameDeck.cardsInShoe is initialized to be empty
-*       gameDeck.returnedCards is initialized to be empty
 *       gameDeck.riggedCards is initialized to be empty
 */
 Shoe::Shoe() {
     gameDeck.numOfDecks = 0;
     gameDeck.cardsInShoe = {};
-    gameDeck.returnedCards = {};
     gameDeck.riggedCards = {};
 }
 
@@ -139,9 +137,8 @@ Card Shoe::Draw() {
 */
 void Shoe::EmptyShoe() {
     // Clear all vectors of cards
-    gameDeck.cardsInShoe.clear();
-    gameDeck.returnedCards.clear();
-    gameDeck.riggedCards.clear();
+    GetCardsInShoe().clear();
+    GetRiggedCards().clear();
 }
 
 /*  Shuffle - This function shuffles the "gameDeck.cardsInShoe" vector
@@ -205,16 +202,16 @@ void Shoe::SetRiggedCards(const Card inputCard) {
 // ----- ----- ----- ----- ----- ----- ----- Getter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 
 // GetNumOfDecks - Retrieves the private data member "numOfDecks"
-int Shoe::GetNumOfDecks() const {
+int& Shoe::GetNumOfDecks() {
     return gameDeck.numOfDecks;
 }
 
 // GetCardsInShoe - Retrieves the private data member "cardsInShoe"
-std::vector<Card> Shoe::GetCardsInShoe() const {
+std::vector<Card>& Shoe::GetCardsInShoe() {
     return gameDeck.cardsInShoe;
 }
 
 // GetRiggedCards - Retrieves the private data member "riggedCards"
-std::vector<Card> Shoe::GetRiggedCards() const {
+std::vector<Card>& Shoe::GetRiggedCards() {
     return gameDeck.riggedCards;
 }

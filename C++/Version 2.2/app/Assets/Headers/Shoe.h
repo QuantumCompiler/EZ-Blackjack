@@ -6,13 +6,11 @@
 *   Data Members:
 *       numOfDecks - Integer value that represents the number of decks in a shoe
 *       cardsInShoe - Vector of Card objects that represents the number of cards in a shoe / deck
-*       returnedCards - Vector of Card objects that represents the number of cards in a shoe / deck
 *       riggedCards - Vector of Card objects that represents the number of cards in a rigged shoe / deck
 */
 struct Deck {
     int numOfDecks;
     std::vector<Card> cardsInShoe;
-    std::vector<Card> returnedCards;
     std::vector<Card> riggedCards;
 };
 class Shoe {
@@ -29,9 +27,9 @@ public:
     void SetCardsInShoe(const Card inputCard);
     void SetRiggedCards(const Card inputCard);
     // Getter Functions
-    int GetNumOfDecks() const;
-    std::vector<Card> GetCardsInShoe() const;
-    std::vector<Card> GetRiggedCards() const;
+    int& GetNumOfDecks();
+    std::vector<Card>& GetCardsInShoe();
+    std::vector<Card>& GetRiggedCards();
 private:
     Deck gameDeck;
 };
