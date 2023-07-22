@@ -44,21 +44,16 @@ Hand::Hand() {
     SetHandsPlayed(0);
     SetIndividualHands(0);
     // String Values Initialization
-    currentPlayer.displayBankTotal.clear();
-    currentPlayer.displayCardsTotal.clear();
-    currentPlayer.displayHandsPlayed.clear();
-    currentPlayer.displayInsuranceWager.clear();
-    currentPlayer.displayName.clear();
-    currentPlayer.displayNet.clear();
-    currentPlayer.displayWager.clear();
-    currentPlayer.name.clear();
+    GetDisplayBankTotal().clear();
+    GetDisplayCardsTotal().clear();
+    GetDisplayHandsPlayed().clear();
+    GetDisplayInsuranceWager().clear();
+    GetDisplayName().clear();
+    GetDisplayNet().clear();
+    GetDisplayWager().clear();
+    GetName().clear();
     // Vector Values Initialization
-    currentPlayer.cards.clear();
-    currentPlayer.handBankTotals.clear();
-    currentPlayer.handCardTotals.clear();
-    currentPlayer.handNets.clear();
-    currentPlayer.handPlayed.clear();
-    currentPlayer.handWagers.clear();
+    GetCards().clear();
 }
 
 /*  AddCardToHand - Adds a card to a players hand
@@ -609,12 +604,12 @@ Hand Hand::ResetHand() {
     SetCardsTotal(0);
     SetIndividualHands(0);
     // String Values
-    currentPlayer.displayCardsTotal.clear();
-    currentPlayer.displayInsuranceWager.clear();
-    currentPlayer.displayNet.clear();
-    currentPlayer.displayWager.clear();
+    GetDisplayCardsTotal().clear();
+    GetDisplayInsuranceWager().clear();
+    GetDisplayNet().clear();
+    GetDisplayWager().clear();
     // Vector Values
-    currentPlayer.cards.clear();
+    GetCards().clear();
     return *this;
 }
 
@@ -1220,269 +1215,183 @@ void Hand::SetCards(const Card& input) {
     currentPlayer.cards.push_back(input);
 }
 
-/*  SetHandBankTotals - Adds a float value to the private data member "handBankTotals" using the push_back function
-*   Input:
-*       input - Constant float value passed by reference that is to be added to the private data member "handBankTotals"
-*   Algorithm:
-*       * Add the input float, "input", to the private data member "handBankTotals" using the push_back function
-*   Output:
-*       This function does not return a value
-*/
-void Hand::SetHandBankTotals(const float& input) {
-    currentPlayer.handBankTotals.push_back(input);
-}
-
-/*  SetHandCardTotals - Adds an integer value to the private data member "handCardTotals" using the push_back function
-*   Input:
-*       input - Constant integer value passed by reference that is to be added to the private data member "handCardTotals"
-*   Algorithm:
-*       * Add the input integer, "input", to the private data member "handCardTotals" using the push_back function
-*   Output:
-*       This function does not return a value
-*/
-void Hand::SetHandCardTotals(const int& input) {
-    currentPlayer.handCardTotals.push_back(input);
-}
-
-/*  SetHandNets - Adds a float value to the private data member "handNets" using the push_back function
-*   Input:
-*       input - Constant float value passed by reference that is to be added to the private data member "handNets"
-*   Algorithm:
-*       * Add the input float, "input", to the private data member "handNets" using the push_back function
-*   Output:
-*       This function does not return a value
-*/
-void Hand::SetHandNets(const float& input) {
-    currentPlayer.handNets.push_back(input);
-}
-
-/*  SetHandPlayed - Adds an integer value to the private data member "handPlayed" using the push_back function
-*   Input:
-*       input - Constant integer value passed by reference that is to be added to the private data member "handPlayed"
-*   Algorithm:
-*       * Add the input integer, "input", to the private data member "handPlayed" using the push_back function
-*   Output:
-*       This function does not return a value
-*/
-void Hand::SetHandPlayed(const int& input) {
-    currentPlayer.handPlayed.push_back(input);
-}
-
-/*  SetHandWagers - Adds a float value to the private data member "handWagers" using the push_back function
-*   Input:
-*       input - Constant float value passed by reference that is to be added to the private data member "handWagers"
-*   Algorithm:
-*       * Add the input float, "input", to the private data member "handWagers" using the push_back function
-*   Output:
-*       This function does not return a value
-*/
-void Hand::SetHandWagers(const float& input) {
-    currentPlayer.handWagers.push_back(input);
-}
-
-
 // ----- ----- ----- ----- ----- ----- ----- Getter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 // GetCanBuyInsurance - Retrieves the private data member "canBuyInsurance"
-bool Hand::GetCanBuyInsurance() const {
+bool& Hand::GetCanBuyInsurance() {
     return currentPlayer.canBuyInsurance;
 }
 
 // GetCanDoubleDown - Retrieves the private data member "canDoubleDown"
-bool Hand::GetCanDoubleDown() const {
+bool& Hand::GetCanDoubleDown() {
     return currentPlayer.canDoubleDown;
 }
 
 // GetCanSplitAces - Retrieves the private data member "canSplitAces"
-bool Hand::GetCanSplitAces() const {
+bool& Hand::GetCanSplitAces() {
     return currentPlayer.canSplitAces;
 }
 
 // GetCanSplitHand - Retrieves the private data member "canSplitHand"
-bool Hand::GetCanSplitHand() const {
+bool& Hand::GetCanSplitHand() {
     return currentPlayer.canSplitHand;
 }
 
 // GetChoseBuyInsurance - Retrieves the private data member "choseBuyInsurance"
-bool Hand::GetChoseBuyInsurance() const {
+bool& Hand::GetChoseBuyInsurance() {
     return currentPlayer.choseBuyInsurance;
 }
 
 // GetChoseDoubleDown - Retrieves the private data member "choseDoubleDown"
-bool Hand::GetChoseDoubleDown() const {
+bool& Hand::GetChoseDoubleDown() {
     return currentPlayer.choseDoubleDown;
 }
 
 // GetChoseSplitAces - Retrieves the private data member "choseSplitAces"
-bool Hand::GetChoseSplitAces() const {
+bool& Hand::GetChoseSplitAces() {
     return currentPlayer.choseSplitAces;
 }
 
 // GetChoseSplitHand - Retrieves the private data member "choseSplitHand"
-bool Hand::GetChoseSplitHand() const {
+bool& Hand::GetChoseSplitHand() {
     return currentPlayer.choseSplitHand;
 }
 
 // GetDoubleDownResponse - Retrieves the private data member "doubleDownResponse"
-bool Hand::GetDoubleDownResponse() const {
+bool& Hand::GetDoubleDownResponse() {
     return currentPlayer.doubleDownResponse;
 }
 
 // GetHasBlackJack - Retrieves the private data member "hasBlackJack"
-bool Hand::GetHasBlackJack() const {
+bool& Hand::GetHasBlackJack() {
     return currentPlayer.hasBlackJack;
 }
 
 // GetHasHit - Retrieves the private data member "hasHit"
-bool Hand::GetHasHit() const {
+bool& Hand::GetHasHit() {
     return currentPlayer.hasHit;
 }
 
 // GetParamInHand - Retrieves the private data member "paramInHand"
-bool Hand::GetParamInHand() const {
+bool& Hand::GetParamInHand() {
     return currentPlayer.paramInHand;
 }
 
 // GetSameParamInHand - Retrieves the private data member "sameParamInHand"
-bool Hand::GetSameParamInHand() const {
+bool& Hand::GetSameParamInHand() {
     return currentPlayer.sameParamInHand;
 }
 
 // GetShouldDoubleDown - Retrieves the private data member "shouldDoubleDown"
-bool Hand::GetShouldDoubleDown() const {
+bool& Hand::GetShouldDoubleDown() {
     return currentPlayer.shouldDoubleDown;
 }
 
 // GetShouldHit - Retrieves the private data member "shouldHit"
-bool Hand::GetShouldHit() const {
+bool& Hand::GetShouldHit() {
     return currentPlayer.shouldHit;
 }
 
 // GetShouldSplit - Retrieves the private data member "shouldSplit"
-bool Hand::GetShouldSplit() const {
+bool& Hand::GetShouldSplit() {
     return currentPlayer.shouldSplit;
 }
 
 // GetShouldStand - Retrieves the private data member "shouldStand"
-bool Hand::GetShouldStand() const {
+bool& Hand::GetShouldStand() {
     return currentPlayer.shouldStand;
 }
 
 // GetSoftSeventeen - Retrieves the private data member "softSeventeen"
-bool Hand::GetSoftSeventeen() const {
+bool& Hand::GetSoftSeventeen() {
     return currentPlayer.softSeventeen;
 }
 
 // GetSplitAcesResponse - Retrieves the private data member "splitAcesResponse"
-bool Hand::GetSplitAcesResponse() const {
+bool& Hand::GetSplitAcesResponse() {
     return currentPlayer.splitAcesResponse;
 }
 
 // GetSplitHandResponse - Retrieves the private data member "splitHandResponse"
-bool Hand::GetSplitHandResponse() const {
+bool& Hand::GetSplitHandResponse() {
     return currentPlayer.splitHandResponse;
 }
 
 // GetBankTotal - Retrieves the private data member "bankTotal"
-float Hand::GetBankTotal() const {
+float& Hand::GetBankTotal() {
     return currentPlayer.bankTotal;
 }
 
 // GetInsuranceWager - Retrieves the private data member "insuranceWager"
-float Hand::GetInsuranceWager() const {
+float& Hand::GetInsuranceWager() {
     return currentPlayer.insuranceWager;
 }
 
 // GetNet - Retrieves the private data member "net"
-float Hand::GetNet() const {
+float& Hand::GetNet() {
     return currentPlayer.net;
 }
 
 // GetWager - Retrieves the private data member "wager"
-float Hand::GetWager() const {
+float& Hand::GetWager() {
     return currentPlayer.wager;
 }
 
 // GetCardsTotal - Retrieves the private data member "cardsTotal"
-int Hand::GetCardsTotal() const {
+int& Hand::GetCardsTotal() {
     return currentPlayer.cardsTotal;
 }
 
 // GetHandsPlayed - Retrieves the private data member "handsPlayed"
-int Hand::GetHandsPlayed() const {
+int& Hand::GetHandsPlayed() {
     return currentPlayer.handsPlayed;
 }
 
 // GetIndividualHands - Retrieves the private data member "individual_hands"
-int Hand::GetIndividualHands() const {
+int& Hand::GetIndividualHands() {
     return currentPlayer.individual_hands;
 }
 
 // GetDisplayBankTotal - Retrieves the private data member "displayBankTotal"
-std::string Hand::GetDisplayBankTotal() const {
+std::string& Hand::GetDisplayBankTotal() {
     return currentPlayer.displayBankTotal;
 }
 
 // GetDisplayCardsTotal - Retrieves the private data member "displayCardsTotal"
-std::string Hand::GetDisplayCardsTotal() const {
+std::string& Hand::GetDisplayCardsTotal() {
     return currentPlayer.displayCardsTotal;
 }
 
 // GetDisplayHandsPlayed - Retrieves the private data member "displayHandsPlayed"
-std::string Hand::GetDisplayHandsPlayed() const {
+std::string& Hand::GetDisplayHandsPlayed() {
     return currentPlayer.displayHandsPlayed;
 }
 
 // GetDisplayInsuranceWager - Retrieves the private data member "displayInsuranceWager"
-std::string Hand::GetDisplayInsuranceWager() const {
+std::string& Hand::GetDisplayInsuranceWager() {
     return currentPlayer.displayInsuranceWager;
 }
 
 // GetDisplayName - Retrieves the private data member "displayName"
-std::string Hand::GetDisplayName() const {
+std::string& Hand::GetDisplayName() {
     return currentPlayer.displayName;
 }
 
 // GetDisplayNet - Retrieves the private data member "displayNet"
-std::string Hand::GetDisplayNet() const {
+std::string& Hand::GetDisplayNet() {
     return currentPlayer.displayNet;
 }
 
 // GetDisplayWager - Retrieves the private data member "displayWager"
-std::string Hand::GetDisplayWager() const {
+std::string& Hand::GetDisplayWager() {
     return currentPlayer.displayWager;
 }
 
 // GetName - Retrieves the private data member "name"
-std::string Hand::GetName() const {
+std::string& Hand::GetName() {
     return currentPlayer.name;
 }
 
 // GetCards - Retrieves the private data member "cards"
-std::vector<Card> Hand::GetCards() const {
+std::vector<Card>& Hand::GetCards() {
     return currentPlayer.cards;
-}
-
-// GetHandBankTotals - Retrieves the private data member "handBankTotals"
-std::vector<float> Hand::GetHandBankTotals() const {
-    return currentPlayer.handBankTotals;
-}
-
-// GetHandCardTotals - Retrieves the private data member "handCardTotals"
-std::vector<int> Hand::GetHandCardTotals() const {
-    return currentPlayer.handCardTotals;
-}
-
-// GetHandNets - Retrieves the private data member "handNets"
-std::vector<float> Hand::GetHandNets() const {
-    return currentPlayer.handNets;
-}
-
-// GetHandPlayed - Retrieves the private data member "handPlayed"
-std::vector<int> Hand::GetHandPlayed() const {
-    return currentPlayer.handPlayed;
-}
-
-// GetHandWagers - Retrieves the private data member "handWagers"
-std::vector<float> Hand::GetHandWagers() const {
-    return currentPlayer.handWagers;
 }

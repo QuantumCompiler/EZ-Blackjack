@@ -44,11 +44,6 @@
 *       name - String value that represents the name of a player
 *     Vector Values:
 *       cards - Vector of Card objects that represents the cards in a hand of a player
-*       handBankTotals - Vector of floats that represents a players bank totals after each hand
-*       handCardTotals - Vector of integers that represents a players card totals after each hand
-*       handNets - Vector of floats that represents a players nets after a hand
-*       handPlayed - Vector of integers that represents the total of hands played by a player
-*       handWagers - Vector of floats that represents the original wager placed for each hand
 */
 struct Player {
     // Boolean Value
@@ -92,11 +87,6 @@ struct Player {
     std::string name;
     // Vectors
     std::vector<Card> cards;
-    std::vector<float> handBankTotals;
-    std::vector<int> handCardTotals;
-    std::vector<float> handNets;
-    std::vector<int> handPlayed;
-    std::vector<float> handWagers; 
 };
 class Hand {
 public:
@@ -160,58 +150,48 @@ public:
     void SetName(const std::string& input);
     // Vector Values
     void SetCards(const Card& input);
-    void SetHandBankTotals(const float& input);
-    void SetHandCardTotals(const int& input);
-    void SetHandNets(const float& input);
-    void SetHandPlayed(const int& input);
-    void SetHandWagers(const float& input);
     // Getter Functions
     // Boolean Values
-    bool GetCanBuyInsurance() const;
-    bool GetCanDoubleDown() const;
-    bool GetCanSplitAces() const;
-    bool GetCanSplitHand() const;
-    bool GetChoseBuyInsurance() const;
-    bool GetChoseDoubleDown() const;
-    bool GetChoseSplitAces() const;
-    bool GetChoseSplitHand() const;
-    bool GetDoubleDownResponse() const;
-    bool GetHasBlackJack() const;
-    bool GetHasHit() const;
-    bool GetParamInHand() const;
-    bool GetSameParamInHand() const;
-    bool GetShouldDoubleDown() const;
-    bool GetShouldHit() const;
-    bool GetShouldSplit() const;
-    bool GetShouldStand() const;
-    bool GetSoftSeventeen() const;
-    bool GetSplitAcesResponse() const;
-    bool GetSplitHandResponse() const;
+    bool& GetCanBuyInsurance();
+    bool& GetCanDoubleDown();
+    bool& GetCanSplitAces();
+    bool& GetCanSplitHand();
+    bool& GetChoseBuyInsurance();
+    bool& GetChoseDoubleDown();
+    bool& GetChoseSplitAces();
+    bool& GetChoseSplitHand();
+    bool& GetDoubleDownResponse();
+    bool& GetHasBlackJack();
+    bool& GetHasHit();
+    bool& GetParamInHand();
+    bool& GetSameParamInHand();
+    bool& GetShouldDoubleDown();
+    bool& GetShouldHit();
+    bool& GetShouldSplit();
+    bool& GetShouldStand();
+    bool& GetSoftSeventeen();
+    bool& GetSplitAcesResponse();
+    bool& GetSplitHandResponse();
     // Float Values
-    float GetBankTotal() const;
-    float GetInsuranceWager() const;
-    float GetNet() const;
-    float GetWager() const;
+    float& GetBankTotal();
+    float& GetInsuranceWager();
+    float& GetNet();
+    float& GetWager();
     // Integer Values
-    int GetCardsTotal() const;
-    int GetHandsPlayed() const;
-    int GetIndividualHands() const;
+    int& GetCardsTotal();
+    int& GetHandsPlayed();
+    int& GetIndividualHands();
     // String Values
-    std::string GetDisplayBankTotal() const;
-    std::string GetDisplayCardsTotal() const;
-    std::string GetDisplayHandsPlayed() const;
-    std::string GetDisplayInsuranceWager() const;
-    std::string GetDisplayName() const;
-    std::string GetDisplayNet() const;
-    std::string GetDisplayWager() const;
-    std::string GetName() const;
+    std::string& GetDisplayBankTotal();
+    std::string& GetDisplayCardsTotal();
+    std::string& GetDisplayHandsPlayed();
+    std::string& GetDisplayInsuranceWager();
+    std::string& GetDisplayName();
+    std::string& GetDisplayNet();
+    std::string& GetDisplayWager();
+    std::string& GetName();
     // Vector Values
-    std::vector<Card> GetCards() const;
-    std::vector<float> GetHandBankTotals() const;
-    std::vector<int> GetHandCardTotals() const;
-    std::vector<float> GetHandNets() const;
-    std::vector<int> GetHandPlayed() const;
-    std::vector<float> GetHandWagers() const;
+    std::vector<Card>& GetCards();
 private:
     Player currentPlayer;
 };
