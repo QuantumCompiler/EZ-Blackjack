@@ -9,27 +9,24 @@ class test_x : public ::testing::Test {};
 // Test Helper Functions
 /////////////////////////////////////////
 
-std::tuple<Hand, Hand, Shoe> ObjectConstruct() {
-    Hand userHand;
-    userHand.SetName("Billy Bob");
-    userHand.SetBankTotal(100);
-    userHand.SetWager(10);
-    Hand dealerHand;
-    dealerHand.SetName("Dealer");
-    Shoe testShoe;
-    return std::make_tuple(userHand, dealerHand, testShoe);
-}
-
 /////////////////////////////////////////
 // Tests start here
 /////////////////////////////////////////
 
 TEST_F(test_x, BlackjackStrat){
     // Test if a player has a card total of (5-8)
+    Hand userHand;
+    Hand dealerHand;
+    userHand.SetBankTotal(100);
+    userHand.SetWager(10);
+    // Add first card to dealer
+    dealerHand.SetCards(Card(Ranks[0], Suits[0]));
+    // Add dummy cards to user hand
+    userHand.SetCards(Card(Ranks[1], Suits[0]));
+    userHand.SetCards(Card(Ranks[2], Suits[0]));
+    // Player has a card total of 4 through 8
     for (int i = 4; i < 9; i++) {
-        auto objects = ObjectConstruct();
-        Hand userHand = std::get<0>(objects);
-        Hand dealerHand = std::get<1>(objects);
+        // Calculate random number
         std::random_device rd;
         std::mt19937 gen(rd());
         int min = 0;
@@ -38,10 +35,6 @@ TEST_F(test_x, BlackjackStrat){
         int randomRank = dist(gen);
         // Add random cards to dealer hand
         dealerHand.SetCards(Card(Ranks[randomRank], Suits[0]));
-        dealerHand.SetCards(Card(Ranks[randomRank], Suits[0]));
-        // Add dummy cards to user hand
-        userHand.SetCards(Card(Ranks[1], Suits[0]));
-        userHand.SetCards(Card(Ranks[2], Suits[0]));
         // Rig hand total
         userHand.SetCardsTotal(i);
         // Test strategy
@@ -50,55 +43,97 @@ TEST_F(test_x, BlackjackStrat){
         ASSERT_TRUE(userHand.GetShouldHit());
         ASSERT_FALSE(userHand.GetShouldSplit());
         ASSERT_FALSE(userHand.GetShouldStand());
+        // Remove last card from dealer hand
+        dealerHand.GetCards().pop_back();
     }
-    // Testing for player hand equal to 9, dealer 2 through 6
+    // Player has a card total of 9
+    userHand.SetCardsTotal(9);
+    // Dealer has a face up card value of 2 through 6
     for (int i = 1; i < 6; i++) {
-        auto objects = ObjectConstruct();
-        Hand userHand = std::get<0>(objects);
-        Hand dealerHand = std::get<1>(objects);
-        // Add cards to dealer hand, 2 through 6
-        dealerHand.SetCards(Card(Ranks[0], Suits[0]));
+        // Add card to dealer hand
         dealerHand.SetCards(Card(Ranks[i], Suits[0]));
-        // Add dummy cards to user hand
-        userHand.SetCards(Card(Ranks[1], Suits[0]));
-        userHand.SetCards(Card(Ranks[2], Suits[0]));
-        // Rig hand total
-        userHand.SetCardsTotal(9);
-        // Test strategy
+        // Test strategy - Can double down
+        userHand.SetWager(10);
         blackjack_strategy(userHand, dealerHand);
         ASSERT_TRUE(userHand.GetShouldDoubleDown());
         ASSERT_TRUE(userHand.GetShouldHit());
         ASSERT_FALSE(userHand.GetShouldSplit());
         ASSERT_FALSE(userHand.GetShouldStand());
-    }
-    // Testing for player hand equal to 9, dealer 7 through Ace
-    for (int i = 6; i < 13; i++) {
-        auto objects = ObjectConstruct();
-        Hand userHand = std::get<0>(objects);
-        Hand dealerHand = std::get<1>(objects);
-        // Add cards to dealer hand, 7 through king
-        dealerHand.SetCards(Card(Ranks[0], Suits[0]));
-        dealerHand.SetCards(Card(Ranks[i], Suits[0]));
-        // Add dummy cards to user hand
-        userHand.SetCards(Card(Ranks[1], Suits[0]));
-        userHand.SetCards(Card(Ranks[2], Suits[0]));
-        // Rig hand total
-        userHand.SetCardsTotal(9);
-        // Test strategy
+        // Test strategy - Can't double down
+        userHand.SetWager(200);
         blackjack_strategy(userHand, dealerHand);
         ASSERT_FALSE(userHand.GetShouldDoubleDown());
         ASSERT_TRUE(userHand.GetShouldHit());
         ASSERT_FALSE(userHand.GetShouldSplit());
         ASSERT_FALSE(userHand.GetShouldStand());
-        // Add cards to dealer hand, Ace in back
-        dealerHand.ResetHand();
-        dealerHand.SetCards(Card(Ranks[0], Suits[0]));
-        dealerHand.SetCards(Card(Ranks[0], Suits[0]));
-        // Test strategy
+        // Remove last card from dealer hand
+        dealerHand.GetCards().pop_back();        
+    }
+    // Dealer has a face up card value of 7 through Ace
+    for (int i = 7; i < 12; i++) {
+        userHand.SetWager(10);
+        // Add card to dealer hand
+        dealerHand.SetCards(Card(Ranks[i], Suits[0]));
+        // Test strategy - Can double down
         blackjack_strategy(userHand, dealerHand);
         ASSERT_FALSE(userHand.GetShouldDoubleDown());
         ASSERT_TRUE(userHand.GetShouldHit());
         ASSERT_FALSE(userHand.GetShouldSplit());
-        ASSERT_FALSE(userHand.GetShouldStand());    
+        ASSERT_FALSE(userHand.GetShouldStand());
+        // Test strategy - For Ace in dealer hand
+        dealerHand.GetCards().pop_back();
+        dealerHand.SetCards(Card(Ranks[0], Suits[0]));
+        blackjack_strategy(userHand, dealerHand);
+        ASSERT_FALSE(userHand.GetShouldDoubleDown());
+        ASSERT_TRUE(userHand.GetShouldHit());
+        ASSERT_FALSE(userHand.GetShouldSplit());
+        ASSERT_FALSE(userHand.GetShouldStand());
+        // Remove last card from dealer hand
+        dealerHand.GetCards().pop_back();          
+    }
+    // Player has a card total of 10
+    userHand.SetCardsTotal(10);
+    // Dealer has a face up card value of 2 through 9
+    for (int i = 1; i < 9; i++) {
+        // Add card to dealer hand
+        dealerHand.SetCards(Card(Ranks[i], Suits[0]));
+        // Test strategy - Can double down
+        userHand.SetWager(10);
+        blackjack_strategy(userHand, dealerHand);
+        ASSERT_TRUE(userHand.GetShouldDoubleDown());
+        ASSERT_TRUE(userHand.GetShouldHit());
+        ASSERT_FALSE(userHand.GetShouldSplit());
+        ASSERT_FALSE(userHand.GetShouldStand());
+        // Test strategy - Can't double down
+        userHand.SetWager(200);
+        blackjack_strategy(userHand, dealerHand);
+        ASSERT_FALSE(userHand.GetShouldDoubleDown());
+        ASSERT_TRUE(userHand.GetShouldHit());
+        ASSERT_FALSE(userHand.GetShouldSplit());
+        ASSERT_FALSE(userHand.GetShouldStand());
+        // Remove last card from dealer hand
+        dealerHand.GetCards().pop_back(); 
+    }
+    // Dealer has a face up card value of 10 or Ace
+    for (int i = 9; i < 13; i++) {
+        userHand.SetWager(10);
+        // Add card to dealer hand
+        dealerHand.SetCards(Card(Ranks[i], Suits[0]));
+        // Test strategy - Can double down
+        blackjack_strategy(userHand, dealerHand);
+        ASSERT_FALSE(userHand.GetShouldDoubleDown());
+        ASSERT_TRUE(userHand.GetShouldHit());
+        ASSERT_FALSE(userHand.GetShouldSplit());
+        ASSERT_FALSE(userHand.GetShouldStand());
+        // Test strategy - For Ace in dealer hand
+        dealerHand.GetCards().pop_back();
+        dealerHand.SetCards(Card(Ranks[0], Suits[0]));
+        blackjack_strategy(userHand, dealerHand);
+        ASSERT_FALSE(userHand.GetShouldDoubleDown());
+        ASSERT_TRUE(userHand.GetShouldHit());
+        ASSERT_FALSE(userHand.GetShouldSplit());
+        ASSERT_FALSE(userHand.GetShouldStand());
+        // Remove last card from dealer hand
+        dealerHand.GetCards().pop_back();  
     }
 }
