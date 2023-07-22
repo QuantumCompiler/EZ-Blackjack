@@ -152,33 +152,32 @@ void Card::SetNewCardValue(const int input) {
 }
 
 // ----- ----- ----- ----- ----- ----- ----- Getter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
-
-// GetRank - Retrieves the private data member "rank"
-std::string Card::GetRank() const {
-    return card.rank;
-}
-
-// GetDisplayRank - Retrieves the private data member "displayRank"
-std::string Card::GetDisplayRank() const {
-    return card.displayRank;
-}
-
-// GetSuit - Retrieves the private data member "suit"
-std::string Card::GetSuit() const {
-    return card.suit;
-}
-
-// GetDisplaySuit - Retrieves the private data member "displaySuit"
-std::string Card::GetDisplaySuit() const {
-    return card.displaySuit;
-}
-
 // GetCardValue - Retrieves the private data member "cardValue"
-int Card::GetCardValue() const {
+int& Card::GetCardValue() {
     return card.cardValue;
 }
 
+// GetDisplayRank - Retrieves the private data member "displayRank"
+std::string& Card::GetDisplayRank() {
+    return card.displayRank;
+}
+
+// GetDisplaySuit - Retrieves the private data member "displaySuit"
+std::string& Card::GetDisplaySuit() {
+    return card.displaySuit;
+}
+
 // GetDisplayCardValue - Retrieves the private data member "displayCardValue"
-std::string Card::GetDisplayCardValue() const {
+std::string& Card::GetDisplayCardValue() {
     return card.displayCardValue;
+}
+
+// GetRank - Retrieves the private data member "rank"
+std::string& Card::GetRank() {
+    return card.rank;
+}
+
+// GetSuit - Retrieves the private data member "suit"
+std::string& Card::GetSuit() {
+    return card.suit;
 }

@@ -24,7 +24,7 @@ public:
     Card(const std::string inputRank, const std::string inputSuit);
     // Class methods
     bool CheckCardParam(const std::string checking, const std::string feeding);
-    friend std::ostream &operator<<(std::ostream &os, const Card& currentCard) {
+    friend std::ostream &operator<<(std::ostream &os, Card& currentCard) {
         os << currentCard.GetDisplayRank() << " of " << currentCard.GetDisplaySuit();
         return os;
     }
@@ -35,12 +35,12 @@ public:
     void SetDisplayCardValue(PlayingCard& inputCard);
     void SetNewCardValue(const int input);
     // Getter Functions
-    int GetCardValue() const;
-    std::string GetDisplayRank() const;
-    std::string GetDisplaySuit() const;
-    std::string GetDisplayCardValue() const;
-    std::string GetRank() const;
-    std::string GetSuit() const;
+    int& GetCardValue();
+    std::string& GetDisplayRank();
+    std::string& GetDisplaySuit();
+    std::string& GetDisplayCardValue();
+    std::string& GetRank();
+    std::string& GetSuit();
 private:
     PlayingCard card;
 };
