@@ -2266,23 +2266,4 @@ void play_game() {
 *   Output:
 *       This function does not return a value
 */
-void test_game() {
-    // Create test hands
-    Hand playerTest;
-    Hand dealerTest;
-    // Create test shoe
-    Shoe testShoe;
-    // testShoe.SetNumOfDecks(1);
-    // testShoe.CreateShoe();
-    testShoe.SetRiggedCards(Card(Ranks[12], Suits[3]));
-    testShoe.SetRiggedCards(Card(Ranks[12], Suits[2]));
-    testShoe.SetRiggedCards(Card(Ranks[12], Suits[1]));
-    testShoe.SetRiggedCards(Card(Ranks[0], Suits[0]));
-    // Set names of player
-    playerTest.SetName("Player 1");
-    dealerTest.SetName("Dealer");
-    // Deposit bank total for player
-    playerTest.SetBankTotal(100);
-    playerTest.SetWager(10);
-    // Test functions
-}
+void test_game() {}
