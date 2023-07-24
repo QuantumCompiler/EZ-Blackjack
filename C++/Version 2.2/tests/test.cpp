@@ -272,7 +272,6 @@ TEST_F(test_x, BlackjackStratAces) {
             else {
                 // Set wager
                 userHand.SetWager(10);
-                blackjack_strategy(userHand, dealerHand);
                 // Test strategy - Can't double down
                 blackjack_strategy(userHand, dealerHand);
                 ASSERT_FALSE(userHand.GetShouldDoubleDown());
@@ -283,9 +282,285 @@ TEST_F(test_x, BlackjackStratAces) {
             dealerHand.GetCards().pop_back();
         }
         userHand.GetCards().pop_back();
+        userHand.AddHandTotal();
     }
-    // Reset user hand value
-    userHand.SetCardsTotal(0);
-    userHand.AddHandTotal();
     // Player has a card total of 15 or 16 (Ace, 4 || Ace, 5)
+    for (int i = 3; i <= 4; i++) {
+        userHand.SetCards(Card(Ranks[i], Suits[0]));
+        userHand.AddHandTotal();
+        for (int j = 0; j < 13; j++) {
+            // Add card to dealer hand
+            dealerHand.SetCards(Card(Ranks[j], Suits[0]));
+            // Card being added is a 4, 5, or 6
+            if (j == 3 || j == 4 || j == 5) {
+                // Player can double down
+                {
+                    // Set wager
+                    userHand.SetWager(10);
+                    // Test strategy - Can double down
+                    blackjack_strategy(userHand, dealerHand);
+                    ASSERT_TRUE(userHand.GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand.GetShouldHit());
+                    ASSERT_FALSE(userHand.GetShouldSplit());
+                    ASSERT_FALSE(userHand.GetShouldStand());
+                }
+                // Player can't double down
+                {
+                    // Set wager
+                    userHand.SetWager(200);
+                    // Test strategy - Can't double down
+                    blackjack_strategy(userHand, dealerHand);
+                    ASSERT_FALSE(userHand.GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand.GetShouldHit());
+                    ASSERT_FALSE(userHand.GetShouldSplit());
+                    ASSERT_FALSE(userHand.GetShouldStand());
+                }
+            }
+            // Otherwise
+            else {
+                // Set wager
+                userHand.SetWager(10);
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                ASSERT_FALSE(userHand.GetShouldDoubleDown());
+                ASSERT_TRUE(userHand.GetShouldHit());
+                ASSERT_FALSE(userHand.GetShouldSplit());
+                ASSERT_FALSE(userHand.GetShouldStand());
+            }
+            dealerHand.GetCards().pop_back();
+        }
+        userHand.GetCards().pop_back();
+        userHand.AddHandTotal();
+    }
+    // Player has a card total of 17 (Ace, 6)
+    {
+        userHand.SetCards(Card(Ranks[5], Suits[0]));
+        userHand.AddHandTotal();
+        for (int i = 0; i < 13; i++) {
+            // Add card to dealer hand
+            dealerHand.SetCards(Card(Ranks[i], Suits[0]));
+            if (i >= 2 && i <= 5) {
+                // Player can double down
+                {
+                    // Set wager
+                    userHand.SetWager(10);
+                    // Test strategy - Can double down
+                    blackjack_strategy(userHand, dealerHand);
+                    ASSERT_TRUE(userHand.GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand.GetShouldHit());
+                    ASSERT_FALSE(userHand.GetShouldSplit());
+                    ASSERT_FALSE(userHand.GetShouldStand());
+                }
+                // Player can't double down
+                {
+                    // Set wager
+                    userHand.SetWager(200);
+                    // Test strategy - Can't double down
+                    blackjack_strategy(userHand, dealerHand);
+                    ASSERT_FALSE(userHand.GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand.GetShouldHit());
+                    ASSERT_FALSE(userHand.GetShouldSplit());
+                    ASSERT_FALSE(userHand.GetShouldStand());
+                }
+            }
+            // Otherwise
+            else {
+                // Set wager
+                userHand.SetWager(10);
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                ASSERT_FALSE(userHand.GetShouldDoubleDown());
+                ASSERT_TRUE(userHand.GetShouldHit());
+                ASSERT_FALSE(userHand.GetShouldSplit());
+                ASSERT_FALSE(userHand.GetShouldStand());
+            }
+            dealerHand.GetCards().pop_back();
+        }
+        userHand.GetCards().pop_back();
+        userHand.AddHandTotal();
+    }
+    // Player card total is 18 (Ace, 7)
+    {
+        userHand.SetCards(Card(Ranks[6], Suits[0]));
+        userHand.AddHandTotal();
+        for (int i = 0; i < 13; i++) {
+            // Add card to dealer hand
+            dealerHand.SetCards(Card(Ranks[i], Suits[0]));
+            if (i == 1 || i == 6 || i == 7) {
+                // Set wager
+                userHand.SetWager(10);
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                ASSERT_FALSE(userHand.GetShouldDoubleDown());
+                ASSERT_FALSE(userHand.GetShouldHit());
+                ASSERT_FALSE(userHand.GetShouldSplit());
+                ASSERT_TRUE(userHand.GetShouldStand());
+            }
+            else if (i >= 2 && i <= 5) {
+                // Player can double down
+                {
+                    // Set wager
+                    userHand.SetWager(10);
+                    // Test strategy - Can double down
+                    blackjack_strategy(userHand, dealerHand);
+                    ASSERT_TRUE(userHand.GetShouldDoubleDown());
+                    ASSERT_FALSE(userHand.GetShouldHit());
+                    ASSERT_FALSE(userHand.GetShouldSplit());
+                    ASSERT_TRUE(userHand.GetShouldStand());
+                }
+                // Player can't double down
+                {
+                    // Set wager
+                    userHand.SetWager(200);
+                    // Test strategy - Can't double down
+                    blackjack_strategy(userHand, dealerHand);
+                    ASSERT_FALSE(userHand.GetShouldDoubleDown());
+                    ASSERT_FALSE(userHand.GetShouldHit());
+                    ASSERT_FALSE(userHand.GetShouldSplit());
+                    ASSERT_TRUE(userHand.GetShouldStand());
+                }
+            }
+            else {
+                // Set wager
+                userHand.SetWager(10);
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                ASSERT_FALSE(userHand.GetShouldDoubleDown());
+                ASSERT_TRUE(userHand.GetShouldHit());
+                ASSERT_FALSE(userHand.GetShouldSplit());
+                ASSERT_FALSE(userHand.GetShouldStand());
+            }
+            dealerHand.GetCards().pop_back();
+        }
+        userHand.GetCards().pop_back();
+        userHand.AddHandTotal();
+    }
+    // Player card total is 19, 20, or 21 (Ace, 8 || Ace, 9 || Ace, Ten)
+    for (int i = 8; i <= 12; i++) {
+        userHand.SetCards(Card(Ranks[i], Suits[0]));
+        userHand.AddHandTotal();
+        for (int j = 0; j < 13; j++) {
+            // Add card to dealer hand
+            dealerHand.SetCards(Card(Ranks[j], Suits[0]));
+            // Set wager
+            userHand.SetWager(200);
+            // Test strategy
+            blackjack_strategy(userHand, dealerHand);
+            ASSERT_FALSE(userHand.GetShouldDoubleDown());
+            ASSERT_FALSE(userHand.GetShouldHit());
+            ASSERT_FALSE(userHand.GetShouldSplit());
+            ASSERT_TRUE(userHand.GetShouldStand());
+            dealerHand.GetCards().pop_back();
+        }
+        userHand.GetCards().pop_back();
+        userHand.AddHandTotal();
+    }
+}
+
+/*
+*   Blackjack strategy test, duplicate ranks
+*/
+TEST_F(test_x, BlackjackStratDuplicates) {
+    Hand userHand;
+    Hand dealerHand;
+    userHand.SetBankTotal(100);
+    // Add first card to dealer
+    dealerHand.SetCards(Card(Ranks[0], Suits[0]));
+    dealerHand.AddHandTotal();
+    // Player card total is 4 (two, two) or 6 (three, three)
+    for (int i = 1; i <= 2; i++) {
+        // Add cards to player hand
+        userHand.AddCardToHand(Card(Ranks[i], Suits[0]));
+        userHand.AddCardToHand(Card(Ranks[i], Suits[0]));
+        for (int j = 0; j < 13; j++) {
+            // Add card to dealer hand
+            dealerHand.SetCards(Card(Ranks[j], Suits[0]));
+            userHand.SetWager(10);
+            // Can split hand
+            {
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                if (j == 1 || j == 2) {
+                    ASSERT_FALSE(userHand.GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand.GetShouldHit());
+                    ASSERT_TRUE(userHand.GetShouldSplit());
+                    ASSERT_FALSE(userHand.GetShouldStand());
+                }
+                else if (j >= 3 && j <= 6) {
+                    ASSERT_FALSE(userHand.GetShouldDoubleDown());
+                    ASSERT_FALSE(userHand.GetShouldHit());
+                    ASSERT_TRUE(userHand.GetShouldSplit());
+                    ASSERT_FALSE(userHand.GetShouldStand());      
+                }
+                else {
+                    ASSERT_FALSE(userHand.GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand.GetShouldHit());
+                    ASSERT_FALSE(userHand.GetShouldSplit());
+                    ASSERT_FALSE(userHand.GetShouldStand());
+                }                
+            }
+            // Can't split hand
+            {
+                // Can't split
+                userHand.SetSplitHandResponse(true);
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                ASSERT_FALSE(userHand.GetShouldDoubleDown());
+                ASSERT_TRUE(userHand.GetShouldHit());
+                ASSERT_FALSE(userHand.GetShouldSplit());
+                ASSERT_FALSE(userHand.GetShouldStand());
+                // Can split
+                userHand.SetSplitHandResponse(false);
+            }
+            dealerHand.GetCards().pop_back();
+        }
+        userHand.GetCards().pop_back();
+        userHand.GetCards().pop_back();
+        userHand.AddHandTotal();
+    }
+    // Player card total is 8 (four, four)
+    {
+        // Add cards to player hand, set wager
+        userHand.AddCardToHand(Card(Ranks[3], Suits[0]));
+        userHand.AddCardToHand(Card(Ranks[3], Suits[0]));
+        userHand.SetWager(10);
+        for (int i = 0; i < 13; i++) {
+            // Add card to dealer hand
+            dealerHand.SetCards(Card(Ranks[i], Suits[0]));
+            // Can split hand
+            {
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                if (i == 4 || i == 5) {
+                    ASSERT_FALSE(userHand.GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand.GetShouldHit());
+                    ASSERT_TRUE(userHand.GetShouldSplit());
+                    ASSERT_FALSE(userHand.GetShouldStand());
+                }
+                else {
+                    ASSERT_FALSE(userHand.GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand.GetShouldHit());
+                    ASSERT_FALSE(userHand.GetShouldSplit());
+                    ASSERT_FALSE(userHand.GetShouldStand());
+                }
+            }
+            // Can't split hand
+            {
+                // Can't split
+                userHand.SetSplitHandResponse(true);
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                ASSERT_FALSE(userHand.GetShouldDoubleDown());
+                ASSERT_TRUE(userHand.GetShouldHit());
+                ASSERT_FALSE(userHand.GetShouldSplit());
+                ASSERT_FALSE(userHand.GetShouldStand());
+                // Can split
+                userHand.SetSplitHandResponse(false);
+            }
+            dealerHand.GetCards().pop_back();
+        }
+        userHand.GetCards().pop_back();
+        userHand.GetCards().pop_back();
+        userHand.AddHandTotal();        
+    }
 }
