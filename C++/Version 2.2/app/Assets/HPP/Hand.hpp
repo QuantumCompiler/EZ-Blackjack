@@ -462,7 +462,7 @@ Hand Hand::ParametersCheck(Hand& checkingHand, Hand& dealerHand) {
         checkingHand.SetCanBuyInsurance(false);
     }
     // Can Double Down Check
-    if (checkingHand.GetBankTotal() >= checkingHand.GetWager()) {
+    if (checkingHand.GetBankTotal() >= checkingHand.GetWager() && !checkingHand.GetChoseDoubleDown()) {
         if (!checkingHand.GetHasHit()) {
             checkingHand.SetCanDoubleDown(true);
         }
