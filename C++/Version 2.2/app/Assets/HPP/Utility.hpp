@@ -108,9 +108,9 @@ float round_input(float input) {
 */
 void time_sleep(const long input) {
     long time = input;
-    if (input == 1000) {
-        time = 0;
-    }
+    // if (input == 1000) {
+    //     time = 0;
+    // }
     std::this_thread::sleep_for(std::chrono::milliseconds(time));
 }
 
