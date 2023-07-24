@@ -1,13 +1,27 @@
 // ----- ----- ----- ----- ----- ----- ----- Includes ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 #include "Hand.hpp"
 
+/*  blackjack_strategy - Provides a strategy for players on what is the best way to play a given hand in blackjack
+*   Input:
+*       playerHand - Hand object that is passed by reference that represents the hand of a user
+*       dealerHand - Hand object that is passed by reference that represents the hand of a dealer
+*   Algorithm:
+*       * Check the parameters of the hand "playerHand"
+*       * Check if the player has a an Ace in their hand and if they have duplicate ranks in their hand
+*       * Create template `should' statements that are output to terminal for certain conditions
+*       * Process the logical steps for the following three scenarios:
+*           * Player has duplicate ranks in their hand, is able to split, and has not spoken on whether they want to split ye
+*           * Player is dealt and Ace and currently has two cards
+*           * Any other scenario that doesn't match the above two
+*   Output:
+*       This function does not output any values, in modifies specific boolean values of "playerHand" and outputs a message to terminal
+*/
 void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
     // Check the parameters of "playerHand"
     playerHand.ParametersCheck(playerHand, dealerHand);
     // Check if "playerHand" has the same rank or if they have an Ace in their hand
     playerHand.CheckParamInHand("R", Ranks[0]);
-    // Grabbing the card that is face up for the dealer
-    std::string dealer_showing = dealerHand.GetCards().at(1).GetRank();
+    playerHand.CheckSameParamInHand("R");
     // Player `should' statements
     std::string should_double_down = "Blackjack strategy suggests that " + playerHand.GetDisplayName() + " should " + color_text(31, "double down") + ".";
     std::string should_double_down_or_hit = "Blackjack strategy suggests that " + playerHand.GetDisplayName() + " should " + color_text(31, "hit") + " or " + color_text(31, "double down") + ".";
@@ -17,91 +31,340 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
     std::string should_split_or_hit = "Blackjack strategy suggests that " + playerHand.GetDisplayName() + " should " + color_text(31, "hit") + " or " + color_text(31, "split") + ".";
     std::string should_stand = "Blackjack strategy suggests that " + playerHand.GetDisplayName() + " should " + color_text(31, "stand") + ".";
     // Logic for if a player is dealt the same rank and only two cards are in the hand with them having not decided if they want to split or not
-    if (((playerHand.GetCanSplitHand() && !playerHand.GetSplitHandResponse()) || (playerHand.GetCanSplitAces() && !playerHand.GetSplitHandResponse())) && playerHand.GetCards().size() == 2) {
-        std::cout << "Fuck ah you" << std::endl;
+    if (((playerHand.GetCanSplitHand() && !playerHand.GetSplitHandResponse()) || (playerHand.GetCanSplitAces() && !playerHand.GetSplitAcesResponse())) && playerHand.GetCards().size() == 2) {
         // Check value of players cards
         switch (playerHand.GetCardsTotal()) {
-        // Player card total is 4 (two, two) or 6 (three, three)
-        case 4:
-        case 6:
-            // Checking the value of the card that is face up of the dealer
-            switch (dealerHand.GetCards().at(1).GetCardValue()) {
-                // Dealer is showing a two or three
-                case 2:
-                case 3:
-                    // Player should split or hit
-                    playerHand.SetShouldDoubleDown(false);
-                    playerHand.SetShouldHit(true);
-                    playerHand.SetShouldSplit(true);
-                    playerHand.SetShouldStand(false);
-                    // std::cout << std::endl << should_split_or_hit << std::endl; time_sleep(1000); - Uncomment after test
-                    break;
-                // Dealer is showing a 4, 5, 6 or 7
-                case 4:
-                case 5:
-                case 6:
-                case 7:
-                    // Player should split
-                    playerHand.SetShouldDoubleDown(false);
-                    playerHand.SetShouldHit(false);
-                    playerHand.SetShouldSplit(true);
-                    playerHand.SetShouldStand(false);
-                    // std::cout << std::endl << should_split << std::endl; time_sleep(1000); - Uncomment after test
-                    break;
-                case 8:
-                case 9:
-                case 10:
-                case 1:
-                case 11:
-                    // Player should hit
-                    playerHand.SetShouldDoubleDown(false);
-                    playerHand.SetShouldHit(true);
-                    playerHand.SetShouldSplit(false);
-                    playerHand.SetShouldStand(false);
-                    break;
-                default:
-                    break;
-            }
-            break;
-        // Player card total is 8 (four, four)
-        case 8:
-            // Checking the value of the card that is face up of the dealer
-            switch (dealerHand.GetCards().at(1).GetCardValue()) {
-                // Dealer is showing a 5 or 6
-                case 5:
-                case 6:
-                    // Player should split or hit
-                    playerHand.SetShouldDoubleDown(false);
-                    playerHand.SetShouldHit(true);
-                    playerHand.SetShouldSplit(true);
-                    playerHand.SetShouldStand(false);
-                    break;
-                case 2:
-                case 3:
-                case 4:
-                case 7:
-                case 8:
-                case 9:
-                case 10:
-                case 1:
-                case 11:
-                    // Player should hit
-                    playerHand.SetShouldDoubleDown(false);
-                    playerHand.SetShouldHit(true);
-                    playerHand.SetShouldSplit(false);
-                    playerHand.SetShouldStand(false);
-                    break;
-                default:
-                    break;
-            }
-            break;
-        default:
-            break;
+            // Player card total is 4 (two, two) or 6 (three, three)
+            case 4:
+            case 6:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealerHand.GetCards().at(1).GetCardValue()) {
+                    // Dealer is showing a two or three
+                    case 2:
+                    case 3:
+                        // Player should split or hit
+                        playerHand.SetShouldDoubleDown(false);
+                        playerHand.SetShouldHit(true);
+                        playerHand.SetShouldSplit(true);
+                        playerHand.SetShouldStand(false);
+                        std::cout << std::endl << should_split_or_hit << std::endl; time_sleep(1000);
+                        break;
+                    // Dealer is showing a 4, 5, 6 or 7
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                        // Player should split
+                        playerHand.SetShouldDoubleDown(false);
+                        playerHand.SetShouldHit(false);
+                        playerHand.SetShouldSplit(true);
+                        playerHand.SetShouldStand(false);
+                        std::cout << std::endl << should_split << std::endl; time_sleep(1000);
+                        break;
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 1:
+                    case 11:
+                        // Player should hit
+                        playerHand.SetShouldDoubleDown(false);
+                        playerHand.SetShouldHit(true);
+                        playerHand.SetShouldSplit(false);
+                        playerHand.SetShouldStand(false);
+                        std::cout << std::endl << should_hit << std::endl; time_sleep(1000);
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            // Player card total is 8 (four, four)
+            case 8:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealerHand.GetCards().at(1).GetCardValue()) {
+                    // Dealer is showing a 5 or 6
+                    case 5:
+                    case 6:
+                        // Player should split or hit
+                        playerHand.SetShouldDoubleDown(false);
+                        playerHand.SetShouldHit(true);
+                        playerHand.SetShouldSplit(true);
+                        playerHand.SetShouldStand(false);
+                        std::cout << std::endl << should_split_or_hit << std::endl; time_sleep(1000);
+                        break;
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 1:
+                    case 11:
+                        // Player should hit
+                        playerHand.SetShouldDoubleDown(false);
+                        playerHand.SetShouldHit(true);
+                        playerHand.SetShouldSplit(false);
+                        playerHand.SetShouldStand(false);
+                        std::cout << std::endl << should_hit << std::endl; time_sleep(1000);
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            // Player card total is 10 (five, five)
+            case 10:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealerHand.GetCards().at(1).GetCardValue()) {
+                    // Dealer is showing a Face or an Ace
+                    case 10:
+                    case 1:
+                    case 11:
+                        // Player should hit
+                        playerHand.SetShouldDoubleDown(false);
+                        playerHand.SetShouldHit(true);
+                        playerHand.SetShouldSplit(false);
+                        playerHand.SetShouldStand(false);
+                        std::cout << std::endl << should_hit << std::endl; time_sleep(1000);
+                        break;
+                    // Otherwise
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8:
+                    case 9:
+                        // Player can double down
+                        if (playerHand.GetCanDoubleDown()) {
+                            playerHand.SetShouldDoubleDown(true);
+                            playerHand.SetShouldHit(true);
+                            playerHand.SetShouldSplit(false);
+                            playerHand.SetShouldStand(false);
+                            std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(1000);
+                        }
+                        // Player cannot double down
+                        else {
+                            playerHand.SetShouldDoubleDown(false);
+                            playerHand.SetShouldHit(true);
+                            playerHand.SetShouldSplit(false);
+                            playerHand.SetShouldStand(false);
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(1000);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            // Player card total is 12 (six, six || Ace, Ace) 
+            case 12:
+                // Player has Aces
+                if (playerHand.GetParamInHand()) {
+                    // Checking the value of the card that is face up of the dealer
+                    switch (dealerHand.GetCards().at(1).GetCardValue()) {
+                        // Dealer is showing any card
+                        case 2:
+                        case 3:
+                        case 4:
+                        case 5:
+                        case 6:
+                        case 7:
+                        case 8:
+                        case 9:
+                        case 10:
+                        case 1:
+                        case 11:
+                            // Player should split
+                            playerHand.SetShouldDoubleDown(false);
+                            playerHand.SetShouldHit(false);
+                            playerHand.SetShouldSplit(true);
+                            playerHand.SetShouldStand(false);
+                            std::cout << std::endl << should_split << std::endl; time_sleep(1000);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                // Player has sixes
+                else {
+                    // Checking the value of the card that is face up of the dealer
+                    switch (dealerHand.GetCards().at(1).GetCardValue()) {
+                        // Dealer is showing a 7
+                        case 7:
+                            // Player should split or hit
+                            playerHand.SetShouldDoubleDown(false);
+                            playerHand.SetShouldHit(true);
+                            playerHand.SetShouldSplit(true);
+                            playerHand.SetShouldStand(false);
+                            std::cout << std::endl << should_split_or_hit << std::endl; time_sleep(1000);
+                            break;
+                        case 2:
+                        case 3:
+                        case 4:
+                        case 5:
+                        case 6:
+                            // Player should split
+                            playerHand.SetShouldDoubleDown(false);
+                            playerHand.SetShouldHit(false);
+                            playerHand.SetShouldSplit(true);
+                            playerHand.SetShouldStand(false);
+                            std::cout << std::endl << should_split << std::endl; time_sleep(1000);
+                            break;
+                        case 8:
+                        case 9:
+                        case 10:
+                        case 1:
+                        case 11:
+                            // Player should hit
+                            playerHand.SetShouldDoubleDown(false);
+                            playerHand.SetShouldHit(true);
+                            playerHand.SetShouldSplit(false);
+                            playerHand.SetShouldStand(false);
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(1000);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                break;
+            // Player has a 14
+            case 14:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealerHand.GetCards().at(1).GetCardValue()) {
+                    // Dealer is showing an 8
+                    case 8:
+                        // Player should split or hit
+                        playerHand.SetShouldDoubleDown(false);
+                        playerHand.SetShouldHit(true);
+                        playerHand.SetShouldSplit(true);
+                        playerHand.SetShouldStand(false);
+                        std::cout << std::endl << should_split_or_hit << std::endl; time_sleep(1000);
+                        break;
+                    // Dealer is showing a 2 - 7
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                        // Player should split
+                        playerHand.SetShouldDoubleDown(false);
+                        playerHand.SetShouldHit(false);
+                        playerHand.SetShouldSplit(true);
+                        playerHand.SetShouldStand(false);
+                        std::cout << std::endl << should_split << std::endl; time_sleep(1000);
+                        break;
+                    // Otherwise
+                    case 9:
+                    case 10:
+                    case 1:
+                    case 11:
+                        // Player should hit
+                        playerHand.SetShouldDoubleDown(false);
+                        playerHand.SetShouldHit(true);
+                        playerHand.SetShouldSplit(false);
+                        playerHand.SetShouldStand(false);
+                        std::cout << std::endl << should_hit << std::endl; time_sleep(1000);
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            // Player card total is 16 (eight, eight)
+            case 16:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealerHand.GetCards().at(1).GetCardValue()) {
+                    // Dealer is showing any card
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 1:
+                    case 11:
+                        // Player should split
+                        playerHand.SetShouldDoubleDown(false);
+                        playerHand.SetShouldHit(false);
+                        playerHand.SetShouldSplit(true);
+                        playerHand.SetShouldStand(false);
+                        std::cout << std::endl << should_split << std::endl; time_sleep(1000);            
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            // Player card total is 18 (nine, nine)
+            case 18:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealerHand.GetCards().at(1).GetCardValue()) {
+                    // Dealer is showing a 7, Face, or Ace
+                    case 7:
+                    case 10:
+                    case 1:
+                    case 11:
+                        // Player should stand
+                        playerHand.SetShouldDoubleDown(false);
+                        playerHand.SetShouldHit(false);
+                        playerHand.SetShouldSplit(false);
+                        playerHand.SetShouldStand(true);
+                        std::cout << std::endl << should_stand << std::endl; time_sleep(1000); 
+                        break;
+                    // Otherwise
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 8:
+                    case 9:
+                        // Player should split
+                        playerHand.SetShouldDoubleDown(false);
+                        playerHand.SetShouldHit(false);
+                        playerHand.SetShouldSplit(true);
+                        playerHand.SetShouldStand(false);
+                        std::cout << std::endl << should_split << std::endl; time_sleep(1000);
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            // Player card total is 20 (face, face)
+            case 20:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealerHand.GetCards().at(1).GetCardValue()) {
+                    // Dealer is showing any card
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 1:
+                    case 11:
+                        // Player should stand
+                        playerHand.SetShouldDoubleDown(false);
+                        playerHand.SetShouldHit(false);
+                        playerHand.SetShouldSplit(false);
+                        playerHand.SetShouldStand(true);
+                        std::cout << std::endl << should_stand << std::endl; time_sleep(1000); 
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
         }
     }
     // Logic for if a player is dealt an Ace and only two cards are in the hand
-    else if (playerHand.GetParamInHand() && playerHand.GetCards().size() == 2) {
-        std::cout << "Fuck ah both ah yous" << std::endl;
+    else if (playerHand.GetParamInHand() && !playerHand.GetSameParamInHand() && playerHand.GetCards().size() == 2) {
         // Check value of players cards
         switch (playerHand.GetCardsTotal()) {
             // Player card total is 13 or 14 (Ace, 2 || Ace, 3)
@@ -119,7 +382,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                             playerHand.SetShouldHit(true);
                             playerHand.SetShouldSplit(false);
                             playerHand.SetShouldStand(false);
-                            // std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(1000); - Uncomment after test
+                            std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(1000);
                         }
                         // Player cannot double down
                         else {
@@ -128,7 +391,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                             playerHand.SetShouldHit(true);
                             playerHand.SetShouldSplit(false);
                             playerHand.SetShouldStand(false);
-                            // std::cout << std::endl << should_hit << std::endl; time_sleep(1000); - Uncomment after test
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(1000);
                         }
                         break;
                     // Dealer is showing 2 - 4 or 7 - Face or Ace
@@ -146,7 +409,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                         playerHand.SetShouldHit(true);
                         playerHand.SetShouldSplit(false);
                         playerHand.SetShouldStand(false);
-                        // std::cout << std::endl << should_hit << std::endl; time_sleep(1000); - Uncomment after test
+                        std::cout << std::endl << should_hit << std::endl; time_sleep(1000);
                         break;
                     default:
                         break;
@@ -168,7 +431,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                             playerHand.SetShouldHit(true);
                             playerHand.SetShouldSplit(false);
                             playerHand.SetShouldStand(false);
-                            // std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(1000); - Uncomment after test
+                            std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(1000);
                         }
                         // Player cannot double down
                         else {
@@ -177,7 +440,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                             playerHand.SetShouldHit(true);
                             playerHand.SetShouldSplit(false);
                             playerHand.SetShouldStand(false);
-                            // std::cout << std::endl << should_hit << std::endl; time_sleep(1000); - Uncomment after test
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(1000);
                         }              
                         break;
                     // Otherwise
@@ -194,7 +457,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                         playerHand.SetShouldHit(true);
                         playerHand.SetShouldSplit(false);
                         playerHand.SetShouldStand(false);
-                        // std::cout << std::endl << should_hit << std::endl; time_sleep(1000); - Uncomment after test
+                        std::cout << std::endl << should_hit << std::endl; time_sleep(1000);
                         break;
                     default:
                         break;
@@ -216,7 +479,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                             playerHand.SetShouldHit(true);
                             playerHand.SetShouldSplit(false);
                             playerHand.SetShouldStand(false);
-                            // std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(1000); - Uncomment after test
+                            std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(1000);
                         }
                         // Player cannot double down
                         else {
@@ -225,7 +488,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                             playerHand.SetShouldHit(true);
                             playerHand.SetShouldSplit(false);
                             playerHand.SetShouldStand(false);
-                            // std::cout << std::endl << should_hit << std::endl; time_sleep(1000); - Uncomment after test
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(1000);
                         }
                         break;
                     // Otherwise
@@ -241,7 +504,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                         playerHand.SetShouldHit(true);
                         playerHand.SetShouldSplit(false);
                         playerHand.SetShouldStand(false);
-                        // std::cout << std::endl << should_hit << std::endl; time_sleep(1000); - Uncomment after test
+                        std::cout << std::endl << should_hit << std::endl; time_sleep(1000);
                         break;
                     default:
                         break;
@@ -260,7 +523,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                         playerHand.SetShouldHit(false);
                         playerHand.SetShouldSplit(false);
                         playerHand.SetShouldStand(true);
-                        // std::cout << std::endl << should_stand << std::endl; time_sleep(1000); - Uncomment after test
+                        std::cout << std::endl << should_stand << std::endl; time_sleep(1000); 
                         break;
                     // Dealer is showing a 3, 4, 5, or 6
                     case 3:
@@ -274,7 +537,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                             playerHand.SetShouldHit(false);
                             playerHand.SetShouldSplit(false);
                             playerHand.SetShouldStand(true);
-                            // std::cout << std::endl << should_double_down_or_stand << std::endl; time_sleep(1000); - Uncomment after test
+                            std::cout << std::endl << should_double_down_or_stand << std::endl; time_sleep(1000);
                         }
                         else {
                             // Player should stand
@@ -282,7 +545,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                             playerHand.SetShouldHit(false);
                             playerHand.SetShouldSplit(false);
                             playerHand.SetShouldStand(true);
-                            // std::cout << std::endl << should_stand << std::endl; time_sleep(1000); - Uncomment after test
+                            std::cout << std::endl << should_stand << std::endl; time_sleep(1000); 
                         }
                         break;
                     // Dealer is showing 9, Face, or Ace
@@ -295,7 +558,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                         playerHand.SetShouldHit(true);
                         playerHand.SetShouldSplit(false);
                         playerHand.SetShouldStand(false);
-                        // std::cout << std::endl << should_hit << std::endl; time_sleep(1000); - Uncomment after test
+                        std::cout << std::endl << should_hit << std::endl; time_sleep(1000);
                         break;
                     default:
                         break;
@@ -324,7 +587,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                         playerHand.SetShouldHit(false);
                         playerHand.SetShouldSplit(false);
                         playerHand.SetShouldStand(true);
-                        // std::cout << std::endl << should_stand << std::endl; time_sleep(1000); - Uncomment after test
+                        std::cout << std::endl << should_stand << std::endl; time_sleep(1000); 
                         break;
                     default:
                         break;
@@ -336,7 +599,6 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
     }
     // Logic for all other scenarios
     else {
-        std::cout << "Fuck ah me" << std::endl;
         // Check value of players cards
         switch (playerHand.GetCardsTotal()) {
             // Player card total is 4-8
@@ -364,7 +626,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                         playerHand.SetShouldHit(true);
                         playerHand.SetShouldSplit(false);
                         playerHand.SetShouldStand(false);
-                        // std::cout << std::endl << should_hit << std::endl; time_sleep(1000); - Uncomment after test
+                        std::cout << std::endl << should_hit << std::endl; time_sleep(1000);
                         break;
                     default:
                         break;
@@ -387,7 +649,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                             playerHand.SetShouldHit(true);
                             playerHand.SetShouldSplit(false);
                             playerHand.SetShouldStand(false);
-                            // std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(1000); - Uncomment after test
+                            std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(1000);
                         }
                         // Player cannot double down
                         else {
@@ -396,7 +658,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                             playerHand.SetShouldHit(true);
                             playerHand.SetShouldSplit(false);
                             playerHand.SetShouldStand(false);
-                            // std::cout << std::endl << should_hit << std::endl; time_sleep(1000); - Uncomment after test
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(1000);
                         }
                         break;
                     // Dealer is showing 7-Face or Ace
@@ -411,7 +673,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                         playerHand.SetShouldHit(true);
                         playerHand.SetShouldSplit(false);
                         playerHand.SetShouldStand(false);
-                        // std::cout << std::endl << should_hit << std::endl; time_sleep(1000); - Uncomment after test
+                        std::cout << std::endl << should_hit << std::endl; time_sleep(1000);
                         break;
                     default:
                         break;
@@ -437,7 +699,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                             playerHand.SetShouldHit(true);
                             playerHand.SetShouldSplit(false);
                             playerHand.SetShouldStand(false);
-                            // std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(1000); - Uncomment after test
+                            std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(1000);
                         }
                         // Player cannot double down
                         else {
@@ -446,7 +708,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                             playerHand.SetShouldHit(true);
                             playerHand.SetShouldSplit(false);
                             playerHand.SetShouldStand(false);
-                            // std::cout << std::endl << should_hit << std::endl; time_sleep(1000); - Uncomment after test
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(1000);
                         }
                         break;
                     // Dealer is showing a face card or Ace
@@ -458,7 +720,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                         playerHand.SetShouldHit(true);
                         playerHand.SetShouldSplit(false);
                         playerHand.SetShouldStand(false);
-                        // std::cout << std::endl << should_hit << std::endl; time_sleep(1000); - Uncomment after test
+                        std::cout << std::endl << should_hit << std::endl; time_sleep(1000);
                         break;
                     default:
                         break;
@@ -487,7 +749,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                             playerHand.SetShouldHit(true);
                             playerHand.SetShouldSplit(false);
                             playerHand.SetShouldStand(false);
-                            // std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(1000); - Uncomment after test
+                            std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(1000);
                         }
                         // Player cannot double down
                         else {
@@ -496,7 +758,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                             playerHand.SetShouldHit(true);
                             playerHand.SetShouldSplit(false);
                             playerHand.SetShouldStand(false);
-                            // std::cout << std::endl << should_hit << std::endl; time_sleep(1000); - Uncomment after test
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(1000);
                         }
                         break;
                     default:
@@ -521,7 +783,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                         playerHand.SetShouldHit(true);
                         playerHand.SetShouldSplit(false);
                         playerHand.SetShouldStand(false);
-                        // std::cout << std::endl << should_hit << std::endl; time_sleep(1000); - Uncomment after test
+                        std::cout << std::endl << should_hit << std::endl; time_sleep(1000);
                         break;
                     // Dealer is showing a 4-6
                     case 4:
@@ -532,7 +794,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                         playerHand.SetShouldHit(false);
                         playerHand.SetShouldSplit(false);
                         playerHand.SetShouldStand(true);
-                        // std::cout << std::endl << should_stand << std::endl; time_sleep(1000); - Uncomment after test 
+                        std::cout << std::endl << should_stand << std::endl; time_sleep(1000);  
                         break;
                     default:
                         break;
@@ -556,7 +818,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                         playerHand.SetShouldHit(false);
                         playerHand.SetShouldSplit(false);
                         playerHand.SetShouldStand(true);
-                        // std::cout << std::endl << should_stand << std::endl; time_sleep(1000); - Uncomment after test
+                        std::cout << std::endl << should_stand << std::endl; time_sleep(1000); 
                         break;
                     // Dealer is showing 7-Face or Ace
                     case 7:
@@ -570,7 +832,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                         playerHand.SetShouldHit(true);
                         playerHand.SetShouldSplit(false);
                         playerHand.SetShouldStand(false);
-                        // std::cout << std::endl << should_hit << std::endl; time_sleep(1000); - Uncomment after test
+                        std::cout << std::endl << should_hit << std::endl; time_sleep(1000);
                         break;
                     default:
                         break;
@@ -601,7 +863,7 @@ void blackjack_strategy(Hand& playerHand, Hand& dealerHand) {
                         playerHand.SetShouldHit(false);
                         playerHand.SetShouldSplit(false);
                         playerHand.SetShouldStand(true);
-                        // std::cout << std::endl << should_stand << std::endl; time_sleep(1000); - Uncomment after test
+                        std::cout << std::endl << should_stand << std::endl; time_sleep(1000); 
                         break;
                     default:
                         break;
@@ -702,13 +964,11 @@ std::tuple<Hand, Hand, Shoe, bool> dealer_showing_ace(Hand& playerHand, Hand& de
                 std::cout << std::endl << "Both players have blackjack. " << playerHand.GetDisplayName() << " pushes their original wager. "; time_sleep(1000);
                 playerHand.UpdateBank(3, playerHand.GetWager());
             }
-            std::cout << playerHand.GetDisplayName() << " nets " << playerHand.GetDisplayNet() << " this hand." << std::endl << std::endl; time_sleep(1000);
             std::cout << "Here are the final hands of the players:" << std::endl; time_sleep(1000);
             playerHand.ShowHand("final");
             dealerHand.ShowHand("final", "show");
+            std::cout << std::endl << playerHand.GetDisplayName() << " pushes the current hand. " << playerHand.GetDisplayName() << " nets " << playerHand.GetDisplayNet() << " this hand." << std::endl; time_sleep(1000);
             hand_continue = false;
-            time_sleep(3000);
-            clear_terminal();
             // Update Stats Here
         }
         // Dealer has blackjack, player does not, hand ends
@@ -724,13 +984,11 @@ std::tuple<Hand, Hand, Shoe, bool> dealer_showing_ace(Hand& playerHand, Hand& de
                 << " loses their original wager. "; time_sleep(1000);
                 playerHand.UpdateBank(2, playerHand.GetWager());
             }
-            std::cout << playerHand.GetDisplayName() << " nets " << playerHand.GetDisplayNet() << " this hand." << std::endl << std::endl; time_sleep(1000);
             std::cout << "Here are the final hands of the players:" << std::endl; time_sleep(1000);
             playerHand.ShowHand("final");
             dealerHand.ShowHand("final", "show");
+            std::cout << std::endl << playerHand.GetDisplayName() << " loses the current hand. " << playerHand.GetDisplayName() << " nets " << playerHand.GetDisplayNet() << " this hand." << std::endl; time_sleep(1000);
             hand_continue = false;
-            time_sleep(3000);
-            clear_terminal();
             // Update Stats Here
         }
         // Dealer does not have blackjack, player does, hand ends
@@ -746,13 +1004,11 @@ std::tuple<Hand, Hand, Shoe, bool> dealer_showing_ace(Hand& playerHand, Hand& de
                 << " wins their original wager. "; time_sleep(1000);
                 playerHand.UpdateBank(4, playerHand.GetWager());
             }
-            std::cout << playerHand.GetDisplayName() << " nets " << playerHand.GetDisplayNet() << " this hand." << std::endl << std::endl; time_sleep(1000);
             std::cout << "Here are the final hands of the players:" << std::endl; time_sleep(1000);
             playerHand.ShowHand("final");
             dealerHand.ShowHand("final", "show");
+            std::cout << std::endl << playerHand.GetDisplayName() << " wins the current hand. " << playerHand.GetDisplayName() << " nets " << playerHand.GetDisplayNet() << " this hand." << std::endl; time_sleep(1000);
             hand_continue = false;
-            time_sleep(3000);
-            clear_terminal();
             // Update Stats Here
         }
         // Neither player has blackjack, hand continues
@@ -778,43 +1034,37 @@ std::tuple<Hand, Hand, Shoe, bool> dealer_showing_ace(Hand& playerHand, Hand& de
         }
         // Both players have blackjack, hand ends
         if (dealerHand.GetHasBlackJack() && playerHand.GetHasBlackJack()) {
-            std::cout << std::endl << "Both players have blackjack. " << playerHand.GetDisplayName() << " pushes their original wager. ";
+            std::cout << std::endl << "Both players have blackjack. " << playerHand.GetDisplayName() << " pushes their original wager." << std::endl; time_sleep(1000);
             playerHand.UpdateBank(3, playerHand.GetWager());
-            std::cout << playerHand.GetDisplayName() << " nets " << playerHand.GetDisplayNet() << " this hand." << std::endl << std::endl; time_sleep(1000);
             std::cout << "Here are the final hands of the players:" << std::endl; time_sleep(1000);
             playerHand.ShowHand("final");
             dealerHand.ShowHand("final", "show");
+            std::cout << std::endl << playerHand.GetDisplayName() << " pushes the current hand. " << playerHand.GetDisplayName() << " nets " << playerHand.GetDisplayNet() << " this hand." << std::endl; time_sleep(1000);
             hand_continue = false;
-            clear_terminal();
-            time_sleep(3000);
             // Update Stats Here
         }
         // Dealer has blackjack, player does not, hand ends
         else if (dealerHand.GetHasBlackJack() && !playerHand.GetHasBlackJack()) {
             std::cout << std::endl << dealerHand.GetDisplayName() << " has blackjack but " << playerHand.GetDisplayName() << " does not. " << playerHand.GetDisplayName()
-            << " loses their original wager. "; time_sleep(1000);
+            << " loses their original wager." << std::endl; time_sleep(1000);
             playerHand.UpdateBank(2, playerHand.GetWager());
-            std::cout << playerHand.GetDisplayName() << " nets " << playerHand.GetDisplayNet() << " this hand." << std::endl << std::endl; time_sleep(1000);
-            std::cout << "Here are the final hands of the players:" << std::endl; time_sleep(1000);
+            std::cout << std::endl << "Here are the final hands of the players:" << std::endl; time_sleep(1000);
             playerHand.ShowHand("final");
             dealerHand.ShowHand("final", "show");
+            std::cout << std::endl << playerHand.GetDisplayName() << " loses the current hand. " << playerHand.GetDisplayName() << " nets " << playerHand.GetDisplayNet() << " this hand." << std::endl; time_sleep(1000);
             hand_continue = false;
-            clear_terminal();
-            time_sleep(3000);
             // Update Stats Here
         }
         // Dealer does not have blackjack, player does, hand ends
         else if (!dealerHand.GetHasBlackJack() && playerHand.GetHasBlackJack()) {
             std::cout << std::endl << playerHand.GetDisplayName() << " has blackjack and " << dealerHand.GetDisplayName() << " does not. " << playerHand.GetDisplayName()
-            << " wins their original wager. "; time_sleep(1000);
+            << " wins their original wager." << std::endl; time_sleep(1000);
             playerHand.UpdateBank(4, playerHand.GetWager());
-            std::cout << playerHand.GetDisplayName() << " nets " << playerHand.GetDisplayNet() << " this hand." << std::endl << std::endl; time_sleep(1000);
-            std::cout << "Here are the final hands of the players:" << std::endl; time_sleep(1000);
+            std::cout << std::endl << "Here are the final hands of the players:" << std::endl; time_sleep(1000);
             playerHand.ShowHand("final");
             dealerHand.ShowHand("final", "show");
+            std::cout << std::endl << playerHand.GetDisplayName() << " wins the current hand. " << playerHand.GetDisplayName() << " nets " << playerHand.GetDisplayNet() << " this hand." << std::endl; time_sleep(1000);
             hand_continue = false;
-            clear_terminal();
-            time_sleep(3000);
             // Update Stats Here
         }
         // Neither player has blackjack, hand continues
@@ -879,7 +1129,7 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
                 // Prompt player to enter response to split aces
                 std::cout << std::endl << "You have the same rank of " << playerHand.GetCards().at(0).GetDisplayRank() << " in your hand." << std::endl; time_sleep(1000);
                 std::cout << std::endl << "Would you like to split your hand? You may only split your hand once." << std::endl; time_sleep(1000);
-                // blackjack_strategy(playerHand, dealerHand, false);
+                blackjack_strategy(playerHand, dealerHand);
                 std::cout << std::endl << "Enter (y) for yes and (n) for no: "; time_sleep(1000);
                 std::cin >> aces_response; std::cout << std::endl;
                 // Player has chosen to split aces
@@ -924,7 +1174,7 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
                 }
                 // Player has entered an invalid response
                 else {
-                    std::cout << color_text(31, "Invalid choice") + " of " + color_text(31, aces_response) + ". Plese re-enter your decision." << std::endl; time_sleep(1000);
+                    std::cout << color_text(31, "Invalid choice") + " of " + color_text(31, aces_response) + ". Please re-enter your decision." << std::endl; time_sleep(1000);
                     aces_response.clear();
                 }
             }
@@ -936,7 +1186,7 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
                 // Prompt player to enter response to split hand
                 std::cout << std::endl << "You have the same rank of " << playerHand.GetCards().at(0).GetDisplayRank() << " in your hand." << std::endl; time_sleep(1000);
                 std::cout << std::endl << "Would you like to split your hand? You can split up to four times." << std::endl; time_sleep(1000);
-                // blackjack_strategy(playerHand, dealerHand, false);
+                blackjack_strategy(playerHand, dealerHand);
                 std::cout << std::endl << "Enter (y) for yes and (n) for no: "; time_sleep(1000);
                 std::cin >> same_rank_response; std::cout << std::endl; 
                 // Player has chosen to split their hand
@@ -980,7 +1230,7 @@ std::tuple<std::vector<Hand>, Hand, Hand, Shoe, int> same_rank_check(Hand& playe
                             while (split_again != "y" || split_again != "n") {
                                 std::cout << std::endl << "You have pulled the same rank of " << checkingHand.GetCards().at(0).GetDisplayRank() << " again." << std::endl; time_sleep(1000);
                                 std::cout << std::endl << "Would you like to split your current hand again?" << std::endl; time_sleep(1000);
-                                // blackjack_strategy(checking_hand, dealerHand, false);
+                                blackjack_strategy(checkingHand, dealerHand);
                                 std::cout << std::endl << "Enter (y) for yes and (n) for no: "; time_sleep(1000);
                                 std::cin >> split_again; std::cout << std::endl;
                                 if (split_again == "y") {
@@ -1284,14 +1534,14 @@ std::tuple<Hand, Hand, Shoe> player_logic(Hand& currentPlayerHand, Hand& dealerH
                     if (currentPlayerHand.GetCanDoubleDown()) {
                         // Prompt player what they would like to do
                         std::cout << std::endl << "Would you like to hit, stand, or double down for hand " << std::to_string(hand_counter) << "?" << std::endl; time_sleep(1000);
-                        // blackjack_strategy(playerHand, dealerHand, true);
+                        blackjack_strategy(currentPlayerHand, dealerHand);
                         std::cout << std::endl << "Enter (h) to hit, (s) to stand, and (d) to double down for " << std::to_string(hand_counter) << ": "; time_sleep(1000);
                     }
                     // Player can't double down their current split hand
                     else {
                         // Prompt player what they would like to do
                         std::cout << std::endl << "Would you like to hit or stand for hand " << std::to_string(hand_counter) << "?" << std::endl; time_sleep(1000);
-                        // blackjack_strategy(playerHand, dealerHand, true);
+                        blackjack_strategy(currentPlayerHand, dealerHand);
                         std::cout << std::endl << "Enter (h) to hit and (s) to stand for " << std::to_string(hand_counter) << ": "; time_sleep(1000);
                     }
                     std::cin >> response;
@@ -1303,14 +1553,14 @@ std::tuple<Hand, Hand, Shoe> player_logic(Hand& currentPlayerHand, Hand& dealerH
                     if (currentPlayerHand.GetCanDoubleDown()) {
                         // Prompt player what they would like to do
                         std::cout << std::endl << "Would you like to hit, stand, or double down?" << std::endl; time_sleep(1000);
-                        // blackjack_strategy(playerHand, dealerHand, true);
+                        blackjack_strategy(currentPlayerHand, dealerHand);
                         std::cout << std::endl << "Enter (h) to hit, (s) to stand, and (d) to double down: "; time_sleep(1000);
                     }
                     // Player can't double down their current hand
                     else {
                         // Prompt player what they would like to do
                         std::cout << std::endl << "Would you like to hit or stand?" << std::endl; time_sleep(1000);
-                        // blackjack_strategy(playerHand, dealerHand, true);
+                        blackjack_strategy(currentPlayerHand, dealerHand);
                         std::cout << std::endl << "Enter (h) to hit and (s) to stand: "; time_sleep(1000);
                     }
                     std::cin >> response;
@@ -1331,7 +1581,7 @@ std::tuple<Hand, Hand, Shoe> player_logic(Hand& currentPlayerHand, Hand& dealerH
                 dealerHand.ShowHand("initial");
                 // Prompt player what they would like to do
                 std::cout << std::endl << "Would you like to hit (h) or stand (s)?" << std::endl; time_sleep(1000);
-                // blackjack_strategy(playerHand, dealerHand, true);
+                blackjack_strategy(currentPlayerHand, dealerHand);
                 std::cout << std::endl << "Enter (h) to hit and (s) to stand: "; time_sleep(1000);
                 std::cin >> response;
                 std::cout << std::endl; time_sleep(1000);
@@ -1946,7 +2196,7 @@ void play_game() {
         // Player has run out of currency in their bank
         else {
             std::string redeposit;
-            std::cout << humanHand.GetDisplayName() << " has run out of currency in their bank." << std::endl; time_sleep(1000);
+            std::cout << std::endl << humanHand.GetDisplayName() << " has run out of currency in their bank." << std::endl; time_sleep(1000);
             // Prompt the player if they want to re-deposit currency into their bank, require them to enter y or n
             while (true) {
                 std::cout << std::endl << "Would you like to deposit more currency into your bank? (y/n): "; time_sleep(1000);
@@ -1972,7 +2222,7 @@ void play_game() {
                 }
                 // Player has chosen not to re-deposit currency into their bank
                 else if (redeposit == "n") {
-                    std::cout << humanHand.GetDisplayName() << " has chosen to not redeposit more currency into their bank. Game over." << std::endl; time_sleep(1000);
+                    std::cout << std::endl << humanHand.GetDisplayName() << " has chosen to not redeposit more currency into their bank. Game over." << std::endl; time_sleep(1000);
                     std::cout << std::endl << "Thank you for playing " << humanHand.GetDisplayName() << "!" << std::endl; time_sleep(3000);
                     clear_terminal();
                     break;
