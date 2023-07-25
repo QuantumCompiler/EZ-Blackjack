@@ -2,7 +2,6 @@
 #ifndef HAND_H
 #define HAND_H
 #include "../HPP/Shoe.hpp"
-#include "../../Structure/HPP/LinkedList.hpp"
 /*  Structure Player - Struct to resemble a playing card
 *   Data Members:
 *     Boolean Values:
