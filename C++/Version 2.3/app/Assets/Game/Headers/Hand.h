@@ -2,6 +2,7 @@
 #ifndef HAND_H
 #define HAND_H
 #include "../HPP/Shoe.hpp"
+#include "../../Structure/HPP/LinkedList.hpp"
 /*  Structure Player - Struct to resemble a playing card
 *   Data Members:
 *     Boolean Values:
@@ -44,6 +45,11 @@
 *       name - String value that represents the name of a player
 *     Vector Values:
 *       cards - Vector of Card objects that represents the cards in a hand of a player
+*     List Values:
+*       handBankList - Linked list of the bank totals after each hand of a player
+*       handNetList - Linked list of the net totals after each hand of a player
+*       handTotalList - Linked list of the hand totals after each hand of a player
+*       handWagerList - Linked list of the hand wagers after each hand of a player
 */
 struct Player {
     // Boolean Value
@@ -87,6 +93,11 @@ struct Player {
     std::string name;
     // Vectors
     std::vector<Card> cards;
+    // Lists
+    LinkedList handBankList;
+    LinkedList handNetList;
+    LinkedList handTotalList;
+    LinkedList handWagerList;
 };
 class Hand {
 public:
@@ -150,6 +161,11 @@ public:
     void SetName(const std::string& input);
     // Vector Values
     void SetCards(const Card& input);
+    // Linked List Values
+    void SetHandBankList(const LinkedList& input);
+    void SetHandNetList(const LinkedList& input);
+    void SetHandTotalList(const LinkedList& input);
+    void SetHandWagerList(const LinkedList& input);
     // Getter Functions
     // Boolean Values
     bool& GetCanBuyInsurance();
@@ -192,6 +208,10 @@ public:
     std::string& GetName();
     // Vector Values
     std::vector<Card>& GetCards();
+    LinkedList& GetHandBankList();
+    LinkedList& GetHandNetList();
+    LinkedList& GetHandTotalList();
+    LinkedList& GetHandWagerList();
 private:
     Player currentPlayer;
 };
