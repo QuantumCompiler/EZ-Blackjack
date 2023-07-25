@@ -12,8 +12,9 @@
 *       data members
 */
 Card::Card(const std::string inputRank, const std::string inputSuit) {
-    card.rank = inputRank;
-    card.suit = inputSuit;
+    card = std::make_shared<PlayingCard>();
+    card->rank = inputRank;
+    card->suit = inputSuit;
     SetCardValue(card);
     SetDisplayRank(card);
     SetDisplaySuit(card);
@@ -42,8 +43,8 @@ bool Card::CheckCardParam(const std::string checkingParam, const std::string fee
 *   Output:
 *       This function does not return a value
 */
-void Card::SetDisplayRank(PlayingCard& inputCard) {
-    card.displayRank = color_text(32, inputCard.rank);
+void Card::SetDisplayRank(std::shared_ptr<PlayingCard> inputCard) {
+    card->displayRank = color_text(32, inputCard->rank);
 }
 
 /*  SetDisplaySuit - Sets the display value of a cards suit
@@ -57,24 +58,24 @@ void Card::SetDisplayRank(PlayingCard& inputCard) {
 *   Output:
 *       This function does not return a value
 */
-void Card::SetDisplaySuit(PlayingCard& inputCard) {
+void Card::SetDisplaySuit(std::shared_ptr<PlayingCard> inputCard) {
     // Iterate through all possible suits of cards
     for (int i = 0; i < 4; i++) {
-        if (CheckCardParam(inputCard.suit, Suits[i])) {
+        if (CheckCardParam(inputCard->suit, Suits[i])) {
             switch (i) {
             // Set the color to purple for Clubs and Spades
             case 0:
             case 3:
-                card.displaySuit = color_text(35, inputCard.suit);
+                card->displaySuit = color_text(35, inputCard->suit);
                 break;
             // Set the color to red for Diamonds and Hearts
             case 1:
             case 2:
-                card.displaySuit = color_text(31, inputCard.suit);
+                card->displaySuit = color_text(31, inputCard->suit);
                 break;
             // Default to white for all other suits
             default:
-                card.displaySuit = color_text(37, inputCard.suit);
+                card->displaySuit = color_text(37, inputCard->suit);
                 break;
             }
         }
@@ -89,8 +90,8 @@ void Card::SetDisplaySuit(PlayingCard& inputCard) {
 *   Output:
 *       This function does not return a value
 */
-void Card::SetDisplayCardValue(PlayingCard& inputCard) {
-    card.displayCardValue = color_text(31, std::to_string(inputCard.cardValue));
+void Card::SetDisplayCardValue(std::shared_ptr<PlayingCard> inputCard) {
+    card->displayCardValue = color_text(31, std::to_string(inputCard->cardValue));
 }
 
 /*  SetCardValue - Sets the value of a playing card based off of its rank
@@ -104,14 +105,14 @@ void Card::SetDisplayCardValue(PlayingCard& inputCard) {
 *   Output:
 *       This function does not return a value
 */
-void Card::SetCardValue(PlayingCard& inputCard) {
+void Card::SetCardValue(std::shared_ptr<PlayingCard> inputCard) {
     // Iterate through all possible ranks of cards
     for (int i = 0; i < 13; i++) {
-        if (CheckCardParam(inputCard.rank, Ranks[i])) {
+        if (CheckCardParam(inputCard->rank, Ranks[i])) {
             switch (i) {
             // Set the default value of an Ace to 11
             case 0:
-                card.cardValue = 11;
+                card->cardValue = 11;
                 break;
             // Set the value of 2 through 9 to their respective rank
             case 1:
@@ -123,13 +124,13 @@ void Card::SetCardValue(PlayingCard& inputCard) {
             case 7:
             case 8:
             case 9:
-                card.cardValue = std::stoi(Ranks[i]);
+                card->cardValue = std::stoi(Ranks[i]);
                 break;
             // Set the value of Jack, Queen, and King to 10
             case 10:
             case 11:
             case 12:
-                card.cardValue = 10;
+                card->cardValue = 10;
             default:
                 break;
             }
@@ -147,37 +148,37 @@ void Card::SetCardValue(PlayingCard& inputCard) {
 *       This function does not return a value
 */
 void Card::SetNewCardValue(const int input) {
-    card.cardValue = input;
+    card->cardValue = input;
     SetDisplayCardValue(card);
 }
 
 // ----- ----- ----- ----- ----- ----- ----- Getter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 // GetCardValue - Retrieves the private data member "cardValue"
 int& Card::GetCardValue() {
-    return card.cardValue;
+    return card->cardValue;
 }
 
 // GetDisplayRank - Retrieves the private data member "displayRank"
 std::string& Card::GetDisplayRank() {
-    return card.displayRank;
+    return card->displayRank;
 }
 
 // GetDisplaySuit - Retrieves the private data member "displaySuit"
 std::string& Card::GetDisplaySuit() {
-    return card.displaySuit;
+    return card->displaySuit;
 }
 
 // GetDisplayCardValue - Retrieves the private data member "displayCardValue"
 std::string& Card::GetDisplayCardValue() {
-    return card.displayCardValue;
+    return card->displayCardValue;
 }
 
 // GetRank - Retrieves the private data member "rank"
 std::string& Card::GetRank() {
-    return card.rank;
+    return card->rank;
 }
 
 // GetSuit - Retrieves the private data member "suit"
 std::string& Card::GetSuit() {
-    return card.suit;
+    return card->suit;
 }

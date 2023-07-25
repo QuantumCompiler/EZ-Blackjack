@@ -2,6 +2,7 @@
 #ifndef CARD_H
 #define CARD_H
 #include "../HPP/Utility.hpp"
+#include "../../Structure/HPP/LinkedList.hpp"
 /*  Structure PlayingCard - Struct to resemble a playing card
 *   Data Members:
 *       rank - String value that represents a cards rank
@@ -29,10 +30,10 @@ public:
         return os;
     }
     // Setter Functions
-    void SetCardValue(PlayingCard& inputCard);
-    void SetDisplayRank(PlayingCard& inputCard);
-    void SetDisplaySuit(PlayingCard& inputCard);
-    void SetDisplayCardValue(PlayingCard& inputCard);
+    void SetCardValue(std::shared_ptr<PlayingCard> inputCard);
+    void SetDisplayRank(std::shared_ptr<PlayingCard> inputCard);
+    void SetDisplaySuit(std::shared_ptr<PlayingCard> inputCard);
+    void SetDisplayCardValue(std::shared_ptr<PlayingCard> inputCard);
     void SetNewCardValue(const int input);
     // Getter Functions
     int& GetCardValue();
@@ -42,6 +43,6 @@ public:
     std::string& GetRank();
     std::string& GetSuit();
 private:
-    PlayingCard card;
+    std::shared_ptr<PlayingCard> card;
 };
 #endif
