@@ -30,18 +30,18 @@ public:
         return os;
     }
     // Setter Functions
-    void SetCardValue(std::shared_ptr<PlayingCard> inputCard);
-    void SetDisplayRank(std::shared_ptr<PlayingCard> inputCard);
-    void SetDisplaySuit(std::shared_ptr<PlayingCard> inputCard);
-    void SetDisplayCardValue(std::shared_ptr<PlayingCard> inputCard);
-    void SetNewCardValue(const int input);
+    void SetCardValue(std::shared_ptr<PlayingCard> inputCard); // Sets card value
+    void SetDisplayRank(std::shared_ptr<PlayingCard> inputCard); // Sets display rank
+    void SetDisplaySuit(std::shared_ptr<PlayingCard> inputCard); // Sets display suit
+    void SetDisplayCardValue(std::shared_ptr<PlayingCard> inputCard); // Sets a display card value
+    void SetNewCardValue(const int input); // Sets a new card value
     // Getter Functions
-    int& GetCardValue();
-    std::string& GetDisplayRank();
-    std::string& GetDisplaySuit();
-    std::string& GetDisplayCardValue();
-    std::string& GetRank();
-    std::string& GetSuit();
+    int& GetCardValue(); // Retrieves a cards value
+    std::string& GetDisplayRank(); // Retrieves a cards display rank
+    std::string& GetDisplaySuit(); // Retrieves a cards display suit
+    std::string& GetDisplayCardValue(); // Retrieves a cards display card value
+    std::string& GetRank(); // Retrieves a cards rank
+    std::string& GetSuit(); // Retrieves a cards suit
 private:
     std::shared_ptr<PlayingCard> card;
 };

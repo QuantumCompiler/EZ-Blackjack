@@ -6,8 +6,9 @@
 *       inputRank - Constant string value that represents a cards rank
 *       inputSuit - Constant string value that represents a cards suit
 *   Initialization:
-*       card.rank is set to inputRank
-*       card.suit is set to inputSuit
+*       Create a card object on the heap
+*       card->rank is set to inputRank
+*       card->suit is set to inputSuit
 *       SetCardValue, SetDisplayRank, SetDisplaySuit, SetDisplayCardValue functions are called to mutate private
 *       data members
 */
@@ -37,7 +38,7 @@ bool Card::CheckCardParam(const std::string checkingParam, const std::string fee
 // ----- ----- ----- ----- ----- ----- ----- Setter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 /*  SetDisplayRank - Sets the display value of a cards rank
 *   Input:
-*       inputCard: PlayingCard struct passed by reference to make changes to private data member "displayRank"
+*       inputCard: Smart pointer of object type PlayingCard struct to make changes to private data member "displayRank"
 *   Algorithm:
 *       * Set the private data member "displayRank" equal to the modified version of "rank"
 *   Output:
@@ -49,7 +50,7 @@ void Card::SetDisplayRank(std::shared_ptr<PlayingCard> inputCard) {
 
 /*  SetDisplaySuit - Sets the display value of a cards suit
 *   Input:
-*       inputCard: PlayingCard struct passed by reference to make changes to private data member "displaySuit"
+*       inputCard: Smart pointer of object type PlayingCard struct to make changes to private data member "displaySuit"
 *   Algorithm:
 *       * Function checks for it a suit is a of a specific kind:
 *           * (0,3): Card is a Club or Spade - Console output is changed to purple
@@ -84,7 +85,7 @@ void Card::SetDisplaySuit(std::shared_ptr<PlayingCard> inputCard) {
 
 /*  SetDisplayCardValue - Sets the display value of a cards value
 *   Input:
-*       inputCard: PlayingCard struct passed by reference to make changes to the private data member "displayCardValue"
+*       inputCard: Smart pointer of object type PlayingCard struct to make changes to private data member "displayCardValue"
 *   Algorithm:
 *       * Set the private data member "displayCardValue" to the modified version of "cardValue"
 *   Output:
@@ -96,7 +97,7 @@ void Card::SetDisplayCardValue(std::shared_ptr<PlayingCard> inputCard) {
 
 /*  SetCardValue - Sets the value of a playing card based off of its rank
 *   Input:
-*       inputCard: PlayingCard struct passed by reference to make changes to private data member "cardValue"
+*       inputCard: Smart pointer of object type PlayingCard struct to make changes to private data member "cardValue"
 *   Algorithm:
 *       * Function checks for what rank a card is:
 *           * Ace: Card value is defaulted to a value of (11) - This can be mutated with another function
