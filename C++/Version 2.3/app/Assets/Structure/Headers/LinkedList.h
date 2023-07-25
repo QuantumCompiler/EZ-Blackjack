@@ -6,8 +6,7 @@
 // Linked List Node
 struct LinkedListNode {
     // Data members
-    int integerValue;
-    float floatValue;
+    float value;
     // Pointers
     std::shared_ptr<LinkedListNode> nextNode;
     std::shared_ptr<LinkedListNode> previousNode;
@@ -19,23 +18,26 @@ private:
     // Root and tail nodes of list
     std::shared_ptr<LinkedListNode> rootNode;
     std::shared_ptr<LinkedListNode> tailNode;
+    // Size of list
+    int listSize = 0;
 public:
     // Constructor and de-constructor
     LinkedList();
     ~LinkedList();
     // Member functions
-    void AppendNode(std::shared_ptr<LinkedListNode> input); // Append node
-    std::shared_ptr<LinkedListNode> InitNode(int intInput, float floatInput); // Init node
-    void InsertNode(std::shared_ptr<LinkedListNode> input, int offset); // Insert node
-    std::shared_ptr<LinkedListNode> PopNode(std::shared_ptr<LinkedListNode> input); // Pop node
+    void AppendNode(std::shared_ptr<LinkedListNode>& input); // Append node
+    void ClearList(); // Clear a linked list
+    std::shared_ptr<LinkedListNode> InitNode(float input); // Init node
+    std::shared_ptr<LinkedListNode> PopNode(); // Pop node
     void PrintList(); // Print list
-    void RemoveNode(int offset); // Remove node
     // ---- ---- ---- Mutator Functions ---- ---- ---- //
     // Getter functions
-    std::shared_ptr<LinkedListNode> GetRoot(); // Get root of list
-    std::shared_ptr<LinkedListNode> GetTail(); // Get tail of list
+    std::shared_ptr<LinkedListNode>& GetRoot(); // Get root of list
+    int& GetSize(); // Get size of list
+    std::shared_ptr<LinkedListNode>& GetTail(); // Get tail of list
     // Setter functions
     void SetRoot(std::shared_ptr<LinkedListNode> input); // Set root of list
+    void SetSize(); // Set size of list
     void SetTail(std::shared_ptr<LinkedListNode> input); // Set tail of list
 };
 
