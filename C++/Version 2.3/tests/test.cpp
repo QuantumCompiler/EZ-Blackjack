@@ -1,8 +1,5 @@
 #include <gtest/gtest.h>
 #include "../app/Assets/Game/HPP/Core.hpp"
-#include "../app/Assets/Structure/HPP/LinkedList.hpp"
-
-using namespace std;
 
 class test_x : public ::testing::Test {};
 
@@ -22,11 +19,9 @@ public:
 // Linked list test, init node
 TEST_F(test_x, LinkedListInitNode) {
     LinkedList testList;
-    int intVal = 3;
     float floatVal = 3.14;
-    shared_ptr<LinkedListNode> testNode = testList.InitNode(intVal, floatVal);
-    ASSERT_EQ(intVal, testNode->integerValue);
-    ASSERT_EQ(floatVal, testNode->floatValue);
+    std::shared_ptr<LinkedListNode> testNode = testList.InitNode(floatVal);
+    ASSERT_EQ(floatVal, testNode->value);
     ASSERT_EQ(nullptr, testNode->previousNode);
     ASSERT_EQ(nullptr, testNode->nextNode);
 }
@@ -34,12 +29,10 @@ TEST_F(test_x, LinkedListInitNode) {
 // Linked list test, set root
 TEST_F(test_x, LinkedListRoot) {
     LinkedList testList;
-    int intVal = 4;
     float floatVal = 4.15;
-    shared_ptr<LinkedListNode> testRoot = testList.InitNode(intVal, floatVal);
+    std::shared_ptr<LinkedListNode> testRoot = testList.InitNode(floatVal);
     testList.SetRoot(testRoot);
-    ASSERT_EQ(floatVal, testList.GetRoot()->floatValue);
-    ASSERT_EQ(intVal, testList.GetRoot()->integerValue);
+    ASSERT_EQ(floatVal, testList.GetRoot()->value);
     ASSERT_EQ(nullptr, testList.GetRoot()->previousNode);
     ASSERT_EQ(nullptr, testList.GetRoot()->nextNode);
 }
@@ -47,14 +40,118 @@ TEST_F(test_x, LinkedListRoot) {
 // Linked list test, set tail
 TEST_F(test_x, LinkedListTail) {
     LinkedList testList;
-    int intVal = 5;
     float floatVal = 6.15;
-    shared_ptr<LinkedListNode> testTail = testList.InitNode(intVal, floatVal);
+    std::shared_ptr<LinkedListNode> testTail = testList.InitNode(floatVal);
     testList.SetTail(testTail);
-    ASSERT_EQ(floatVal, testList.GetTail()->floatValue);
-    ASSERT_EQ(intVal, testList.GetTail()->integerValue);
+    ASSERT_EQ(floatVal, testList.GetTail()->value);
     ASSERT_EQ(nullptr, testList.GetTail()->previousNode);
     ASSERT_EQ(nullptr, testList.GetTail()->nextNode);
+}
+
+// Linked list, append node
+TEST_F(test_x, LinkedListAppend) {
+    LinkedList testList;
+    float floatVal = 4.23;
+    // Insert into empty list
+    std::shared_ptr<LinkedListNode> testNode1 = testList.InitNode(floatVal);
+    testList.AppendNode(testNode1);
+    EXPECT_EQ(1, testList.GetSize());
+    EXPECT_EQ(testNode1, testList.GetRoot());
+    EXPECT_EQ(nullptr, testList.GetRoot()->previousNode);
+    EXPECT_EQ(nullptr, testList.GetRoot()->nextNode);
+    EXPECT_EQ(testNode1, testList.GetTail());
+    EXPECT_EQ(nullptr, testList.GetTail()->previousNode);
+    EXPECT_EQ(nullptr, testList.GetTail()->nextNode);
+    floatVal = 5.32;
+    // Insert into list with one element
+    std::shared_ptr<LinkedListNode> testNode2 = testList.InitNode(floatVal);
+    testList.AppendNode(testNode2);
+    EXPECT_EQ(2, testList.GetSize());
+    EXPECT_EQ(testNode1, testList.GetRoot());
+    EXPECT_EQ(testNode2, testList.GetTail());
+    EXPECT_EQ(nullptr, testList.GetRoot()->previousNode);
+    EXPECT_EQ(testList.GetTail(), testList.GetRoot()->nextNode);
+    EXPECT_EQ(testList.GetRoot(), testList.GetTail()->previousNode);
+    EXPECT_EQ(nullptr, testList.GetTail()->nextNode);
+    floatVal = 6.72;
+    // Insert into list with two elements
+    std::shared_ptr<LinkedListNode> testNode3 = testList.InitNode(floatVal);
+    testList.AppendNode(testNode3);
+    EXPECT_EQ(3, testList.GetSize());
+    EXPECT_EQ(testNode1, testList.GetRoot());
+    EXPECT_EQ(testNode3, testList.GetTail());
+    EXPECT_EQ(nullptr, testList.GetRoot()->previousNode);
+    EXPECT_EQ(testNode2, testList.GetRoot()->nextNode);
+    EXPECT_EQ(testList.GetRoot(), testNode2->previousNode);
+    EXPECT_EQ(testList.GetTail(), testNode2->nextNode);
+    EXPECT_EQ(testNode2, testList.GetTail()->previousNode);
+    EXPECT_EQ(nullptr, testList.GetTail()->nextNode);
+}
+
+// Linked list, pop node
+TEST_F(test_x, LinkedListPop) {
+    LinkedList testList;
+    float floatVal = 3.14;
+    // Check on empty list
+    std::shared_ptr<LinkedListNode> emptyNode = testList.PopNode();
+    EXPECT_EQ(0, testList.GetSize());
+    EXPECT_EQ(nullptr, emptyNode);
+    EXPECT_EQ(emptyNode, testList.GetRoot());
+    // Test on list with one element
+    std::shared_ptr<LinkedListNode> testNode1 = testList.InitNode(floatVal);
+    testList.AppendNode(testNode1);
+    std::shared_ptr<LinkedListNode> poppedNode = testList.PopNode();
+    EXPECT_EQ(0, testList.GetSize());
+    EXPECT_EQ(nullptr, testList.GetRoot());
+    EXPECT_EQ(nullptr, testList.GetTail());
+    EXPECT_EQ(poppedNode, testNode1);
+    EXPECT_EQ(nullptr, poppedNode->previousNode);
+    EXPECT_EQ(nullptr, poppedNode->nextNode);
+    // Test on list with two elements
+    floatVal = 4.25;
+    std::shared_ptr<LinkedListNode> testNode2 = testList.InitNode(floatVal);
+    floatVal = 5.37;
+    std::shared_ptr<LinkedListNode> testNode3 = testList.InitNode(floatVal);
+    // Add test nodes
+    testList.AppendNode(testNode2);
+    testList.AppendNode(testNode3);
+    // Pop node
+    poppedNode = testList.PopNode();
+    EXPECT_EQ(1, testList.GetSize());
+    EXPECT_EQ(testNode2, testList.GetRoot());
+    EXPECT_EQ(testNode2, testList.GetTail());
+    EXPECT_EQ(poppedNode, testNode3);
+    // Pop node again
+    poppedNode = testList.PopNode();
+    EXPECT_EQ(0, testList.GetSize());
+    EXPECT_EQ(nullptr, testList.GetRoot());
+    EXPECT_EQ(nullptr, testList.GetTail());
+    EXPECT_EQ(poppedNode, testNode2);
+    // Attempt to pop node again (empty list now)
+    poppedNode = testList.PopNode();
+    EXPECT_EQ(nullptr, testList.GetRoot());
+    EXPECT_EQ(nullptr, testList.GetTail());
+    EXPECT_EQ(nullptr, poppedNode);
+}
+
+// Linked list, clear list
+TEST_F(test_x, LinkedListClear) {
+    LinkedList testList;
+    float floatVal = 4.23;
+    // Insert into empty list
+    std::shared_ptr<LinkedListNode> testNode1 = testList.InitNode(floatVal);
+    testList.AppendNode(testNode1);
+    EXPECT_EQ(1, testList.GetSize());
+    EXPECT_EQ(testNode1, testList.GetRoot());
+    EXPECT_EQ(nullptr, testList.GetRoot()->previousNode);
+    EXPECT_EQ(nullptr, testList.GetRoot()->nextNode);
+    EXPECT_EQ(testNode1, testList.GetTail());
+    EXPECT_EQ(nullptr, testList.GetTail()->previousNode);
+    EXPECT_EQ(nullptr, testList.GetTail()->nextNode);
+    testList.ClearList();
+    EXPECT_EQ(0, testList.GetSize());
+    EXPECT_EQ(nullptr, testList.GetRoot());
+    EXPECT_EQ(nullptr, testList.GetTail());
 }
 
 // Blackjack strategy test, no duplicate ranks, no ace in hand off deal
