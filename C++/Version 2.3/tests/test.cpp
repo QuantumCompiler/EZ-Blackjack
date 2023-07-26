@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../app/Assets/Game/HPP/Shoe.hpp"
+#include "../app/Assets/Game/HPP/HandC.hpp"
 
 class test_x : public ::testing::Test {};
 
@@ -408,6 +408,15 @@ TEST_F(test_x, ShoeClassDraw) {
         std::shared_ptr<Card> poppedCard = testShoe->Draw();
         EXPECT_EQ(testShoe->GetCardsInShoe()->GetSize(), i - 1);
     }
+}
+
+/////////////////////////////////////////
+// Hand Class Test
+/////////////////////////////////////////
+
+// Hand class, constructor test
+TEST_F(test_x, HandClassConst) {
+    std::shared_ptr<Hand> testHand(new Hand);
 }
 
 /////////////////////////////////////////
