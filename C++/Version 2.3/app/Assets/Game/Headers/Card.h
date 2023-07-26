@@ -21,7 +21,8 @@ struct PlayingCard {
 class Card {
 public:
     // Constructor
-    Card(const std::string inputRank, const std::string inputSuit);
+    Card(const std::string inputRank, const std::string inputSuit); // Constructor
+    Card() : card(std::make_shared<PlayingCard>()) {} // Default constructor
     // Class methods
     bool CheckCardParam(const std::string checking, const std::string feeding);
     friend std::ostream &operator<<(std::ostream &os, Card& currentCard) {
