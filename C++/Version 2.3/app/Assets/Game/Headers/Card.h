@@ -2,7 +2,6 @@
 #ifndef CARD_H
 #define CARD_H
 #include "../HPP/Utility.hpp"
-#include "../../Structure/HPP/LinkedList.hpp"
 /*  Structure PlayingCard - Struct to resemble a playing card
 *   Data Members:
 *       rank - String value that represents a cards rank
