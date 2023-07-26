@@ -40,144 +40,197 @@ TEST_F(test_x, CardClassConst) {
     ASSERT_EQ(testCard->GetCardValue(), 123);
 }
 
-
-
 // Linked list test, init node
 TEST_F(test_x, LinkedListInitNode) {
-    std::shared_ptr<LinkedList> testList(new LinkedList);
+    // Integer list
+    std::shared_ptr<LinkedList<int>> intList(new LinkedList<int>);
+    int intVal = 13;
+    std::shared_ptr<node<int>> intNode = intList->InitNode(intVal);
+    ASSERT_TRUE(typeid(intNode->data) == typeid(int));
+    ASSERT_EQ(intNode->nextNode, nullptr);
+    ASSERT_EQ(intNode->previousNode, nullptr);
+    ASSERT_EQ(intNode->data, intVal);
+    // Float list
+    std::shared_ptr<LinkedList<float>> floatList(new LinkedList<float>);
     float floatVal = 3.14;
-    std::shared_ptr<LinkedListNode> testNode = testList->InitNode(floatVal);
-    ASSERT_EQ(floatVal, testNode->value);
-    ASSERT_EQ(nullptr, testNode->previousNode);
-    ASSERT_EQ(nullptr, testNode->nextNode);
+    std::shared_ptr<node<float>> floatNode = floatList->InitNode(floatVal);
+    ASSERT_TRUE(typeid(floatNode->data) == typeid(float));
+    ASSERT_EQ(floatNode->nextNode, nullptr);
+    ASSERT_EQ(floatNode->previousNode, nullptr);
+    ASSERT_EQ(floatNode->data, floatVal);
+    // Double list
+    std::shared_ptr<LinkedList<double>> doubleList(new LinkedList<double>);
+    double doubleVal = 3.141592654;
+    std::shared_ptr<node<double>> doubleNode = doubleList->InitNode(doubleVal);
+    ASSERT_TRUE(typeid(doubleNode->data) == typeid(double));
+    ASSERT_EQ(doubleNode->nextNode, nullptr);
+    ASSERT_EQ(doubleNode->previousNode, nullptr);
+    ASSERT_EQ(doubleNode->data, doubleVal);
+    // Long list
+    std::shared_ptr<LinkedList<long>> longList(new LinkedList<long>);
+    long longVal = 2147483647;
+    std::shared_ptr<node<long>> longNode = longList->InitNode(longVal);
+    ASSERT_TRUE(typeid(longNode->data) == typeid(long));
+    ASSERT_EQ(longNode->nextNode, nullptr);
+    ASSERT_EQ(longNode->previousNode, nullptr);
+    ASSERT_EQ(longNode->data, longVal);
+    // String list
+    std::shared_ptr<LinkedList<std::string>> stringList(new LinkedList<std::string>);
+    std::string stringVal = "Hello World!";
+    std::shared_ptr<node<std::string>> stringNode = stringList->InitNode(stringVal);
+    ASSERT_TRUE(typeid(stringNode->data) == typeid(std::string));
+    ASSERT_EQ(stringNode->nextNode, nullptr);
+    ASSERT_EQ(stringNode->previousNode, nullptr);
+    ASSERT_EQ(stringNode->data, stringVal);
+    // Card list
+    std::shared_ptr<LinkedList<Card>> cardList(new LinkedList<Card>);
+    std::shared_ptr<Card> testCard(new Card(Ranks[0], Suits[0]));
+    std::shared_ptr<node<Card>> cardNode = cardList->InitNode(testCard);
+    ASSERT_TRUE(typeid(cardNode->data) == typeid(Card));
+    ASSERT_EQ(cardNode->nextNode, nullptr);
+    ASSERT_EQ(cardNode->previousNode, nullptr);
+    ASSERT_EQ(cardNode->data.GetCardValue(), 11);
+    ASSERT_EQ(cardNode->data.GetRank(), Ranks[0]);
+    ASSERT_EQ(cardNode->data.GetSuit(), Suits[0]);
 }
 
 // Linked list test, set root
 TEST_F(test_x, LinkedListRoot) {
-    std::shared_ptr<LinkedList> testList(new LinkedList);
+    std::shared_ptr<LinkedList<float>> testList(new LinkedList<float>);
     float floatVal = 4.15;
-    std::shared_ptr<LinkedListNode> testRoot = testList->InitNode(floatVal);
+    std::shared_ptr<node<float>> testRoot = testList->InitNode(floatVal);
     testList->SetRoot(testRoot);
-    ASSERT_EQ(floatVal, testList->GetRoot()->value);
-    ASSERT_EQ(nullptr, testList->GetRoot()->previousNode);
-    ASSERT_EQ(nullptr, testList->GetRoot()->nextNode);
+    ASSERT_EQ(testList->GetRoot()->data, floatVal);
+    ASSERT_EQ(testList->GetRoot()->previousNode, nullptr);
+    ASSERT_EQ(testList->GetRoot()->nextNode, nullptr);
 }
 
 // Linked list test, set tail
 TEST_F(test_x, LinkedListTail) {
-    std::shared_ptr<LinkedList> testList(new LinkedList);
+    std::shared_ptr<LinkedList<float>> testList(new LinkedList<float>);
     float floatVal = 6.15;
-    std::shared_ptr<LinkedListNode> testTail = testList->InitNode(floatVal);
+    std::shared_ptr<node<float>> testTail = testList->InitNode(floatVal);
     testList->SetTail(testTail);
-    ASSERT_EQ(floatVal, testList->GetTail()->value);
-    ASSERT_EQ(nullptr, testList->GetTail()->previousNode);
-    ASSERT_EQ(nullptr, testList->GetTail()->nextNode);
+    ASSERT_EQ(testList->GetTail()->data, floatVal);
+    ASSERT_EQ(testList->GetTail()->previousNode, nullptr);
+    ASSERT_EQ(testList->GetTail()->nextNode, nullptr);
+}
+
+// Linked list test, size
+TEST_F(test_x, LinkedListSize) {
+    std::shared_ptr<LinkedList<int>> testList(new LinkedList<int>);
+    ASSERT_EQ(testList->GetSize(), 0);
+    int intVal = 123;
+    std::shared_ptr<node<int>> testNode = testList->InitNode(intVal);
+    ASSERT_EQ(testList->GetSize(), 0);
+    testList->SetRoot(testNode);
+    ASSERT_EQ(testList->GetSize(), 1);
 }
 
 // Linked list, append node
 TEST_F(test_x, LinkedListAppend) {
-    std::shared_ptr<LinkedList> testList(new LinkedList);
+    std::shared_ptr<LinkedList<float>> testList(new LinkedList<float>);
     float floatVal = 4.23;
     // Insert into empty list
-    std::shared_ptr<LinkedListNode> testNode1 = testList->InitNode(floatVal);
+    std::shared_ptr<node<float>> testNode1 = testList->InitNode(floatVal);
     testList->AppendNode(testNode1);
-    EXPECT_EQ(1, testList->GetSize());
-    EXPECT_EQ(testNode1, testList->GetRoot());
-    EXPECT_EQ(nullptr, testList->GetRoot()->previousNode);
-    EXPECT_EQ(nullptr, testList->GetRoot()->nextNode);
-    EXPECT_EQ(testNode1, testList->GetTail());
-    EXPECT_EQ(nullptr, testList->GetTail()->previousNode);
-    EXPECT_EQ(nullptr, testList->GetTail()->nextNode);
+    EXPECT_EQ(testList->GetSize(), 1);
+    EXPECT_EQ(testList->GetRoot(), testNode1);
+    EXPECT_EQ(testList->GetRoot()->previousNode, nullptr);
+    EXPECT_EQ(testList->GetRoot()->nextNode, nullptr);
+    EXPECT_EQ(testList->GetTail(), testNode1);
+    EXPECT_EQ(testList->GetTail()->previousNode, nullptr);
+    EXPECT_EQ(testList->GetTail()->nextNode, nullptr);
     floatVal = 5.32;
     // Insert into list with one element
-    std::shared_ptr<LinkedListNode> testNode2 = testList->InitNode(floatVal);
+    std::shared_ptr<node<float>> testNode2 = testList->InitNode(floatVal);
     testList->AppendNode(testNode2);
-    EXPECT_EQ(2, testList->GetSize());
-    EXPECT_EQ(testNode1, testList->GetRoot());
-    EXPECT_EQ(testNode2, testList->GetTail());
-    EXPECT_EQ(nullptr, testList->GetRoot()->previousNode);
+    EXPECT_EQ(testList->GetSize(), 2);
+    EXPECT_EQ(testList->GetRoot(), testNode1);
+    EXPECT_EQ(testList->GetTail(), testNode2);
+    EXPECT_EQ(testList->GetRoot()->previousNode, nullptr);
     EXPECT_EQ(testList->GetTail(), testList->GetRoot()->nextNode);
     EXPECT_EQ(testList->GetRoot(), testList->GetTail()->previousNode);
-    EXPECT_EQ(nullptr, testList->GetTail()->nextNode);
+    EXPECT_EQ(testList->GetTail()->nextNode, nullptr);
     floatVal = 6.72;
     // Insert into list with two elements
-    std::shared_ptr<LinkedListNode> testNode3 = testList->InitNode(floatVal);
+    std::shared_ptr<node<float>> testNode3 = testList->InitNode(floatVal);
     testList->AppendNode(testNode3);
-    EXPECT_EQ(3, testList->GetSize());
-    EXPECT_EQ(testNode1, testList->GetRoot());
-    EXPECT_EQ(testNode3, testList->GetTail());
-    EXPECT_EQ(nullptr, testList->GetRoot()->previousNode);
-    EXPECT_EQ(testNode2, testList->GetRoot()->nextNode);
+    EXPECT_EQ(testList->GetSize(), 3);
+    EXPECT_EQ(testList->GetRoot(), testNode1);
+    EXPECT_EQ(testList->GetTail(), testNode3);
+    EXPECT_EQ(testList->GetRoot()->previousNode, nullptr);
+    EXPECT_EQ(testList->GetRoot()->nextNode, testNode2);
     EXPECT_EQ(testList->GetRoot(), testNode2->previousNode);
     EXPECT_EQ(testList->GetTail(), testNode2->nextNode);
-    EXPECT_EQ(testNode2, testList->GetTail()->previousNode);
-    EXPECT_EQ(nullptr, testList->GetTail()->nextNode);
+    EXPECT_EQ(testList->GetTail()->previousNode, testNode2);
+    EXPECT_EQ(testList->GetTail()->nextNode, nullptr);
 }
 
 // Linked list, pop node
 TEST_F(test_x, LinkedListPop) {
-    std::shared_ptr<LinkedList> testList(new LinkedList);
-    float floatVal = 3.14;
+    std::shared_ptr<LinkedList<int>> testList(new LinkedList<int>);
+    int intVal = 3;
     // Check on empty list
-    std::shared_ptr<LinkedListNode> emptyNode = testList->PopNode();
-    EXPECT_EQ(0, testList->GetSize());
-    EXPECT_EQ(nullptr, emptyNode);
-    EXPECT_EQ(emptyNode, testList->GetRoot());
+    std::shared_ptr<node<int>> emptyNode = testList->PopNode();
+    EXPECT_EQ(testList->GetSize(), 0);
+    EXPECT_EQ(emptyNode, nullptr);
+    EXPECT_EQ(testList->GetRoot(), emptyNode);
     // Test on list with one element
-    std::shared_ptr<LinkedListNode> testNode1 = testList->InitNode(floatVal);
+    std::shared_ptr<node<int>> testNode1 = testList->InitNode(intVal);
     testList->AppendNode(testNode1);
-    std::shared_ptr<LinkedListNode> poppedNode = testList->PopNode();
-    EXPECT_EQ(0, testList->GetSize());
-    EXPECT_EQ(nullptr, testList->GetRoot());
-    EXPECT_EQ(nullptr, testList->GetTail());
+    std::shared_ptr<node<int>> poppedNode = testList->PopNode();
+    EXPECT_EQ(testList->GetSize(), 0);
+    EXPECT_EQ(testList->GetRoot(), nullptr);
+    EXPECT_EQ(testList->GetTail(), nullptr);
     EXPECT_EQ(poppedNode, testNode1);
-    EXPECT_EQ(nullptr, poppedNode->previousNode);
-    EXPECT_EQ(nullptr, poppedNode->nextNode);
+    EXPECT_EQ(poppedNode->previousNode, nullptr);
+    EXPECT_EQ(poppedNode->nextNode, nullptr);
     // Test on list with two elements
-    floatVal = 4.25;
-    std::shared_ptr<LinkedListNode> testNode2 = testList->InitNode(floatVal);
-    floatVal = 5.37;
-    std::shared_ptr<LinkedListNode> testNode3 = testList->InitNode(floatVal);
+    intVal = 4;
+    std::shared_ptr<node<int>> testNode2 = testList->InitNode(intVal);
+    intVal = 5;
+    std::shared_ptr<node<int>> testNode3 = testList->InitNode(intVal);
     // Add test nodes
     testList->AppendNode(testNode2);
     testList->AppendNode(testNode3);
     // Pop node
     poppedNode = testList->PopNode();
-    EXPECT_EQ(1, testList->GetSize());
-    EXPECT_EQ(testNode2, testList->GetRoot());
-    EXPECT_EQ(testNode2, testList->GetTail());
+    EXPECT_EQ(testList->GetSize(), 1);
+    EXPECT_EQ(testList->GetRoot(), testNode2);
+    EXPECT_EQ(testList->GetTail(), testNode2);
     EXPECT_EQ(poppedNode, testNode3);
     // Pop node again
     poppedNode = testList->PopNode();
-    EXPECT_EQ(0, testList->GetSize());
-    EXPECT_EQ(nullptr, testList->GetRoot());
-    EXPECT_EQ(nullptr, testList->GetTail());
+    EXPECT_EQ(testList->GetSize(), 0);
+    EXPECT_EQ(testList->GetRoot(), nullptr);
+    EXPECT_EQ(testList->GetTail(), nullptr);
     EXPECT_EQ(poppedNode, testNode2);
     // Attempt to pop node again (empty list now)
     poppedNode = testList->PopNode();
-    EXPECT_EQ(nullptr, testList->GetRoot());
-    EXPECT_EQ(nullptr, testList->GetTail());
-    EXPECT_EQ(nullptr, poppedNode);
+    EXPECT_EQ(testList->GetRoot(), nullptr);
+    EXPECT_EQ(testList->GetTail(), nullptr);
+    EXPECT_EQ(poppedNode, nullptr);
 }
 
 // Linked list, clear list
 TEST_F(test_x, LinkedListClear) {
-    std::shared_ptr<LinkedList> testList(new LinkedList);
-    float floatVal = 4.23;
+    std::shared_ptr<LinkedList<double>> testList(new LinkedList<double>);
+    double doubleVal = 3.141592654;
     // Insert into empty list
-    std::shared_ptr<LinkedListNode> testNode1 = testList->InitNode(floatVal);
+    std::shared_ptr<node<double>> testNode1 = testList->InitNode(doubleVal);
     testList->AppendNode(testNode1);
-    EXPECT_EQ(1, testList->GetSize());
-    EXPECT_EQ(testNode1, testList->GetRoot());
-    EXPECT_EQ(nullptr, testList->GetRoot()->previousNode);
-    EXPECT_EQ(nullptr, testList->GetRoot()->nextNode);
-    EXPECT_EQ(testNode1, testList->GetTail());
-    EXPECT_EQ(nullptr, testList->GetTail()->previousNode);
-    EXPECT_EQ(nullptr, testList->GetTail()->nextNode);
+    EXPECT_EQ(testList->GetSize(), 1);
+    EXPECT_EQ(testList->GetRoot(), testNode1);
+    EXPECT_EQ(testList->GetRoot()->previousNode, nullptr);
+    EXPECT_EQ(testList->GetRoot()->nextNode, nullptr);
+    EXPECT_EQ(testList->GetTail(), testNode1);
+    EXPECT_EQ(testList->GetTail()->previousNode, nullptr);
+    EXPECT_EQ(testList->GetTail()->nextNode, nullptr);
     testList->ClearList();
-    EXPECT_EQ(0, testList->GetSize());
-    EXPECT_EQ(nullptr, testList->GetRoot());
-    EXPECT_EQ(nullptr, testList->GetTail());
+    EXPECT_EQ(testList->GetSize(), 0);
+    EXPECT_EQ(testList->GetRoot(), nullptr);
+    EXPECT_EQ(testList->GetTail(), nullptr);
 }
 
 // Blackjack strategy test, no duplicate ranks, no ace in hand off deal
