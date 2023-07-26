@@ -29,8 +29,10 @@ public:
     void ClearList(); // Clear a linked list
     std::shared_ptr<node<customType>> InitNode(const customType& input); // Init node
     std::shared_ptr<node<customType>> InitNode(std::shared_ptr<customType> input); // Init node overload
+    void InsertNode(std::shared_ptr<node<customType>> input, int index); // Insert node 
     std::shared_ptr<node<customType>> PopNode(); // Pop node
     void PrintList(); // Print list
+    void RemoveNode(int index);
     // ---- ---- ---- Mutator Functions ---- ---- ---- //
     // Getter functions
     std::shared_ptr<node<customType>>& GetRoot(); // Get root of list
@@ -107,6 +109,51 @@ std::shared_ptr<node<customType>> LinkedList<customType>::InitNode(std::shared_p
     return ret;
 }
 
+// InsertNode - Inserts a node into a linked list at a given index
+template <typename customType>
+void LinkedList<customType>::InsertNode(std::shared_ptr<node<customType>> input, int index) {
+    if (index == 0) {
+        if (GetRoot() == nullptr) {
+            SetRoot(input);
+            SetTail(input);
+        }
+        else {
+            GetRoot()->previousNode = input;
+            input->nextNode = GetRoot();
+            input->previousNode = nullptr;
+            SetRoot(input);
+        }
+    }
+    else if (index <= GetSize()) {
+        std::shared_ptr<node<customType>> current = GetRoot();
+        std::vector<std::shared_ptr<node<customType>>> nodes;
+        while (current != nullptr) {
+            nodes.push_back(current);
+            current = current->nextNode;
+        }
+        current = GetRoot();
+        for (int i = 0; i < nodes.size(); i++) {
+            if (i == index - 1) {
+                input->nextNode = current->nextNode;
+                input->previousNode = current;
+                if (current->nextNode) {
+                    current->nextNode->previousNode = input;
+                }
+                current->nextNode = input;
+                if (input->nextNode == nullptr) {
+                    SetTail(input);
+                }
+                break;
+            }
+            current = current->nextNode;
+        }
+        SetSize();
+    }
+    else {
+        AppendNode(input);
+    }
+}
+
 // PopNode - Removes the last node of the linked list and returns it
 template <typename customType>
 std::shared_ptr<node<customType>> LinkedList<customType>::PopNode() {
@@ -144,10 +191,65 @@ void LinkedList<customType>::PrintList() {
         std::cout << "Empty list." << std::endl;
     }
     while (current != nullptr) {
-        std::cout << "Address: " << current << ", Previous: " << current->previousNode << ", Next: " << current->nextNode << ", Size: " << GetSize() << " | ";
+        std::cout << "Previous: " << current->previousNode << ", Current: " << current << ", Next: " << current->nextNode << " | ";
         current = current->nextNode;
     }
-    std::cout << std::endl;
+    std::cout << " Size: " << GetSize() << std::endl;
+}
+
+// RemoveNode - Removes a node at a given index
+template <typename customType>
+void LinkedList<customType>::RemoveNode(int index) {
+    std::shared_ptr<node<customType>> current = GetRoot();
+    std::vector<std::shared_ptr<node<customType>>> nodes;
+    while (current != nullptr) {
+        nodes.push_back(current);
+        current = current->nextNode;
+    }
+    current = GetRoot();
+    if (index == 0) {
+        if (GetRoot() != nullptr) {
+            SetRoot(current->nextNode);
+            GetRoot()->previousNode = nullptr;
+            if (GetRoot()->nextNode == nullptr) {
+                SetTail(GetRoot());
+            }
+        }
+        else {
+            SetRoot(current);
+            SetTail(current);
+        }
+    }
+    else if (index > 0 && index < GetSize()) {
+        for (int i = 0; i < nodes.size(); i++) {
+            if (i == index - 1) {
+                if (current->nextNode->nextNode) {
+                    current->nextNode->nextNode->previousNode = current;
+                    current->nextNode = current->nextNode->nextNode;
+                    SetSize();
+                }
+                else {
+                    current->nextNode = nullptr;
+                    SetTail(current);
+                }
+                break;
+            }
+            current = current->nextNode;
+        }
+    }
+    else {
+        if (GetTail()->previousNode) {
+            GetTail()->previousNode->nextNode = nullptr;
+            SetTail(GetTail()->previousNode);
+            if (GetTail()->previousNode == nullptr && GetTail()->nextNode == nullptr) {
+                SetRoot(GetTail());
+            }
+        }
+        else {
+            SetTail(nullptr);
+            SetRoot(nullptr);
+        }
+    }
 }
 
 // // ----- ----- ----- ----- ----- ----- ----- Mutators ----- ----- ----- ----- ----- ----- ----- ----- ----- //
