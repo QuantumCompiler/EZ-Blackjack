@@ -18,7 +18,7 @@ public:
     // Constructor
     Shoe();
     // Class Functions
-    Shoe& CreateShoe();
+    Shoe CreateShoe();
     Card Draw();
     void EmptyShoe();
     void Shuffle();

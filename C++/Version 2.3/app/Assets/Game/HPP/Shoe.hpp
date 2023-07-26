@@ -29,7 +29,7 @@ Shoe::Shoe() {
 *   Output:
 *       This function returns a shoe object by referencing the shoe object that is being assembled
 */
-Shoe& Shoe::CreateShoe() {
+Shoe Shoe::CreateShoe() {
     bool needInput = false;
     // If "numOfDecks" is greater than zero, no need to prompt for how many decks to play with
     if (GetNumOfDecks() == 0) {
