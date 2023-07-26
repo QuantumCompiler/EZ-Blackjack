@@ -1215,54 +1215,6 @@ void Hand::SetCards(const Card& input) {
     currentPlayer.cards.push_back(input);
 }
 
-/*  SetHandBankList - Adds a Card object to the private data member "handBankList" using the push_back function
-*   Input:
-*       input - Constant Linked List object that is passed by reference that the private data member "handBankList" will be set to
-*   Algorithm:
-*       * Set the private data member "handBankList" to the input parameter "input"
-*   Output:
-*       This function does not return a value
-*/
-void Hand::SetHandBankList(const LinkedList& input) {
-    currentPlayer.handBankList = input;
-}
-
-/*  SetHandNetList - Adds a Card object to the private data member "handNetList" using the push_back function
-*   Input:
-*       input - Constant Linked List object that is passed by reference that the private data member "handNetList" will be set to
-*   Algorithm:
-*       * Set the private data member "handNetList" to the input parameter "input"
-*   Output:
-*       This function does not return a value
-*/
-void Hand::SetHandNetList(const LinkedList& input) {
-    currentPlayer.handNetList = input;
-}
-
-/*  SetHandTotalList - Adds a Card object to the private data member "handTotalList" using the push_back function
-*   Input:
-*       input - Constant Linked List object that is passed by reference that the private data member "handTotalList" will be set to
-*   Algorithm:
-*       * Set the private data member "handTotalList" to the input parameter "input"
-*   Output:
-*       This function does not return a value
-*/
-void Hand::SetHandTotalList(const LinkedList& input) {
-    currentPlayer.handTotalList = input;
-}
-
-/*  SetHandWagerList - Adds a Card object to the private data member "handWagerList" using the push_back function
-*   Input:
-*       input - Constant Linked List object that is passed by reference that the private data member "handWagerList" will be set to
-*   Algorithm:
-*       * Set the private data member "handWagerList" to the input parameter "input"
-*   Output:
-*       This function does not return a value
-*/
-void Hand::SetHandWagerList(const LinkedList& input) {
-    currentPlayer.handWagerList = input;
-}
-
 // ----- ----- ----- ----- ----- ----- ----- Getter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 // GetCanBuyInsurance - Retrieves the private data member "canBuyInsurance"
 bool& Hand::GetCanBuyInsurance() {
@@ -1442,24 +1394,4 @@ std::string& Hand::GetName() {
 // GetCards - Retrieves the private data member "cards"
 std::vector<Card>& Hand::GetCards() {
     return currentPlayer.cards;
-}
-
-// GetHandBankList - Retrieves the private data member "handBankList"
-LinkedList& Hand::GetHandBankList() {
-    return currentPlayer.handBankList;
-}
-
-// GetHandNetList - Retrieves the private data member "handNetList"
-LinkedList& Hand::GetHandNetList() {
-    return currentPlayer.handNetList;
-}
-
-// GetHandTotalList - Retrieves the private data member "handTotalList"
-LinkedList& Hand::GetHandTotalList() {
-    return currentPlayer.handTotalList;
-}
-
-// GetHandWagerList - Retrieves the private data member "handWagerList"
-LinkedList& Hand::GetHandWagerList() {
-    return currentPlayer.handWagerList;
 }
