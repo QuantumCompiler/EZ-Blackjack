@@ -14,6 +14,9 @@ Shoe::Shoe() {
     deck->cards->ClearList();
 }
 
+// De-Constructor
+Shoe::~Shoe() {}
+
 /*  CreateShoe - Function that is responsible for creating the shoe that is to be played with
 *   Input:
 *       This function does not have input parameters
@@ -101,7 +104,9 @@ Shoe Shoe::CreateShoe() {
 *   Input:
 *       This function does not have any input parameters
 *   Algorithm:
-
+*       * Pop a node from the linked list using "PopNode()"
+*       * Create a card object with the information from this node
+*       * Return the card object
 *   Output:
 *       This function returns a Card object that is pulled from one of two possible vectors
 */
@@ -163,40 +168,23 @@ void Shoe::Shuffle() {
 }
 
 // ----- ----- ----- ----- ----- ----- ----- Setter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
-
-/*  SetNumOfDecks - Function that sets the private data member "gameDeck.numOfDecks" to the input parameter "input"
-*                   to represent the number of decks that will be played with in the game
-*   Input:
-*       input - Integer value that is to be set to the aforementioned private data member of the current Shoe object
-*   Algorithm:
-*       * We set the private data member previously mentioned to the input parameter "input"
-*   Output:
-*       This function does not return a value
-*/
-void Shoe::SetNumOfDecks(const int input) {
-    deck->numOfDecks = input;
-}
-
-/* SetCardsInShoe - Function that adds a Card object to the private data member "cards"
-*   Input:
-*       input - Smart pointer of Card object that is to be pushed to the back of the the "cards"
-*   Algorithm:
-*       * Append the card object as a node to the linked list "cards"
-*   Output:
-*       This function does not return a value
-*/
+// SetCardsInShoe - Mutates the private data member "cards" by adding a Card node to a linked list
 void Shoe::SetCardsInShoe(std::shared_ptr<node<Card>>& input) {
     deck->cards->AppendNode(input);
 }
 
+// SetNumOfDecks - Mutates the private data member "numOfDecks" by assigning it to "input"
+void Shoe::SetNumOfDecks(const int input) {
+    deck->numOfDecks = input;
+}
+
 // // ----- ----- ----- ----- ----- ----- ----- Getter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
+// GetCardsInShoe - Retrieves the private data member "cards"
+std::shared_ptr<LinkedList<Card>>& Shoe::GetCardsInShoe() {
+    return deck->cards;
+}
 
 // GetNumOfDecks - Retrieves the private data member "numOfDecks"
 int& Shoe::GetNumOfDecks() {
     return deck->numOfDecks;
-}
-
-// GetCardsInShoe - Retrieves the private data member "cards"
-std::shared_ptr<LinkedList<Card>>& Shoe::GetCardsInShoe() {
-    return deck->cards;
 }

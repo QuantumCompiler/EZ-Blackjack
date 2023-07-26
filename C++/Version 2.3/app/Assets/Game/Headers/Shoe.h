@@ -14,21 +14,22 @@ struct Deck {
 };
 class Shoe {
 public:
-    // Constructor
-    Shoe();
+    // Constructors
+    Shoe(); // Constructor
+    ~Shoe(); // De-Constructor
     // Class Functions
-    Shoe CreateShoe();
-    std::shared_ptr<Card> Draw();
-    void EmptyShoe();
-    void Shuffle();
+    Shoe CreateShoe(); // Creates shoe of cards
+    std::shared_ptr<Card> Draw(); // Removes last card from shoe
+    void EmptyShoe(); // Empties a shoe of cards
+    void Shuffle(); // Shuffles shoe of cards
     // Setter Functions
-    void SetNumOfDecks(const int input);
-    void SetCardsInShoe(std::shared_ptr<node<Card>>& input);
+    void SetCardsInShoe(std::shared_ptr<node<Card>>& input); // Mutates "cards"
+    void SetNumOfDecks(const int input); // Mutates "numOfDecks"
     // Getter Functions
-    int& GetNumOfDecks();
-    std::shared_ptr<LinkedList<Card>>& GetCardsInShoe();
+    int& GetNumOfDecks(); // Retrieves "numOfDecks"
+    std::shared_ptr<LinkedList<Card>>& GetCardsInShoe(); // Retrieves "cards"
 private:
-    std::shared_ptr<Deck> deck;
+    std::shared_ptr<Deck> deck; // Private data member that encapsulates the Deck structure
 };
 
 #endif
