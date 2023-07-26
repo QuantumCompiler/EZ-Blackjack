@@ -1,5 +1,3 @@
 .DS_Store
 C++/Version 2.2/build/*
-C++/Version 2.3/build/*
 !C++/Version 2.2/build/.gitkeep
-!C++/Version 2.3/build/.gitkeep
