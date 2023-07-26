@@ -4,25 +4,27 @@
 #include "../HPP/Utility.hpp"
 /*  Structure PlayingCard - Struct to resemble a playing card
 *   Data Members:
-*       rank - String value that represents a cards rank
-*       suit - String value that represents a cards suit
+*       cardValue - Integer value that represents the value of a card
 *       displayCardValue - String value that represents a modified version of the "cardValue" data member
 *       displayRank - String value that represents a modified version of the "rank" data member
 *       displaySuit - String value that represents a modified version of the "suit" data member
+*       rank - String value that represents a cards rank
+*       suit - String value that represents a cards suit
 */
 struct PlayingCard {
-    std::string rank;
-    std::string suit;
+    int cardValue;
     std::string displayCardValue;
     std::string displayRank;
     std::string displaySuit;
-    int cardValue;
+    std::string rank;
+    std::string suit;
 };
 class Card {
 public:
-    // Constructor
+    // Constructors
     Card(const std::string inputRank, const std::string inputSuit); // Constructor
-    Card() : card(std::make_shared<PlayingCard>()) {} // Default constructor
+    Card() : card(std::make_shared<PlayingCard>()) {} // Default Constructor
+    ~Card(); // De-Constructor
     // Class methods
     bool CheckCardParam(const std::string checking, const std::string feeding);
     friend std::ostream &operator<<(std::ostream &os, Card& currentCard) {
@@ -30,19 +32,19 @@ public:
         return os;
     }
     // Setter Functions
-    void SetCardValue(std::shared_ptr<PlayingCard> inputCard); // Sets card value
-    void SetDisplayRank(std::shared_ptr<PlayingCard> inputCard); // Sets display rank
-    void SetDisplaySuit(std::shared_ptr<PlayingCard> inputCard); // Sets display suit
-    void SetDisplayCardValue(std::shared_ptr<PlayingCard> inputCard); // Sets a display card value
-    void SetNewCardValue(const int input); // Sets a new card value
+    void SetCardValue(std::shared_ptr<PlayingCard> inputCard); // Mutates "cardValue"
+    void SetDisplayCardValue(std::shared_ptr<PlayingCard> inputCard); // Mutates "displayCardValue"
+    void SetDisplayRank(std::shared_ptr<PlayingCard> inputCard); // Mutates "displayRank"
+    void SetDisplaySuit(std::shared_ptr<PlayingCard> inputCard); // Mutates "displaySuit"
+    void SetNewCardValue(const int input); // Mutates "cardValue"
     // Getter Functions
-    int& GetCardValue(); // Retrieves a cards value
-    std::string& GetDisplayRank(); // Retrieves a cards display rank
-    std::string& GetDisplaySuit(); // Retrieves a cards display suit
-    std::string& GetDisplayCardValue(); // Retrieves a cards display card value
-    std::string& GetRank(); // Retrieves a cards rank
-    std::string& GetSuit(); // Retrieves a cards suit
+    int& GetCardValue(); // Retrieves "cardValue"
+    std::string& GetDisplayCardValue(); // Retrieves "displayCardValue"
+    std::string& GetDisplayRank(); // Retrieves "displayRank"
+    std::string& GetDisplaySuit(); // Retrieves "displaySuit"
+    std::string& GetRank(); // Retrieves "rank"
+    std::string& GetSuit(); // Retrieves "suit"
 private:
-    std::shared_ptr<PlayingCard> card;
+    std::shared_ptr<PlayingCard> card; // Private data member that encapsulates the PlayingCard structure
 };
 #endif

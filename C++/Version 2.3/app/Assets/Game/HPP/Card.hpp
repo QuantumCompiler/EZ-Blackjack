@@ -22,6 +22,9 @@ Card::Card(const std::string inputRank, const std::string inputSuit) {
     SetDisplayCardValue(card);
 }
 
+// De-Constructor
+Card::~Card() {}
+
 /*  CheckCardParam - Checks to see if a specific parameter is present for a card
 *   Input:
 *       checkingParam - Constant string value that is being fed into function to check if it matches another
@@ -36,76 +39,7 @@ bool Card::CheckCardParam(const std::string checkingParam, const std::string fee
 }
 
 // ----- ----- ----- ----- ----- ----- ----- Setter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
-/*  SetDisplayRank - Sets the display value of a cards rank
-*   Input:
-*       inputCard: Smart pointer of object type PlayingCard struct to make changes to private data member "displayRank"
-*   Algorithm:
-*       * Set the private data member "displayRank" equal to the modified version of "rank"
-*   Output:
-*       This function does not return a value
-*/
-void Card::SetDisplayRank(std::shared_ptr<PlayingCard> inputCard) {
-    card->displayRank = color_text(32, inputCard->rank);
-}
-
-/*  SetDisplaySuit - Sets the display value of a cards suit
-*   Input:
-*       inputCard: Smart pointer of object type PlayingCard struct to make changes to private data member "displaySuit"
-*   Algorithm:
-*       * Function checks for it a suit is a of a specific kind:
-*           * (0,3): Card is a Club or Spade - Console output is changed to purple
-*           * (1,2): Card is a Diamond or Heart - Console output is changed to red
-*           * Other: Card is an undefined suit - Console output is white
-*   Output:
-*       This function does not return a value
-*/
-void Card::SetDisplaySuit(std::shared_ptr<PlayingCard> inputCard) {
-    // Iterate through all possible suits of cards
-    for (int i = 0; i < 4; i++) {
-        if (CheckCardParam(inputCard->suit, Suits[i])) {
-            switch (i) {
-            // Set the color to purple for Clubs and Spades
-            case 0:
-            case 3:
-                card->displaySuit = color_text(35, inputCard->suit);
-                break;
-            // Set the color to red for Diamonds and Hearts
-            case 1:
-            case 2:
-                card->displaySuit = color_text(31, inputCard->suit);
-                break;
-            // Default to white for all other suits
-            default:
-                card->displaySuit = color_text(37, inputCard->suit);
-                break;
-            }
-        }
-    }
-}
-
-/*  SetDisplayCardValue - Sets the display value of a cards value
-*   Input:
-*       inputCard: Smart pointer of object type PlayingCard struct to make changes to private data member "displayCardValue"
-*   Algorithm:
-*       * Set the private data member "displayCardValue" to the modified version of "cardValue"
-*   Output:
-*       This function does not return a value
-*/
-void Card::SetDisplayCardValue(std::shared_ptr<PlayingCard> inputCard) {
-    card->displayCardValue = color_text(31, std::to_string(inputCard->cardValue));
-}
-
-/*  SetCardValue - Sets the value of a playing card based off of its rank
-*   Input:
-*       inputCard: Smart pointer of object type PlayingCard struct to make changes to private data member "cardValue"
-*   Algorithm:
-*       * Function checks for what rank a card is:
-*           * Ace: Card value is defaulted to a value of (11) - This can be mutated with another function
-*           * (2,3,4,5,6,7,8,9,10): Card value is defaulted to the integer value of the card
-*           * (Jack,Queen,King): Card value is defaulted to a value of (10)
-*   Output:
-*       This function does not return a value
-*/
+// SetCardValue - Mutates the private data member "cardValue" by assigning it to a cards correct value
 void Card::SetCardValue(std::shared_ptr<PlayingCard> inputCard) {
     // Iterate through all possible ranks of cards
     for (int i = 0; i < 13; i++) {
@@ -139,15 +73,42 @@ void Card::SetCardValue(std::shared_ptr<PlayingCard> inputCard) {
     }
 }
 
-/*  SetNewCardValue - Mutates the private data member "cardValue" to a new integer value
-*   Input:
-*       input: Integer value that private data member "cardValue" is to be changed to
-*   Algorithm:
-*       * Set the private data member "cardValue" equal to the input parameter "input"
-*       * Set the display card value with the function "SetDisplayCardValue"
-*   Output:
-*       This function does not return a value
-*/
+// SetDisplayCardValue - Mutates the private data member "displayCardValue"
+void Card::SetDisplayCardValue(std::shared_ptr<PlayingCard> inputCard) {
+    card->displayCardValue = color_text(31, std::to_string(inputCard->cardValue));
+}
+
+// SetDisplayRank - Mutates the private data member "displayRank"
+void Card::SetDisplayRank(std::shared_ptr<PlayingCard> inputCard) {
+    card->displayRank = color_text(32, inputCard->rank);
+}
+
+// SetDisplaySuit - Mutates the private data member "displaySuit"
+void Card::SetDisplaySuit(std::shared_ptr<PlayingCard> inputCard) {
+    // Iterate through all possible suits of cards
+    for (int i = 0; i < 4; i++) {
+        if (CheckCardParam(inputCard->suit, Suits[i])) {
+            switch (i) {
+            // Set the color to purple for Clubs and Spades
+            case 0:
+            case 3:
+                card->displaySuit = color_text(35, inputCard->suit);
+                break;
+            // Set the color to red for Diamonds and Hearts
+            case 1:
+            case 2:
+                card->displaySuit = color_text(31, inputCard->suit);
+                break;
+            // Default to white for all other suits
+            default:
+                card->displaySuit = color_text(37, inputCard->suit);
+                break;
+            }
+        }
+    }
+}
+
+// SetNewCardValue - Mutates the private data member "cardValue" by assigning it to a new value
 void Card::SetNewCardValue(const int input) {
     card->cardValue = input;
     SetDisplayCardValue(card);
@@ -159,6 +120,11 @@ int& Card::GetCardValue() {
     return card->cardValue;
 }
 
+// GetDisplayCardValue - Retrieves the private data member "displayCardValue"
+std::string& Card::GetDisplayCardValue() {
+    return card->displayCardValue;
+}
+
 // GetDisplayRank - Retrieves the private data member "displayRank"
 std::string& Card::GetDisplayRank() {
     return card->displayRank;
@@ -167,11 +133,6 @@ std::string& Card::GetDisplayRank() {
 // GetDisplaySuit - Retrieves the private data member "displaySuit"
 std::string& Card::GetDisplaySuit() {
     return card->displaySuit;
-}
-
-// GetDisplayCardValue - Retrieves the private data member "displayCardValue"
-std::string& Card::GetDisplayCardValue() {
-    return card->displayCardValue;
 }
 
 // GetRank - Retrieves the private data member "rank"
