@@ -3,14 +3,15 @@
 // ----- ----- ----- ----- ----- ----- ----- Class Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 /*  Constructor for Shoe Class
 *   Initialization:
-*       gameDeck.numOfDecks is initialized to be zero
-*       gameDeck.cardsInShoe is initialized to be empty
-*       gameDeck.riggedCards is initialized to be empty
+*       numOfDecks is initialized to be zero
+*       cards is initialized to be empty
 */
 Shoe::Shoe() {
-    gameDeck.numOfDecks = 0;
-    gameDeck.cardsInShoe = {};
-    gameDeck.riggedCards = {};
+    // Create objects on the heap
+    deck = std::make_shared<Deck>();
+    deck->cards = std::make_shared<LinkedList<Card>>();
+    deck->numOfDecks = 0;
+    deck->cards->ClearList();
 }
 
 /*  CreateShoe - Function that is responsible for creating the shoe that is to be played with
@@ -84,7 +85,9 @@ Shoe Shoe::CreateShoe() {
     for (int i = 1; i <= GetNumOfDecks(); i++) {
         for (const auto& rank : Ranks) {
             for (const auto& suit : Suits) {
-                SetCardsInShoe(Card(rank, suit));
+                std::shared_ptr<Card> card(new Card(rank, suit));
+                std::shared_ptr<node<Card>> node = this->GetCardsInShoe()->InitNode(card);
+                SetCardsInShoe(node);
             }
         }
     }
@@ -94,40 +97,26 @@ Shoe Shoe::CreateShoe() {
     return *this;
 }
 
-/*  Draw - Function that removes a card from a vector and returns that Card object
+/*  Draw - Function that removes a card from a shoe and returns that Card object
 *   Input:
 *       This function does not have any input parameters
 *   Algorithm:
-*       * This function first checks to see if the "gameDeck.riggedCards" vector is empty
-*           * If this vector is empty, then we remove a card from the back of the "gameDeck.cardsInShoe"
-*             and return that Card object
-*           * If this vector is not empty, we remove a card from the back of the "gameDeck.riggedCards"
-*             and return that Card object
+
 *   Output:
 *       This function returns a Card object that is pulled from one of two possible vectors
 */
-Card Shoe::Draw() {
-    // Remove card for back of "cardsInShoe"
-    if (gameDeck.riggedCards.empty()) {
-        Card cardDrawn = gameDeck.cardsInShoe.back();
-        gameDeck.cardsInShoe.pop_back();
-        return cardDrawn;
+std::shared_ptr<Card> Shoe::Draw() {
+    if (this->GetCardsInShoe()->GetSize() > 0) {
+        std::shared_ptr<node<Card>> card = this->GetCardsInShoe()->PopNode();
+        std::shared_ptr<Card> ret(new Card(card->data.GetRank(), card->data.GetSuit()));
+        return ret;
     }
-    // Remove card from back of "riggedCards"
-    else if (gameDeck.riggedCards.size() > 0) {
-        Card cardDrawn = gameDeck.riggedCards.back();
-        gameDeck.riggedCards.pop_back();
-        return cardDrawn;
-    }
-    // Default to removing from "cardsInShoe"
     else {
-        Card cardDrawn = gameDeck.cardsInShoe.back();
-        gameDeck.cardsInShoe.pop_back();
-        return cardDrawn;
+        return nullptr;
     }
 }
 
-/*  EmptyShoe - Empties the shoe that is in question
+/*  ResetShoe - Empties the shoe that is in question and sets the number of decks to zero
 *   Input:
 *       This function does not have any input parameters
 *   Algorithm:
@@ -136,26 +125,41 @@ Card Shoe::Draw() {
 *       This function does not return a value, but it modifies the data structure elements
 */
 void Shoe::EmptyShoe() {
-    // Clear all vectors of cards
-    GetCardsInShoe().clear();
-    GetRiggedCards().clear();
+    GetCardsInShoe()->ClearList();
+    SetNumOfDecks(0);
 }
 
-/*  Shuffle - This function shuffles the "gameDeck.cardsInShoe" vector
+/*  Shuffle - This function shuffles the cards that are in a shoe
 *   Input:
 *       This function does not have any input parameters
 *   Algorithm:
-*       * We first create an object "random" of type "std::random_device" to generate a hardware-based random number
-*       * We then create an object "g" of type "std::mt19936" to generate a random number with seed "random()"
-*       * We then invoke the "shuffle" function to shuffle our "gameDeck.cardsInShoe" vector with our random number "g"
+*       * Create temporary card at root of list and a vector to hold cards
+*       * Copy the cards in the list to the vector
+*       * Clear the original list of cards
+*       * Shuffle the vector of cards
+*       * Copy the cards from the vector to the linked list
 *   Output:
 *       This function does not return a value
 */
 void Shoe::Shuffle() {
-    // Choose random number
+    // Create temp cards and vector to hold cards
+    std::shared_ptr<node<Card>> current = deck->cards->GetRoot();
+    std::vector<std::shared_ptr<node<Card>>> cardVector(0);
+    // Copy cards to vector
+    while (current != nullptr) {
+        cardVector.push_back(current);
+        current = current->nextNode;
+    }
+    // Clear the original list of cards
+    deck->cards->ClearList();
+    // Shuffle cards with "shuffle"
     std::random_device random;
     std::mt19937 g(random());
-    shuffle(gameDeck.cardsInShoe.begin(), gameDeck.cardsInShoe.end(), g);
+    shuffle(cardVector.begin(), cardVector.end(), g);
+    // Copy all cards to deck of cards
+    for (int i = 0; i < cardVector.size(); i++) {
+        deck->cards->AppendNode(cardVector.at(i));
+    }
 }
 
 // ----- ----- ----- ----- ----- ----- ----- Setter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
@@ -170,48 +174,29 @@ void Shoe::Shuffle() {
 *       This function does not return a value
 */
 void Shoe::SetNumOfDecks(const int input) {
-    gameDeck.numOfDecks = input;
+    deck->numOfDecks = input;
 }
 
-/*
-*   SetCardsInShoe - Function that adds a Card object to the private data member "gameDeck.cardsInShoe"
+/* SetCardsInShoe - Function that adds a Card object to the private data member "cards"
 *   Input:
-*       inputCard - Card object that is to be pushed to the back of the private data member "gameDeck.cardsInShoe"
+*       input - Smart pointer of Card object that is to be pushed to the back of the the "cards"
 *   Algorithm:
-*       * We use the "push_back" function to insert the input parameter to the back of the aforementioned private data member
+*       * Append the card object as a node to the linked list "cards"
 *   Output:
 *       This function does not return a value
 */
-void Shoe::SetCardsInShoe(const Card inputCard) {
-    gameDeck.cardsInShoe.push_back(inputCard);
+void Shoe::SetCardsInShoe(std::shared_ptr<node<Card>>& input) {
+    deck->cards->AppendNode(input);
 }
 
-/*
-*   SetRiggedCards - Function that adds a Card object to the private data member "gameDeck.riggedCards"
-*   Input:
-*       inputCard - Card object that is to be pushed to the back of the private data member "gameDeck.riggedCards"
-*   Algorithm:
-*       * We use the "push_back" function to insert the input parameter to the back of the aforementioned private data member
-*   Output:
-*       This function does not return a value
-*/
-void Shoe::SetRiggedCards(const Card inputCard) {
-    gameDeck.riggedCards.push_back(inputCard);
-}
-
-// ----- ----- ----- ----- ----- ----- ----- Getter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
+// // ----- ----- ----- ----- ----- ----- ----- Getter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 
 // GetNumOfDecks - Retrieves the private data member "numOfDecks"
 int& Shoe::GetNumOfDecks() {
-    return gameDeck.numOfDecks;
+    return deck->numOfDecks;
 }
 
-// GetCardsInShoe - Retrieves the private data member "cardsInShoe"
-std::vector<Card>& Shoe::GetCardsInShoe() {
-    return gameDeck.cardsInShoe;
-}
-
-// GetRiggedCards - Retrieves the private data member "riggedCards"
-std::vector<Card>& Shoe::GetRiggedCards() {
-    return gameDeck.riggedCards;
+// GetCardsInShoe - Retrieves the private data member "cards"
+std::shared_ptr<LinkedList<Card>>& Shoe::GetCardsInShoe() {
+    return deck->cards;
 }

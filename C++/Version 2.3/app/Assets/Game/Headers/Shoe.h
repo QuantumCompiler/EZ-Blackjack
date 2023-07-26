@@ -10,8 +10,7 @@
 */
 struct Deck {
     int numOfDecks;
-    std::vector<Card> cardsInShoe;
-    std::vector<Card> riggedCards;
+    std::shared_ptr<LinkedList<Card>> cards;
 };
 class Shoe {
 public:
@@ -19,19 +18,17 @@ public:
     Shoe();
     // Class Functions
     Shoe CreateShoe();
-    Card Draw();
+    std::shared_ptr<Card> Draw();
     void EmptyShoe();
     void Shuffle();
     // Setter Functions
     void SetNumOfDecks(const int input);
-    void SetCardsInShoe(const Card inputCard);
-    void SetRiggedCards(const Card inputCard);
+    void SetCardsInShoe(std::shared_ptr<node<Card>>& input);
     // Getter Functions
     int& GetNumOfDecks();
-    std::vector<Card>& GetCardsInShoe();
-    std::vector<Card>& GetRiggedCards();
+    std::shared_ptr<LinkedList<Card>>& GetCardsInShoe();
 private:
-    Deck gameDeck;
+    std::shared_ptr<Deck> deck;
 };
 
 #endif
