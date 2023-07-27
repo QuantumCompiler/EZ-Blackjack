@@ -101,12 +101,12 @@ public:
     Hand(); // Constructor
     ~Hand(); // De-Constructor
     // Class Functions
-    // Hand AddCardToHand(const Card& input);
-    // Hand AddHandTotal();
-    // Hand BankDeposit();
-    // Hand CheckBlackJack();
-    // Hand CheckParamInHand(const std::string referenceParameter, const std::string checkingParameter);
-    // Hand CheckSameParamInHand(const std::string referenceParameter, const std::string checkingParameter = "");
+    Hand AddCardToHand(std::shared_ptr<node<Card>>& input); // Adds card to hand
+    Hand AddHandTotal(); // Adds current hand total
+    Hand BankDeposit(); // Deposits currency into a players bank
+    Hand CheckBlackJack(); // Checks for if a player has blackjack
+    Hand CheckParamInHand(const std::string referenceParameter, const std::string checkingParameter); // Checks if a player has a specific parameter in their hand
+    Hand CheckSameParamInHand(const std::string referenceParameter, const std::string checkingParameter = ""); // Checks if a player has the same parameter in their hand
     // Hand CopyVariables(Hand& input);
     // Hand HitHand(Shoe& input);
     // Hand InsurancePrompt();
@@ -119,43 +119,48 @@ public:
     // Setter Functions
     // Boolean Values
     void SetCanBuyInsurance(const bool input); // Mutates "canBuyInsurance"
-    // void SetCanDoubleDown(const bool input);
-    // void SetCanSplitAces(const bool input);
-    // void SetCanSplitHand(const bool input);
-    // void SetChoseBuyInsurance(const bool input);
-    // void SetChoseDoubleDown(const bool input);
-    // void SetChoseSplitAces(const bool input);
-    // void SetChoseSplitHand(const bool input);
-    // void SetDoubleDownResponse(const bool input);
-    // void SetHasBlackJack(const bool input);
-    // void SetHasHit(const bool input);
-    // void SetParamInHand(const bool input);
-    // void SetSameParamInHand(const bool input);
-    // void SetShouldDoubleDown(const bool input);
-    // void SetShouldHit(const bool input);
-    // void SetShouldSplit(const bool input);
-    // void SetShouldStand(const bool input);
-    // void SetSoftSeventeen(const bool input);
-    // void SetSplitAcesResponse(const bool input);
-    // void SetSplitHandResponse(const bool input);
+    void SetCanDoubleDown(const bool input); // Mutates "canDoubleDown"
+    void SetCanSplitAces(const bool input); // Mutates "canSplitAces"
+    void SetCanSplitHand(const bool input); // Mutates "canSplitHand"
+    void SetChoseBuyInsurance(const bool input); // Mutates "choseBuyInsurance"
+    void SetChoseDoubleDown(const bool input); // Mutates "choseDoubleDown"
+    void SetChoseSplitAces(const bool input); // Mutates "choseSplitAces"
+    void SetChoseSplitHand(const bool input); // Mutates "choseSplitHand"
+    void SetDoubleDownResponse(const bool input); // Mutates "doubleDownResponse"
+    void SetHasBlackJack(const bool input); // Mutates "hasBlackJack"
+    void SetHasHit(const bool input); // Mutates "hasHit"
+    void SetParamInHand(const bool input); // Mutates "paramInHand"
+    void SetSameParamInHand(const bool input); // Mutates "sameParamInHand"
+    void SetShouldDoubleDown(const bool input); // Mutates "shouldDoubleDowns"
+    void SetShouldHit(const bool input); // Mutates "shouldHit"
+    void SetShouldSplit(const bool input); // Mutates "shouldSplit"
+    void SetShouldStand(const bool input); // Mutates "shouldStand"
+    void SetSoftSeventeen(const bool input); // Mutates "softSeventeen"
+    void SetSplitAcesResponse(const bool input); // Mutates "splitAcesResponse"
+    void SetSplitHandResponse(const bool input); // Mutates "splitHandResponse"
     // Float Values
-    // void SetBankTotal(const float& input);
-    // void SetInsuranceWager(const float& input);
-    // void SetNet(const float& input);
-    // void SetWager(const float& input);
+    void SetBankTotal(const float& input); // Mutates "bankTotal"
+    void SetInsuranceWager(const float& input); // Mutates "insuranceWager"
+    void SetNet(const float& input); // Mutates "net"
+    void SetWager(const float& input); // Mutates "wager"
     // Integer Values
-    // void SetCardsTotal(const int& input);
-    // void SetHandsPlayed(const int& input);
-    // void SetIndividualHands(const int& input);
+    void SetCardsTotal(const int& input); // Mutates "cardsTotal"
+    void SetHandsPlayed(const int& input); // Mutates "handsPlayed"
     // String Values
-    // void SetDisplayName();
-    // void SetDisplayBankTotal();
-    // void SetDisplayNet();
-    // void SetDisplayWager();
-    // void SetDisplayInsuranceWager();
-    // void SetDisplayCardsTotal();
-    // void SetName(const std::string& input);
+    void SetDisplayBankTotal(); // Mutates "displayBankTotal"
+    void SetDisplayCardsTotal(); // Mutates "displayCardsTotal"
+    void SetDisplayInsuranceWager(); // Mutates "displayInsuranceWager"
+    void SetDisplayName(); // Mutates "displayName"
+    void SetDisplayNet(); // Mutates "displayNet"
+    void SetDisplayWager(); // Mutates "displayWager"
+    void SetName(const std::string& input); // Mutates "name"
     // List Values
+    void SetHandBankTotals(std::shared_ptr<node<float>>& input); // Mutates "handBankTotals"
+    void SetHandCardTotals(std::shared_ptr<node<int>>& input); // Mutates "handCardTotals"
+    void SetHandNets(std::shared_ptr<node<float>>& input); // Mutates "handNets"
+    void SetHandPlayed(std::shared_ptr<node<int>>& input); // Mutates "handPlayed"
+    void SetHandWagers(std::shared_ptr<node<float>>& input); // Mutates "handWagers"
+    void SetPlayerCards(std::shared_ptr<node<Card>>& input); // Mutates "playerCards"
     // Getter Functions
     // Boolean Values
     bool& GetCanBuyInsurance(); // Retrieves "canBuyInsurance"

@@ -23,299 +23,305 @@ Hand::Hand() {
     player->handWagers = std::make_shared<LinkedList<float>>();
     player->playerCards = std::make_shared<LinkedList<Card>>();
     // Boolean Values Initialization
-    SetCanBuyInsurance(false);
-    // SetCanDoubleDown(false);
-    // SetCanSplitAces(false);
-    // SetCanSplitHand(false);
-    // SetChoseBuyInsurance(false);
-    // SetChoseDoubleDown(false);
-    // SetChoseSplitAces(false);
-    // SetChoseSplitHand(false);
-    // SetDoubleDownResponse(false);
-    // SetHasBlackJack(false);
-    // SetHasHit(false);
-    // SetParamInHand(false);
-    // SetSameParamInHand(false);
-    // SetShouldDoubleDown(false);
-    // SetShouldHit(false);
-    // SetShouldSplit(false);
-    // SetShouldStand(false);
-    // SetSoftSeventeen(false);
-    // SetSplitAcesResponse(false);
-    // SetSplitHandResponse(false);
+    this->SetCanBuyInsurance(false);
+    this->SetCanDoubleDown(false);
+    this->SetCanSplitAces(false);
+    this->SetCanSplitHand(false);
+    this->SetChoseBuyInsurance(false);
+    this->SetShouldDoubleDown(false);
+    this->SetChoseSplitAces(false);
+    this->SetChoseSplitHand(false);
+    this->SetDoubleDownResponse(false);
+    this->SetHasBlackJack(false);
+    this->SetHasHit(false);
+    this->SetParamInHand(false);
+    this->SetSameParamInHand(false);
+    this->SetShouldDoubleDown(false);
+    this->SetShouldHit(false);
+    this->SetShouldSplit(false);
+    this->SetShouldStand(false);
+    this->SetSoftSeventeen(false);
+    this->SetSplitAcesResponse(false);
+    this->SetSplitHandResponse(false);
     // Float Values Initialization
-    // SetBankTotal(0.00);
-    // SetInsuranceWager(0.00);
-    // SetNet(0.00);
-    // SetWager(0.00);
+    this->SetBankTotal(0);
+    this->SetInsuranceWager(0);
+    this->SetNet(0);
+    this->SetWager(0);
     // Integer Values Initialization
-    // SetCardsTotal(0);
-    // SetHandsPlayed(0);
-    // SetIndividualHands(0);
+    this->SetCardsTotal(0);
+    this->SetHandsPlayed(0);
     // String Values Initialization
-    // GetDisplayBankTotal().clear();
-    // GetDisplayCardsTotal().clear();
-    // GetDisplayHandsPlayed().clear();
-    // GetDisplayInsuranceWager().clear();
-    // GetDisplayName().clear();
-    // GetDisplayNet().clear();
-    // GetDisplayWager().clear();
-    // GetName().clear();
+    this->GetDisplayBankTotal().clear();
+    this->GetDisplayCardsTotal().clear();
+    this->GetDisplayInsuranceWager().clear();
+    this->GetDisplayName().clear();
+    this->GetDisplayNet().clear();
+    this->GetDisplayWager().clear();
+    this->GetName().clear();
     // List Values Initialization
+    this->GetHandBankTotals()->ClearList();
+    this->GetHandCardTotals()->ClearList();
+    this->GetHandNets()->ClearList();
+    this->GetHandPlayed()->ClearList();
+    this->GetHandWagers()->ClearList();
+    this->GetPlayerCards()->ClearList();
 }
 
 // De-Constructor
 Hand::~Hand() {}
 
-// /*  AddCardToHand - Adds a card to a players hand
-// *   Input:
-// *       input - Constant card passed by reference that is to be added to a players hand
-// *   Algorithm:
-// *       * Calls the "SetCards" function and adds the input parameter "input" to the private data member "cards"
-// *       * Call "AddHandTotal" function to add up the total in the hand of the player
-// *   Output:
-// *       This function returns a Hand object
-// */
-// Hand Hand::AddCardToHand(const Card& input) {
-//     // Add card to players hand and update hand total
-//     SetCards(input);
-//     AddHandTotal();
-//     return *this;
-// }
+/*  AddCardToHand - Adds a card to a players hand
+*   Input:
+*       input - Card node passed by reference that represents the card being inserted into a hand
+*   Algorithm:
+*       * Calls the "SetCards" function and adds the input parameter "input" to the private data member ""
+*       * Call "AddHandTotal" function to add up the total in the hand of the player
+*   Output:
+*       This function returns a Hand object
+*/
+Hand Hand::AddCardToHand(std::shared_ptr<node<Card>>& input) {
+    // Add card to players hand and update hand total
+    this->SetPlayerCards(input);
+    this->AddHandTotal();
+    return *this;
+}
 
-// /*  AddHandTotal - Adds the hand total of a current player
-// *   Input:
-// *       This function does not have any input parameters
-// *   Algorithm:
-// *       * Create two integer values; ace_count (Represents the number of aces in a hand), running_hand_value (A running hand value)
-// *       * Iterate through the cards in a players hand and count how many Aces are present in a players hand
-// *       * Iterate through the cards in a players hand and do the following:
-// *           * If the number of Aces in the hand is 1, then set the value of the Ace to 11
-// *           * If the number of Aces in the hand is greater than 1, then set the current value of the Ace to 1
-// *           * Update the "running_hand_value" by adding the current cards value to it
-// *           * Decrease the value of "ace_count" by one, then repeat the loop
-// *       * Iterate through the cards in a players hand if the "running_hand_value" is greater than 21
-// *           * If the current card is an Ace, set its value to 1, and add that card value to "running_hand_value"
-// *           * If the current card is not an Ace, then just add its value to "running_hand_value"
-// *       * Set the private data member "cardsTotal" to "running_hand_value" using SetCardsTotal
-// *   Output:
-// *       This function returns a Hand object after iterating through all the cards in a hand
-// */
-// Hand Hand::AddHandTotal() {
-//     int ace_count = 0;
-//     int running_hand_value = 0;
-//     // Count number of Aces in hand
-//     for (Card& current_card : currentPlayer.cards) {
-//         if (current_card.CheckCardParam(current_card.GetRank(), Ranks[0])) {
-//             ace_count += 1;
-//         }
-//     }
-//     // Change Ace values
-//     for (Card& current_card : currentPlayer.cards) {
-//         if (ace_count == 1) {
-//             // Change Ace value to 11
-//             if (current_card.CheckCardParam(current_card.GetRank(), Ranks[0])) {
-//                 current_card.SetNewCardValue(11);
-//             }
-//         }
-//         else if (ace_count > 1) {
-//             // Change Ace value to 1
-//             if (current_card.CheckCardParam(current_card.GetRank(), Ranks[0])) {
-//                 current_card.SetNewCardValue(1);
-//             }
-//         }
-//         running_hand_value += current_card.GetCardValue();
-//         ace_count -= 1;
-//     }
-//     // Check if current hand is over 21
-//     if (running_hand_value > 21) {
-//         running_hand_value = 0;
-//         for (Card& current_card : currentPlayer.cards) {
-//             // If the card is an Ace, change the value of it to 1
-//             if (current_card.CheckCardParam(current_card.GetRank(), Ranks[0])) {
-//                 current_card.SetNewCardValue(1);
-//                 running_hand_value += current_card.GetCardValue();
-//             }
-//             // If the card is not an Ace, just add value to running_hand_value
-//             else {
-//                 running_hand_value += current_card.GetCardValue();
-//             }
-//         }
-//     }
-//     SetCardsTotal(running_hand_value);
-//     return *this;
-// }
+/*  AddHandTotal - Adds the hand total of a current player
+*   Input:
+*       This function does not have any input parameters
+*   Algorithm:
+*       * Create two integer values; ace_count (Represents the number of aces in a hand), running_hand_value (A running hand value)
+*       * Iterate through the cards in a players hand and count how many Aces are present in a players hand
+*       * Iterate through the cards in a players hand and do the following:
+*           * If the number of Aces in the hand is 1, then set the value of the Ace to 11
+*           * If the number of Aces in the hand is greater than 1, then set the current value of the Ace to 1
+*           * Update the "running_hand_value" by adding the current cards value to it
+*           * Decrease the value of "ace_count" by one, then repeat the loop
+*       * Iterate through the cards in a players hand if the "running_hand_value" is greater than 21
+*           * If the current card is an Ace, set its value to 1, and add that card value to "running_hand_value"
+*           * If the current card is not an Ace, then just add its value to "running_hand_value"
+*       * Set the private data member "cardsTotal" to "running_hand_value" using SetCardsTotal
+*   Output:
+*       This function returns a Hand object after iterating through all the cards in a hand
+*/
+Hand Hand::AddHandTotal() {
+    int ace_count = 0;
+    int running_hand_value = 0;
+    // Count number of Aces in hand
+    std::shared_ptr<node<Card>> currentCard = this->GetPlayerCards()->GetRoot();
+    while (currentCard != nullptr) {
+        if (currentCard->data.CheckCardParam(currentCard->data.GetRank(), Ranks[0])) {
+            ace_count += 1;
+        }
+        currentCard = currentCard->nextNode;
+    }
+    currentCard = this->GetPlayerCards()->GetRoot();
+    // Change Ace values
+    while (currentCard != nullptr) {
+        if (currentCard->data.CheckCardParam(currentCard->data.GetRank(), Ranks[0])) {
+            // Change Ace value to 11
+            if (ace_count == 1) {
+                currentCard->data.SetNewCardValue(11);
+            }
+            // Change Ace value to 1
+            else if (ace_count > 1) {
+                currentCard->data.SetNewCardValue(1);
+            }
+        }
+        ace_count -= 1;
+        running_hand_value += currentCard->data.GetCardValue();
+        currentCard = currentCard->nextNode;
+    }
+    currentCard = this->GetPlayerCards()->GetRoot();
+    if (running_hand_value > 21) {
+        running_hand_value = 0;
+        while (currentCard != nullptr) {
+            // If the card is an Ace, change the value of it to 1
+            if (currentCard->data.CheckCardParam(currentCard->data.GetRank(), Ranks[0])) {
+                currentCard->data.SetNewCardValue(1);
+                running_hand_value += currentCard->data.GetCardValue();
+            }
+            // If the card is not an Ace, just add value to running_hand_value
+            else {
+                running_hand_value += currentCard->data.GetCardValue();
+            }
+            currentCard = currentCard->nextNode;
+        }
+    }
+    currentCard = this->GetPlayerCards()->GetRoot();
+    this->SetCardsTotal(running_hand_value);
+    return *this;
+}
 
-// /*  BankDeposit - Updates the private data member "bankTotal" to represent a players bank total
-// *   Input:
-// *       This function does not have any input parameters
-// *   Algorithm:
-// *       * First create a float value that represents the bank total of a player prior to depositing
-// *       * Enter an error catching block that will help us determine if a player has entered a correct value for a bank total
-// *           * If the value entered is not a float, then we output an error message and clear the inputs
-// *           * If the value entered is a float or an integer
-// *               * We check to see if it is less than or equal to zero, if it is, we output an error message and require another input
-// *               * If it is greater than zero, then we set the private data member "bankTotal" to the "input" with SetBankTotal
-// *       * We then initialize some values for the statistics tracking of the player
-// *   Output:
-// *       This function returns a Hand object after depositing currency into a players bank
-// */
-// Hand Hand::BankDeposit() {
-//     float input;
-//     while (true) {
-//         // Prompt user for deposit
-//         std::cout << std::endl << "Please enter the amount you'd like to deposit into your bank: "; time_sleep(1000);
-//         std::cin >> input; time_sleep(1000);
-//         const std::type_info& result = typeid(input);
-//         std::string checkResult = result.name();
-//         // Check if value is not a float or integer
-//         if (checkResult != "f" && checkResult != "i") {
-//             std::cout << std::endl << color_text(31, "Invalid Response") << ". Please re-enter your submission." << std::endl; time_sleep(1000);
-//             clear_terminal();
-//             checkResult.clear();
-//             std::cin.clear();
-//             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-//             continue;
-//         }
-//         // Check if value is a float or integer
-//         else if (checkResult == "f" || checkResult == "i") {
-//             if (input <= 0) {
-//                 std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(round_input(input))) << ". Please re-enter a positive value." << std::endl; time_sleep(1000);
-//                 clear_terminal();
-//                 checkResult.clear();
-//                 std::cin.clear();
-//                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-//                 continue;
-//             }
-//             else {
-//                 SetBankTotal(input);
-//                 break;
-//             }
-//         }
-//     }
-//     std::cout << std::endl << GetDisplayName() << " has decided to start with: " << GetDisplayBankTotal() << std::endl; time_sleep(1000);
-//     // Update stats of player
-//     return *this;
-// }
+/*  BankDeposit - Updates the private data member "bankTotal" to represent a players bank total
+*   Input:
+*       This function does not have any input parameters
+*   Algorithm:
+*       * First create a float value that represents the bank total of a player prior to depositing
+*       * Enter an error catching block that will help us determine if a player has entered a correct value for a bank total
+*           * If the value entered is not a float, then we output an error message and clear the inputs
+*           * If the value entered is a float or an integer
+*               * We check to see if it is less than or equal to zero, if it is, we output an error message and require another input
+*               * If it is greater than zero, then we set the private data member "bankTotal" to the "input" with SetBankTotal
+*       * We then initialize some values for the statistics tracking of the player
+*   Output:
+*       This function returns a Hand object after depositing currency into a players bank
+*/
+Hand Hand::BankDeposit() {
+    float input;
+    while (true) {
+        // Prompt user for deposit
+        std::cout << std::endl << "Please enter the amount you'd like to deposit into your bank: "; time_sleep(1000);
+        std::cin >> input; time_sleep(1000);
+        const std::type_info& result = typeid(input);
+        std::string checkResult = result.name();
+        // Check if value is not a float or integer
+        if (checkResult != "f" && checkResult != "i") {
+            std::cout << std::endl << color_text(31, "Invalid Response") << ". Please re-enter your submission." << std::endl; time_sleep(1000);
+            clear_terminal();
+            checkResult.clear();
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            continue;
+        }
+        // Check if value is a float or integer
+        else if (checkResult == "f" || checkResult == "i") {
+            if (input <= 0) {
+                std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(round_input(input))) << ". Please re-enter a positive value." << std::endl; time_sleep(1000);
+                clear_terminal();
+                checkResult.clear();
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                continue;
+            }
+            else {
+                this->SetBankTotal(input);
+                break;
+            }
+        }
+    }
+    std::cout << std::endl << this->GetDisplayName() << " has decided to start with: " << this->GetDisplayBankTotal() << std::endl; time_sleep(1000);
+    // Update stats of player
+    return *this;
+}
 
-// /*  CheckBlackJack - Checks to see if a player has blackjack
-// *   Input:
-// *       This function does not have any input parameters
-// *   Algorithm:
-// *       * Check to see if the player has an Ace in their hand first
-// *       * Begin by iterating through a hands cards
-// *       * First, check to see if the current card value in the hand has a value of 10
-// *           * If it does, proceed to return true if an Ace is also present and the hands size is only two
-// *           * Otherwise, continue through the hand
-// *       * Otherwise, proceed to check the next card in hand
-// *   Output:
-// *       This function returns a boolean value that determines if a player has a blackjack on deal
-// */
-// Hand Hand::CheckBlackJack() {
-//     SetHasBlackJack(false);
-//     CheckParamInHand("R",Ranks[0]);
-//     // Iterate over cards
-//     for (Card current_card : GetCards()) {
-//         // Check if there is a card in hand that has a value of 10
-//         if (current_card.GetCardValue() == 10) {
-//             // Check if there is an Ace in the hand and the hand only has 2 cards
-//             if (GetParamInHand() && GetCards().size() == 2) {
-//                 SetHasBlackJack(true);
-//                 break;
-//             }
-//             else {continue;}
-//         }
-//         else {continue;}
-//     }
-//     return *this;
-// }
+/*  CheckBlackJack - Checks to see if a player has blackjack
+*   Input:
+*       This function does not have any input parameters
+*   Algorithm:
+*       * Check to see if the player has an Ace in their hand first
+*       * Begin by iterating through a hands cards
+*       * First, check to see if the current card value in the hand has a value of 10
+*           * If it does, proceed to return true if an Ace is also present and the hands size is only two
+*           * Otherwise, continue through the hand
+*       * Otherwise, proceed to check the next card in hand
+*   Output:
+*       This function returns a boolean value that determines if a player has a blackjack on deal
+*/
+Hand Hand::CheckBlackJack() {
+    this->SetHasBlackJack(false);
+    this->CheckParamInHand("R",Ranks[0]);
+    // Iterate over cards
+    std::shared_ptr<node<Card>> currentCard = this->GetPlayerCards()->GetRoot();
+    while (currentCard != nullptr) {
+        // Check if there is a card in hand that has a value of 10
+        if (currentCard->data.GetCardValue() == 10) {
+            // Check if there is an Ace in the hand and the hand only has 2 cards
+            if (this->GetParamInHand() && this->GetPlayerCards()->GetSize() == 2) {
+                this->SetHasBlackJack(true);
+                break;
+            }
+        }
+        currentCard = currentCard->nextNode;
+    }
+    return *this;
+}
 
-// /*  CheckParamInHand - Checks to see if there is a specific parameter found in a players hand
-// *   Input:
-// *       referenceParameter - Constant string value that represents the type of parameter we are looking for
-// *           "R" - This parameter represents rank
-// *           "S" - This parameter represents suit
-// *       checkingParameter - Constant string value that represents the parameter that we are searching for in a players hand
-// *   Algorithm:
-// *       * Start iterating through the cards of the player
-// *       * If the reference parameter that we are looking for is a rank
-// *           * We check to see if the current card matches the rank we are looking for by calling "CheckCardParam"
-// *           * Otherwise, we move on to the next card in the players hand
-// *       * If the reference parameter that we are looking for is a suit
-// *           * We check to see if the current card matches the suit we are looking for by calling "CheckCardParam"
-// *           * Otherwise, we move on to the next card in the players hand
-// *   Output:
-// *       This function returns a Hand object after checking if a specific parameter is present in a players hand
-// */
-// Hand Hand::CheckParamInHand(const std::string referenceParameter, const std::string checkingParameter) {
-//     SetParamInHand(false);
-//     // Iterate over cards
-//     for (Card current_card : GetCards()) {
-//         // If the "referenceParameter" is a rank, check for a rank
-//         if (referenceParameter == "R") {
-//             if (current_card.CheckCardParam(current_card.GetRank(), checkingParameter)) {
-//                 SetParamInHand(true);
-//                 break;
-//             }
-//             else {continue;}
-//         }
-//         // If the "referenceParameter" is a suit, check for a suit
-//         else if (referenceParameter == "S") {
-//             if (current_card.CheckCardParam(current_card.GetSuit(), checkingParameter)) {
-//                 SetParamInHand(true);
-//                 break;
-//             }
-//             else {continue;}
-//         }
-//     }
-//     return *this;
-// }
+/*  CheckParamInHand - Checks to see if there is a specific parameter found in a players hand
+*   Input:
+*       referenceParameter - Constant string value that represents the type of parameter we are looking for
+*           "R" - This parameter represents rank
+*           "S" - This parameter represents suit
+*       checkingParameter - Constant string value that represents the parameter that we are searching for in a players hand
+*   Algorithm:
+*       * Start iterating through the cards of the player
+*       * If the reference parameter that we are looking for is a rank
+*           * We check to see if the current card matches the rank we are looking for by calling "CheckCardParam"
+*           * Otherwise, we move on to the next card in the players hand
+*       * If the reference parameter that we are looking for is a suit
+*           * We check to see if the current card matches the suit we are looking for by calling "CheckCardParam"
+*           * Otherwise, we move on to the next card in the players hand
+*   Output:
+*       This function returns a Hand object after checking if a specific parameter is present in a players hand
+*/
+Hand Hand::CheckParamInHand(const std::string referenceParameter, const std::string checkingParameter) {
+    this->SetParamInHand(false);
+    // Iterate over cards
+    std::shared_ptr<node<Card>> currentCard = this->GetPlayerCards()->GetRoot();
+    while (currentCard != nullptr) {
+        // If the "referenceParameter" is a rank, check for a rank
+        if (referenceParameter == "R") {
+            if (currentCard->data.CheckCardParam(currentCard->data.GetRank(), checkingParameter)) {
+                this->SetParamInHand(true);
+                break;
+            }
+        }
+        // If the "referenceParameter" is a suit, check for a suit
+        else if (referenceParameter == "S") {
+            if (currentCard->data.CheckCardParam(currentCard->data.GetSuit(), checkingParameter)) {
+                this->SetParamInHand(true);
+                break;
+            }
+        }
+        currentCard = currentCard->nextNode;
+    }
+    return *this;
+}
 
-// /*  CheckSameParamInHand - Checks to see if the same parameter is present in a players hand
-// *   Input:
-// *       referenceParameter - Constant string value that represents the type of parameter we are looking for
-// *           "R" - This parameter represents rank
-// *           "S" - This parameter represents suit
-// *       checkingParameter - Constant string value that represents the parameter that we are searching for in a players hand
-// *   Algorithm:
-// *       * Begin by iterating through the players hand, one card from the beginning of their hand
-// *       * Set the current card to the index of the vector
-// *       * If the "referenceParameter" is a Rank
-// *           * Return false if the current cards rank does not match the first cards rank or if the specific rank that is designated with "checkingParameter"
-// *             does not match that of the current card
-// *           * Otherwise, continue to the next card in the players hand
-// *       * If the "referenceParameter" is a Suit
-// *           * Return false if the current cards rank does not match the first cards suit or if the specific suit that is designated with "checkingParameter"
-// *             does not match that of the current card
-// *           * Otherwise, continue to the next card in the players hand
-// *       * Otherwise, if all the previous tests pass, then return true
-// *   Output:
-// *       This function returns a Hand object after checking if a specific parameter is the same in a players hand
-// */
-// Hand Hand::CheckSameParamInHand(const std::string referenceParameter, const std::string checkingParameter) {
-//     SetSameParamInHand(true);
-//     // Iterate over the cards in a players hand
-//     for (int i = 1; i < GetCards().size(); i++) {
-//         Card currentCard = GetCards().at(i);
-//         // If the "referenceParameter" is a rank, check for the same rank in a hand
-//         if (referenceParameter == "R") {
-//             if (!currentCard.CheckCardParam(currentCard.GetRank(), GetCards().at(0).GetRank()) || (!checkingParameter.empty() && !currentCard.CheckCardParam(currentCard.GetRank(), checkingParameter))) {
-//                 SetSameParamInHand(false);
-//                 break;
-//             }
-//             else {continue;}
-//         }
-//         // If the "referenceParameter" is a suit, check for the same suit in a hand
-//         else if (referenceParameter == "S") {
-//             if (!currentCard.CheckCardParam(currentCard.GetSuit(), GetCards().at(0).GetSuit()) || (!checkingParameter.empty() && !currentCard.CheckCardParam(currentCard.GetSuit(), checkingParameter))) {
-//                 SetSameParamInHand(false);
-//                 break;
-//             }
-//             else {continue;}
-//         }
-//     }
-//     return *this;
-// }
+/*  CheckSameParamInHand - Checks to see if the same parameter is present in a players hand
+*   Input:
+*       referenceParameter - Constant string value that represents the type of parameter we are looking for
+*           "R" - This parameter represents rank
+*           "S" - This parameter represents suit
+*       checkingParameter - Constant string value that represents the parameter that we are searching for in a players hand
+*   Algorithm:
+*       * Begin by iterating through the players hand, one card from the beginning of their hand
+*       * Set the current card to the index of the vector
+*       * If the "referenceParameter" is a Rank
+*           * Return false if the current cards rank does not match the first cards rank or if the specific rank that is designated with "checkingParameter"
+*             does not match that of the current card
+*           * Otherwise, continue to the next card in the players hand
+*       * If the "referenceParameter" is a Suit
+*           * Return false if the current cards rank does not match the first cards suit or if the specific suit that is designated with "checkingParameter"
+*             does not match that of the current card
+*           * Otherwise, continue to the next card in the players hand
+*       * Otherwise, if all the previous tests pass, then return true
+*   Output:
+*       This function returns a Hand object after checking if a specific parameter is the same in a players hand
+*/
+Hand Hand::CheckSameParamInHand(const std::string referenceParameter, const std::string checkingParameter) {
+    this->SetSameParamInHand(true);
+    // Iterate over the cards in a players hand
+    for (int i = 1; i < this->GetPlayerCards()->GetSize(); i++) {
+        std::shared_ptr<node<Card>> currentCard = this->GetPlayerCards()->RetrieveNode(i);
+        // If the "referenceParameter" is a rank, check for the same rank in a hand
+        if (referenceParameter == "R") {
+            if (!currentCard->data.CheckCardParam(currentCard->data.GetRank(), this->GetPlayerCards()->RetrieveNode(0)->data.GetRank()) || (!checkingParameter.empty() && !currentCard->data.CheckCardParam(currentCard->data.GetRank(), checkingParameter))) {
+                this->SetSameParamInHand(false);
+                break;
+            }
+        }
+        // If the "referenceParameter" is a suit, check for the same suit in a hand
+        if (referenceParameter == "S") {
+            if (!currentCard->data.CheckCardParam(currentCard->data.GetSuit(), this->GetPlayerCards()->RetrieveNode(0)->data.GetSuit()) || (!checkingParameter.empty() && !currentCard->data.CheckCardParam(currentCard->data.GetSuit(), checkingParameter))) {
+                this->SetSameParamInHand(false);
+                break;
+            }
+        }
+    }
+    return *this;
+}
 
 // /*  CopyVariables - Copies select data members from one hand to the current hand
 // *   Input:
@@ -756,6 +762,223 @@ Hand::~Hand() {}
 //     }
 // }
 
+// ----- ----- ----- ----- ----- ----- ----- Setter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
+// SetCanBuyInsurance - Mutates the private data member "canBuyInsurance" by assigning it to "input"
+void Hand::SetCanBuyInsurance(const bool input) {
+    player->canBuyInsurance = input;
+}
+
+// SetCanDoubleDown - Mutates the private data member "canDoubleDown" by assigning it to "input"
+void Hand::SetCanDoubleDown(const bool input) {
+    player->canDoubleDown = input;
+}
+
+// SetCanSplitAces - Mutates the private data member "canSplitAces" by assigning it to "input"
+void Hand::SetCanSplitAces(const bool input) {
+    player->canSplitAces = input;
+}
+
+// SetCanSplitHand - Mutates the private data member "canSplitHand" by assigning it to "input"
+void Hand::SetCanSplitHand(const bool input) {
+    player->canSplitHand = input;
+}
+
+// SetChoseBuyInsurance - Mutates the private data member "choseBuyInsurance" by assigning it to "input"
+void Hand::SetChoseBuyInsurance(const bool input) {
+    player->choseBuyInsurance = input;
+}
+
+// SetChoseDoubleDown - Mutates the private data member "choseDoubleDown" by assigning it to "input"
+void Hand::SetChoseDoubleDown(const bool input) {
+    player->choseDoubleDown = input;
+}
+
+// SetChoseSplitAces - Mutates the private data member "choseSplitAces" by assigning it to "input"
+void Hand::SetChoseSplitAces(const bool input) {
+    player->choseSplitAces = input;
+}
+
+// SetChoseSplitHand - Mutates the private data member "choseSplitHand" by assigning it to "input"
+void Hand::SetChoseSplitHand(const bool input) {
+    player->choseSplitHand = input;
+}
+
+// SetDoubleDownResponse - Mutates the private data member "doubleDownResponse" by assigning it to "input"
+void Hand::SetDoubleDownResponse(const bool input) {
+    player->doubleDownResponse = input;
+}
+
+// SetHasBlackJack - Mutates the private data member "hasBlackJack" by assigning it to "input"
+void Hand::SetHasBlackJack(const bool input) {
+    player->hasBlackJack = input;
+}
+
+// SetHasHit - Mutates the private data member "hasHit" by assigning it to "input"
+void Hand::SetHasHit(const bool input) {
+    player->hasHit = input;
+}
+
+// SetParamInHand - Mutates the private data member "paramInHand" by assigning it to "input"
+void Hand::SetParamInHand(const bool input) {
+    player->paramInHand = input;
+}
+
+// SetSameParamInHand - Mutates the private data member "sameParamInHand" by assigning it to "input"
+void Hand::SetSameParamInHand(const bool input) {
+    player->sameParamInHand = input;
+}
+
+// SetShouldDoubleDown - Mutates the private data member "shouldDoubleDown" by assigning it to "input"
+void Hand::SetShouldDoubleDown(const bool input) {
+    player->shouldDoubleDown = input;
+}
+
+// SetShouldHit - Mutates the private data member "shouldHit" by assigning it to "input"
+void Hand::SetShouldHit(const bool input) {
+    player->shouldHit = input;
+}
+
+// SetShouldSplit - Mutates the private data member "shouldSplit" by assigning it to "input"
+void Hand::SetShouldSplit(const bool input) {
+    player->shouldSplit = input;
+}
+
+// SetShouldStand - Mutates the private data member "shouldStand" by assigning it to "input"
+void Hand::SetShouldStand(const bool input) {
+    player->shouldStand = input;
+}
+
+// SetSoftSeventeen - Mutates the private data member "softSeventeen" by assigning it to "input"
+void Hand::SetSoftSeventeen(const bool input) {
+    player->softSeventeen = input;
+}
+
+// SetSplitAcesResponse - Mutates the private data member "splitAcesResponse" by assigning it to "input"
+void Hand::SetSplitAcesResponse(const bool input) {
+    player->splitAcesResponse = input;
+}
+
+// SetSplitHandResponse - Mutates the private data member "splitHandResponse" by assigning it to "input"
+void Hand::SetSplitHandResponse(const bool input) {
+    player->splitHandResponse = input;
+}
+
+// SetBankTotal - Mutates the private data member "bankTotal" by assigning it to "input"
+void Hand::SetBankTotal(const float& input) {
+    float rounded_input = round_input(input);
+    player->bankTotal = rounded_input;
+    this->SetDisplayBankTotal();
+}
+
+// SetInsuranceWager - Mutates the private data member "insuranceWager" by assigning it to "input"
+void Hand::SetInsuranceWager(const float& input) {
+    float rounded_input = round_input(input);
+    player->insuranceWager = rounded_input;
+    this->SetDisplayInsuranceWager();
+}
+
+// SetNet - Mutates the private data member "net" by assigning it to "input"
+void Hand::SetNet(const float& input) {
+    float rounded_input = round_input(input);
+    player->net = rounded_input;
+    this->SetDisplayNet();
+}
+
+// SetWager - Mutates the private data member "wager" by assigning it to "input"
+void Hand::SetWager(const float& input) {
+    float rounded_input = round_input(input);
+    player->wager = rounded_input;
+    this->SetDisplayWager();
+}
+
+// SetCardsTotal - Mutates the private data member "cardsTotal" by assigning it to "input"
+void Hand::SetCardsTotal(const int& input) {
+    player->cardsTotal = input;
+}
+
+// SetHandsPlayed - Mutates the private data member "handsPlayed" by assigning it to "input"
+void Hand::SetHandsPlayed(const int& input) {
+    player->handsPlayed = input;
+}
+
+// SetDisplayBankTotal - Mutates the private data member "displayBankTotal" by assigning it to "input"
+void Hand::SetDisplayBankTotal() {
+    std::string modified_input = color_text(33, round_to_string(GetBankTotal()));
+    player->displayBankTotal = modified_input;
+}
+
+// SetDisplayCardsTotal - Mutates the private data member "displayCardsTotal" by assigning it to "input"
+void Hand::SetDisplayCardsTotal() {
+    std::string modified_input = color_text(35, std::to_string(GetCardsTotal()));
+    player->displayCardsTotal = modified_input;
+}
+
+// SetDisplayInsuranceWager - Mutates the private data member "displayInsuranceWager" by assigning it to "input"
+void Hand::SetDisplayInsuranceWager() {
+    std::string modified_input = color_text(31, round_to_string(GetInsuranceWager()));
+    player->displayInsuranceWager = modified_input;
+}
+
+// SetDisplayName - Mutates the private data member "displayName" by assigning it to "input"
+void Hand::SetDisplayName() {
+    std::string modified_input;
+    if (GetName() != "Dealer") {
+        modified_input = color_text(34, GetName());
+    }
+    else {
+        modified_input = color_text(31, GetName());
+    }
+    player->displayName = modified_input;
+}
+
+// SetDisplayNet - Mutates the private data member "displayNet" by assigning it to "input"
+void Hand::SetDisplayNet() {
+    std::string modified_input = color_text(33, round_to_string(GetNet()));
+    player->displayNet = modified_input;
+}
+
+// SetDisplayWager - Mutates the private data member "displayWager" bt assigning it to "input"
+void Hand::SetDisplayWager() {
+    std::string modified_input = color_text(31, round_to_string(GetWager()));
+    player->displayWager = modified_input;
+}
+
+// SetName - Mutates the private data member "name" bt assigning it to "input"
+void Hand::SetName(const std::string& input) {
+    player->name = input;
+    this->SetDisplayName();
+}
+
+// SetHandBankTotals - Mutates the private data member "handBankTotals" bt assigning it to "input"
+void Hand::SetHandBankTotals(std::shared_ptr<node<float>>& input) {
+    player->handBankTotals->AppendNode(input);
+}
+
+// SetHandCardTotals - Mutates the private data member "handCardTotals" bt assigning it to "input"
+void Hand::SetHandCardTotals(std::shared_ptr<node<int>>& input) {
+    player->handCardTotals->AppendNode(input);
+}
+
+// SetHandNets - Mutates the private data member "handNets" bt assigning it to "input"
+void Hand::SetHandNets(std::shared_ptr<node<float>>& input) {
+    player->handNets->AppendNode(input);
+}
+
+// SetHandPlayed - Mutates the private data member "handPlayed" bt assigning it to "input"
+void Hand::SetHandPlayed(std::shared_ptr<node<int>>& input) {
+    player->handPlayed->AppendNode(input);
+}
+
+// SetHandWagers - Mutates the private data member "handWagers" bt assigning it to "input"
+void Hand::SetHandWagers(std::shared_ptr<node<float>>& input) {
+    player->handWagers->AppendNode(input);
+}
+
+// SetPlayerCards - Mutates the private data member "playerCards" bt assigning it to "input"
+void Hand::SetPlayerCards(std::shared_ptr<node<Card>>& input) {
+    player->playerCards->AppendNode(input);
+}
+
 // ----- ----- ----- ----- ----- ----- ----- Getter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 // GetCanBuyInsurance - Retrieves the private data member "canBuyInsurance"
 bool& Hand::GetCanBuyInsurance() {
@@ -950,10 +1173,4 @@ std::shared_ptr<LinkedList<float>>& Hand::GetHandWagers() {
 // GetPlayerCards - Retrieves the private data member "playerCards"
 std::shared_ptr<LinkedList<Card>>& Hand::GetPlayerCards() {
     return player->playerCards;
-}
-
-// // ----- ----- ----- ----- ----- ----- ----- Setter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
-// SetCanBuyInsurance - Mutates the private data member "canBuyInsurance" by assigning it to "input"
-void Hand::SetCanBuyInsurance(const bool input) {
-    player->canBuyInsurance = input;
 }
