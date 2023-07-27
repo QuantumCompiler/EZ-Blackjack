@@ -664,6 +664,246 @@ TEST_F(test_x, HandClassCheckBlackjack) {
     }
 }
 
+// Hand class, hit hand test
+TEST_F(test_x, HandClassHitHand) {
+    // Create test hand, shoe, and card
+    std::shared_ptr<Hand> testHand(new Hand);
+    std::shared_ptr<Shoe> testShoe(new Shoe);
+    testShoe->SetNumOfDecks(1);
+    testShoe->CreateShoe();
+    int handCardCounter = 0;
+    for (int i = 52; i > 0; i--) {
+        handCardCounter++;
+        EXPECT_EQ(testShoe->GetCardsInShoe()->GetSize(), i);
+        testHand->HitHand(testShoe);
+        EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), handCardCounter);
+    }
+}
+
+// Hand class, update hand test
+TEST_F(test_x, HandClassUpdate) {
+    std::shared_ptr<Hand> testHand(new Hand);
+    int bankValue = 100;
+    int loopValue = 1;
+    int wagerValue = loopValue;
+    testHand->SetBankTotal(bankValue);
+    // Test deposit
+    while (testHand->GetBankTotal() > 0) {
+        testHand->SetWager(wagerValue);
+        testHand->UpdateBank(0, testHand->GetWager());
+        EXPECT_EQ(testHand->GetBankTotal(), bankValue - loopValue);
+        loopValue++;
+    }
+    testHand->SetBankTotal(bankValue);
+    loopValue = 1;
+    wagerValue = loopValue;
+    // Test win
+    while (testHand->GetBankTotal() < 200) {
+        testHand->SetWager(wagerValue);
+        testHand->UpdateBank(0, testHand->GetWager());
+        testHand->UpdateBank(1, testHand->GetWager());
+        EXPECT_EQ(testHand->GetBankTotal(), bankValue + loopValue);
+        loopValue++;
+    }
+    testHand->SetBankTotal(bankValue);
+    loopValue = 1;
+    wagerValue = loopValue;
+    // Test loss
+    while(testHand->GetBankTotal() > 0) {
+        testHand->SetWager(wagerValue);
+        testHand->UpdateBank(0, testHand->GetWager());
+        testHand->UpdateBank(2, testHand->GetWager());
+        EXPECT_EQ(testHand->GetBankTotal(), bankValue - loopValue);
+        loopValue++;
+    }
+    testHand->SetBankTotal(bankValue);
+    loopValue = 1;
+    wagerValue = loopValue;
+    // Test push
+    while (loopValue < 100) {
+        testHand->SetWager(wagerValue);
+        testHand->UpdateBank(0, testHand->GetWager());
+        testHand->UpdateBank(3, testHand->GetWager());
+        EXPECT_EQ(testHand->GetBankTotal(), bankValue);
+        loopValue++;
+    }
+    testHand->SetBankTotal(bankValue);
+    loopValue = 1;
+    wagerValue = loopValue;
+    // Test blackjack
+    while (testHand->GetBankTotal() < 250) {
+        testHand->SetWager(wagerValue);
+        testHand->UpdateBank(0, testHand->GetWager());
+        testHand->UpdateBank(4, testHand->GetWager());
+        EXPECT_EQ(testHand->GetBankTotal(), bankValue + 1.5*loopValue);
+        loopValue++;
+    }
+    testHand->SetBankTotal(bankValue);
+    loopValue = 1;
+    wagerValue = loopValue;
+    // Test insurance
+    while (testHand->GetBankTotal() < 200) {
+        testHand->SetWager(wagerValue);
+        testHand->SetInsuranceWager(testHand->GetWager());
+        testHand->UpdateBank(0, testHand->GetWager());
+        testHand->UpdateBank(5, testHand->GetInsuranceWager());
+        EXPECT_EQ(testHand->GetBankTotal(), bankValue + 2.0*loopValue);
+        loopValue++;
+    }  
+}
+
+// Hand class, parameters check test
+TEST_F(test_x, HandClassParameterCheck) {
+    // Create objects
+    std::shared_ptr<Hand> testHand(new Hand);
+    std::shared_ptr<Hand> dealerHand(new Hand);
+    std::shared_ptr<Shoe> testShoe(new Shoe);
+    std::shared_ptr<Card> testCard(new Card);
+    std::shared_ptr<node<Card>> testNode;
+    testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+    dealerHand->AddCardToHand(testNode);
+    dealerHand->AddCardToHand(testNode);
+    testHand->AddCardToHand(testNode);
+    testHand->AddCardToHand(testNode);
+    testHand->SetBankTotal(100);
+    testHand->SetName("Borby");
+    // Test can double down
+    for (int i = 1; i <= 200; i++) {
+        testHand->SetWager(i);
+        testHand->SetHasHit(false);
+        {
+            testHand->SetChoseDoubleDown(false);
+            {
+                testHand->ParametersCheck(dealerHand);
+                if (testHand->GetWager() <= testHand->GetBankTotal()) {
+                    EXPECT_TRUE(testHand->GetCanDoubleDown());
+                }
+                else {
+                    EXPECT_FALSE(testHand->GetCanDoubleDown());
+                }
+            }
+            testHand->SetChoseDoubleDown(true);
+            {
+                testHand->ParametersCheck(dealerHand);
+                EXPECT_FALSE(testHand->GetCanDoubleDown());
+            }
+        }
+        testHand->SetHasHit(true);
+        testHand->ParametersCheck(dealerHand);
+        EXPECT_FALSE(testHand->GetCanDoubleDown());
+    }
+    testHand->GetPlayerCards()->ClearList();
+    // Soft seventeen check
+    // (Ace, Ace, Ace, Ace, Ace, Ace, Ace)
+    for (int i = 1; i <= 7; i++) {
+        testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+        testHand->AddCardToHand(testNode);  
+    }
+    testHand->ParametersCheck(dealerHand);
+    EXPECT_TRUE(testHand->GetSoftSeventeen());
+    testHand->GetPlayerCards()->ClearList();
+    // (King, 7)
+    testCard = std::make_shared<Card>(Ranks[12], Suits[0]);
+    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+    testHand->AddCardToHand(testNode);
+    testCard = std::make_shared<Card>(Ranks[6], Suits[0]);
+    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+    testHand->AddCardToHand(testNode);
+    testHand->ParametersCheck(dealerHand);
+    EXPECT_FALSE(testHand->GetSoftSeventeen());
+    testHand->GetPlayerCards()->ClearList();
+    // (Queen, Ace, Ace, Ace, Ace, Ace, Ace, Ace, Ace)
+    testCard = std::make_shared<Card>(Ranks[11], Suits[0]);
+    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+    testHand->AddCardToHand(testNode);
+    for (int i = 1; i <= 7; i++) {
+        testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+        testHand->AddCardToHand(testNode);  
+    }
+    testHand->ParametersCheck(dealerHand);
+    EXPECT_FALSE(testHand->GetSoftSeventeen());
+    testHand->GetPlayerCards()->ClearList();
+    testHand->AddCardToHand(testNode);
+    testHand->AddCardToHand(testNode);
+    dealerHand->GetPlayerCards()->ClearList();
+    // Insurance check
+    for (int i = 0; i < 13; i++) {
+        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+        dealerHand->AddCardToHand(testNode);
+        for (int j = 0; j < 13; j++) {
+            testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
+            testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+            dealerHand->AddCardToHand(testNode);
+            dealerHand->CheckBlackJack();
+            if (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetRank() == Ranks[0] && !dealerHand->GetHasBlackJack()) {
+                for (int k = 1; k <= 400; k++) {
+                    testHand->SetWager(k);
+                    testHand->ParametersCheck(dealerHand);
+                    if (k <= 200) {
+                        EXPECT_TRUE(testHand->GetCanBuyInsurance());
+                    }
+                    else {
+                        EXPECT_FALSE(testHand->GetCanBuyInsurance());
+                    }
+                }
+            }
+            else {
+                testHand->ParametersCheck(dealerHand);
+                EXPECT_FALSE(testHand->GetCanBuyInsurance());
+            }
+            dealerHand->GetPlayerCards()->RemoveNode(-1);
+        }
+        dealerHand->GetPlayerCards()->RemoveNode(0);
+    }
+    testHand->GetPlayerCards()->ClearList();
+    dealerHand->AddCardToHand(testNode);
+    dealerHand->AddCardToHand(testNode);
+    // Can split hand check
+    for (int i = 0; i < 13; i++) {
+        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+        testHand->AddCardToHand(testNode);
+        for (int j = 0; j < 13; j++) {
+            testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
+            testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+            testHand->AddCardToHand(testNode);
+            testHand->CheckSameParamInHand("R");
+            if (testHand->GetSameParamInHand()) {
+                for (int k = 1; k <= 200; k++) {
+                    testHand->SetWager(k);
+                    testHand->ParametersCheck(dealerHand);
+                    testHand->CheckParamInHand("R", Ranks[0]);
+                    if (k <= 100) {
+                        if (testHand->GetParamInHand()) {
+                            EXPECT_TRUE(testHand->GetCanSplitAces());
+                            EXPECT_FALSE(testHand->GetCanSplitHand());
+                        }
+                        else {
+                            EXPECT_FALSE(testHand->GetCanSplitAces());
+                            EXPECT_TRUE(testHand->GetCanSplitHand());
+                        }
+                    }
+                    else {
+                        EXPECT_FALSE(testHand->GetCanSplitAces());
+                        EXPECT_FALSE(testHand->GetCanSplitHand());
+                    }
+                }
+            }
+            else {
+                testHand->ParametersCheck(dealerHand);
+                EXPECT_FALSE(testHand->GetCanSplitAces());
+                EXPECT_FALSE(testHand->GetCanSplitHand());
+            }
+            testHand->GetPlayerCards()->RemoveNode(-1);
+        }
+        testHand->GetPlayerCards()->RemoveNode(0);
+    }
+}
+
 /////////////////////////////////////////
 // Blackjack Strategy Test
 /////////////////////////////////////////
