@@ -497,6 +497,173 @@ TEST_F(test_x, HandClassConst) {
     EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 0);
 }
 
+// Hand class, add card to hand test
+TEST_F(test_x, HandClassAdd) {
+    // Create test hand, shoe, and card
+    std::shared_ptr<Hand> testHand(new Hand);
+    std::shared_ptr<Shoe> testShoe(new Shoe);
+    std::shared_ptr<Card> testCard(new Card);
+    std::shared_ptr<node<Card>> testNode;
+    // Add Ace to hand
+    testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+    testHand->AddCardToHand(testNode);
+    EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 1);
+    EXPECT_EQ(testHand->GetCardsTotal(), 11);
+    // Add King to hand
+    testCard = std::make_shared<Card>(Ranks[12], Suits[0]);
+    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+    testHand->AddCardToHand(testNode);
+    EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+    EXPECT_EQ(testHand->GetCardsTotal(), 21);
+    // Add another Ace to hand
+    testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+    testHand->AddCardToHand(testNode);
+    EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 3);
+    EXPECT_EQ(testHand->GetCardsTotal(), 12);
+    // Add a Nine to hand
+    testCard = std::make_shared<Card>(Ranks[8], Suits[0]);
+    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+    testHand->AddCardToHand(testNode);
+    EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 4);
+    EXPECT_EQ(testHand->GetCardsTotal(), 21);
+    // Add a Nine to hand
+    testCard = std::make_shared<Card>(Ranks[8], Suits[0]);
+    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+    testHand->AddCardToHand(testNode);
+    EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 5);
+    EXPECT_EQ(testHand->GetCardsTotal(), 30);
+}
+
+// Hand class, check parameter test
+TEST_F(test_x, HandClassCheckParam) {
+    // Create test hand, shoe, and card
+    std::shared_ptr<Hand> testHand(new Hand);
+    std::shared_ptr<Shoe> testShoe(new Shoe);
+    std::shared_ptr<Card> testCard(new Card);
+    std::shared_ptr<node<Card>> testNode;
+    // Iterate over all possibilities
+    for (int i = 0; i < 13; i++) {
+        for (int j = 0; j < 4; j++) {
+            testCard = std::make_shared<Card>(Ranks[i], Suits[j]);
+            testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+            testHand->AddCardToHand(testNode);
+            testHand->CheckParamInHand("R", Ranks[i]);
+            EXPECT_TRUE(testHand->GetParamInHand());
+            testHand->CheckParamInHand("S", Suits[j]);
+            EXPECT_TRUE(testHand->GetParamInHand());
+            testHand->GetPlayerCards()->RemoveNode(-1);
+        }
+    }
+}
+
+// Hand class, check same parameter test
+TEST_F(test_x, HandClassCheckSameParam) {
+    // Create test hand, shoe, and card
+    std::shared_ptr<Hand> testHand(new Hand);
+    std::shared_ptr<Shoe> testShoe(new Shoe);
+    std::shared_ptr<Card> testCard1(new Card);
+    std::shared_ptr<Card> testCard2(new Card);
+    std::shared_ptr<node<Card>> testNode1;
+    std::shared_ptr<node<Card>> testNode2;
+    // Iterate over all possibilities, checking random ranks
+    for (int i = 0; i < 13; i++) {
+        testCard1 = std::make_shared<Card>(Ranks[i], Suits[0]);
+        testNode1 = testShoe->GetCardsInShoe()->InitNode(testCard1);
+        testHand->AddCardToHand(testNode1);
+        for (int j = 0; j < 13; j++) {
+            testCard2 = std::make_shared<Card>(Ranks[j], Suits[3]);
+            testNode2 = testShoe->GetCardsInShoe()->InitNode(testCard2);
+            testHand->AddCardToHand(testNode2);
+            testHand->CheckSameParamInHand("R");
+            if (i == j) {
+                ASSERT_TRUE(testHand->GetSameParamInHand());
+            }
+            else {
+                ASSERT_FALSE(testHand->GetSameParamInHand());
+            }
+            testHand->CheckSameParamInHand("S");
+            ASSERT_FALSE(testHand->GetSameParamInHand());
+            testHand->GetPlayerCards()->RemoveNode(-1);
+        }
+        testHand->GetPlayerCards()->RemoveNode(0);
+    }
+    // Iterate over all possibilities, checking random suits
+    for (int i = 0; i < 4; i++) {
+        testCard1 = std::make_shared<Card>(Ranks[0], Suits[i]);
+        testNode1 = testShoe->GetCardsInShoe()->InitNode(testCard1);
+        testHand->AddCardToHand(testNode1);
+        for (int j = 0; j < 4; j++) {
+            testCard2 = std::make_shared<Card>(Ranks[12], Suits[j]);
+            testNode2 = testShoe->GetCardsInShoe()->InitNode(testCard2);
+            testHand->AddCardToHand(testNode2);
+            testHand->CheckSameParamInHand("S");
+            if (i == j) {
+                ASSERT_TRUE(testHand->GetSameParamInHand());
+            }
+            else {
+                ASSERT_FALSE(testHand->GetSameParamInHand());
+            }
+            testHand->CheckSameParamInHand("R");
+            ASSERT_FALSE(testHand->GetSameParamInHand());
+            testHand->GetPlayerCards()->RemoveNode(-1);
+        }
+        testHand->GetPlayerCards()->RemoveNode(0);
+    }
+}
+
+// Hand class, check for blackjack
+TEST_F(test_x, HandClassCheckBlackjack) {
+    // Create test hand, shoe, and card
+    std::shared_ptr<Hand> testHand(new Hand);
+    std::shared_ptr<Shoe> testShoe(new Shoe);
+    std::shared_ptr<Card> testCard1(new Card);
+    std::shared_ptr<Card> testCard2(new Card);
+    std::shared_ptr<Card> testCard3(new Card);
+    std::shared_ptr<node<Card>> testNode1;
+    std::shared_ptr<node<Card>> testNode2;
+    std::shared_ptr<node<Card>> testNode3;
+    // First card is an Ace
+    testCard1 = std::make_shared<Card>(Card(Ranks[0], Suits[0]));
+    testNode1 = testShoe->GetCardsInShoe()->InitNode(testCard1);
+    testHand->AddCardToHand(testNode1);
+    // Test for false cases
+    for (int i = 0; i < 9; i++) {
+        testCard2 = std::make_shared<Card>(Card(Ranks[i], Suits[0]));
+        testNode2 = testShoe->GetCardsInShoe()->InitNode(testCard2);
+        testHand->AddCardToHand(testNode2);
+        testHand->CheckBlackJack();
+        ASSERT_FALSE(testHand->GetHasBlackJack());
+        ASSERT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+        testHand->GetPlayerCards()->RemoveNode(-1);
+    }
+    // Test for true cases
+    for (int i = 9; i < 13; i++) {
+        testCard2 = std::make_shared<Card>(Card(Ranks[i], Suits[0]));
+        testNode2 = testShoe->GetCardsInShoe()->InitNode(testCard2);
+        testHand->AddCardToHand(testNode2);
+        testHand->CheckBlackJack();
+        ASSERT_TRUE(testHand->GetHasBlackJack());
+        ASSERT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+        testHand->GetPlayerCards()->RemoveNode(-1);
+    }
+    // Add second card to player hand
+    testCard3 = std::make_shared<Card>(Card(Ranks[1], Suits[0]));
+    testNode3 = testShoe->GetCardsInShoe()->InitNode(testCard3);
+    testHand->AddCardToHand(testNode3);
+    // Test for false case
+    for (int i = 0; i < 13; i++) {
+        testCard2 = std::make_shared<Card>(Card(Ranks[i], Suits[0]));
+        testNode2 = testShoe->GetCardsInShoe()->InitNode(testCard2);
+        testHand->AddCardToHand(testNode2);
+        testHand->CheckBlackJack();
+        ASSERT_FALSE(testHand->GetHasBlackJack());
+        ASSERT_EQ(testHand->GetPlayerCards()->GetSize(), 3);
+        testHand->GetPlayerCards()->RemoveNode(-1);
+    }
+}
+
 /////////////////////////////////////////
 // Blackjack Strategy Test
 /////////////////////////////////////////
