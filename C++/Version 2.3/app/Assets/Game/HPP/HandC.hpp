@@ -341,174 +341,178 @@ Hand Hand::CheckSameParamInHand(const std::string referenceParameter, const std:
 //     return *this;
 // }
 
-// /*  HitHand - Removes a hand from a given show and adds it a players hand
-// *   Input:
-// *       input - Shoe object that is passed by reference where a Card object is being pulled from
-// *   Algorithm:
-// *       * Call AddCardToHand() to add a card to the current players hand
-// *   Output:
-// *       This function returns a Hand object after adding a card to it
-// */
-// Hand Hand::HitHand(Shoe& input) {
-//     // Add card to current hand
-//     AddCardToHand(input.Draw());
-//     return *this;
-// }
+/*  HitHand - Removes a hand from a given show and adds it a players hand
+*   Input:
+*       input - Shoe object that is passed by reference where a Card object is being pulled from
+*   Algorithm:
+*       * Call AddCardToHand() to add a card to the current players hand
+*   Output:
+*       This function returns a Hand object after adding a card to it
+*/
+Hand Hand::HitHand(std::shared_ptr<Shoe>& input) {
+    // Add card to current hand
+    std::shared_ptr<Card> drawnCard = input->Draw();
+    std::shared_ptr<node<Card>> cardNode = this->GetPlayerCards()->InitNode(drawnCard);
+    this->AddCardToHand(cardNode);
+    return *this;
+}
 
-// /*  InsurancePrompt - Prompts a player if they would like to buy insurance
-// *   Input:
-// *       This function does not have any input parameters
-// *   Algorithm:
-// *       * Create a string and prompt the user if they would like to buy insurance
-// *       * Check to see if the input is yes or no
-// *           * If the input is yes, set the private data member "choseBuyInsurance" to true with "SetChoseBuyInsurance"
-// *           * If the input is no, set the private data member "choseBuyInsurance" to false with "SetChoseBuyInsurance"
-// *       * If the answer is not yes or no
-// *           * Through an output message
-// *           * Clear the inputs and go back to the beginning of the loop
-// *   Output:
-// *       This function returns a Hand object after prompting the user about buying insurance
-// */
-// Hand Hand::InsurancePrompt() {
-//     std::string input;
-//     while (true) {
-//         // Prompt user for insurance
-//         std::cout << std::endl << "Would you like to buy insurance? Insurance pays (2:1). (y/n): "; time_sleep(1000);
-//         std::cin >> input; time_sleep(1000);
-//         // User has chosen to buy insurance, set insurance wager
-//         if (input == "y") {
-//             SetChoseBuyInsurance(true);
-//             SetInsuranceWager(round_input(0.5*GetWager()));
-//             UpdateBank(0,GetInsuranceWager());
-//             return *this;
-//         }
-//         // User has chosen to not buy insurance, do not take insurance wager
-//         else if (input == "n") {
-//             SetChoseBuyInsurance(false);
-//             return *this;
-//         }
-//         // Player did not enter a valid input for a response
-//         else {
-//             std::cout << std::endl << color_text(31, "Invalid Response") << ". Please re-enter your insurance decision." << std::endl;
-//             input.clear();
-//             std::cin.clear();
-//             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-//             continue;
-//         }
-//     }
-// }
+/*  InsurancePrompt - Prompts a player if they would like to buy insurance
+*   Input:
+*       This function does not have any input parameters
+*   Algorithm:
+*       * Create a string and prompt the user if they would like to buy insurance
+*       * Check to see if the input is yes or no
+*           * If the input is yes, set the private data member "choseBuyInsurance" to true with "SetChoseBuyInsurance"
+*           * If the input is no, set the private data member "choseBuyInsurance" to false with "SetChoseBuyInsurance"
+*       * If the answer is not yes or no
+*           * Through an output message
+*           * Clear the inputs and go back to the beginning of the loop
+*   Output:
+*       This function returns a Hand object after prompting the user about buying insurance
+*/
+Hand Hand::InsurancePrompt() {
+    std::string input;
+    while (true) {
+        // Prompt user for insurance
+        std::cout << std::endl << "Would you like to buy insurance? Insurance pays (2:1). (y/n): "; time_sleep(1000);
+        std::cin >> input; time_sleep(1000);
+        // User has chosen to buy insurance, set insurance wager
+        if (input == "y") {
+            this->SetChoseBuyInsurance(true);
+            this->SetInsuranceWager(round_input(0.5*this->GetWager()));
+            this->UpdateBank(0,this->GetInsuranceWager());
+            return *this;
+        }
+        // User has chosen to not buy insurance, do not take insurance wager
+        else if (input == "n") {
+            this->SetChoseBuyInsurance(false);
+            return *this;
+        }
+        // Player did not enter a valid input for a response
+        else {
+            std::cout << std::endl << color_text(31, "Invalid Response") << ". Please re-enter your insurance decision." << std::endl;
+            input.clear();
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            continue;
+        }
+    }
+}
 
-// /*  NamePrompt - Prompts a user to input a name for their player
-// *   Input:
-// *       This function does not have any input parameters
-// *   Algorithm:
-// *       * Create a string value "input" and prompt the user for what they want their name to be
-// *       * Call the "SetName" function to set the private data member "name" to "input"
-// *   Output:
-// *       This function returns a Hand object after prompting the user about what their name will be
-// */
-// Hand Hand::NamePrompt() {
-//     std::string input;
-//     // Prompt user for their name
-//     std::cout << std::endl << "Please enter a name for your player: "; time_sleep(1000);
-//     std::getline(std::cin, input); time_sleep(1000);
-//     // Set the players name to "input"
-//     SetName(input);
-//     return *this;
-// }
+/*  NamePrompt - Prompts a user to input a name for their player
+*   Input:
+*       This function does not have any input parameters
+*   Algorithm:
+*       * Create a string value "input" and prompt the user for what they want their name to be
+*       * Call the "SetName" function to set the private data member "name" to "input"
+*   Output:
+*       This function returns a Hand object after prompting the user about what their name will be
+*/
+Hand Hand::NamePrompt() {
+    std::string input;
+    // Prompt user for their name
+    std::cout << std::endl << "Please enter a name for your player: "; time_sleep(1000);
+    std::getline(std::cin, input); time_sleep(1000);
+    // Set the players name to "input"
+    this->SetName(input);
+    return *this;
+}
 
-// /*  ParametersCheck - Checks to see if certain parameters in regards to wagering are met
-// *   Input:
-// *       checkingHand - Hand object passed by reference that represents the hand that is being examine
-// *       dealerHand - Hand object passed by reference that represents the dealer's hand
-// *   Algorithm:
-// *       * This algorithm checks for specific parameters that pertain to how the player can play their hand
-// *       * The parameters that are checked are the following:
-// *           * Blackjack Check - Checks to see if the players have blackjack or not
-// *           * Insurance Check - Checks to see if the player is able to buy insurance for their hand
-// *           * Double Down Check - Checks to see if the player is able to double down for their hand
-// *           * Soft Seventeen Check - Checks to see if the player possesses a soft seventeen in their hand
-// *   Output:
-// *       This function returns a Hand object after checking the parameters in the current hand
-// */
-// Hand Hand::ParametersCheck(Hand& checkingHand, Hand& dealerHand) {
-//     // Player Checks
-//     checkingHand.CheckSameParamInHand("R", "");
-//     checkingHand.CheckBlackJack();
-//     // Dealer Checks
-//     dealerHand.CheckBlackJack();
-//     // Can Split Hand Check
-//     if (checkingHand.GetSameParamInHand()) {
-//         // Player has enough money to split
-//         if (checkingHand.GetBankTotal() >= checkingHand.GetWager()) {
-//             // Checking if player has aces
-//             bool aces = checkingHand.GetCards().at(0).CheckCardParam(checkingHand.GetCards().at(0).GetRank(), Ranks[0]);
-//             // Player doesn't have Aces, can still split hand
-//             if (!aces) {
-//                 checkingHand.SetCanSplitAces(false);
-//                 checkingHand.SetCanSplitHand(true);
-//             }
-//             // Player has Aces, can split Aces, can't split regular hand
-//             else {
-//                 checkingHand.SetCanSplitAces(true);
-//                 checkingHand.SetCanSplitHand(false);
-//             }
-//         }
-//         // Player does not have enough money to split, can't split Aces or hand
-//         else {
-//             checkingHand.SetCanSplitAces(false);
-//             checkingHand.SetCanSplitHand(false);
-//         }
-//     }
-//     else {
-//         checkingHand.SetCanSplitAces(false);
-//         checkingHand.SetCanSplitHand(false);
-//     }
-//     // Insurance Check
-//     if (dealerHand.GetCards().at(1).CheckCardParam(dealerHand.GetCards().at(1).GetRank(), Ranks[0])) {
-//         // Player has enough money to buy insurance
-//         if (checkingHand.GetBankTotal() >= 0.5*checkingHand.GetWager()) {
-//             checkingHand.SetCanBuyInsurance(true);
-//         }
-//         // Player does not have enough money to buy insurance
-//         else {
-//             checkingHand.SetCanBuyInsurance(false);
-//         }
-//     }
-//     else {
-//         checkingHand.SetCanBuyInsurance(false);
-//     }
-//     // Can Double Down Check
-//     if (checkingHand.GetBankTotal() >= checkingHand.GetWager() && !checkingHand.GetChoseDoubleDown()) {
-//         if (!checkingHand.GetHasHit()) {
-//             checkingHand.SetCanDoubleDown(true);
-//         }
-//         else {
-//             checkingHand.SetCanDoubleDown(false);
-//         }
-//     }
-//     else {
-//         checkingHand.SetCanDoubleDown(false);
-//     }
-//     // Soft Seventeen Check
-//     if (checkingHand.GetCardsTotal() == 17) {
-//         checkingHand.CheckParamInHand("R", Ranks[0]);
-//         for (Card& current_card : checkingHand.GetCards()) {
-//             if (checkingHand.GetParamInHand() && current_card.GetCardValue() == 11) {
-//                 checkingHand.SetSoftSeventeen(true);
-//                 break;
-//             }
-//             else if (!checkingHand.GetParamInHand() || current_card.GetCardValue() == 1) {
-//                 checkingHand.SetSoftSeventeen(false);
-//                 continue;
-//             }
-//         }
-//     }
-//     else {
-//         checkingHand.SetSoftSeventeen(false);
-//     }
-//     return *this;
-// }
+/*  ParametersCheck - Checks to see if certain parameters in regards to wagering are met
+*   Input:
+*       dealerHand - Hand object passed by reference that represents the dealer's hand
+*   Algorithm:
+*       * This algorithm checks for specific parameters that pertain to how the player can play their hand
+*       * The parameters that are checked are the following:
+*           * Blackjack Check - Checks to see if the players have blackjack or not
+*           * Insurance Check - Checks to see if the player is able to buy insurance for their hand
+*           * Double Down Check - Checks to see if the player is able to double down for their hand
+*           * Soft Seventeen Check - Checks to see if the player possesses a soft seventeen in their hand
+*   Output:
+*       This function returns a Hand object after checking the parameters in the current hand
+*/
+Hand Hand::ParametersCheck(std::shared_ptr<Hand>& dealerHand) {
+    // Reset Parameters
+    this->SetCanSplitAces(false);
+    this->SetCanSplitHand(false);
+    this->SetCanBuyInsurance(false);
+    this->SetCanDoubleDown(false);
+    this->SetSoftSeventeen(false);
+    // Player Checks
+    this->CheckSameParamInHand("R");
+    this->CheckBlackJack();
+    // Dealer Checks
+    dealerHand->CheckBlackJack();
+    // Can Split Hand Check
+    if (this->GetSameParamInHand()) {
+        // Player has enough money to split
+        if (this->GetBankTotal() >= this->GetWager()) {
+            // Checking if player has aces
+            bool aces = this->GetPlayerCards()->RetrieveNode(0)->data.CheckCardParam(this->GetPlayerCards()->RetrieveNode(0)->data.GetRank(), Ranks[0]);
+            // Player doesn't have Aces, can still split hand
+            if (!aces) {
+                this->SetCanSplitAces(false);
+                this->SetCanSplitHand(true);
+            }
+            // Player has Aces, can split Aces, can't split regular hand
+            else {
+                this->SetCanSplitAces(true);
+                this->SetCanSplitHand(false);
+            }
+        }
+        // Player does not have enough money to split, can't split Aces or hand
+        else {
+            this->SetCanSplitAces(false);
+            this->SetCanSplitHand(false);
+        }
+    }
+    else {
+        this->SetCanSplitAces(false);
+        this->SetCanSplitHand(false);
+    }
+    // Insurance Check
+    if (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.CheckCardParam(dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetRank(), Ranks[0]) && !dealerHand->GetHasBlackJack()) {
+        // Player has enough money to buy insurance
+        if (this->GetBankTotal() >= 0.5*this->GetWager()) {
+            this->SetCanBuyInsurance(true);
+        }
+        // Player does not have enough money to buy insurance
+        else {
+            this->SetCanBuyInsurance(false);
+        }
+    }
+    else {
+        this->SetCanBuyInsurance(false);
+    }
+    // Can Double Down Check
+    if (!this->GetHasHit()) {
+        if (this->GetBankTotal() >= this->GetWager() && !this->GetChoseDoubleDown()) {
+            this->SetCanDoubleDown(true);
+        }
+        else {
+            this->SetCanDoubleDown(false);
+        }
+    }
+    else {
+        this->SetCanDoubleDown(false);
+    }
+    // Soft Seventeen Check
+    if (this->GetCardsTotal() == 17) {
+        std::shared_ptr<node<Card>> current = this->GetPlayerCards()->GetRoot();
+        while (current != nullptr) {
+            if (current->data.GetRank() == Ranks[0] && current->data.GetCardValue() == 11) {
+                this->SetSoftSeventeen(true);
+                break;
+            }
+            current = current->nextNode;
+        }
+    }
+    else {
+        this->SetSoftSeventeen(false);
+    }
+    return *this;
+}
 
 // /*  PlaceWager - Prompts the user to input a wager for their hand
 // *   Input:
@@ -630,137 +634,137 @@ Hand Hand::CheckSameParamInHand(const std::string referenceParameter, const std:
 //     return *this;
 // }
 
-// /*  ShowHand - This function displays the cards that are present in a players hand
-// *   Input:
-// *       option - String value that represents a custom hand tracker (e.g. First, Second, etc.)
-// *       dealerShow - Constant string value that determines if the dealer is to show both hands
-// *   Algorithm:
-// *       * Begin by checking to see if the "option" string is empty
-// *           * If it is, set it to current
-// *       * Create string objects that represent certain trackers for the output
-// *       * Check to see if the player is not the dealer
-// *           * If it is, create some more string objects to represent parameters
-// *           * Iterate through the cards in the players hand
-// *           * Add the hand total and display the other hand parameters
-// *       * If the player is the dealer
-// *           * If the dealer is hiding a card, output a special message to console
-// *           * If the dealer is showing both cards, do the same as a non dealer player
-// *   Output:
-// *       This function returns a Hand object after displaying what cards they have
-// */
-// Hand Hand::ShowHand(std::string option, const std::string dealerShow) {
-//     // Test to see if the option value is empty
-//     if (option.empty()) {
-//         option = "current";
-//     }
-//     // Modify the string values
-//     std::string optionMod = color_text(34, option);
-//     std::string handTotalMod = color_text(36, "Hand Total");
-//     // The player is not the dealer
-//     if (GetName() != "Dealer") {
-//         // Modify more string values
-//         std::string handWager = color_text(32, "Hand Wager");
-//         std::string bankTotal = color_text(33, "Bank Total");
-//         std::cout << GetDisplayName() << "'s " << optionMod << " hand: [";
-//         // Iterate through the cards in players hand
-//         for (int i = 0; i < GetCards().size(); i++) {
-//             if (i == GetCards().size() - 1) {
-//                 std::cout << GetCards().at(i) << "] ";
-//             }
-//             else {
-//                 std::cout << GetCards().at(i) << " , ";
-//             }
-//         }
-//         // Add hand total and display players hand parameters
-//         AddHandTotal();
-//         std::cout << handTotalMod << ": " << GetDisplayCardsTotal() << " , " << handWager << ": " << GetDisplayWager() << " , " << bankTotal << ": " << GetDisplayBankTotal() << std::endl; time_sleep(1000);
-//     }
-//     // The player is the dealer
-//     else if (GetName() == "Dealer") {
-//         // Dealer is hiding a card
-//         if (dealerShow.empty()) {
-//             std::string backCardMod = color_text(36, std::to_string(GetCards().back().GetCardValue()));
-//             std::cout << GetDisplayName() << "'s " << optionMod << " hand : [Hidden, " << GetCards().back() << "] " << handTotalMod << ": " << backCardMod << std::endl; time_sleep(1000);
-//         }
-//         // Dealer is showing both cards
-//         else {
-//             if (dealerShow != "cards") {
-//                 std::cout << GetDisplayName() << "'s " << optionMod << " hand: [";
-//             }
-//             // Specialized display of cards
-//             else {
-//                 std::cout << "[";
-//             }
-//             // Iterate through the cards in players hand
-//             for (int i = 0; i < GetCards().size(); i++) {
-//                 if (i == GetCards().size() - 1) {
-//                     std::cout << GetCards().at(i) << "] ";
-//                 }
-//                 else {
-//                     std::cout << GetCards().at(i) << " , ";
-//                 }
-//             }
-//             // Add hand total and display players hand parameters
-//             AddHandTotal();
-//             std::cout << handTotalMod << ": " << GetDisplayCardsTotal() << std::endl; time_sleep(1000);
-//         }
-//     }
-//     return *this;
-// }
+/*  ShowHand - This function displays the cards that are present in a players hand
+*   Input:
+*       option - String value that represents a custom hand tracker (e.g. First, Second, etc.)
+*       dealerShow - Constant string value that determines if the dealer is to show both hands
+*   Algorithm:
+*       * Begin by checking to see if the "option" string is empty
+*           * If it is, set it to current
+*       * Create string objects that represent certain trackers for the output
+*       * Check to see if the player is not the dealer
+*           * If it is, create some more string objects to represent parameters
+*           * Iterate through the cards in the players hand
+*           * Add the hand total and display the other hand parameters
+*       * If the player is the dealer
+*           * If the dealer is hiding a card, output a special message to console
+*           * If the dealer is showing both cards, do the same as a non dealer player
+*   Output:
+*       This function returns a Hand object after displaying what cards they have
+*/
+Hand Hand::ShowHand(std::string option, const std::string dealerShow) {
+    // Test to see if the option value is empty
+    if (option.empty()) {
+        option = "current";
+    }
+    // Modify the string values
+    std::string optionMod = color_text(34, option);
+    std::string handTotalMod = color_text(36, "Hand Total");
+    // The player is not the dealer
+    if (this->GetName() != "Dealer") {
+        // Modify more string values
+        std::string handWager = color_text(32, "Hand Wager");
+        std::string bankTotal = color_text(33, "Bank Total");
+        std::cout << this->GetDisplayName() << "'s " << optionMod << " hand: [";
+        // Iterate through the cards in players hand
+        for (int i = 0; i < this->GetPlayerCards()->GetSize(); i++) {
+            if (i == this->GetPlayerCards()->GetSize() - 1) {
+                std::cout << this->GetPlayerCards()->RetrieveNode(i)->data << "] ";
+            }
+            else {
+                std::cout << this->GetPlayerCards()->RetrieveNode(i)->data << " , ";
+            }
+        }
+        // Add hand total and display players hand parameters
+        this->AddHandTotal();
+        std::cout << handTotalMod << ": " << this->GetDisplayCardsTotal() << " , " << handWager << ": " << this->GetDisplayWager() << " , " << bankTotal << ": " << this->GetDisplayBankTotal() << std::endl; time_sleep(1000);
+    }
+    // The player is the dealer
+    else if (this->GetName() == "Dealer") {
+        // Dealer is hiding a card
+        if (dealerShow.empty()) {
+            std::string backCardMod = color_text(36, std::to_string(this->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()));
+            std::cout << this->GetDisplayName() << "'s " << optionMod << " hand : [Hidden, " << this->GetPlayerCards()->RetrieveNode(-1)->data << "] " << handTotalMod << ": " << backCardMod << std::endl; time_sleep(1000);
+        }
+        // Dealer is showing both cards
+        else {
+            if (dealerShow != "cards") {
+                std::cout << this->GetDisplayName() << "'s " << optionMod << " hand: [";
+            }
+            // Specialized display of cards
+            else {
+                std::cout << "[";
+            }
+            // Iterate through the cards in players hand
+            for (int i = 0; i < this->GetPlayerCards()->GetSize(); i++) {
+                if (i == this->GetPlayerCards()->GetSize() - 1) {
+                    std::cout << this->GetPlayerCards()->RetrieveNode(i) << "] ";
+                }
+                else {
+                    std::cout << this->GetPlayerCards()->RetrieveNode(i) << " , ";
+                }
+            }
+            // Add hand total and display players hand parameters
+            this->AddHandTotal();
+            std::cout << handTotalMod << ": " << this->GetDisplayCardsTotal() << std::endl; time_sleep(1000);
+        }
+    }
+    return *this;
+}
 
-// /*  UpdateBank - Updates the bank of a player
-// *   Input:
-// *       choice - Constant integer that is supposed to represent the outcome of a hand
-// *       wager - Constant float passed by reference that is the wager being used to update the bank
-// *   Algorithm:
-// *       * Grab the prior bank value with "prior_bank"
-// *       * The following codes represent what the choices mean
-// *           * 0 - Player withdraws money from bank (placing wager)
-// *           * 1 - Player wins hand
-// *           * 2 - Player loses hand
-// *           * 3 - Player pushes hand
-// *           * 4 - Player wins blackjack
-// *           * 5 - Player wins insurance
-// *   Output:
-// *       This function returns a Hand object after updating the players bank
-// */
-// Hand Hand::UpdateBank(const int choice, const float& wager) {
-//     float prior_bank = GetBankTotal();
-//     switch (choice) {
-//     // 0 - Player withdraws money from bank (places wager)
-//     case 0:
-//         SetBankTotal(prior_bank - wager);
-//         return *this;
-//     // 1 - Player wins hand
-//     case 1:
-//         SetBankTotal(GetBankTotal() + (2.0 * wager));
-//         SetNet(GetNet() + (GetBankTotal() - (prior_bank + wager)));
-//         return *this;
-//     // 2 - Player loses hand
-//     case 2:
-//         SetBankTotal(prior_bank);
-//         SetNet(GetNet() + (GetBankTotal() - (prior_bank + wager)));
-//         return *this;
-//     // 3 - Player pushes hand
-//     case 3:
-//         SetBankTotal(GetBankTotal() + wager);
-//         SetNet(GetNet() + (GetBankTotal() - (prior_bank + wager)));
-//         return *this;
-//     // 4 - Player wins blackjack
-//     case 4:
-//         SetBankTotal(GetBankTotal() + wager + (1.5 * wager));
-//         SetNet(GetNet() + (GetBankTotal() - (prior_bank + wager)));
-//         return *this;
-//     // 5 - Player wins insurance
-//     case 5:
-//         SetBankTotal(GetBankTotal() + (3 * wager));
-//         SetNet(GetNet() + (GetBankTotal() - (prior_bank + wager)));
-//         return *this;
-//     default:
-//         return *this;
-//         break;
-//     }
-// }
+/*  UpdateBank - Updates the bank of a player
+*   Input:
+*       choice - Constant integer that is supposed to represent the outcome of a hand
+*       wager - Constant float passed by reference that is the wager being used to update the bank
+*   Algorithm:
+*       * Grab the prior bank value with "prior_bank"
+*       * The following codes represent what the choices mean
+*           * 0 - Player withdraws money from bank (placing wager)
+*           * 1 - Player wins hand
+*           * 2 - Player loses hand
+*           * 3 - Player pushes hand
+*           * 4 - Player wins blackjack
+*           * 5 - Player wins insurance
+*   Output:
+*       This function returns a Hand object after updating the players bank
+*/
+Hand Hand::UpdateBank(const int choice, const float& wager) {
+    float prior_bank = this->GetBankTotal();
+    switch (choice) {
+    // 0 - Player withdraws money from bank (places wager)
+    case 0:
+        this->SetBankTotal(prior_bank - wager);
+        return *this;
+    // 1 - Player wins hand
+    case 1:
+        this->SetBankTotal(this->GetBankTotal() + (2.0 * wager));
+        this->SetNet(this->GetNet() + (this->GetBankTotal() - (prior_bank + wager)));
+        return *this;
+    // 2 - Player loses hand
+    case 2:
+        this->SetBankTotal(prior_bank);
+        this->SetNet(this->GetNet() + (this->GetBankTotal() - (prior_bank + wager)));
+        return *this;
+    // 3 - Player pushes hand
+    case 3:
+        this->SetBankTotal(this->GetBankTotal() + wager);
+        this->SetNet(this->GetNet() + (this->GetBankTotal() - (prior_bank + wager)));
+        return *this;
+    // 4 - Player wins blackjack
+    case 4:
+        this->SetBankTotal(this->GetBankTotal() + wager + (1.5 * wager));
+        this->SetNet(this->GetNet() + (this->GetBankTotal() - (prior_bank + wager)));
+        return *this;
+    // 5 - Player wins insurance
+    case 5:
+        this->SetBankTotal(this->GetBankTotal() + (3 * wager));
+        this->SetNet(this->GetNet() + (this->GetBankTotal() - (prior_bank + wager)));
+        return *this;
+    default:
+        return *this;
+        break;
+    }
+}
 
 // ----- ----- ----- ----- ----- ----- ----- Setter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 // SetCanBuyInsurance - Mutates the private data member "canBuyInsurance" by assigning it to "input"
@@ -894,6 +898,7 @@ void Hand::SetWager(const float& input) {
 // SetCardsTotal - Mutates the private data member "cardsTotal" by assigning it to "input"
 void Hand::SetCardsTotal(const int& input) {
     player->cardsTotal = input;
+    this->SetDisplayCardsTotal();
 }
 
 // SetHandsPlayed - Mutates the private data member "handsPlayed" by assigning it to "input"

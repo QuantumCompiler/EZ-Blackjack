@@ -108,14 +108,14 @@ public:
     Hand CheckParamInHand(const std::string referenceParameter, const std::string checkingParameter); // Checks if a player has a specific parameter in their hand
     Hand CheckSameParamInHand(const std::string referenceParameter, const std::string checkingParameter = ""); // Checks if a player has the same parameter in their hand
     // Hand CopyVariables(Hand& input);
-    // Hand HitHand(Shoe& input);
-    // Hand InsurancePrompt();
-    // Hand NamePrompt();
-    // Hand ParametersCheck(Hand& checkingHand, Hand& dealerHand);
+    Hand HitHand(std::shared_ptr<Shoe>& input); // Adds a card to a players hand from a shoe
+    Hand InsurancePrompt(); // Prompts a player if they would like to place an insurance wager
+    Hand NamePrompt(); // Prompts the player for a name that they would like to be called
+    Hand ParametersCheck(std::shared_ptr<Hand>& dealerHand); 
     // Hand PlaceWager();
     // Hand ResetHand();
-    // Hand ShowHand(std::string option = "", const std::string dealerShow = "");
-    // Hand UpdateBank(const int choice, const float& wager);
+    Hand ShowHand(std::string option = "", const std::string dealerShow = ""); 
+    Hand UpdateBank(const int choice, const float& wager); // Updates the bank total of a player
     // Setter Functions
     // Boolean Values
     void SetCanBuyInsurance(const bool input); // Mutates "canBuyInsurance"
