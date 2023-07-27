@@ -32,7 +32,8 @@ public:
     void InsertNode(std::shared_ptr<node<customType>> input, int index); // Insert node 
     std::shared_ptr<node<customType>> PopNode(); // Pop node
     void PrintList(); // Print list
-    void RemoveNode(int index);
+    void RemoveNode(int index); // Removes node
+    std::shared_ptr<node<customType>> RetrieveNode(int index); // Retrieves node
     // ---- ---- ---- Mutator Functions ---- ---- ---- //
     // Getter functions
     std::shared_ptr<node<customType>>& GetRoot(); // Get root of list
@@ -50,9 +51,9 @@ template <typename customType>
 LinkedList<customType>::LinkedList() {
     std::shared_ptr<node<customType>> initRoot = nullptr;
     std::shared_ptr<node<customType>> initTail = nullptr;
-    SetRoot(initRoot);
-    SetTail(initTail);
-    SetSize();
+    this->SetRoot(initRoot);
+    this->SetTail(initTail);
+    this->SetSize();
 }
 
 // Class de-constructor
@@ -62,29 +63,29 @@ LinkedList<customType>::~LinkedList() {}
 // AppendNode - Adds a node to the end of the linked list
 template <typename customType>
 void LinkedList<customType>::AppendNode(std::shared_ptr<node<customType>>& input) {
-    if (GetRoot() == nullptr) {
+    if (this->GetRoot() == nullptr) {
         input->previousNode = nullptr;
         input->nextNode = nullptr;
-        SetRoot(input);
-        SetTail(input);
+        this->SetRoot(input);
+        this->SetTail(input);
     }
     else {
-        std::shared_ptr<node<customType>> current = GetRoot();
+        std::shared_ptr<node<customType>> current = this->GetRoot();
         while (current->nextNode != nullptr) {
             current = current->nextNode;
         }
         current->nextNode = input;
         input->previousNode = current;
         input->nextNode = nullptr;
-        SetTail(input);
+        this->SetTail(input);
     }
-    SetSize();
+    this->SetSize();
 }
 
 // ClearList - Clears a linked list
 template <typename customType>
 void LinkedList<customType>::ClearList() {
-    std::shared_ptr<node<customType>> current = GetRoot();
+    std::shared_ptr<node<customType>> current = this->GetRoot();
     while (current != nullptr) {
         std::shared_ptr<node<customType>> temp = current;
         current = current->nextNode;
@@ -113,25 +114,25 @@ std::shared_ptr<node<customType>> LinkedList<customType>::InitNode(std::shared_p
 template <typename customType>
 void LinkedList<customType>::InsertNode(std::shared_ptr<node<customType>> input, int index) {
     if (index == 0) {
-        if (GetRoot() == nullptr) {
-            SetRoot(input);
-            SetTail(input);
+        if (this->GetRoot() == nullptr) {
+            this->SetRoot(input);
+            this->SetTail(input);
         }
         else {
-            GetRoot()->previousNode = input;
-            input->nextNode = GetRoot();
+            this->GetRoot()->previousNode = input;
+            input->nextNode = this->GetRoot();
             input->previousNode = nullptr;
-            SetRoot(input);
+            this->SetRoot(input);
         }
     }
     else if (index <= GetSize()) {
-        std::shared_ptr<node<customType>> current = GetRoot();
+        std::shared_ptr<node<customType>> current = this->GetRoot();
         std::vector<std::shared_ptr<node<customType>>> nodes;
         while (current != nullptr) {
             nodes.push_back(current);
             current = current->nextNode;
         }
-        current = GetRoot();
+        current = this->GetRoot();
         for (int i = 0; i < nodes.size(); i++) {
             if (i == index - 1) {
                 input->nextNode = current->nextNode;
@@ -141,16 +142,16 @@ void LinkedList<customType>::InsertNode(std::shared_ptr<node<customType>> input,
                 }
                 current->nextNode = input;
                 if (input->nextNode == nullptr) {
-                    SetTail(input);
+                    this->SetTail(input);
                 }
                 break;
             }
             current = current->nextNode;
         }
-        SetSize();
+        this->SetSize();
     }
     else {
-        AppendNode(input);
+        this->AppendNode(input);
     }
 }
 
@@ -158,35 +159,35 @@ void LinkedList<customType>::InsertNode(std::shared_ptr<node<customType>> input,
 template <typename customType>
 std::shared_ptr<node<customType>> LinkedList<customType>::PopNode() {
     std::shared_ptr<node<customType>> returnNode(new node<customType>);
-    if (GetRoot() == nullptr) {
-        SetSize();
+    if (this->GetRoot() == nullptr) {
+        this->SetSize();
         return nullptr;
     }
-    else if (GetRoot()->previousNode == nullptr && GetRoot()->nextNode == nullptr) {
+    else if (GetRoot()->previousNode == nullptr && this->GetRoot()->nextNode == nullptr) {
         returnNode = GetRoot();
-        SetRoot(nullptr);
-        SetTail(nullptr);
+        this->SetRoot(nullptr);
+        this->SetTail(nullptr);
     }
     else {
-        std::shared_ptr<node<customType>> current = GetRoot();
+        std::shared_ptr<node<customType>> current = this->GetRoot();
         while (current->nextNode != nullptr) {
             current = current->nextNode;
         }
         returnNode = current;
         current->previousNode->nextNode = nullptr;
         if (current->previousNode->previousNode == nullptr) {
-            SetRoot(current->previousNode);
+            this->SetRoot(current->previousNode);
         }
-        SetTail(current->previousNode);
+        this->SetTail(current->previousNode);
     }
-    SetSize();
+    this->SetSize();
     return returnNode;
 }
 
 // PrintList - Prints the contents in a linked list
 template <typename customType>
 void LinkedList<customType>::PrintList() {
-    std::shared_ptr<node<customType>> current = GetRoot();
+    std::shared_ptr<node<customType>> current = this->GetRoot();
     if (current == nullptr) {
         std::cout << "Empty list." << std::endl;
     }
@@ -194,66 +195,81 @@ void LinkedList<customType>::PrintList() {
         std::cout << "Previous: " << current->previousNode << ", Current: " << current << ", Next: " << current->nextNode << " | ";
         current = current->nextNode;
     }
-    std::cout << " Size: " << GetSize() << std::endl;
+    std::cout << " Size: " << this->GetSize() << std::endl;
 }
 
 // RemoveNode - Removes a node at a given index
 template <typename customType>
 void LinkedList<customType>::RemoveNode(int index) {
-    std::shared_ptr<node<customType>> current = GetRoot();
-    std::vector<std::shared_ptr<node<customType>>> nodes;
-    while (current != nullptr) {
-        nodes.push_back(current);
-        current = current->nextNode;
-    }
-    current = GetRoot();
-    if (index == 0) {
-        if (GetRoot() != nullptr) {
-            SetRoot(current->nextNode);
-            GetRoot()->previousNode = nullptr;
-            if (GetRoot()->nextNode == nullptr) {
-                SetTail(GetRoot());
+    std::shared_ptr<node<customType>> foundNode = this->RetrieveNode(index);
+    if (foundNode == this->GetRoot()) {
+        if (this->GetRoot() != nullptr) {
+            if (foundNode->nextNode) {
+                this->SetRoot(foundNode->nextNode);
+                this->GetRoot()->previousNode = nullptr;
+                if (this->GetRoot()->nextNode == nullptr) {
+                    this->SetTail(this->GetRoot());
+                }
+            }
+            else {
+                this->SetRoot(nullptr);
+                this->SetTail(nullptr);
             }
         }
         else {
-            SetRoot(current);
-            SetTail(current);
+            this->SetRoot(foundNode);
+            this->SetTail(foundNode);
         }
     }
-    else if (index > 0 && index < GetSize()) {
-        for (int i = 0; i < nodes.size(); i++) {
-            if (i == index - 1) {
-                if (current->nextNode->nextNode) {
-                    current->nextNode->nextNode->previousNode = current;
-                    current->nextNode = current->nextNode->nextNode;
-                    SetSize();
-                }
-                else {
-                    current->nextNode = nullptr;
-                    SetTail(current);
-                }
-                break;
+    else if (foundNode == this->GetTail()) {
+        if (this->GetTail()->previousNode) {
+            this->GetTail()->previousNode->nextNode = nullptr;
+            this->SetTail(this->GetTail()->previousNode);
+            if (GetTail()->previousNode == nullptr && GetTail()->nextNode == nullptr) {
+                this->SetRoot(this->GetTail());
             }
-            current = current->nextNode;
+        }
+        else {
+            this->SetTail(nullptr);
+            this->SetRoot(nullptr);
         }
     }
     else {
-        if (GetTail()->previousNode) {
-            GetTail()->previousNode->nextNode = nullptr;
-            SetTail(GetTail()->previousNode);
-            if (GetTail()->previousNode == nullptr && GetTail()->nextNode == nullptr) {
-                SetRoot(GetTail());
-            }
+        if (foundNode->nextNode) {
+            foundNode->previousNode->nextNode = foundNode->nextNode;
+            foundNode->nextNode->previousNode = foundNode->previousNode;
+            this->SetSize();
         }
         else {
-            SetTail(nullptr);
-            SetRoot(nullptr);
+            this->SetTail(foundNode);
         }
     }
 }
 
-// // ----- ----- ----- ----- ----- ----- ----- Mutators ----- ----- ----- ----- ----- ----- ----- ----- ----- //
-// // ----- ----- ----- ----- Getter Functions ----- ----- ----- ----- //
+// RetrieveNode - Retrieves a node at a given index
+template <typename customType>
+std::shared_ptr<node<customType>> LinkedList<customType>::RetrieveNode(int index) {
+    std::shared_ptr<node<customType>> ret(new node<customType>);
+    if (index == 0) {
+        ret = this->GetRoot();
+    }
+    else if (index == -1 || index >= this->GetSize()) {
+        ret = this->GetTail();
+    }
+    else {
+        std::shared_ptr<node<customType>> current = this->GetRoot();
+        int indexTracker = 0;
+        while (current != nullptr && indexTracker < index) {
+            current = current->nextNode;
+            indexTracker++;
+        }
+        ret = current;
+    }
+    return ret;
+}
+
+// ----- ----- ----- ----- ----- ----- ----- Mutators ----- ----- ----- ----- ----- ----- ----- ----- ----- //
+// ----- ----- ----- ----- Getter Functions ----- ----- ----- ----- //
 // GetRoot - Retrieves the root node of a linked list
 template <typename customType>
 std::shared_ptr<node<customType>>& LinkedList<customType>::GetRoot() {
@@ -277,14 +293,14 @@ std::shared_ptr<node<customType>>& LinkedList<customType>::GetTail() {
 template <typename customType>
 void LinkedList<customType>::SetRoot(std::shared_ptr<node<customType>> input) {
     rootNode = input;
-    SetSize();
+    this->SetSize();
 }
 
 // SetSize - Sets the size of the linked list
 template <typename customType>
 void LinkedList<customType>::SetSize() {
     listSize = 0;
-    std::shared_ptr<node<customType>> current = GetRoot();
+    std::shared_ptr<node<customType>> current = this->GetRoot();
     while (current != nullptr) {
         listSize++;
         current = current->nextNode;
@@ -295,5 +311,5 @@ void LinkedList<customType>::SetSize() {
 template <typename customType>
 void LinkedList<customType>::SetTail(std::shared_ptr<node<customType>> input) {
     tailNode = input;
-    SetSize();
+    this->SetSize();
 }
