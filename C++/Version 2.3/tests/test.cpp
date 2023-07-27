@@ -259,6 +259,35 @@ TEST_F(test_x, LinkedListInsert) {
     EXPECT_EQ(testList->GetSize(), 5);
 }
 
+// Linked list, retrieve test
+TEST_F(test_x, LinkedListRetrieve) {
+    std::shared_ptr<LinkedList<int>> testList(new LinkedList<int>);
+    int intVal = 12;
+    // Create nodes
+    std::shared_ptr<node<int>> testNode1 = testList->InitNode(intVal);
+    intVal = 13;
+    std::shared_ptr<node<int>> testNode2 = testList->InitNode(intVal);
+    intVal = 14;
+    std::shared_ptr<node<int>> testNode3 = testList->InitNode(intVal);
+    intVal = 15;
+    std::shared_ptr<node<int>> testNode4 = testList->InitNode(intVal);
+    // Insert nodes (testNode1, testNode2, testNode3, testNode4)
+    testList->AppendNode(testNode1);
+    testList->AppendNode(testNode2);
+    testList->AppendNode(testNode3);
+    testList->AppendNode(testNode4);
+    // Test retrieving nodes
+    EXPECT_EQ(testList->GetRoot(), testNode1);
+    EXPECT_EQ(testList->GetTail(), testNode4);
+    EXPECT_EQ(testList->RetrieveNode(0), testNode1);
+    EXPECT_EQ(testList->RetrieveNode(1), testNode2);
+    EXPECT_EQ(testList->RetrieveNode(2), testNode3);
+    EXPECT_EQ(testList->RetrieveNode(3), testNode4);
+    EXPECT_EQ(testList->RetrieveNode(-1), testNode4);
+    EXPECT_EQ(testList->RetrieveNode(4), testNode4);
+    EXPECT_EQ(testList->GetSize(), 4);
+}
+
 // Linked list, remove list
 TEST_F(test_x, LinkedListRemove) {
     std::shared_ptr<LinkedList<int>> testList(new LinkedList<int>);
@@ -286,7 +315,7 @@ TEST_F(test_x, LinkedListRemove) {
     EXPECT_EQ(testNode3->nextNode, testNode4);
     EXPECT_EQ(testNode4->previousNode, testNode3);
     // Remove tail (testNode2, testNode3)
-    testList->RemoveNode(2);
+    testList->RemoveNode(-1);
     EXPECT_EQ(testList->GetSize(), 2);
     EXPECT_EQ(testList->GetRoot(), testNode2);
     EXPECT_EQ(testList->GetTail(), testNode3);
@@ -319,8 +348,8 @@ TEST_F(test_x, LinkedListRemove) {
     EXPECT_EQ(testList->GetSize(), 1);
     EXPECT_EQ(testList->GetRoot(), testNode1);
     EXPECT_EQ(testList->GetTail(), testNode1);
-    // Empty list
-    testList->RemoveNode(124);
+    // Empty list, remove tail
+    testList->RemoveNode(-1);
     EXPECT_EQ(testList->GetSize(), 0);
     EXPECT_EQ(testList->GetRoot(), nullptr);
     EXPECT_EQ(testList->GetTail(), nullptr);
@@ -331,6 +360,11 @@ TEST_F(test_x, LinkedListRemove) {
     EXPECT_EQ(testList->GetSize(), 1);
     EXPECT_EQ(testList->GetRoot(), testNode2);
     EXPECT_EQ(testList->GetTail(), testNode2);
+    // Empty list, remove root
+    testList->RemoveNode(0);
+    EXPECT_EQ(testList->GetSize(), 0);
+    EXPECT_EQ(testList->GetRoot(), nullptr);
+    EXPECT_EQ(testList->GetTail(), nullptr);
 }
 
 /////////////////////////////////////////
@@ -417,6 +451,50 @@ TEST_F(test_x, ShoeClassDraw) {
 // Hand class, constructor test
 TEST_F(test_x, HandClassConst) {
     std::shared_ptr<Hand> testHand(new Hand);
+    // Test initial boolean values
+    EXPECT_FALSE(testHand->GetCanBuyInsurance());
+    EXPECT_FALSE(testHand->GetCanDoubleDown());
+    EXPECT_FALSE(testHand->GetCanSplitAces());
+    EXPECT_FALSE(testHand->GetCanSplitHand());
+    EXPECT_FALSE(testHand->GetChoseBuyInsurance());
+    EXPECT_FALSE(testHand->GetChoseDoubleDown());
+    EXPECT_FALSE(testHand->GetChoseSplitAces());
+    EXPECT_FALSE(testHand->GetChoseSplitHand());
+    EXPECT_FALSE(testHand->GetDoubleDownResponse());
+    EXPECT_FALSE(testHand->GetHasBlackJack());
+    EXPECT_FALSE(testHand->GetHasHit());
+    EXPECT_FALSE(testHand->GetParamInHand());
+    EXPECT_FALSE(testHand->GetSameParamInHand());
+    EXPECT_FALSE(testHand->GetShouldDoubleDown());
+    EXPECT_FALSE(testHand->GetShouldHit());
+    EXPECT_FALSE(testHand->GetShouldSplit());
+    EXPECT_FALSE(testHand->GetShouldStand());
+    EXPECT_FALSE(testHand->GetSoftSeventeen());
+    EXPECT_FALSE(testHand->GetSplitAcesResponse());
+    EXPECT_FALSE(testHand->GetSplitHandResponse());
+    // Test initial float values
+    EXPECT_EQ(testHand->GetBankTotal(), 0);
+    EXPECT_EQ(testHand->GetInsuranceWager(), 0);
+    EXPECT_EQ(testHand->GetNet(), 0);
+    EXPECT_EQ(testHand->GetWager(), 0);
+    // Test initial integer values
+    EXPECT_EQ(testHand->GetCardsTotal(), 0);
+    EXPECT_EQ(testHand->GetHandsPlayed(), 0);
+    // Test initial string values
+    EXPECT_EQ(testHand->GetDisplayBankTotal(), "");
+    EXPECT_EQ(testHand->GetDisplayCardsTotal(), "");
+    EXPECT_EQ(testHand->GetDisplayInsuranceWager(), "");
+    EXPECT_EQ(testHand->GetDisplayName(), "");
+    EXPECT_EQ(testHand->GetDisplayNet(), "");
+    EXPECT_EQ(testHand->GetDisplayWager(), "");
+    EXPECT_EQ(testHand->GetName(), "");
+    // Test linked list sizes
+    EXPECT_EQ(testHand->GetHandBankTotals()->GetSize(), 0);
+    EXPECT_EQ(testHand->GetHandCardTotals()->GetSize(), 0);
+    EXPECT_EQ(testHand->GetHandNets()->GetSize(), 0);
+    EXPECT_EQ(testHand->GetHandPlayed()->GetSize(), 0);
+    EXPECT_EQ(testHand->GetHandWagers()->GetSize(), 0);
+    EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 0);
 }
 
 /////////////////////////////////////////
