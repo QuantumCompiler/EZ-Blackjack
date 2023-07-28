@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../app/Assets/Game/HPP/Hand.hpp"
+#include "../app/Assets/Game/HPP/Core.hpp"
 
 class test_x : public ::testing::Test {};
 
@@ -990,900 +990,1114 @@ TEST_F(test_x, HandClassCopy) {
 }
 
 /////////////////////////////////////////
-// Blackjack Strategy Test
+// Core Functions Tests
 /////////////////////////////////////////
 
-// // Blackjack strategy test, no duplicate ranks, no ace in hand off deal
-// TEST_F(test_x, BlackjackStrat){
-//     // Suppress Cout's
-//     std::streambuf* oldCoutBuffer = std::cout.rdbuf();
-//     NullBuffer nullBuffer;
-//     std::cout.rdbuf(&nullBuffer);
-//     // Create hands
-//     Hand userHand;
-//     Hand dealerHand;
-//     userHand.SetBankTotal(100);
-//     // Add first card to dealer
-//     dealerHand.SetCards(Card(Ranks[0], Suits[0]));
-//     // Add dummy cards to user hand
-//     userHand.SetCards(Card(Ranks[1], Suits[0]));
-//     userHand.SetCards(Card(Ranks[12], Suits[0]));
-//     // Player has a card total of 4 through 8
-//     for (int i = 4; i <= 8; i++) {
-//         userHand.SetCardsTotal(i);
-//         userHand.SetWager(10);
-//         for (int j = 0; j < 13; j++) {
-//             // Add card to dealer hand
-//             dealerHand.SetCards(Card(Ranks[j], Suits[0]));
-//             blackjack_strategy(userHand, dealerHand);
-//             ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//             ASSERT_TRUE(userHand.GetShouldHit());
-//             ASSERT_FALSE(userHand.GetShouldSplit());
-//             ASSERT_FALSE(userHand.GetShouldStand());
-//             dealerHand.GetCards().pop_back();
-//         }
-//     }
-//     // Player has a card total of 9
-//     userHand.SetCardsTotal(9);
-//     for (int i = 0; i < 13; i++) {
-//         // Add card to dealer hand
-//         dealerHand.SetCards(Card(Ranks[i], Suits[0]));
-//         // Dealer has a 2 - 6
-//         if (i != 0 && i < 6) {
-//             // Test strategy for if a player can double down
-//             {   
-//                 // Set wager
-//                 userHand.SetWager(10);
-//                 // Test strategy
-//                 blackjack_strategy(userHand, dealerHand);
-//                 ASSERT_TRUE(userHand.GetShouldDoubleDown());
-//                 ASSERT_TRUE(userHand.GetShouldHit());
-//                 ASSERT_FALSE(userHand.GetShouldSplit());
-//                 ASSERT_FALSE(userHand.GetShouldStand());
-//             }
-//             // Test strategy for if a player cannot double down
-//             {
-//                 // Set wager
-//                 userHand.SetWager(200);
-//                 // Test strategy
-//                 blackjack_strategy(userHand, dealerHand);
-//                 ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                 ASSERT_TRUE(userHand.GetShouldHit());
-//                 ASSERT_FALSE(userHand.GetShouldSplit());
-//                 ASSERT_FALSE(userHand.GetShouldStand());
-//             }
-//         }
-//         // Otherwise
-//         else {
-//             // Set wager
-//             userHand.SetWager(10);
-//             // Test strategy
-//             blackjack_strategy(userHand, dealerHand);
-//             ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//             ASSERT_TRUE(userHand.GetShouldHit());
-//             ASSERT_FALSE(userHand.GetShouldSplit());
-//             ASSERT_FALSE(userHand.GetShouldStand());
-//         }    
-//         dealerHand.GetCards().pop_back();
-//     }
-//     // Player has a card total of 10
-//     userHand.SetCardsTotal(10);
-//     for (int i = 0; i < 13; i++) {
-//         // Add card to dealer hand
-//         dealerHand.SetCards(Card(Ranks[i], Suits[0]));
-//         // Dealer has a 2 - 9
-//         if (i != 0 && i < 9) {
-//             // Test strategy for if a player can double down
-//             {
-//                 // Set wager
-//                 userHand.SetWager(10);
-//                 // Test strategy
-//                 blackjack_strategy(userHand, dealerHand);
-//                 ASSERT_TRUE(userHand.GetShouldDoubleDown());
-//                 ASSERT_TRUE(userHand.GetShouldHit());
-//                 ASSERT_FALSE(userHand.GetShouldSplit());
-//                 ASSERT_FALSE(userHand.GetShouldStand());
-//             }
-//             // Test strategy for if a player cannot double down
-//             {
-//                 // Set wager
-//                 userHand.SetWager(200);
-//                 // Test strategy
-//                 blackjack_strategy(userHand, dealerHand);
-//                 ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                 ASSERT_TRUE(userHand.GetShouldHit());
-//                 ASSERT_FALSE(userHand.GetShouldSplit());
-//                 ASSERT_FALSE(userHand.GetShouldStand());
-//             }
-//         }
-//         // Otherwise
-//         else {
-//             // Set wager
-//             userHand.SetWager(10);
-//             // Test strategy
-//             blackjack_strategy(userHand, dealerHand);
-//             ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//             ASSERT_TRUE(userHand.GetShouldHit());
-//             ASSERT_FALSE(userHand.GetShouldSplit());
-//             ASSERT_FALSE(userHand.GetShouldStand());
-//         }
-//         dealerHand.GetCards().pop_back();
-//     }
-//     // Player has a hand card value of 11
-//     userHand.SetCardsTotal(11);
-//     for (int i = 0; i < 13; i++) {
-//         // Player can double down
-//         {
-//             userHand.SetWager(10);
-//             // Add card to dealer hand
-//             dealerHand.SetCards(Card(Ranks[i], Suits[0]));
-//             // Test strategy - Can double down
-//             blackjack_strategy(userHand, dealerHand);
-//             ASSERT_TRUE(userHand.GetShouldDoubleDown());
-//             ASSERT_TRUE(userHand.GetShouldHit());
-//             ASSERT_FALSE(userHand.GetShouldSplit());
-//             ASSERT_FALSE(userHand.GetShouldStand());
-//             // Remove last card from dealer hand
-//             dealerHand.GetCards().pop_back();                  
-//         }
-//         // Player cannot double down
-//         {
-//             userHand.SetWager(200);
-//             // Add card to dealer hand
-//             dealerHand.SetCards(Card(Ranks[i], Suits[0]));
-//             // Test strategy - Can double down
-//             blackjack_strategy(userHand, dealerHand);
-//             ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//             ASSERT_TRUE(userHand.GetShouldHit());
-//             ASSERT_FALSE(userHand.GetShouldSplit());
-//             ASSERT_FALSE(userHand.GetShouldStand());
-//             // Remove last card from dealer hand
-//             dealerHand.GetCards().pop_back();         
-//         }
-//     }
-//     // Player has a hand card value of 12
-//     userHand.SetCardsTotal(12);
-//     for (int i = 0; i < 13; i++) {
-//         userHand.SetWager(10);
-//         // Add card to dealer hand
-//         dealerHand.SetCards(Card(Ranks[i], Suits[0]));
-//         blackjack_strategy(userHand, dealerHand);
-//         // Test strategy for 4, 5, and 6 cards
-//         if (i == 3 || i == 4 || i == 5) {
-//             ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//             ASSERT_FALSE(userHand.GetShouldHit());
-//             ASSERT_FALSE(userHand.GetShouldSplit());
-//             ASSERT_TRUE(userHand.GetShouldStand());
-//         }
-//         // Test strategy for other cards
-//         else {
-//             ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//             ASSERT_TRUE(userHand.GetShouldHit());
-//             ASSERT_FALSE(userHand.GetShouldSplit());
-//             ASSERT_FALSE(userHand.GetShouldStand());
-//         }
-//         dealerHand.GetCards().pop_back();
-//     }
-//     // Player has a hand card value of 13 through 16
-//     for (int i = 13; i <= 16; i++) {
-//         userHand.SetCardsTotal(i);
-//         userHand.SetWager(10);
-//         for (int j = 0; j < 13; j++) {
-//             // Add card to dealer hand
-//             dealerHand.SetCards(Card(Ranks[j], Suits[0]));
-//             blackjack_strategy(userHand, dealerHand);
-//             // Test strategy for 2 through 6
-//             if (j != 0 && j < 6) {
-//                 ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                 ASSERT_FALSE(userHand.GetShouldHit());
-//                 ASSERT_FALSE(userHand.GetShouldSplit());
-//                 ASSERT_TRUE(userHand.GetShouldStand());
-//             }
-//             // Test strategy otherwise
-//             else {
-//                 ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                 ASSERT_TRUE(userHand.GetShouldHit());
-//                 ASSERT_FALSE(userHand.GetShouldSplit());
-//                 ASSERT_FALSE(userHand.GetShouldStand());
-//             }
-//             dealerHand.GetCards().pop_back();
-//         }
-//     }
-//     // Player has a hand card value of 17 through 21
-//     for (int i = 17; i <= 21; i++) {
-//         userHand.SetCardsTotal(i);
-//         userHand.SetWager(10);
-//         for (int j = 0; j < 13; j++) {
-//             // Add card to dealer hand
-//             dealerHand.SetCards(Card(Ranks[j], Suits[0]));
-//             blackjack_strategy(userHand, dealerHand);
-//             ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//             ASSERT_FALSE(userHand.GetShouldHit());
-//             ASSERT_FALSE(userHand.GetShouldSplit());
-//             ASSERT_TRUE(userHand.GetShouldStand());
-//             dealerHand.GetCards().pop_back();
-//         }
-//     }
-//     std::cout.rdbuf(oldCoutBuffer);
-// }
+// Blackjack strategy test, no duplicate ranks, no ace in hand off deal
+TEST_F(test_x, BlackjackStrat){
+    // Suppress Cout's
+    std::streambuf* oldCoutBuffer = std::cout.rdbuf();
+    NullBuffer nullBuffer;
+    std::cout.rdbuf(&nullBuffer);
+    // Create hands and card objects
+    std::shared_ptr<Hand> userHand(new Hand);
+    std::shared_ptr<Hand> dealerHand(new Hand);
+    std::shared_ptr<Card> testCard(new Card);
+    std::shared_ptr<node<Card>> testNode;
+    userHand->SetBankTotal(100);
+    // Add first card to dealer
+    testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+    testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+    dealerHand->SetPlayerCards(testNode);
+    // Add dummy cards to user hand
+    testCard = std::make_shared<Card>(Ranks[1], Suits[0]);
+    testNode = userHand->GetPlayerCards()->InitNode(testCard);
+    userHand->SetPlayerCards(testNode);
+    testCard = std::make_shared<Card>(Ranks[12], Suits[0]);
+    testNode = userHand->GetPlayerCards()->InitNode(testCard);
+    userHand->SetPlayerCards(testNode);
+    // Player has a card total of 4 through 8
+    for (int i = 4; i <= 8; i++) {
+        userHand->SetCardsTotal(i);
+        userHand->SetWager(10);
+        for (int j = 0; j < 13; j++) {
+            // Add card to dealer hand
+            testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            dealerHand->SetPlayerCards(testNode);
+            blackjack_strategy(userHand, dealerHand);
+            ASSERT_FALSE(userHand->GetShouldDoubleDown());
+            ASSERT_TRUE(userHand->GetShouldHit());
+            ASSERT_FALSE(userHand->GetShouldSplit());
+            ASSERT_FALSE(userHand->GetShouldStand());
+            dealerHand->GetPlayerCards()->RemoveNode(-1);
+        }
+    }
+    // Player has a card total of 9
+    userHand->SetCardsTotal(9);
+    for (int i = 0; i < 13; i++) {
+        // Add card to dealer hand
+        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+        dealerHand->SetPlayerCards(testNode);
+        // Dealer has a 2 - 6
+        if (i != 0 && i < 6) {
+            // Test strategy for if a player can double down
+            {   
+                // Set wager
+                userHand->SetWager(10);
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                ASSERT_TRUE(userHand->GetShouldDoubleDown());
+                ASSERT_TRUE(userHand->GetShouldHit());
+                ASSERT_FALSE(userHand->GetShouldSplit());
+                ASSERT_FALSE(userHand->GetShouldStand());
+            }
+            // Test strategy for if a player cannot double down
+            {
+                // Set wager
+                userHand->SetWager(200);
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                ASSERT_TRUE(userHand->GetShouldHit());
+                ASSERT_FALSE(userHand->GetShouldSplit());
+                ASSERT_FALSE(userHand->GetShouldStand());
+            }
+        }
+        // Otherwise
+        else {
+            // Set wager
+            userHand->SetWager(10);
+            // Test strategy
+            blackjack_strategy(userHand, dealerHand);
+            ASSERT_FALSE(userHand->GetShouldDoubleDown());
+            ASSERT_TRUE(userHand->GetShouldHit());
+            ASSERT_FALSE(userHand->GetShouldSplit());
+            ASSERT_FALSE(userHand->GetShouldStand());
+        }    
+        dealerHand->GetPlayerCards()->RemoveNode(-1);
+    }
+    // Player has a card total of 10
+    userHand->SetCardsTotal(10);
+    for (int i = 0; i < 13; i++) {
+        // Add card to dealer hand
+        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+        dealerHand->SetPlayerCards(testNode);
+        // Dealer has a 2 - 9
+        if (i != 0 && i < 9) {
+            // Test strategy for if a player can double down
+            {
+                // Set wager
+                userHand->SetWager(10);
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                ASSERT_TRUE(userHand->GetShouldDoubleDown());
+                ASSERT_TRUE(userHand->GetShouldHit());
+                ASSERT_FALSE(userHand->GetShouldSplit());
+                ASSERT_FALSE(userHand->GetShouldStand());
+            }
+            // Test strategy for if a player cannot double down
+            {
+                // Set wager
+                userHand->SetWager(200);
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                ASSERT_TRUE(userHand->GetShouldHit());
+                ASSERT_FALSE(userHand->GetShouldSplit());
+                ASSERT_FALSE(userHand->GetShouldStand());
+            }
+        }
+        // Otherwise
+        else {
+            // Set wager
+            userHand->SetWager(10);
+            // Test strategy
+            blackjack_strategy(userHand, dealerHand);
+            ASSERT_FALSE(userHand->GetShouldDoubleDown());
+            ASSERT_TRUE(userHand->GetShouldHit());
+            ASSERT_FALSE(userHand->GetShouldSplit());
+            ASSERT_FALSE(userHand->GetShouldStand());
+        }
+        dealerHand->GetPlayerCards()->RemoveNode(-1);
+    }
+    // Player has a hand card value of 11
+    userHand->SetCardsTotal(11);
+    for (int i = 0; i < 13; i++) {
+        // Player can double down
+        {
+            userHand->SetWager(10);
+            // Add card to dealer hand
+            testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            dealerHand->SetPlayerCards(testNode);
+            // Test strategy - Can double down
+            blackjack_strategy(userHand, dealerHand);
+            ASSERT_TRUE(userHand->GetShouldDoubleDown());
+            ASSERT_TRUE(userHand->GetShouldHit());
+            ASSERT_FALSE(userHand->GetShouldSplit());
+            ASSERT_FALSE(userHand->GetShouldStand());
+            // Remove last card from dealer hand
+            dealerHand->GetPlayerCards()->RemoveNode(-1);           
+        }
+        // Player cannot double down
+        {
+            userHand->SetWager(200);
+            // Add card to dealer hand
+            testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            dealerHand->SetPlayerCards(testNode);
+            // Test strategy - Can double down
+            blackjack_strategy(userHand, dealerHand);
+            ASSERT_FALSE(userHand->GetShouldDoubleDown());
+            ASSERT_TRUE(userHand->GetShouldHit());
+            ASSERT_FALSE(userHand->GetShouldSplit());
+            ASSERT_FALSE(userHand->GetShouldStand());
+            // Remove last card from dealer hand
+            dealerHand->GetPlayerCards()->RemoveNode(-1);     
+        }
+    }
+    // Player has a hand card value of 12
+    userHand->SetCardsTotal(12);
+    for (int i = 0; i < 13; i++) {
+        userHand->SetWager(10);
+        // Add card to dealer hand
+        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+        dealerHand->SetPlayerCards(testNode);
+        blackjack_strategy(userHand, dealerHand);
+        // Test strategy for 4, 5, and 6 cards
+        if (i == 3 || i == 4 || i == 5) {
+            ASSERT_FALSE(userHand->GetShouldDoubleDown());
+            ASSERT_FALSE(userHand->GetShouldHit());
+            ASSERT_FALSE(userHand->GetShouldSplit());
+            ASSERT_TRUE(userHand->GetShouldStand());
+        }
+        // Test strategy for other cards
+        else {
+            ASSERT_FALSE(userHand->GetShouldDoubleDown());
+            ASSERT_TRUE(userHand->GetShouldHit());
+            ASSERT_FALSE(userHand->GetShouldSplit());
+            ASSERT_FALSE(userHand->GetShouldStand());
+        }
+        dealerHand->GetPlayerCards()->RemoveNode(-1);  
+    }
+    // Player has a hand card value of 13 through 16
+    for (int i = 13; i <= 16; i++) {
+        userHand->SetCardsTotal(i);
+        userHand->SetWager(10);
+        for (int j = 0; j < 13; j++) {
+            // Add card to dealer hand
+            testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            dealerHand->SetPlayerCards(testNode);
+            blackjack_strategy(userHand, dealerHand);
+            // Test strategy for 2 through 6
+            if (j != 0 && j < 6) {
+                ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                ASSERT_FALSE(userHand->GetShouldHit());
+                ASSERT_FALSE(userHand->GetShouldSplit());
+                ASSERT_TRUE(userHand->GetShouldStand());
+            }
+            // Test strategy otherwise
+            else {
+                ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                ASSERT_TRUE(userHand->GetShouldHit());
+                ASSERT_FALSE(userHand->GetShouldSplit());
+                ASSERT_FALSE(userHand->GetShouldStand());
+            }
+            dealerHand->GetPlayerCards()->RemoveNode(-1);
+        }
+    }
+    // Player has a hand card value of 17 through 21
+    for (int i = 17; i <= 21; i++) {
+        userHand->SetCardsTotal(i);
+        userHand->SetWager(10);
+        for (int j = 0; j < 13; j++) {
+            // Add card to dealer hand
+            testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            dealerHand->SetPlayerCards(testNode);
+            blackjack_strategy(userHand, dealerHand);
+            ASSERT_FALSE(userHand->GetShouldDoubleDown());
+            ASSERT_FALSE(userHand->GetShouldHit());
+            ASSERT_FALSE(userHand->GetShouldSplit());
+            ASSERT_TRUE(userHand->GetShouldStand());
+            dealerHand->GetPlayerCards()->RemoveNode(-1);
+        }
+    }
+    std::cout.rdbuf(oldCoutBuffer);
+}
 
-// // Blackjack strategy test, no duplicate ranks, Ace in hand off deal
-// TEST_F(test_x, BlackjackStratAces) {
-//     // Suppress Cout's
-//     std::streambuf* oldCoutBuffer = std::cout.rdbuf();
-//     NullBuffer nullBuffer;
-//     std::cout.rdbuf(&nullBuffer);
-//     // Create hands
-//     Hand userHand;
-//     Hand dealerHand;
-//     userHand.SetBankTotal(100);
-//     // Add first card to dealer
-//     dealerHand.SetCards(Card(Ranks[0], Suits[0]));
-//     dealerHand.AddHandTotal();
-//     // Add first card to player - Ace
-//     userHand.SetCards(Card(Ranks[0], Suits[0]));
-//     userHand.AddHandTotal();
-//     // Player has a card total of 13 or 14 (Ace, 2 || Ace, 3)
-//     for (int i = 1; i <= 2; i++) {
-//         userHand.SetCards(Card(Ranks[i], Suits[0]));
-//         userHand.AddHandTotal();
-//         for (int j = 0; j < 13; j++) {
-//             // Add card to dealer hand
-//             dealerHand.SetCards(Card(Ranks[j], Suits[0]));
-//             // Card being added is a 5 or 6
-//             if (j == 4 || j == 5) {
-//                 // Player can double down
-//                 {
-//                     // Set wager
-//                     userHand.SetWager(10);
-//                     // Test strategy - Can double down
-//                     blackjack_strategy(userHand, dealerHand);
-//                     ASSERT_TRUE(userHand.GetShouldDoubleDown());
-//                     ASSERT_TRUE(userHand.GetShouldHit());
-//                     ASSERT_FALSE(userHand.GetShouldSplit());
-//                     ASSERT_FALSE(userHand.GetShouldStand());
-//                 }
-//                 // Player can't double down
-//                 {
-//                     // Set wager
-//                     userHand.SetWager(200);
-//                     // Test strategy - Can't double down
-//                     blackjack_strategy(userHand, dealerHand);
-//                     ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                     ASSERT_TRUE(userHand.GetShouldHit());
-//                     ASSERT_FALSE(userHand.GetShouldSplit());
-//                     ASSERT_FALSE(userHand.GetShouldStand());
-//                 }
-//             }
-//             // Otherwise
-//             else {
-//                 // Set wager
-//                 userHand.SetWager(10);
-//                 // Test strategy - Can't double down
-//                 blackjack_strategy(userHand, dealerHand);
-//                 ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                 ASSERT_TRUE(userHand.GetShouldHit());
-//                 ASSERT_FALSE(userHand.GetShouldSplit());
-//                 ASSERT_FALSE(userHand.GetShouldStand());
-//             }
-//             dealerHand.GetCards().pop_back();
-//         }
-//         userHand.GetCards().pop_back();
-//         userHand.AddHandTotal();
-//     }
-//     // Player has a card total of 15 or 16 (Ace, 4 || Ace, 5)
-//     for (int i = 3; i <= 4; i++) {
-//         userHand.SetCards(Card(Ranks[i], Suits[0]));
-//         userHand.AddHandTotal();
-//         for (int j = 0; j < 13; j++) {
-//             // Add card to dealer hand
-//             dealerHand.SetCards(Card(Ranks[j], Suits[0]));
-//             // Card being added is a 4, 5, or 6
-//             if (j == 3 || j == 4 || j == 5) {
-//                 // Player can double down
-//                 {
-//                     // Set wager
-//                     userHand.SetWager(10);
-//                     // Test strategy - Can double down
-//                     blackjack_strategy(userHand, dealerHand);
-//                     ASSERT_TRUE(userHand.GetShouldDoubleDown());
-//                     ASSERT_TRUE(userHand.GetShouldHit());
-//                     ASSERT_FALSE(userHand.GetShouldSplit());
-//                     ASSERT_FALSE(userHand.GetShouldStand());
-//                 }
-//                 // Player can't double down
-//                 {
-//                     // Set wager
-//                     userHand.SetWager(200);
-//                     // Test strategy - Can't double down
-//                     blackjack_strategy(userHand, dealerHand);
-//                     ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                     ASSERT_TRUE(userHand.GetShouldHit());
-//                     ASSERT_FALSE(userHand.GetShouldSplit());
-//                     ASSERT_FALSE(userHand.GetShouldStand());
-//                 }
-//             }
-//             // Otherwise
-//             else {
-//                 // Set wager
-//                 userHand.SetWager(10);
-//                 // Test strategy
-//                 blackjack_strategy(userHand, dealerHand);
-//                 ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                 ASSERT_TRUE(userHand.GetShouldHit());
-//                 ASSERT_FALSE(userHand.GetShouldSplit());
-//                 ASSERT_FALSE(userHand.GetShouldStand());
-//             }
-//             dealerHand.GetCards().pop_back();
-//         }
-//         userHand.GetCards().pop_back();
-//         userHand.AddHandTotal();
-//     }
-//     // Player has a card total of 17 (Ace, 6)
-//     {
-//         userHand.SetCards(Card(Ranks[5], Suits[0]));
-//         userHand.AddHandTotal();
-//         for (int i = 0; i < 13; i++) {
-//             // Add card to dealer hand
-//             dealerHand.SetCards(Card(Ranks[i], Suits[0]));
-//             if (i >= 2 && i <= 5) {
-//                 // Player can double down
-//                 {
-//                     // Set wager
-//                     userHand.SetWager(10);
-//                     // Test strategy - Can double down
-//                     blackjack_strategy(userHand, dealerHand);
-//                     ASSERT_TRUE(userHand.GetShouldDoubleDown());
-//                     ASSERT_TRUE(userHand.GetShouldHit());
-//                     ASSERT_FALSE(userHand.GetShouldSplit());
-//                     ASSERT_FALSE(userHand.GetShouldStand());
-//                 }
-//                 // Player can't double down
-//                 {
-//                     // Set wager
-//                     userHand.SetWager(200);
-//                     // Test strategy - Can't double down
-//                     blackjack_strategy(userHand, dealerHand);
-//                     ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                     ASSERT_TRUE(userHand.GetShouldHit());
-//                     ASSERT_FALSE(userHand.GetShouldSplit());
-//                     ASSERT_FALSE(userHand.GetShouldStand());
-//                 }
-//             }
-//             // Otherwise
-//             else {
-//                 // Set wager
-//                 userHand.SetWager(10);
-//                 // Test strategy
-//                 blackjack_strategy(userHand, dealerHand);
-//                 ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                 ASSERT_TRUE(userHand.GetShouldHit());
-//                 ASSERT_FALSE(userHand.GetShouldSplit());
-//                 ASSERT_FALSE(userHand.GetShouldStand());
-//             }
-//             dealerHand.GetCards().pop_back();
-//         }
-//         userHand.GetCards().pop_back();
-//         userHand.AddHandTotal();
-//     }
-//     // Player card total is 18 (Ace, 7)
-//     {
-//         userHand.SetCards(Card(Ranks[6], Suits[0]));
-//         userHand.AddHandTotal();
-//         for (int i = 0; i < 13; i++) {
-//             // Add card to dealer hand
-//             dealerHand.SetCards(Card(Ranks[i], Suits[0]));
-//             if (i == 1 || i == 6 || i == 7) {
-//                 // Set wager
-//                 userHand.SetWager(10);
-//                 // Test strategy
-//                 blackjack_strategy(userHand, dealerHand);
-//                 ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                 ASSERT_FALSE(userHand.GetShouldHit());
-//                 ASSERT_FALSE(userHand.GetShouldSplit());
-//                 ASSERT_TRUE(userHand.GetShouldStand());
-//             }
-//             else if (i >= 2 && i <= 5) {
-//                 // Player can double down
-//                 {
-//                     // Set wager
-//                     userHand.SetWager(10);
-//                     // Test strategy - Can double down
-//                     blackjack_strategy(userHand, dealerHand);
-//                     ASSERT_TRUE(userHand.GetShouldDoubleDown());
-//                     ASSERT_FALSE(userHand.GetShouldHit());
-//                     ASSERT_FALSE(userHand.GetShouldSplit());
-//                     ASSERT_TRUE(userHand.GetShouldStand());
-//                 }
-//                 // Player can't double down
-//                 {
-//                     // Set wager
-//                     userHand.SetWager(200);
-//                     // Test strategy - Can't double down
-//                     blackjack_strategy(userHand, dealerHand);
-//                     ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                     ASSERT_FALSE(userHand.GetShouldHit());
-//                     ASSERT_FALSE(userHand.GetShouldSplit());
-//                     ASSERT_TRUE(userHand.GetShouldStand());
-//                 }
-//             }
-//             else {
-//                 // Set wager
-//                 userHand.SetWager(10);
-//                 // Test strategy
-//                 blackjack_strategy(userHand, dealerHand);
-//                 ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                 ASSERT_TRUE(userHand.GetShouldHit());
-//                 ASSERT_FALSE(userHand.GetShouldSplit());
-//                 ASSERT_FALSE(userHand.GetShouldStand());
-//             }
-//             dealerHand.GetCards().pop_back();
-//         }
-//         userHand.GetCards().pop_back();
-//         userHand.AddHandTotal();
-//     }
-//     // Player card total is 19, 20, or 21 (Ace, 8 || Ace, 9 || Ace, Ten)
-//     for (int i = 8; i <= 12; i++) {
-//         userHand.SetCards(Card(Ranks[i], Suits[0]));
-//         userHand.AddHandTotal();
-//         for (int j = 0; j < 13; j++) {
-//             // Add card to dealer hand
-//             dealerHand.SetCards(Card(Ranks[j], Suits[0]));
-//             // Set wager
-//             userHand.SetWager(200);
-//             // Test strategy
-//             blackjack_strategy(userHand, dealerHand);
-//             ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//             ASSERT_FALSE(userHand.GetShouldHit());
-//             ASSERT_FALSE(userHand.GetShouldSplit());
-//             ASSERT_TRUE(userHand.GetShouldStand());
-//             dealerHand.GetCards().pop_back();
-//         }
-//         userHand.GetCards().pop_back();
-//         userHand.AddHandTotal();
-//     }
-//     std::cout.rdbuf(oldCoutBuffer);
-// }
+// Blackjack strategy test, no duplicate ranks, Ace in hand off deal
+TEST_F(test_x, BlackjackStratAces) {
+    // Suppress Cout's
+    std::streambuf* oldCoutBuffer = std::cout.rdbuf();
+    NullBuffer nullBuffer;
+    std::cout.rdbuf(&nullBuffer);
+    // Create hands
+    std::shared_ptr<Hand> userHand(new Hand);
+    std::shared_ptr<Hand> dealerHand(new Hand);
+    std::shared_ptr<Card> testCard(new Card);
+    std::shared_ptr<node<Card>> testNode;
+    userHand->SetBankTotal(100);
+    // Add first card to dealer
+    testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+    testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+    dealerHand->SetPlayerCards(testNode);
+    dealerHand->AddHandTotal();
+    // Add first card to player - Ace
+    testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+    testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+    userHand->SetPlayerCards(testNode);
+    userHand->AddHandTotal();
+    // Player has a card total of 13 or 14 (Ace, 2 || Ace, 3)
+    for (int i = 1; i <= 2; i++) {
+        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+        userHand->SetPlayerCards(testNode);
+        userHand->AddHandTotal();
+        for (int j = 0; j < 13; j++) {
+            // Add card to dealer hand
+            testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            dealerHand->SetPlayerCards(testNode);
+            // Card being added is a 5 or 6
+            if (j == 4 || j == 5) {
+                // Player can double down
+                {
+                    // Set wager
+                    userHand->SetWager(10);
+                    // Test strategy - Can double down
+                    blackjack_strategy(userHand, dealerHand);
+                    ASSERT_TRUE(userHand->GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand->GetShouldHit());
+                    ASSERT_FALSE(userHand->GetShouldSplit());
+                    ASSERT_FALSE(userHand->GetShouldStand());
+                }
+                // Player can't double down
+                {
+                    // Set wager
+                    userHand->SetWager(200);
+                    // Test strategy - Can't double down
+                    blackjack_strategy(userHand, dealerHand);
+                    ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand->GetShouldHit());
+                    ASSERT_FALSE(userHand->GetShouldSplit());
+                    ASSERT_FALSE(userHand->GetShouldStand());
+                }
+            }
+            // Otherwise
+            else {
+                // Set wager
+                userHand->SetWager(10);
+                // Test strategy - Can't double down
+                blackjack_strategy(userHand, dealerHand);
+                ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                ASSERT_TRUE(userHand->GetShouldHit());
+                ASSERT_FALSE(userHand->GetShouldSplit());
+                ASSERT_FALSE(userHand->GetShouldStand());
+            }
+            dealerHand->GetPlayerCards()->RemoveNode(-1);
+        }
+        userHand->GetPlayerCards()->RemoveNode(-1);
+        userHand->AddHandTotal();
+    }
+    // Player has a card total of 15 or 16 (Ace, 4 || Ace, 5)
+    for (int i = 3; i <= 4; i++) {
+        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+        userHand->SetPlayerCards(testNode);
+        userHand->AddHandTotal();
+        for (int j = 0; j < 13; j++) {
+            // Add card to dealer hand
+            testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            dealerHand->SetPlayerCards(testNode);
+            // Card being added is a 4, 5, or 6
+            if (j == 3 || j == 4 || j == 5) {
+                // Player can double down
+                {
+                    // Set wager
+                    userHand->SetWager(10);
+                    // Test strategy - Can double down
+                    blackjack_strategy(userHand, dealerHand);
+                    ASSERT_TRUE(userHand->GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand->GetShouldHit());
+                    ASSERT_FALSE(userHand->GetShouldSplit());
+                    ASSERT_FALSE(userHand->GetShouldStand());
+                }
+                // Player can't double down
+                {
+                    // Set wager
+                    userHand->SetWager(200);
+                    // Test strategy - Can't double down
+                    blackjack_strategy(userHand, dealerHand);
+                    ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand->GetShouldHit());
+                    ASSERT_FALSE(userHand->GetShouldSplit());
+                    ASSERT_FALSE(userHand->GetShouldStand());
+                }
+            }
+            // Otherwise
+            else {
+                // Set wager
+                userHand->SetWager(10);
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                ASSERT_TRUE(userHand->GetShouldHit());
+                ASSERT_FALSE(userHand->GetShouldSplit());
+                ASSERT_FALSE(userHand->GetShouldStand());
+            }
+            dealerHand->GetPlayerCards()->RemoveNode(-1);
+        }
+        userHand->GetPlayerCards()->RemoveNode(-1);
+        userHand->AddHandTotal();
+    }
+    // Player has a card total of 17 (Ace, 6)
+    {
+        testCard = std::make_shared<Card>(Ranks[5], Suits[0]);
+        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+        userHand->SetPlayerCards(testNode);
+        userHand->AddHandTotal();
+        for (int i = 0; i < 13; i++) {
+            // Add card to dealer hand
+            testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            dealerHand->SetPlayerCards(testNode);
+            if (i >= 2 && i <= 5) {
+                // Player can double down
+                {
+                    // Set wager
+                    userHand->SetWager(10);
+                    // Test strategy - Can double down
+                    blackjack_strategy(userHand, dealerHand);
+                    ASSERT_TRUE(userHand->GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand->GetShouldHit());
+                    ASSERT_FALSE(userHand->GetShouldSplit());
+                    ASSERT_FALSE(userHand->GetShouldStand());
+                }
+                // Player can't double down
+                {
+                    // Set wager
+                    userHand->SetWager(200);
+                    // Test strategy - Can't double down
+                    blackjack_strategy(userHand, dealerHand);
+                    ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand->GetShouldHit());
+                    ASSERT_FALSE(userHand->GetShouldSplit());
+                    ASSERT_FALSE(userHand->GetShouldStand());
+                }
+            }
+            // Otherwise
+            else {
+                // Set wager
+                userHand->SetWager(10);
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                ASSERT_TRUE(userHand->GetShouldHit());
+                ASSERT_FALSE(userHand->GetShouldSplit());
+                ASSERT_FALSE(userHand->GetShouldStand());
+            }
+            dealerHand->GetPlayerCards()->RemoveNode(-1);
+        }
+        userHand->GetPlayerCards()->RemoveNode(-1);
+        userHand->AddHandTotal();
+    }
+    // Player card total is 18 (Ace, 7)
+    {
+        testCard = std::make_shared<Card>(Ranks[6], Suits[0]);
+        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+        userHand->SetPlayerCards(testNode);
+        userHand->AddHandTotal();
+        for (int i = 0; i < 13; i++) {
+            // Add card to dealer hand
+            testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            dealerHand->SetPlayerCards(testNode);
+            if (i == 1 || i == 6 || i == 7) {
+                // Set wager
+                userHand->SetWager(10);
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                ASSERT_FALSE(userHand->GetShouldHit());
+                ASSERT_FALSE(userHand->GetShouldSplit());
+                ASSERT_TRUE(userHand->GetShouldStand());
+            }
+            else if (i >= 2 && i <= 5) {
+                // Player can double down
+                {
+                    // Set wager
+                    userHand->SetWager(10);
+                    // Test strategy - Can double down
+                    blackjack_strategy(userHand, dealerHand);
+                    ASSERT_TRUE(userHand->GetShouldDoubleDown());
+                    ASSERT_FALSE(userHand->GetShouldHit());
+                    ASSERT_FALSE(userHand->GetShouldSplit());
+                    ASSERT_TRUE(userHand->GetShouldStand());
+                }
+                // Player can't double down
+                {
+                    // Set wager
+                    userHand->SetWager(200);
+                    // Test strategy - Can't double down
+                    blackjack_strategy(userHand, dealerHand);
+                    ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                    ASSERT_FALSE(userHand->GetShouldHit());
+                    ASSERT_FALSE(userHand->GetShouldSplit());
+                    ASSERT_TRUE(userHand->GetShouldStand());
+                }
+            }
+            else {
+                // Set wager
+                userHand->SetWager(10);
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                ASSERT_TRUE(userHand->GetShouldHit());
+                ASSERT_FALSE(userHand->GetShouldSplit());
+                ASSERT_FALSE(userHand->GetShouldStand());
+            }
+            dealerHand->GetPlayerCards()->RemoveNode(-1);
+        }
+        userHand->GetPlayerCards()->RemoveNode(-1);
+        userHand->AddHandTotal();
+    }
+    // Player card total is 19, 20, or 21 (Ace, 8 || Ace, 9 || Ace, Ten)
+    for (int i = 8; i <= 12; i++) {
+        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+        userHand->SetPlayerCards(testNode);
+        userHand->AddHandTotal();
+        for (int j = 0; j < 13; j++) {
+            // Add card to dealer hand
+            testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            dealerHand->SetPlayerCards(testNode);
+            // Set wager
+            userHand->SetWager(200);
+            // Test strategy
+            blackjack_strategy(userHand, dealerHand);
+            ASSERT_FALSE(userHand->GetShouldDoubleDown());
+            ASSERT_FALSE(userHand->GetShouldHit());
+            ASSERT_FALSE(userHand->GetShouldSplit());
+            ASSERT_TRUE(userHand->GetShouldStand());
+            dealerHand->GetPlayerCards()->RemoveNode(-1);
+        }
+        userHand->GetPlayerCards()->RemoveNode(-1);
+        userHand->AddHandTotal();
+    }
+    std::cout.rdbuf(oldCoutBuffer);
+}
 
-// // Blackjack strategy test, duplicate ranks
-// TEST_F(test_x, BlackjackStratDuplicates) {
-//     // Suppress Cout's
-//     std::streambuf* oldCoutBuffer = std::cout.rdbuf();
-//     NullBuffer nullBuffer;
-//     std::cout.rdbuf(&nullBuffer);
-//     // Create hands
-//     Hand userHand;
-//     Hand dealerHand;
-//     userHand.SetBankTotal(100);
-//     // Add first card to dealer
-//     dealerHand.SetCards(Card(Ranks[0], Suits[0]));
-//     dealerHand.AddHandTotal();
-//     // Player card total is 4 (two, two) or 6 (three, three)
-//     for (int i = 1; i <= 2; i++) {
-//         // Add cards to player hand
-//         userHand.AddCardToHand(Card(Ranks[i], Suits[0]));
-//         userHand.AddCardToHand(Card(Ranks[i], Suits[0]));
-//         for (int j = 0; j < 13; j++) {
-//             // Add card to dealer hand
-//             dealerHand.SetCards(Card(Ranks[j], Suits[0]));
-//             userHand.SetWager(10);
-//             // Can split hand
-//             {
-//                 // Test strategy
-//                 blackjack_strategy(userHand, dealerHand);
-//                 if (j == 1 || j == 2) {
-//                     ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                     ASSERT_TRUE(userHand.GetShouldHit());
-//                     ASSERT_TRUE(userHand.GetShouldSplit());
-//                     ASSERT_FALSE(userHand.GetShouldStand());
-//                 }
-//                 else if (j >= 3 && j <= 6) {
-//                     ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                     ASSERT_FALSE(userHand.GetShouldHit());
-//                     ASSERT_TRUE(userHand.GetShouldSplit());
-//                     ASSERT_FALSE(userHand.GetShouldStand());      
-//                 }
-//                 else {
-//                     ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                     ASSERT_TRUE(userHand.GetShouldHit());
-//                     ASSERT_FALSE(userHand.GetShouldSplit());
-//                     ASSERT_FALSE(userHand.GetShouldStand());
-//                 }                
-//             }
-//             // Can't split hand
-//             {
-//                 // Can't split
-//                 userHand.SetSplitHandResponse(true);
-//                 // Test strategy
-//                 blackjack_strategy(userHand, dealerHand);
-//                 ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                 ASSERT_TRUE(userHand.GetShouldHit());
-//                 ASSERT_FALSE(userHand.GetShouldSplit());
-//                 ASSERT_FALSE(userHand.GetShouldStand());
-//                 // Can split
-//                 userHand.SetSplitHandResponse(false);
-//             }
-//             dealerHand.GetCards().pop_back();
-//         }
-//         userHand.GetCards().pop_back();
-//         userHand.GetCards().pop_back();
-//         userHand.AddHandTotal();
-//     }
-//     // Player card total is 8 (four, four)
-//     {
-//         // Add cards to player hand, set wager
-//         userHand.AddCardToHand(Card(Ranks[3], Suits[0]));
-//         userHand.AddCardToHand(Card(Ranks[3], Suits[0]));
-//         userHand.SetWager(10);
-//         for (int i = 0; i < 13; i++) {
-//             // Add card to dealer hand
-//             dealerHand.SetCards(Card(Ranks[i], Suits[0]));
-//             // Can split hand
-//             {
-//                 // Test strategy
-//                 blackjack_strategy(userHand, dealerHand);
-//                 if (i == 4 || i == 5) {
-//                     ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                     ASSERT_TRUE(userHand.GetShouldHit());
-//                     ASSERT_TRUE(userHand.GetShouldSplit());
-//                     ASSERT_FALSE(userHand.GetShouldStand());
-//                 }
-//                 else {
-//                     ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                     ASSERT_TRUE(userHand.GetShouldHit());
-//                     ASSERT_FALSE(userHand.GetShouldSplit());
-//                     ASSERT_FALSE(userHand.GetShouldStand());
-//                 }
-//             }
-//             // Can't split hand
-//             {
-//                 // Can't split
-//                 userHand.SetSplitHandResponse(true);
-//                 // Test strategy
-//                 blackjack_strategy(userHand, dealerHand);
-//                 ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                 ASSERT_TRUE(userHand.GetShouldHit());
-//                 ASSERT_FALSE(userHand.GetShouldSplit());
-//                 ASSERT_FALSE(userHand.GetShouldStand());
-//                 // Can split
-//                 userHand.SetSplitHandResponse(false);
-//             }
-//             dealerHand.GetCards().pop_back();
-//         }
-//         userHand.GetCards().pop_back();
-//         userHand.GetCards().pop_back();
-//         userHand.AddHandTotal();        
-//     }
-//     // Player card total is 10 (five, five)
-//     {
-//         // Add cards to player hand, set wager
-//         userHand.AddCardToHand(Card(Ranks[4], Suits[0]));
-//         userHand.AddCardToHand(Card(Ranks[4], Suits[0]));
-//         for (int i = 0; i < 13; i++) {
-//             // Add card to dealer hand
-//             dealerHand.SetCards(Card(Ranks[i], Suits[0]));
-//             if (i == 0 || i >= 9) {
-//                 // Set wager
-//                 userHand.SetWager(10);
-//                 // Test strategy
-//                 blackjack_strategy(userHand, dealerHand);
-//                 ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                 ASSERT_TRUE(userHand.GetShouldHit());
-//                 ASSERT_FALSE(userHand.GetShouldSplit());
-//                 ASSERT_FALSE(userHand.GetShouldStand());
-//             }
-//             else {
-//                 // Can double down
-//                 {
-//                     // Set wager
-//                     userHand.SetWager(10);
-//                     // Test strategy
-//                     blackjack_strategy(userHand, dealerHand);
-//                     ASSERT_TRUE(userHand.GetShouldDoubleDown());
-//                     ASSERT_TRUE(userHand.GetShouldHit());
-//                     ASSERT_FALSE(userHand.GetShouldSplit());
-//                     ASSERT_FALSE(userHand.GetShouldStand());
-//                 }
-//                 // Cannot double down
-//                 {
-//                     // Set wager
-//                     userHand.SetWager(101);
-//                     // Test strategy
-//                     blackjack_strategy(userHand, dealerHand);
-//                     ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                     ASSERT_TRUE(userHand.GetShouldHit());
-//                     ASSERT_FALSE(userHand.GetShouldSplit());
-//                     ASSERT_FALSE(userHand.GetShouldStand());
-//                 }
-//             }
-//             dealerHand.GetCards().pop_back();
-//         }
-//         userHand.GetCards().pop_back();
-//         userHand.GetCards().pop_back();
-//         userHand.AddHandTotal();
-//     }
-//     // Player card total is 12 (six, six || Ace, Ace) 
-//     {
-//         // Player has two sixes
-//         {
-//             // Add cards to player hand, set wager
-//             userHand.AddCardToHand(Card(Ranks[5], Suits[0]));
-//             userHand.AddCardToHand(Card(Ranks[5], Suits[0]));
-//             userHand.SetWager(10);
-//             for (int i = 0; i < 13; i++) {
-//                 // Add card to dealer hand
-//                 dealerHand.SetCards(Card(Ranks[i], Suits[0]));
-//                 // Can split
-//                 {
-//                     // Test strategy
-//                     blackjack_strategy(userHand, dealerHand);
-//                     if (i >= 1 && i <= 5) {
-//                         ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                         ASSERT_FALSE(userHand.GetShouldHit());
-//                         ASSERT_TRUE(userHand.GetShouldSplit());
-//                         ASSERT_FALSE(userHand.GetShouldStand());
-//                     }
-//                     else if (i == 6) {
-//                         ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                         ASSERT_TRUE(userHand.GetShouldHit());
-//                         ASSERT_TRUE(userHand.GetShouldSplit());
-//                         ASSERT_FALSE(userHand.GetShouldStand());
-//                     }
-//                     else {
-//                         ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                         ASSERT_TRUE(userHand.GetShouldHit());
-//                         ASSERT_FALSE(userHand.GetShouldSplit());
-//                         ASSERT_FALSE(userHand.GetShouldStand());
-//                     }
-//                 }
-//                 // Can't split
-//                 {
-//                     userHand.SetSplitHandResponse(true);
-//                     // Test strategy
-//                     blackjack_strategy(userHand, dealerHand);
-//                     if ((i >= 1 && i <= 2) || (i == 0 || i >= 6)) {
-//                         ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                         ASSERT_TRUE(userHand.GetShouldHit());
-//                         ASSERT_FALSE(userHand.GetShouldSplit());
-//                         ASSERT_FALSE(userHand.GetShouldStand());
-//                     }
-//                     else {
-//                         ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                         ASSERT_FALSE(userHand.GetShouldHit());
-//                         ASSERT_FALSE(userHand.GetShouldSplit());
-//                         ASSERT_TRUE(userHand.GetShouldStand());
-//                     }
-//                     userHand.SetSplitHandResponse(false);
-//                 }
-//                 dealerHand.GetCards().pop_back();
-//             }
-//             userHand.GetCards().pop_back();
-//             userHand.GetCards().pop_back();
-//             userHand.AddHandTotal();
-//         }
-//         // Player has two aces
-//         {
-//             // Add cards to player hand, set wager
-//             userHand.AddCardToHand(Card(Ranks[0], Suits[0]));
-//             userHand.AddCardToHand(Card(Ranks[0], Suits[0]));
-//             userHand.SetWager(10);
-//             for (int i = 0; i < 13; i++) {
-//                 // Add card to dealer hand
-//                 dealerHand.SetCards(Card(Ranks[i], Suits[0]));
-//                 // Can split
-//                 {
-//                     // Test strategy
-//                     blackjack_strategy(userHand, dealerHand);
-//                     ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                     ASSERT_FALSE(userHand.GetShouldHit());
-//                     ASSERT_TRUE(userHand.GetShouldSplit());
-//                     ASSERT_FALSE(userHand.GetShouldStand());
-//                 }
-//                 // Can't split
-//                 {
-//                     userHand.SetSplitAcesResponse(true);
-//                     // Test strategy
-//                     blackjack_strategy(userHand, dealerHand);
-//                     if ((i >= 1 && i <= 2) || (i == 0 || i >= 6)) {
-//                         ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                         ASSERT_TRUE(userHand.GetShouldHit());
-//                         ASSERT_FALSE(userHand.GetShouldSplit());
-//                         ASSERT_FALSE(userHand.GetShouldStand());
-//                     }
-//                     else {
-//                         ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                         ASSERT_FALSE(userHand.GetShouldHit());
-//                         ASSERT_FALSE(userHand.GetShouldSplit());
-//                         ASSERT_TRUE(userHand.GetShouldStand());
-//                     }
-//                     userHand.SetSplitAcesResponse(false);
-//                 }
-//                 dealerHand.GetCards().pop_back();
-//             }
-//             userHand.GetCards().pop_back();
-//             userHand.GetCards().pop_back();
-//             userHand.AddHandTotal();
-//         }
-//     }
-//     // Player card total is 14 (seven, seven) 
-//     {
-//         // Add cards to player hand, set wager
-//         userHand.AddCardToHand(Card(Ranks[6], Suits[0]));
-//         userHand.AddCardToHand(Card(Ranks[6], Suits[0]));
-//         userHand.SetWager(10);
-//         for (int i = 0; i < 13; i++) {
-//             // Add card to dealer hand
-//             dealerHand.SetCards(Card(Ranks[i], Suits[0]));
-//             // Can split
-//             {
-//                 // Test strategy
-//                 blackjack_strategy(userHand, dealerHand);
-//                 if (i >= 1 && i <= 6) {
-//                     ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                     ASSERT_FALSE(userHand.GetShouldHit());
-//                     ASSERT_TRUE(userHand.GetShouldSplit());
-//                     ASSERT_FALSE(userHand.GetShouldStand());
-//                 }
-//                 else if (i == 7) {
-//                     ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                     ASSERT_TRUE(userHand.GetShouldHit());
-//                     ASSERT_TRUE(userHand.GetShouldSplit());
-//                     ASSERT_FALSE(userHand.GetShouldStand());
-//                 }
-//                 else {
-//                     ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                     ASSERT_TRUE(userHand.GetShouldHit());
-//                     ASSERT_FALSE(userHand.GetShouldSplit());
-//                     ASSERT_FALSE(userHand.GetShouldStand());
-//                 }
-//             }
-//             // Can't split
-//             {
-//                 userHand.SetSplitHandResponse(true);
-//                 // Test strategy
-//                 blackjack_strategy(userHand, dealerHand);
-//                 if (i >= 1 && i <= 5) {
-//                     ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                     ASSERT_FALSE(userHand.GetShouldHit());
-//                     ASSERT_FALSE(userHand.GetShouldSplit());
-//                     ASSERT_TRUE(userHand.GetShouldStand());
-//                 }
-//                 else {
-//                     ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                     ASSERT_TRUE(userHand.GetShouldHit());
-//                     ASSERT_FALSE(userHand.GetShouldSplit());
-//                     ASSERT_FALSE(userHand.GetShouldStand());
-//                 }
-//                 userHand.SetSplitHandResponse(false);
-//             }
-//             dealerHand.GetCards().pop_back();
-//         }
-//         userHand.GetCards().pop_back();
-//         userHand.GetCards().pop_back();
-//         userHand.AddHandTotal();
-//     }
-//     // Player card total is 16 (eight, eight)
-//     {
-//         // Add cards to player hand, set wager
-//         userHand.AddCardToHand(Card(Ranks[7], Suits[0]));
-//         userHand.AddCardToHand(Card(Ranks[7], Suits[0]));
-//         userHand.SetWager(10);
-//         for (int i = 0; i < 13; i++) {
-//             // Add card to dealer hand
-//             dealerHand.SetCards(Card(Ranks[i], Suits[0]));
-//             // Can split
-//             {
-//                 // Test strategy
-//                 blackjack_strategy(userHand, dealerHand);
-//                 ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                 ASSERT_FALSE(userHand.GetShouldHit());
-//                 ASSERT_TRUE(userHand.GetShouldSplit());
-//                 ASSERT_FALSE(userHand.GetShouldStand());                
-//             }
-//             // Can't split
-//             {
-//                 userHand.SetSplitHandResponse(true);
-//                 // Test strategy
-//                 blackjack_strategy(userHand, dealerHand);
-//                 if (i >= 1 && i <= 5) {
-//                     ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                     ASSERT_FALSE(userHand.GetShouldHit());
-//                     ASSERT_FALSE(userHand.GetShouldSplit());
-//                     ASSERT_TRUE(userHand.GetShouldStand());
-//                 }
-//                 else {
-//                     ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                     ASSERT_TRUE(userHand.GetShouldHit());
-//                     ASSERT_FALSE(userHand.GetShouldSplit());
-//                     ASSERT_FALSE(userHand.GetShouldStand());
-//                 }
-//                 userHand.SetSplitHandResponse(false);
-//             }
-//             dealerHand.GetCards().pop_back();
-//         }
-//         userHand.GetCards().pop_back();
-//         userHand.GetCards().pop_back();
-//         userHand.AddHandTotal();
-//     }
-//     // Player card total is 18 (nine, nine)
-//     {
-//         // Add cards to player hand, set wager
-//         userHand.AddCardToHand(Card(Ranks[8], Suits[0]));
-//         userHand.AddCardToHand(Card(Ranks[8], Suits[0]));
-//         userHand.SetWager(10);
-//         for (int i = 0; i < 13; i++) {
-//             // Add card to dealer hand
-//             dealerHand.SetCards(Card(Ranks[i], Suits[0]));
-//             // Can split
-//             {
-//                 // Test strategy
-//                 blackjack_strategy(userHand, dealerHand); 
-//                 if (i == 0 || i == 6 || i >= 9) {
-//                     ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                     ASSERT_FALSE(userHand.GetShouldHit());
-//                     ASSERT_FALSE(userHand.GetShouldSplit());
-//                     ASSERT_TRUE(userHand.GetShouldStand());
-//                 }
-//                 else {
-//                     ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                     ASSERT_FALSE(userHand.GetShouldHit());
-//                     ASSERT_TRUE(userHand.GetShouldSplit());
-//                     ASSERT_FALSE(userHand.GetShouldStand());
-//                 }
-//             }
-//             // Can't split
-//             {
-//                 userHand.SetSplitHandResponse(true);
-//                 // Test strategy
-//                 blackjack_strategy(userHand, dealerHand);
-//                 ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                 ASSERT_FALSE(userHand.GetShouldHit());
-//                 ASSERT_FALSE(userHand.GetShouldSplit());
-//                 ASSERT_TRUE(userHand.GetShouldStand());                
-//                 userHand.SetSplitHandResponse(false);
-//             }
-//             dealerHand.GetCards().pop_back();
-//         }
-//         userHand.GetCards().pop_back();
-//         userHand.GetCards().pop_back();
-//         userHand.AddHandTotal();
-//     }
-//     // Player card total is 20 (face, face)
-//     {
-//         // Add cards to player hand, set wager
-//         for (int i = 9; i <= 12; i++) {
-//             userHand.AddCardToHand(Card(Ranks[i], Suits[0]));
-//             userHand.AddCardToHand(Card(Ranks[i], Suits[0]));
-//             userHand.SetWager(10);
-//             for (int j = 0; j < 13; j++) {
-//                 // Add card to dealer hand
-//                 dealerHand.SetCards(Card(Ranks[j], Suits[0]));
-//                 // Can split
-//                 {
-//                     // Test strategy
-//                     blackjack_strategy(userHand, dealerHand);
-//                     ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                     ASSERT_FALSE(userHand.GetShouldHit());
-//                     ASSERT_FALSE(userHand.GetShouldSplit());
-//                     ASSERT_TRUE(userHand.GetShouldStand()); 
-//                 }
-//                 // Can't split
-//                 {
-//                     userHand.SetSplitHandResponse(true);
-//                     // Test strategy
-//                     blackjack_strategy(userHand, dealerHand);
-//                     ASSERT_FALSE(userHand.GetShouldDoubleDown());
-//                     ASSERT_FALSE(userHand.GetShouldHit());
-//                     ASSERT_FALSE(userHand.GetShouldSplit());
-//                     ASSERT_TRUE(userHand.GetShouldStand()); 
-//                     userHand.SetSplitHandResponse(false);                   
-//                 }
-//                 dealerHand.GetCards().pop_back(); 
-//             }
-//             userHand.GetCards().pop_back();
-//             userHand.GetCards().pop_back();
-//             userHand.AddHandTotal();
-//         }
-//     }
-//     std::cout.rdbuf(oldCoutBuffer);
-// }
+// Blackjack strategy test, duplicate ranks
+TEST_F(test_x, BlackjackStratDuplicates) {
+    // Suppress Cout's
+    std::streambuf* oldCoutBuffer = std::cout.rdbuf();
+    NullBuffer nullBuffer;
+    std::cout.rdbuf(&nullBuffer);
+    // Create hands
+    std::shared_ptr<Hand> userHand(new Hand);
+    std::shared_ptr<Hand> dealerHand(new Hand);
+    std::shared_ptr<Card> testCard(new Card);
+    std::shared_ptr<node<Card>> testNode;
+    userHand->SetBankTotal(100);
+    // Add first card to dealer
+    testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+    testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+    dealerHand->SetPlayerCards(testNode);
+    // Player card total is 4 (two, two) or 6 (three, three)
+    for (int i = 1; i <= 2; i++) {
+        // Add cards to player hand
+        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+        userHand->AddCardToHand(testNode);
+        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+        userHand->AddCardToHand(testNode);
+        for (int j = 0; j < 13; j++) {
+            // Add card to dealer hand
+            testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            dealerHand->SetPlayerCards(testNode);
+            userHand->SetWager(10);
+            // Can split hand
+            {
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                if (j == 1 || j == 2) {
+                    ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand->GetShouldHit());
+                    ASSERT_TRUE(userHand->GetShouldSplit());
+                    ASSERT_FALSE(userHand->GetShouldStand());
+                }
+                else if (j >= 3 && j <= 6) {
+                    ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                    ASSERT_FALSE(userHand->GetShouldHit());
+                    ASSERT_TRUE(userHand->GetShouldSplit());
+                    ASSERT_FALSE(userHand->GetShouldStand());      
+                }
+                else {
+                    ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand->GetShouldHit());
+                    ASSERT_FALSE(userHand->GetShouldSplit());
+                    ASSERT_FALSE(userHand->GetShouldStand());
+                }                
+            }
+            // Can't split hand
+            {
+                // Can't split
+                userHand->SetSplitHandResponse(true);
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                ASSERT_TRUE(userHand->GetShouldHit());
+                ASSERT_FALSE(userHand->GetShouldSplit());
+                ASSERT_FALSE(userHand->GetShouldStand());
+                // Can split
+                userHand->SetSplitHandResponse(false);
+            }
+            dealerHand->GetPlayerCards()->RemoveNode(-1);
+        }
+        userHand->GetPlayerCards()->RemoveNode(-1);
+        userHand->GetPlayerCards()->RemoveNode(-1);
+        userHand->AddHandTotal();
+    }
+    // Player card total is 8 (four, four)
+    {
+        // Add cards to player hand, set wager
+        testCard = std::make_shared<Card>(Ranks[3], Suits[0]);
+        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+        userHand->AddCardToHand(testNode);
+        testCard = std::make_shared<Card>(Ranks[3], Suits[0]);
+        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+        userHand->AddCardToHand(testNode);
+        userHand->SetWager(10);
+        for (int i = 0; i < 13; i++) {
+            // Add card to dealer hand
+            testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            dealerHand->SetPlayerCards(testNode);
+            // Can split hand
+            {
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                if (i == 4 || i == 5) {
+                    ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand->GetShouldHit());
+                    ASSERT_TRUE(userHand->GetShouldSplit());
+                    ASSERT_FALSE(userHand->GetShouldStand());
+                }
+                else {
+                    ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand->GetShouldHit());
+                    ASSERT_FALSE(userHand->GetShouldSplit());
+                    ASSERT_FALSE(userHand->GetShouldStand());
+                }
+            }
+            // Can't split hand
+            {
+                // Can't split
+                userHand->SetSplitHandResponse(true);
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                ASSERT_TRUE(userHand->GetShouldHit());
+                ASSERT_FALSE(userHand->GetShouldSplit());
+                ASSERT_FALSE(userHand->GetShouldStand());
+                // Can split
+                userHand->SetSplitHandResponse(false);
+            }
+            dealerHand->GetPlayerCards()->RemoveNode(-1);
+        }
+        userHand->GetPlayerCards()->RemoveNode(-1);
+        userHand->GetPlayerCards()->RemoveNode(-1);
+        userHand->AddHandTotal();        
+    }
+    // Player card total is 10 (five, five)
+    {
+        // Add cards to player hand, set wager
+        testCard = std::make_shared<Card>(Ranks[4], Suits[0]);
+        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+        userHand->AddCardToHand(testNode);
+        testCard = std::make_shared<Card>(Ranks[4], Suits[0]);
+        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+        userHand->AddCardToHand(testNode);
+        for (int i = 0; i < 13; i++) {
+            // Add card to dealer hand
+            testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            dealerHand->SetPlayerCards(testNode);
+            if (i == 0 || i >= 9) {
+                // Set wager
+                userHand->SetWager(10);
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                ASSERT_TRUE(userHand->GetShouldHit());
+                ASSERT_FALSE(userHand->GetShouldSplit());
+                ASSERT_FALSE(userHand->GetShouldStand());
+            }
+            else {
+                // Can double down
+                {
+                    // Set wager
+                    userHand->SetWager(10);
+                    // Test strategy
+                    blackjack_strategy(userHand, dealerHand);
+                    ASSERT_TRUE(userHand->GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand->GetShouldHit());
+                    ASSERT_FALSE(userHand->GetShouldSplit());
+                    ASSERT_FALSE(userHand->GetShouldStand());
+                }
+                // Cannot double down
+                {
+                    // Set wager
+                    userHand->SetWager(101);
+                    // Test strategy
+                    blackjack_strategy(userHand, dealerHand);
+                    ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand->GetShouldHit());
+                    ASSERT_FALSE(userHand->GetShouldSplit());
+                    ASSERT_FALSE(userHand->GetShouldStand());
+                }
+            }
+            dealerHand->GetPlayerCards()->RemoveNode(-1);
+        }
+        userHand->GetPlayerCards()->RemoveNode(-1);
+        userHand->GetPlayerCards()->RemoveNode(-1);
+        userHand->AddHandTotal();
+    }
+    // Player card total is 12 (six, six || Ace, Ace) 
+    {
+        // Player has two sixes
+        {
+            // Add cards to player hand, set wager
+            testCard = std::make_shared<Card>(Ranks[5], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            userHand->AddCardToHand(testNode);
+            testCard = std::make_shared<Card>(Ranks[5], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            userHand->AddCardToHand(testNode);
+            userHand->SetWager(10);
+            for (int i = 0; i < 13; i++) {
+                // Add card to dealer hand
+                testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+                testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+                dealerHand->SetPlayerCards(testNode);
+                // Can split
+                {
+                    // Test strategy
+                    blackjack_strategy(userHand, dealerHand);
+                    if (i >= 1 && i <= 5) {
+                        ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                        ASSERT_FALSE(userHand->GetShouldHit());
+                        ASSERT_TRUE(userHand->GetShouldSplit());
+                        ASSERT_FALSE(userHand->GetShouldStand());
+                    }
+                    else if (i == 6) {
+                        ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                        ASSERT_TRUE(userHand->GetShouldHit());
+                        ASSERT_TRUE(userHand->GetShouldSplit());
+                        ASSERT_FALSE(userHand->GetShouldStand());
+                    }
+                    else {
+                        ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                        ASSERT_TRUE(userHand->GetShouldHit());
+                        ASSERT_FALSE(userHand->GetShouldSplit());
+                        ASSERT_FALSE(userHand->GetShouldStand());
+                    }
+                }
+                // Can't split
+                {
+                    userHand->SetSplitHandResponse(true);
+                    // Test strategy
+                    blackjack_strategy(userHand, dealerHand);
+                    if ((i >= 1 && i <= 2) || (i == 0 || i >= 6)) {
+                        ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                        ASSERT_TRUE(userHand->GetShouldHit());
+                        ASSERT_FALSE(userHand->GetShouldSplit());
+                        ASSERT_FALSE(userHand->GetShouldStand());
+                    }
+                    else {
+                        ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                        ASSERT_FALSE(userHand->GetShouldHit());
+                        ASSERT_FALSE(userHand->GetShouldSplit());
+                        ASSERT_TRUE(userHand->GetShouldStand());
+                    }
+                    userHand->SetSplitHandResponse(false);
+                }
+                dealerHand->GetPlayerCards()->RemoveNode(-1);
+            }
+            userHand->GetPlayerCards()->RemoveNode(-1);
+            userHand->GetPlayerCards()->RemoveNode(-1);
+            userHand->AddHandTotal();
+        }
+        // Player has two aces
+        {
+            // Add cards to player hand, set wager
+            testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            userHand->AddCardToHand(testNode);
+            testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            userHand->AddCardToHand(testNode);
+            userHand->SetWager(10);
+            for (int i = 0; i < 13; i++) {
+                // Add card to dealer hand
+                testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+                testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+                dealerHand->SetPlayerCards(testNode);
+                // Can split
+                {
+                    // Test strategy
+                    blackjack_strategy(userHand, dealerHand);
+                    ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                    ASSERT_FALSE(userHand->GetShouldHit());
+                    ASSERT_TRUE(userHand->GetShouldSplit());
+                    ASSERT_FALSE(userHand->GetShouldStand());
+                }
+                // Can't split
+                {
+                    userHand->SetSplitAcesResponse(true);
+                    // Test strategy
+                    blackjack_strategy(userHand, dealerHand);
+                    if ((i >= 1 && i <= 2) || (i == 0 || i >= 6)) {
+                        ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                        ASSERT_TRUE(userHand->GetShouldHit());
+                        ASSERT_FALSE(userHand->GetShouldSplit());
+                        ASSERT_FALSE(userHand->GetShouldStand());
+                    }
+                    else {
+                        ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                        ASSERT_FALSE(userHand->GetShouldHit());
+                        ASSERT_FALSE(userHand->GetShouldSplit());
+                        ASSERT_TRUE(userHand->GetShouldStand());
+                    }
+                    userHand->SetSplitAcesResponse(false);
+                }
+                dealerHand->GetPlayerCards()->RemoveNode(-1);
+            }
+            userHand->GetPlayerCards()->RemoveNode(-1);
+            userHand->GetPlayerCards()->RemoveNode(-1);
+            userHand->AddHandTotal();
+        }
+    }
+    // Player card total is 14 (seven, seven) 
+    {
+        // Add cards to player hand, set wager
+            testCard = std::make_shared<Card>(Ranks[6], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            userHand->AddCardToHand(testNode);
+            testCard = std::make_shared<Card>(Ranks[6], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            userHand->AddCardToHand(testNode);
+            userHand->SetWager(10);
+        for (int i = 0; i < 13; i++) {
+            // Add card to dealer hand
+            testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            dealerHand->SetPlayerCards(testNode);
+            // Can split
+            {
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                if (i >= 1 && i <= 6) {
+                    ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                    ASSERT_FALSE(userHand->GetShouldHit());
+                    ASSERT_TRUE(userHand->GetShouldSplit());
+                    ASSERT_FALSE(userHand->GetShouldStand());
+                }
+                else if (i == 7) {
+                    ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand->GetShouldHit());
+                    ASSERT_TRUE(userHand->GetShouldSplit());
+                    ASSERT_FALSE(userHand->GetShouldStand());
+                }
+                else {
+                    ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand->GetShouldHit());
+                    ASSERT_FALSE(userHand->GetShouldSplit());
+                    ASSERT_FALSE(userHand->GetShouldStand());
+                }
+            }
+            // Can't split
+            {
+                userHand->SetSplitHandResponse(true);
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                if (i >= 1 && i <= 5) {
+                    ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                    ASSERT_FALSE(userHand->GetShouldHit());
+                    ASSERT_FALSE(userHand->GetShouldSplit());
+                    ASSERT_TRUE(userHand->GetShouldStand());
+                }
+                else {
+                    ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand->GetShouldHit());
+                    ASSERT_FALSE(userHand->GetShouldSplit());
+                    ASSERT_FALSE(userHand->GetShouldStand());
+                }
+                userHand->SetSplitHandResponse(false);
+            }
+            dealerHand->GetPlayerCards()->RemoveNode(-1);
+        }
+        userHand->GetPlayerCards()->RemoveNode(-1);
+        userHand->GetPlayerCards()->RemoveNode(-1);
+        userHand->AddHandTotal();
+    }
+    // Player card total is 16 (eight, eight)
+    {
+        // Add cards to player hand, set wager
+        testCard = std::make_shared<Card>(Ranks[7], Suits[0]);
+        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+        userHand->AddCardToHand(testNode);
+        testCard = std::make_shared<Card>(Ranks[7], Suits[0]);
+        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+        userHand->AddCardToHand(testNode);
+        userHand->SetWager(10);
+        for (int i = 0; i < 13; i++) {
+            // Add card to dealer hand
+            testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            dealerHand->SetPlayerCards(testNode);
+            // Can split
+            {
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                ASSERT_FALSE(userHand->GetShouldHit());
+                ASSERT_TRUE(userHand->GetShouldSplit());
+                ASSERT_FALSE(userHand->GetShouldStand());                
+            }
+            // Can't split
+            {
+                userHand->SetSplitHandResponse(true);
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                if (i >= 1 && i <= 5) {
+                    ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                    ASSERT_FALSE(userHand->GetShouldHit());
+                    ASSERT_FALSE(userHand->GetShouldSplit());
+                    ASSERT_TRUE(userHand->GetShouldStand());
+                }
+                else {
+                    ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                    ASSERT_TRUE(userHand->GetShouldHit());
+                    ASSERT_FALSE(userHand->GetShouldSplit());
+                    ASSERT_FALSE(userHand->GetShouldStand());
+                }
+                userHand->SetSplitHandResponse(false);
+            }
+            dealerHand->GetPlayerCards()->RemoveNode(-1);
+        }
+        userHand->GetPlayerCards()->RemoveNode(-1);
+        userHand->GetPlayerCards()->RemoveNode(-1);
+        userHand->AddHandTotal();
+    }
+    // Player card total is 18 (nine, nine)
+    {
+        // Add cards to player hand, set wager
+        testCard = std::make_shared<Card>(Ranks[8], Suits[0]);
+        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+        userHand->AddCardToHand(testNode);
+        testCard = std::make_shared<Card>(Ranks[8], Suits[0]);
+        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+        userHand->AddCardToHand(testNode);
+        userHand->SetWager(10);
+        for (int i = 0; i < 13; i++) {
+            // Add card to dealer hand
+            testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            dealerHand->SetPlayerCards(testNode);
+            // Can split
+            {
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand); 
+                if (i == 0 || i == 6 || i >= 9) {
+                    ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                    ASSERT_FALSE(userHand->GetShouldHit());
+                    ASSERT_FALSE(userHand->GetShouldSplit());
+                    ASSERT_TRUE(userHand->GetShouldStand());
+                }
+                else {
+                    ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                    ASSERT_FALSE(userHand->GetShouldHit());
+                    ASSERT_TRUE(userHand->GetShouldSplit());
+                    ASSERT_FALSE(userHand->GetShouldStand());
+                }
+            }
+            // Can't split
+            {
+                userHand->SetSplitHandResponse(true);
+                // Test strategy
+                blackjack_strategy(userHand, dealerHand);
+                ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                ASSERT_FALSE(userHand->GetShouldHit());
+                ASSERT_FALSE(userHand->GetShouldSplit());
+                ASSERT_TRUE(userHand->GetShouldStand());                
+                userHand->SetSplitHandResponse(false);
+            }
+            dealerHand->GetPlayerCards()->RemoveNode(-1);
+        }
+        userHand->GetPlayerCards()->RemoveNode(-1);
+        userHand->GetPlayerCards()->RemoveNode(-1);
+        userHand->AddHandTotal();
+    }
+    // Player card total is 20 (face, face)
+    {
+        // Add cards to player hand, set wager
+        for (int i = 9; i <= 12; i++) {
+            testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            userHand->AddCardToHand(testNode);
+            testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            userHand->AddCardToHand(testNode);
+            userHand->SetWager(10);
+            for (int j = 0; j < 13; j++) {
+                // Add card to dealer hand
+                testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
+                testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+                dealerHand->SetPlayerCards(testNode);
+                // Can split
+                {
+                    // Test strategy
+                    blackjack_strategy(userHand, dealerHand);
+                    ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                    ASSERT_FALSE(userHand->GetShouldHit());
+                    ASSERT_FALSE(userHand->GetShouldSplit());
+                    ASSERT_TRUE(userHand->GetShouldStand()); 
+                }
+                // Can't split
+                {
+                    userHand->SetSplitHandResponse(true);
+                    // Test strategy
+                    blackjack_strategy(userHand, dealerHand);
+                    ASSERT_FALSE(userHand->GetShouldDoubleDown());
+                    ASSERT_FALSE(userHand->GetShouldHit());
+                    ASSERT_FALSE(userHand->GetShouldSplit());
+                    ASSERT_TRUE(userHand->GetShouldStand()); 
+                    userHand->SetSplitHandResponse(false);                   
+                }
+                dealerHand->GetPlayerCards()->RemoveNode(-1);
+            }
+            userHand->GetPlayerCards()->RemoveNode(-1);
+            userHand->GetPlayerCards()->RemoveNode(-1);
+            userHand->AddHandTotal();
+        }
+    }
+    std::cout.rdbuf(oldCoutBuffer);
+}
+
+// Deal hand test
+TEST_F(test_x, DealHand) {
+    // Suppress Cout's
+    std::streambuf* oldCoutBuffer = std::cout.rdbuf();
+    NullBuffer nullBuffer;
+    std::cout.rdbuf(&nullBuffer);
+    // Create hands and shoe
+    std::shared_ptr<Hand> testHand(new Hand);
+    std::shared_ptr<Hand> dealerHand(new Hand);
+    std::shared_ptr<Shoe> testShoe(new Shoe);
+    testHand->SetName("Borby");
+    dealerHand->SetName("Dealer");
+    testHand->SetBankTotal(100);
+    testHand->SetWager(10);
+    testShoe->SetNumOfDecks(1);
+    testShoe->CreateShoe();
+    // Test function
+    deal_hand(testHand, dealerHand, testShoe);
+    EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+    EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
+    std::cout.rdbuf(oldCoutBuffer);
+}
+
+// Dealer showing Ace check
+TEST_F(test_x, DealerShowingAce) {
+    // Suppress Cout's
+    std::streambuf* oldCoutBuffer = std::cout.rdbuf();
+    NullBuffer nullBuffer;
+    std::cout.rdbuf(&nullBuffer);
+    // Create hands and shoe
+    std::shared_ptr<Hand> testHand(new Hand);
+    std::shared_ptr<Hand> dealerHand(new Hand);
+    std::shared_ptr<Shoe> testShoe(new Shoe);
+    std::shared_ptr<Card> testCard(new Card);
+    std::shared_ptr<node<Card>> testNode;
+    // Create dummy hand for player
+    testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+    testNode = testHand->GetPlayerCards()->InitNode(testCard);
+    testHand->AddCardToHand(testNode);
+    testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+    testNode = testHand->GetPlayerCards()->InitNode(testCard);
+    testHand->AddCardToHand(testNode);
+    testHand->SetBankTotal(100);
+    // Can buy insurance check
+    for (int i = 0; i < 13; i++) {
+        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+        dealerHand->AddCardToHand(testNode);
+        for (int j = 0; j < 13; j++) {
+            testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+            dealerHand->AddCardToHand(testNode);
+            if (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetRank() == Ranks[0]) {
+                // Enough currency
+                {
+                    testHand->SetWager(200);
+                    testHand->ParametersCheck(dealerHand);
+                    EXPECT_TRUE(testHand->GetCanBuyInsurance());
+                }
+                // Not enough currency
+                {
+                    testHand->SetWager(400);
+                    testHand->ParametersCheck(dealerHand);
+                    EXPECT_FALSE(testHand->GetCanBuyInsurance());
+                }
+            }
+            else {
+                testHand->SetWager(200);
+                testHand->ParametersCheck(dealerHand);
+                EXPECT_FALSE(testHand->GetCanBuyInsurance());
+            }
+            dealerHand->GetPlayerCards()->RemoveNode(-1);
+            dealerHand->AddHandTotal();
+        }
+        dealerHand->GetPlayerCards()->RemoveNode(-1);
+        dealerHand->AddHandTotal();
+    }
+    std::cout.rdbuf(oldCoutBuffer);
+}
+
+// Split hand check
+TEST_F(test_x, SplitHandCheck) {
+    std::shared_ptr<Hand> testHand1(new Hand);
+    std::shared_ptr<Hand> testHand2(new Hand);
+    std::shared_ptr<Card> testCard(new Card);
+    std::shared_ptr<node<Card>> testNode;
+    testHand1->SetName("Borby");
+    testHand1->SetBankTotal(100);
+    testHand1->SetWager(10);
+    testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+    testNode = testHand1->GetPlayerCards()->InitNode(testCard);
+    testHand1->SetPlayerCards(testNode);
+    testCard = std::make_shared<Card>(Ranks[12], Suits[1]);
+    testNode = testHand1->GetPlayerCards()->InitNode(testCard);
+    testHand1->SetPlayerCards(testNode);
+    EXPECT_EQ(testHand1->GetPlayerCards()->GetSize(), 2);
+    std::vector<std::shared_ptr<Hand>> newHands = split_hand(testHand1);
+    testHand1 = newHands.at(0);
+    testHand2 = newHands.at(1);
+    EXPECT_EQ(testHand1->GetPlayerCards()->GetSize(), 1);
+    EXPECT_EQ(testHand1->GetPlayerCards()->RetrieveNode(0)->data.GetRank(), Ranks[0]);
+    EXPECT_EQ(testHand1->GetPlayerCards()->RetrieveNode(0)->data.GetSuit(), Suits[0]);
+    EXPECT_EQ(testHand2->GetPlayerCards()->GetSize(), 1);
+    EXPECT_EQ(testHand2->GetPlayerCards()->RetrieveNode(0)->data.GetRank(), Ranks[12]);
+    EXPECT_EQ(testHand2->GetPlayerCards()->RetrieveNode(0)->data.GetSuit(), Suits[1]);
+}
