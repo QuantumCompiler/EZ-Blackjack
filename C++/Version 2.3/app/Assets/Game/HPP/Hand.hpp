@@ -172,13 +172,13 @@ Hand Hand::BankDeposit() {
     float input;
     while (true) {
         // Prompt user for deposit
-        std::cout << std::endl << "Please enter the amount you'd like to deposit into your bank: "; time_sleep(1000);
-        std::cin >> input; time_sleep(1000);
+        std::cout << std::endl << "Please enter the amount you'd like to deposit into your bank: "; time_sleep(SHORT_TIME_SLEEP);
+        std::cin >> input; time_sleep(SHORT_TIME_SLEEP);
         const std::type_info& result = typeid(input);
         std::string checkResult = result.name();
         // Check if value is not a float or integer
         if (checkResult != "f" && checkResult != "i") {
-            std::cout << std::endl << color_text(31, "Invalid Response") << ". Please re-enter your submission." << std::endl; time_sleep(1000);
+            std::cout << std::endl << color_text(31, "Invalid Response") << ". Please re-enter your submission." << std::endl; time_sleep(SHORT_TIME_SLEEP);
             clear_terminal();
             checkResult.clear();
             std::cin.clear();
@@ -188,7 +188,7 @@ Hand Hand::BankDeposit() {
         // Check if value is a float or integer
         else if (checkResult == "f" || checkResult == "i") {
             if (input <= 0) {
-                std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(round_input(input))) << ". Please re-enter a positive value." << std::endl; time_sleep(1000);
+                std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(round_input(input))) << ". Please re-enter a positive value." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                 clear_terminal();
                 checkResult.clear();
                 std::cin.clear();
@@ -201,7 +201,7 @@ Hand Hand::BankDeposit() {
             }
         }
     }
-    std::cout << std::endl << this->GetDisplayName() << " has decided to start with: " << this->GetDisplayBankTotal() << std::endl; time_sleep(1000);
+    std::cout << std::endl << this->GetDisplayName() << " has decided to start with: " << this->GetDisplayBankTotal() << std::endl; time_sleep(SHORT_TIME_SLEEP);
     // Update stats of player
     return *this;
 }
@@ -375,8 +375,8 @@ Hand Hand::InsurancePrompt() {
     std::string input;
     while (true) {
         // Prompt user for insurance
-        std::cout << std::endl << "Would you like to buy insurance? Insurance pays (2:1). (y/n): "; time_sleep(1000);
-        std::cin >> input; time_sleep(1000);
+        std::cout << std::endl << "Would you like to buy insurance? Insurance pays (2:1). (y/n): "; time_sleep(SHORT_TIME_SLEEP);
+        std::cin >> input; time_sleep(SHORT_TIME_SLEEP);
         // User has chosen to buy insurance, set insurance wager
         if (input == "y") {
             this->SetChoseBuyInsurance(true);
@@ -412,8 +412,8 @@ Hand Hand::InsurancePrompt() {
 Hand Hand::NamePrompt() {
     std::string input;
     // Prompt user for their name
-    std::cout << std::endl << "Please enter a name for your player: "; time_sleep(1000);
-    std::getline(std::cin, input); time_sleep(1000);
+    std::cout << std::endl << "Please enter a name for your player: "; time_sleep(SHORT_TIME_SLEEP);
+    std::getline(std::cin, input); time_sleep(SHORT_TIME_SLEEP);
     // Set the players name to "input"
     this->SetName(input);
     return *this;
@@ -472,7 +472,7 @@ Hand Hand::ParametersCheck(std::shared_ptr<Hand>& dealerHand) {
         this->SetCanSplitHand(false);
     }
     // Insurance Check
-    if (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.CheckCardParam(dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetRank(), Ranks[0]) && !dealerHand->GetHasBlackJack()) {
+    if (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetRank() == Ranks[0]) {
         // Player has enough money to buy insurance
         if (this->GetBankTotal() >= 0.5*this->GetWager()) {
             this->SetCanBuyInsurance(true);
@@ -535,13 +535,13 @@ Hand Hand::PlaceWager() {
     float input;
     while (true) {
         // Prompt user for the wager that they would like place for their hand
-        std::cout << std::endl << "Please enter a wager for this hand. Current bank total: " << this->GetDisplayBankTotal() << ": "; time_sleep(1000);
-        std::cin >> input; time_sleep(1000);
+        std::cout << std::endl << "Please enter a wager for this hand. Current bank total: " << this->GetDisplayBankTotal() << ": "; time_sleep(SHORT_TIME_SLEEP);
+        std::cin >> input; time_sleep(SHORT_TIME_SLEEP);
         const std::type_info& result = typeid(input);
         std::string checkResult = result.name();
         // Check if the input is not a float or integer
         if (checkResult != "f" && checkResult != "i") {
-            std::cout << std::endl << color_text(31, "Invalid Response") << ". Please re-enter your submission." << std::endl; time_sleep(1000);
+            std::cout << std::endl << color_text(31, "Invalid Response") << ". Please re-enter your submission." << std::endl; time_sleep(SHORT_TIME_SLEEP);
             clear_terminal();
             checkResult.clear();
             std::cin.clear();
@@ -552,7 +552,7 @@ Hand Hand::PlaceWager() {
         else if (checkResult == "f" || checkResult == "i") {
             // User has entered a value that is less than zero, return to beginning of while loop
             if (input <= 0) {
-                std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(round_input(input))) << ". Please re-enter a positive value." << std::endl; time_sleep(1000);
+                std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(round_input(input))) << ". Please re-enter a positive value." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                 clear_terminal();
                 checkResult.clear();
                 std::cin.clear();
@@ -564,7 +564,7 @@ Hand Hand::PlaceWager() {
                 // User has entered a wager that is greater than their bank, return to beginning of while loop
                 if (input > this->GetBankTotal()) {
                     std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(round_input(input))) << ". You must enter a wager that is less than or equal to your bank total "
-                    << this->GetDisplayBankTotal() << ". Please re-enter your submission." << std::endl; time_sleep(1000);
+                    << this->GetDisplayBankTotal() << ". Please re-enter your submission." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                     clear_terminal();
                     checkResult.clear();
                     std::cin.clear();
@@ -575,7 +575,7 @@ Hand Hand::PlaceWager() {
                 else {
                     this->SetWager(input);
                     this->UpdateBank(0, this->GetWager());
-                    std::cout << std::endl << GetDisplayName() << " has wagered: " << this->GetDisplayWager() << " with a current bank total " << this->GetDisplayBankTotal() << "." << std::endl; time_sleep(1000);
+                    std::cout << std::endl << GetDisplayName() << " has wagered: " << this->GetDisplayWager() << " with a current bank total " << this->GetDisplayBankTotal() << "." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                     return *this;
                 }
             }
@@ -677,14 +677,14 @@ Hand Hand::ShowHand(std::string option, const std::string dealerShow) {
         }
         // Add hand total and display players hand parameters
         this->AddHandTotal();
-        std::cout << handTotalMod << ": " << this->GetDisplayCardsTotal() << " , " << handWager << ": " << this->GetDisplayWager() << " , " << bankTotal << ": " << this->GetDisplayBankTotal() << std::endl; time_sleep(1000);
+        std::cout << handTotalMod << ": " << this->GetDisplayCardsTotal() << " , " << handWager << ": " << this->GetDisplayWager() << " , " << bankTotal << ": " << this->GetDisplayBankTotal() << std::endl; time_sleep(SHORT_TIME_SLEEP);
     }
     // The player is the dealer
     else if (this->GetName() == "Dealer") {
         // Dealer is hiding a card
         if (dealerShow.empty()) {
             std::string backCardMod = color_text(36, std::to_string(this->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()));
-            std::cout << this->GetDisplayName() << "'s " << optionMod << " hand : [Hidden, " << this->GetPlayerCards()->RetrieveNode(-1)->data << "] " << handTotalMod << ": " << backCardMod << std::endl; time_sleep(1000);
+            std::cout << this->GetDisplayName() << "'s " << optionMod << " hand : [Hidden, " << this->GetPlayerCards()->RetrieveNode(-1)->data << "] " << handTotalMod << ": " << backCardMod << std::endl; time_sleep(SHORT_TIME_SLEEP);
         }
         // Dealer is showing both cards
         else {
@@ -698,15 +698,15 @@ Hand Hand::ShowHand(std::string option, const std::string dealerShow) {
             // Iterate through the cards in players hand
             for (int i = 0; i < this->GetPlayerCards()->GetSize(); i++) {
                 if (i == this->GetPlayerCards()->GetSize() - 1) {
-                    std::cout << this->GetPlayerCards()->RetrieveNode(i) << "] ";
+                    std::cout << this->GetPlayerCards()->RetrieveNode(i)->data << "] ";
                 }
                 else {
-                    std::cout << this->GetPlayerCards()->RetrieveNode(i) << " , ";
+                    std::cout << this->GetPlayerCards()->RetrieveNode(i)->data << " , ";
                 }
             }
             // Add hand total and display players hand parameters
             this->AddHandTotal();
-            std::cout << handTotalMod << ": " << this->GetDisplayCardsTotal() << std::endl; time_sleep(1000);
+            std::cout << handTotalMod << ": " << this->GetDisplayCardsTotal() << std::endl; time_sleep(SHORT_TIME_SLEEP);
         }
     }
     return *this;
