@@ -108,9 +108,6 @@ float round_input(float input) {
 */
 void time_sleep(const long input) {
     long time = input;
-    if (input == 1000) {
-        time = 0;
-    }
     std::this_thread::sleep_for(std::chrono::milliseconds(time));
 }
 
@@ -128,4 +125,27 @@ template <typename Func> void measure_time(const Func function) {
     float duration_time = duration.count();
     std::string rounded_time = round_to_string(duration_time);
     std::cout << std::endl << "Execution time: " << color_text(31, rounded_time) << " milliseconds." << std::endl;
+}
+
+void progress_bar(const long input, std::string message) {
+    int totalProgress = input / 100;
+    for (int progress = 0; progress <= totalProgress; progress++) {
+        float percentage = static_cast<float>(progress) / totalProgress * 100;
+        std::cout << color_text(34, "[");
+        for (int i = 0; i < progress; i++) {
+            std::cout << color_text(34, "=");
+        }
+        std::cout << color_text(34, ">") << std::string(totalProgress - progress, ' ') << color_text(34, "]");
+        std::cout << " " << color_text(34, std::to_string(static_cast<int>(percentage))) << color_text(34, "%") + "\r";
+        std::cout.flush();
+        std::this_thread::sleep_for(std::chrono::milliseconds(input / 100));
+    }
+
+    std::cout << color_text(32, "[");
+    for (int i = 0; i < totalProgress; i++) {
+        std::cout << color_text(32, "=");
+    }
+    std::cout << color_text(32, "] 100% ");
+    std::cout << color_text(32, message) << std::endl;
+    time_sleep(input / 10);
 }
