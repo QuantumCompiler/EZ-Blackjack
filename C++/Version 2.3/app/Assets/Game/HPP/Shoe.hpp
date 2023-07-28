@@ -43,13 +43,13 @@ Shoe Shoe::CreateShoe() {
     while(needInput) {
         int input;
         // Prompt player for the number of decks that they would like to play with
-        std::cout << std::endl << "Please enter the number of decks you would like to play with: "; time_sleep(1000);
-        std::cin >> input; time_sleep(1000);
+        std::cout << std::endl << "Please enter the number of decks you would like to play with: "; time_sleep(SHORT_TIME_SLEEP);
+        std::cin >> input; time_sleep(SHORT_TIME_SLEEP);
         const std::type_info& result = typeid(input);
         std::string checkResult = result.name();
         // Check that the result is an integer, if it isn't, require a response again
         if (checkResult != "i") {
-            std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(input)) << ". Please re-enter your submission." << std::endl; time_sleep(1000);
+            std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(input)) << ". Please re-enter your submission." << std::endl; time_sleep(SHORT_TIME_SLEEP);
             clear_terminal();
             checkResult.clear();
             std::cin.clear();
@@ -60,7 +60,7 @@ Shoe Shoe::CreateShoe() {
         else if (checkResult == "i") {
             // Result is less than zero, require user to re-enter prompt
             if (input <= 0) {
-                std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(input)) << ". Please re-enter a positive value." << std::endl; time_sleep(1000);
+                std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(input)) << ". Please re-enter a positive value." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                 clear_terminal();
                 checkResult.clear();
                 std::cin.clear();
@@ -73,12 +73,12 @@ Shoe Shoe::CreateShoe() {
                 // Prompt for multiple decks
                 if (GetNumOfDecks() > 1) {
                     std::cout << std::endl << "This shoe will be comprised of " << color_text(31, std::to_string(input)) << " decks of cards. " << color_text(31, std::to_string(input * 52))
-                    << " cards total." << std::endl; time_sleep(1000);
+                    << " cards total." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                 }
                 // Prompt for singular deck
                 else {
                     std::cout << std::endl << "This shoe will be comprised of " << color_text(31, std::to_string(input)) << " deck of cards. " << color_text(31, std::to_string(input * 52))
-                    << " cards total." << std::endl; time_sleep(1000);
+                    << " cards total." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                 }
                 break;
             }
@@ -131,7 +131,6 @@ std::shared_ptr<Card> Shoe::Draw() {
 */
 void Shoe::EmptyShoe() {
     GetCardsInShoe()->ClearList();
-    SetNumOfDecks(0);
 }
 
 /*  Shuffle - This function shuffles the cards that are in a shoe
