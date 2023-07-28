@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../app/Assets/Game/HPP/HandC.hpp"
+#include "../app/Assets/Game/HPP/Hand.hpp"
 
 class test_x : public ::testing::Test {};
 
@@ -902,6 +902,91 @@ TEST_F(test_x, HandClassParameterCheck) {
         }
         testHand->GetPlayerCards()->RemoveNode(0);
     }
+}
+
+// Hand class, reset test
+TEST_F(test_x, HandClassReset) {
+    std::shared_ptr<Hand> testHand(new Hand);
+    std::shared_ptr<Shoe> testShoe(new Shoe);
+    testShoe->SetNumOfDecks(1);
+    testShoe->CreateShoe();
+    // Set dummy values
+    testHand->SetName("Borby");
+    testHand->SetBankTotal(100);
+    testHand->SetWager(10);
+    testHand->SetInsuranceWager(5);
+    testHand->SetNet(5);
+    testHand->HitHand(testShoe);
+    testHand->HitHand(testShoe);
+    EXPECT_EQ(testHand->GetName(), "Borby");
+    EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+    EXPECT_EQ(testHand->GetBankTotal(), 100);
+    EXPECT_EQ(testHand->GetInsuranceWager(), 5);
+    EXPECT_EQ(testHand->GetNet(), 5);
+    EXPECT_EQ(testHand->GetWager(), 10);
+    EXPECT_FALSE(testHand->GetCanBuyInsurance());
+    EXPECT_FALSE(testHand->GetCanDoubleDown());
+    EXPECT_FALSE(testHand->GetCanSplitAces());
+    EXPECT_FALSE(testHand->GetCanSplitHand());
+    EXPECT_FALSE(testHand->GetChoseBuyInsurance());
+    EXPECT_FALSE(testHand->GetChoseDoubleDown());
+    EXPECT_FALSE(testHand->GetChoseSplitAces());
+    EXPECT_FALSE(testHand->GetChoseSplitHand());
+    EXPECT_FALSE(testHand->GetDoubleDownResponse());
+    EXPECT_FALSE(testHand->GetHasBlackJack());
+    EXPECT_FALSE(testHand->GetHasHit());
+    EXPECT_FALSE(testHand->GetParamInHand());
+    EXPECT_FALSE(testHand->GetSameParamInHand());
+    EXPECT_FALSE(testHand->GetShouldDoubleDown());
+    EXPECT_FALSE(testHand->GetShouldHit());
+    EXPECT_FALSE(testHand->GetShouldSplit());
+    EXPECT_FALSE(testHand->GetShouldStand());
+    EXPECT_FALSE(testHand->GetSoftSeventeen());
+    EXPECT_FALSE(testHand->GetSplitAcesResponse());
+    EXPECT_FALSE(testHand->GetSplitHandResponse());
+    // Reset Hand
+    testHand->ResetHand();
+    EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 0);
+    EXPECT_EQ(testHand->GetBankTotal(), 100);
+    EXPECT_EQ(testHand->GetInsuranceWager(), 0);
+    EXPECT_EQ(testHand->GetNet(), 0);
+    EXPECT_EQ(testHand->GetWager(), 0);
+    EXPECT_FALSE(testHand->GetCanBuyInsurance());
+    EXPECT_FALSE(testHand->GetCanDoubleDown());
+    EXPECT_FALSE(testHand->GetCanSplitAces());
+    EXPECT_FALSE(testHand->GetCanSplitHand());
+    EXPECT_FALSE(testHand->GetChoseBuyInsurance());
+    EXPECT_FALSE(testHand->GetChoseDoubleDown());
+    EXPECT_FALSE(testHand->GetChoseSplitAces());
+    EXPECT_FALSE(testHand->GetChoseSplitHand());
+    EXPECT_FALSE(testHand->GetDoubleDownResponse());
+    EXPECT_FALSE(testHand->GetHasBlackJack());
+    EXPECT_FALSE(testHand->GetHasHit());
+    EXPECT_FALSE(testHand->GetParamInHand());
+    EXPECT_FALSE(testHand->GetSameParamInHand());
+    EXPECT_FALSE(testHand->GetShouldDoubleDown());
+    EXPECT_FALSE(testHand->GetShouldHit());
+    EXPECT_FALSE(testHand->GetShouldSplit());
+    EXPECT_FALSE(testHand->GetShouldStand());
+    EXPECT_FALSE(testHand->GetSoftSeventeen());
+    EXPECT_FALSE(testHand->GetSplitAcesResponse());
+    EXPECT_FALSE(testHand->GetSplitHandResponse());
+}
+
+// Hand class, copy variables test
+TEST_F(test_x, HandClassCopy) {
+    std::shared_ptr<Hand> hand1(new Hand);
+    std::shared_ptr<Hand> hand1Copy(new Hand);
+    hand1->SetName("Borby");
+    hand1->SetBankTotal(100);
+    hand1->SetWager(10);
+    hand1Copy->CopyVariables(hand1);
+    ASSERT_EQ(hand1->GetName(), "Borby");
+    ASSERT_EQ(hand1->GetBankTotal(), 100);
+    ASSERT_EQ(hand1->GetWager(), 10);
+    ASSERT_EQ(hand1Copy->GetName(), "Borby");
+    ASSERT_EQ(hand1Copy->GetBankTotal(), 100);
+    ASSERT_EQ(hand1Copy->GetWager(), 10);
 }
 
 /////////////////////////////////////////
