@@ -2,6 +2,10 @@
 #ifndef INCLUDES_H
 #define INCLUDES_H
 
+#define SHORT_TIME_SLEEP 1000
+#define MEDIUM_TIME_SLEEP 3000
+#define LONG_TIME_SLEEP 5000
+
 #include <algorithm>
 #include <array>
 #include <cctype>
