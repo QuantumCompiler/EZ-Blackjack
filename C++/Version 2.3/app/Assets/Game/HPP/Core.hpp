@@ -888,28 +888,41 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
     }
 }
 
-// Pseudo code:
-// {
-//     std::string csvFileName = hand.player.name + " Results.csv";
-//     std::ofstream file(csvFileName);
-//     if (file)
-//     {
-//         file << "Hand Number, Wager, Net, Cards Total, Updated Bank" << std::endl;
-//         for (int i = 0; i < hand.player.hand_hands_played.size(); i++)
-//         {
-//             file << hand.player.hand_hands_played.at(i) << "," << hand.player.hand_wagers.at(i) << "," << hand.player.hand_nets.at(i)
-//             << "," << hand.player.hand_card_totals.at(i) << "," << hand.player.hand_bank_totals.at(i) << std::endl;
-//         }
-//         file.close();
-//         std::cout << "CSV File Created: " << csvFileName << std::endl; 
-//     }
-//     else if (!file)
-//     {
-//         std::cout << "Error creating CSV File: " << csvFileName << std::endl; 
-//     }
-//     else {}
-// }
-void csv_generator(std::shared_ptr<Hand>& input) {}
+/*  csv_generator - Generates a CSV file for the game of a player
+*   Input:
+*       input - Hand object passed by reference that represents the hand that is going to have a csv made of it
+*   Algorithm:
+*       * Create a file name for the CSV file
+*       * Generate a file with the contents of the players hand
+*       * Close the file
+*   Output:
+*       This function does not return a value, it generates a csv of the statistics for a players hand
+*/
+void csv_generator(std::shared_ptr<Hand>& input) {
+    std::string fileName = input->GetName() + " Results.csv";
+    std::ofstream file(fileName);
+    if (file) {
+        file << "Hand Number, Hand Wager, Hand Net, Hand Total, Bank Total" << std::endl;
+        std::shared_ptr<node<int>> handNumNode = input->GetHandPlayed()->GetRoot();
+        std::shared_ptr<node<float>> handWagNode = input->GetHandWagers()->GetRoot();
+        std::shared_ptr<node<float>> handNetNode = input->GetHandNets()->GetRoot();
+        std::shared_ptr<node<int>> handTotalNode = input->GetHandCardTotals()->GetRoot();
+        std::shared_ptr<node<float>> handBankNode = input->GetHandBankTotals()->GetRoot();
+        while (handNumNode != nullptr && handWagNode != nullptr && handNetNode != nullptr && handTotalNode != nullptr && handBankNode != nullptr) {
+            file << handNumNode->data << "," << handWagNode->data << "," << handNetNode->data << "," << handTotalNode->data << "," << handBankNode->data << std::endl;
+            handNumNode = handNumNode->nextNode;
+            handWagNode = handWagNode->nextNode;
+            handNetNode = handNetNode->nextNode;
+            handTotalNode = handTotalNode->nextNode;
+            handBankNode = handBankNode->nextNode;
+        }
+        file.close();
+        std::cout << "CSV File Created: " << fileName << std::endl;
+    }
+    else {
+        std::cout << "Error creating CSV File: " << fileName << std::endl;
+    }
+}
 
 /*  deal_hand - Deals cards to players and shows the hands of each player after the deal
 *   Input:
@@ -1084,7 +1097,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>, 
             dealerHand->ShowHand("final", "show");
             std::cout << std::endl << playerHand->GetDisplayName() << " pushes the current hand. " << playerHand->GetDisplayName() << " nets " << playerHand->GetDisplayNet() << " this hand." << std::endl; time_sleep(SHORT_TIME_SLEEP);
             hand_continue = false;
-            // Update Stats Here
+            stats_tracker(playerHand);
         }
         // Dealer has blackjack, player does not, hand ends
         else if (dealerHand->GetHasBlackJack() && !playerHand->GetHasBlackJack()) {
@@ -1104,7 +1117,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>, 
             dealerHand->ShowHand("final", "show");
             std::cout << std::endl << playerHand->GetDisplayName() << " loses the current hand. " << playerHand->GetDisplayName() << " nets " << playerHand->GetDisplayNet() << " this hand." << std::endl; time_sleep(SHORT_TIME_SLEEP);
             hand_continue = false;
-            // Update Stats Here
+            stats_tracker(playerHand);
         }
         // Dealer does not have blackjack, player does, hand ends
         else if (!dealerHand->GetHasBlackJack() && playerHand->GetHasBlackJack()) {
@@ -1124,7 +1137,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>, 
             dealerHand->ShowHand("final", "show");
             std::cout << std::endl << playerHand->GetDisplayName() << " wins the current hand. " << playerHand->GetDisplayName() << " nets " << playerHand->GetDisplayNet() << " this hand." << std::endl; time_sleep(SHORT_TIME_SLEEP);
             hand_continue = false;
-            // Update Stats Here
+            stats_tracker(playerHand);
         }
         // Neither player has blackjack, hand continues
         else {
@@ -1156,7 +1169,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>, 
             dealerHand->ShowHand("final", "show");
             std::cout << std::endl << playerHand->GetDisplayName() << " pushes the current hand. " << playerHand->GetDisplayName() << " nets " << playerHand->GetDisplayNet() << " this hand." << std::endl; time_sleep(SHORT_TIME_SLEEP);
             hand_continue = false;
-            // Update Stats Here
+            stats_tracker(playerHand);
         }
         // Dealer has blackjack, player does not, hand ends
         else if (dealerHand->GetHasBlackJack() && !playerHand->GetHasBlackJack()) {
@@ -1168,7 +1181,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>, 
             dealerHand->ShowHand("final", "show");
             std::cout << std::endl << playerHand->GetDisplayName() << " loses the current hand. " << playerHand->GetDisplayName() << " nets " << playerHand->GetDisplayNet() << " this hand." << std::endl; time_sleep(SHORT_TIME_SLEEP);
             hand_continue = false;
-            // Update Stats Here
+            stats_tracker(playerHand);
         }
         // Dealer does not have blackjack, player does, hand ends
         else if (!dealerHand->GetHasBlackJack() && playerHand->GetHasBlackJack()) {
@@ -1180,7 +1193,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>, 
             dealerHand->ShowHand("final", "show");
             std::cout << std::endl << playerHand->GetDisplayName() << " wins the current hand. " << playerHand->GetDisplayName() << " nets " << playerHand->GetDisplayNet() << " this hand." << std::endl; time_sleep(SHORT_TIME_SLEEP);
             hand_continue = false;
-            // Update Stats Here
+            stats_tracker(playerHand);
         }
         // Neither player has blackjack, hand continues
         else {
@@ -1450,7 +1463,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>> hand_comparison_logic(s
         }
     }
     // Update the stats of the current hand for the player
-    // update_stats(playerHand);
+    stats_tracker(playerHand);
     // Return the player hand, dealer hand, and the shoe
     return std::make_tuple(playerHand, dealerHand);
 }
@@ -1482,7 +1495,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>> hand_comparison_logic(s
 */
 void play_game() {
     clear_terminal();
-    progress_bar(5000, "Loading Game", "Ready To Play :)");
+    progress_bar(LONG_TIME_SLEEP, "Loading Game", "Ready To Play :)");
     clear_terminal();
     // Create Hand objects
     std::shared_ptr<Hand> humanHand(new Hand);
@@ -1610,8 +1623,7 @@ void play_game() {
             continue;
         }
     }
-    // Create csv of stats for user
-    // csv_stats(playerHand);
+    csv_generator(humanHand);
 }
 
 /*  player_logic - Processes the possible options of what a player can do on their current hand
@@ -2299,14 +2311,40 @@ std::vector<std::shared_ptr<Hand>> split_hand(std::shared_ptr<Hand>& input) {
     return split_hands;
 }
 
-// Pseudo code:
-// {
-//     hand.player.hands_played += 1;
-//     hand.player.hand_hands_played.push_back(hand.player.hands_played);
-//     hand.player.hand_wagers.push_back(hand.player.wager);
-//     hand.player.hand_nets.push_back(hand.player.net);
-//     hand.player.hand_card_totals.push_back(hand.player.cards_total);
-//     hand.player.hand_bank_totals.push_back(hand.player.bank_total);
-//     return hand;
-// }
-void stats_tracker(std::shared_ptr<Hand>& input) {}
+/*  stats_tracker - Updates the stat trackers of a current hand
+*   Input:
+*       input - Hand object passed by reference who's stats are being updated
+*   Algorithm:
+*       * Update hands bank total
+*       * Update hands cards total
+*       * Update hands nets total
+*       * Update hands played total
+*       * Update hands wagers total
+*   Output:
+*       This function does not return a value
+*/
+void stats_tracker(std::shared_ptr<Hand>& input) {
+    // Update hands bank total
+    float handBankTotal = input->GetBankTotal();
+    std::shared_ptr<node<float>> bankNode = input->GetHandBankTotals()->InitNode(handBankTotal);
+    input->SetHandBankTotals(bankNode);
+    // Update hands cards total
+    int handCardsTotal = input->GetCardsTotal();
+    std::shared_ptr<node<int>> cardsTotalNode = input->GetHandCardTotals()->InitNode(handCardsTotal);
+    input->SetHandCardTotals(cardsTotalNode);
+    // Update hands nets total
+    float handNetsTotal = input->GetNet();
+    std::shared_ptr<node<float>> netsTotalNode = input->GetHandNets()->InitNode(handNetsTotal);
+    input->SetHandNets(netsTotalNode);
+    // Update hands played total
+    int handsPlayed = input->GetHandsPlayed();
+    handsPlayed++;
+    input->SetHandsPlayed(handsPlayed);
+    int handsPlayedTotal = input->GetHandsPlayed();
+    std::shared_ptr<node<int>> handsPlayedNode = input->GetHandPlayed()->InitNode(handsPlayedTotal);
+    input->SetHandPlayed(handsPlayedNode);
+    // Update hands wagers total
+    float handWagerTotal = input->GetWager();
+    std::shared_ptr<node<float>> handWagerNode = input->GetHandWagers()->InitNode(handWagerTotal);
+    input->SetHandWagers(handWagerNode);
+}
