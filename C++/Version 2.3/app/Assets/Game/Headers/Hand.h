@@ -31,7 +31,11 @@
 *       wager - Float value that represents the wager that is placed on a hand that is being played
 *     Integer Values:
 *       cardsTotal - Integer value that represents the total value of a players hand of cards
+*       handsBlackjack - Integer value that represents how many blackjack hands a player has had
+*       handsLost - Integer value that represents how many hands a player has lost
 *       handsPlayed - Integer value that represents the number of total hands played by a player
+*       handsPushed - Integer value that represents the number of total hands a player has pushed
+*       handsWon - Integer value that represents the number of total hands a player has won
 *     String Values:
 *       displayBankTotal - String value that represents the modified private data member "bankTotal"
 *       displayCardsTotal - String value that represents the modified private data member "cardsTotal"
@@ -78,7 +82,11 @@ struct Player {
     float wager;
     // Integer Values
     int cardsTotal;
+    int handsBlackjack;
+    int handsLost;
     int handsPlayed;
+    int handsPushed;
+    int handsWon;
     // Strings
     std::string displayBankTotal;
     std::string displayCardsTotal;
@@ -145,7 +153,11 @@ public:
     void SetWager(const float& input); // Mutates "wager"
     // Integer Values
     void SetCardsTotal(const int& input); // Mutates "cardsTotal"
+    void SetHandsBlackjack(const int& input); // Mutates "handsBlackjack"
+    void SetHandsLost(const int& input); // Mutates "handsLost"
     void SetHandsPlayed(const int& input); // Mutates "handsPlayed"
+    void SetHandsPushed(const int& input); // Mutates "handsPushed"
+    void SetHandsWon(const int& input); // Mutates "handsWon"
     // String Values
     void SetDisplayBankTotal(); // Mutates "displayBankTotal"
     void SetDisplayCardsTotal(); // Mutates "displayCardsTotal"
@@ -190,7 +202,11 @@ public:
     float& GetWager(); // Retrieves "wager"
     // Integer Values
     int& GetCardsTotal(); // Retrieves "cardsTotal"
+    int& GetHandsBlackjack(); // Retrieves "handsBlackjack"
+    int& GetHandsLost(); // Retrieves "handsLost"
     int& GetHandsPlayed(); // Retrieves "handsPlayed"
+    int& GetHandsPushed(); // Retrieves "handsPushed"
+    int& GetHandsWon(); // Retrieves "handsWon"
     // String Values
     std::string& GetDisplayBankTotal(); // Retrieves "displayBankTotal"
     std::string& GetDisplayCardsTotal(); // Retrieves "displayCardsTotal"
@@ -198,7 +214,7 @@ public:
     std::string& GetDisplayName(); // Retrieves "displayName"
     std::string& GetDisplayNet(); // Retrieves "displayNet"
     std::string& GetDisplayWager(); // Retrieves "displayWager"
-    std::string& GetName(); // name
+    std::string& GetName(); // Retrieves "name"
     // List Values
     std::shared_ptr<LinkedList<float>>& GetHandBankTotals(); // Retrieves "handBankTotals"
     std::shared_ptr<LinkedList<int>>& GetHandCardTotals(); // Retrieves "handCardTotals"

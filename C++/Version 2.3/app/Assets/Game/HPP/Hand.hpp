@@ -50,7 +50,11 @@ Hand::Hand() {
     this->SetWager(0);
     // Integer Values Initialization
     this->SetCardsTotal(0);
+    this->SetHandsBlackjack(0);
+    this->SetHandsLost(0);
     this->SetHandsPlayed(0);
+    this->SetHandsPushed(0);
+    this->SetHandsWon(0);
     // String Values Initialization
     this->GetDisplayBankTotal().clear();
     this->GetDisplayCardsTotal().clear();
@@ -730,6 +734,10 @@ Hand Hand::ShowHand(std::string option, const std::string dealerShow) {
 */
 Hand Hand::UpdateBank(const int choice, const float& wager) {
     float prior_bank = this->GetBankTotal();
+    int handsWon = this->GetHandsWon();
+    int handsLost = this->GetHandsLost();
+    int handsPushed = this->GetHandsPushed();
+    int handsBJ = this->GetHandsBlackjack();
     switch (choice) {
     // 0 - Player withdraws money from bank (places wager)
     case 0:
@@ -737,21 +745,29 @@ Hand Hand::UpdateBank(const int choice, const float& wager) {
         return *this;
     // 1 - Player wins hand
     case 1:
+        handsWon++;
+        this->SetHandsWon(handsWon);
         this->SetBankTotal(this->GetBankTotal() + (2.0 * wager));
         this->SetNet(this->GetNet() + (this->GetBankTotal() - (prior_bank + wager)));
         return *this;
     // 2 - Player loses hand
     case 2:
+        handsLost++;
+        this->SetHandsLost(handsLost);
         this->SetBankTotal(prior_bank);
         this->SetNet(this->GetNet() + (this->GetBankTotal() - (prior_bank + wager)));
         return *this;
     // 3 - Player pushes hand
     case 3:
+        handsPushed++;
+        this->SetHandsPushed(handsPushed);
         this->SetBankTotal(this->GetBankTotal() + wager);
         this->SetNet(this->GetNet() + (this->GetBankTotal() - (prior_bank + wager)));
         return *this;
     // 4 - Player wins blackjack
     case 4:
+        handsBJ++;
+        this->SetHandsBlackjack(handsBJ);
         this->SetBankTotal(this->GetBankTotal() + wager + (1.5 * wager));
         this->SetNet(this->GetNet() + (this->GetBankTotal() - (prior_bank + wager)));
         return *this;
@@ -901,9 +917,29 @@ void Hand::SetCardsTotal(const int& input) {
     this->SetDisplayCardsTotal();
 }
 
+// SetHandsBlackjack - Mutates the private data member "handsBlackjack" by assigning it to "input"
+void Hand::SetHandsBlackjack(const int& input) {
+    player->handsBlackjack = input;
+}
+
+// SetHandsLost - Mutates the private data member "handsLost" by assigning it to "input"
+void Hand::SetHandsLost(const int& input) {
+    player->handsLost = input;
+}
+
 // SetHandsPlayed - Mutates the private data member "handsPlayed" by assigning it to "input"
 void Hand::SetHandsPlayed(const int& input) {
     player->handsPlayed = input;
+}
+
+// SetHandsPushed - Mutates the private data member "handsPushed" by assigning it to "input"
+void Hand::SetHandsPushed(const int& input) {
+    player->handsPushed = input;
+}
+
+// SetHandsWon - Mutates the private data member "handsWon" by assigning it to "input"
+void Hand::SetHandsWon(const int& input) {
+    player->handsWon = input;
 }
 
 // SetDisplayBankTotal - Mutates the private data member "displayBankTotal" by assigning it to "input"
@@ -1110,9 +1146,29 @@ int& Hand::GetCardsTotal() {
     return player->cardsTotal;
 }
 
+// GetHandsBlackjack - Retrieves the private data member "handsBlackjack"
+int& Hand::GetHandsBlackjack() {
+    return player->handsBlackjack;
+}
+
+// GetHandsLost - Retrieves the private data member "handsLost"
+int& Hand::GetHandsLost() {
+    return player->handsLost;
+}
+
 // GetHandsPlayed - Retrieves the private data member "handsPlayed"
 int& Hand::GetHandsPlayed() {
     return player->handsPlayed;
+}
+
+// GetHandsPushed - Retrieves the private data member "handsPushed"
+int& Hand::GetHandsPushed() {
+    return player->handsPushed;
+}
+
+// GetHandsWon - Retrieves the private data member "handsWon"
+int& Hand::GetHandsWon() {
+    return player->handsWon;
 }
 
 // GetDisplayBankTotal - Retrieves the private data member "displayBankTotal"
