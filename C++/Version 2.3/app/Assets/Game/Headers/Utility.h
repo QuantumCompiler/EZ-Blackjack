@@ -1,7 +1,7 @@
 // ----- ----- ----- ----- ----- ----- ----- Includes ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 #ifndef UTILITY_H
 #define UTILITY_H
-#include "../../Structures/LinkedList.hpp"
+#include "../HPP/LinkedList.hpp"
 
 void clear_terminal(); // Clears a terminal
 std::string color_text(const int codeInput, const std::string textInput); // Colors input text
