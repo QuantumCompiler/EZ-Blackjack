@@ -479,7 +479,11 @@ TEST_F(test_x, HandClassConst) {
     EXPECT_EQ(testHand->GetWager(), 0);
     // Test initial integer values
     EXPECT_EQ(testHand->GetCardsTotal(), 0);
+    EXPECT_EQ(testHand->GetHandsBlackjack(), 0);
+    EXPECT_EQ(testHand->GetHandsLost(), 0);
     EXPECT_EQ(testHand->GetHandsPlayed(), 0);
+    EXPECT_EQ(testHand->GetHandsPushed(), 0);
+    EXPECT_EQ(testHand->GetHandsWon(), 0);
     // Test initial string values
     EXPECT_EQ(testHand->GetDisplayBankTotal(), "");
     EXPECT_EQ(testHand->GetDisplayCardsTotal(), "");
