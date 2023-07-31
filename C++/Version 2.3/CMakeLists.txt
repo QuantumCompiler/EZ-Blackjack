@@ -6,6 +6,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif(NOT CMAKE_BUILD_TYPE)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall" CACHE INTERNAL "")
+# x86_64-w64-mingw32-g++ main.cpp -o main.exe <----- Windows compile command
 
 # get folder name as project name
 get_filename_component(ProjectId ${CMAKE_CURRENT_SOURCE_DIR} NAME)
