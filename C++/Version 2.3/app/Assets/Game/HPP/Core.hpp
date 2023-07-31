@@ -903,18 +903,18 @@ void csv_generator(std::shared_ptr<Hand>& input) {
     std::ofstream file(fileName);
     if (file) {
         file << "Hand Number, Hand Wager, Hand Net, Hand Total, Bank Total" << std::endl;
+        std::shared_ptr<node<float>> handBankNode = input->GetHandBankTotals()->GetRoot();
+        std::shared_ptr<node<int>> handTotalNode = input->GetHandCardTotals()->GetRoot();
+        std::shared_ptr<node<float>> handNetNode = input->GetHandNets()->GetRoot();
         std::shared_ptr<node<int>> handNumNode = input->GetHandPlayed()->GetRoot();
         std::shared_ptr<node<float>> handWagNode = input->GetHandWagers()->GetRoot();
-        std::shared_ptr<node<float>> handNetNode = input->GetHandNets()->GetRoot();
-        std::shared_ptr<node<int>> handTotalNode = input->GetHandCardTotals()->GetRoot();
-        std::shared_ptr<node<float>> handBankNode = input->GetHandBankTotals()->GetRoot();
         while (handNumNode != nullptr && handWagNode != nullptr && handNetNode != nullptr && handTotalNode != nullptr && handBankNode != nullptr) {
             file << handNumNode->data << "," << handWagNode->data << "," << handNetNode->data << "," << handTotalNode->data << "," << handBankNode->data << std::endl;
+            handBankNode = handBankNode->nextNode;
+            handTotalNode = handTotalNode->nextNode;
+            handNetNode = handNetNode->nextNode;
             handNumNode = handNumNode->nextNode;
             handWagNode = handWagNode->nextNode;
-            handNetNode = handNetNode->nextNode;
-            handTotalNode = handTotalNode->nextNode;
-            handBankNode = handBankNode->nextNode;
         }
         file.close();
         std::cout << "CSV File Created: " << fileName << std::endl;
@@ -1240,6 +1240,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> 
         std::reverse(playerHandsPL.begin(), playerHandsPL.end());
         // Process the dealer_logic function
         auto dealerHandLogic = dealer_logic(playerHandsPL, dealerHand, shoe);
+        dealerHand = std::get<0>(dealerHandLogic);
         shoe = std::get<1>(dealerHandLogic);
         int current_hand_counter = 1;
         int totalHands = playerHandsPL.size();
@@ -1344,7 +1345,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>> hand_comparison_logic(s
             // Tell the user the result of their current hand
             else {
                 std::cout << std::endl << "Hand " << std::to_string(currentHandCounter) << " is a push. " << playerHand->GetDisplayName() << " nets " << playerHand->GetDisplayNet()
-                << " for hand " << std::to_string(currentHandCounter) << "." << std::endl << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                << " for hand " << std::to_string(currentHandCounter) << "." << std::endl; time_sleep(SHORT_TIME_SLEEP);
             }
         }
         // Dealer wins
@@ -1374,7 +1375,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>> hand_comparison_logic(s
             // Tell the user the result of their current hand
             else {
                 std::cout << std::endl << playerHand->GetDisplayName() << " loses hand " << std::to_string(currentHandCounter) << ". " << playerHand->GetDisplayName() << " nets " << playerHand->GetDisplayNet()
-                << " for hand " << std::to_string(currentHandCounter) << "." << std::endl << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                << " for hand " << std::to_string(currentHandCounter) << "." << std::endl; time_sleep(SHORT_TIME_SLEEP);
             }
         }
         // Player wins
@@ -1404,7 +1405,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>> hand_comparison_logic(s
             // Tell the user the result of their current hand
             else {
                 std::cout << std::endl << playerHand->GetDisplayName() << " wins hand " << std::to_string(currentHandCounter) << ". " << playerHand->GetDisplayName() << " nets " << playerHand->GetDisplayNet()
-                << " for hand " << std::to_string(currentHandCounter) << "." << std::endl << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                << " for hand " << std::to_string(currentHandCounter) << "." << std::endl; time_sleep(SHORT_TIME_SLEEP);
             }
         }
         // Dealer has busted on their current hand
@@ -2051,8 +2052,8 @@ std::tuple<std::vector<std::shared_ptr<Hand>>, std::shared_ptr<Hand>, std::share
                                     split_counter++;
                                     hand_count++;
                                     std::vector<std::shared_ptr<Hand>> new_split = split_hand(checkingHand);
-                                    std::shared_ptr<Hand> newPlayerHand1 = splitHand.at(0);
-                                    std::shared_ptr<Hand> newPlayerHand2 = splitHand.at(1);
+                                    std::shared_ptr<Hand> newPlayerHand1 = new_split.at(0);
+                                    std::shared_ptr<Hand> newPlayerHand2 = new_split.at(1);
                                     newPlayerHand2->HitHand(shoe);
                                     splitHands.insert(splitHands.begin(), newPlayerHand1);
                                     checkingHand = newPlayerHand2;
@@ -2325,26 +2326,18 @@ std::vector<std::shared_ptr<Hand>> split_hand(std::shared_ptr<Hand>& input) {
 */
 void stats_tracker(std::shared_ptr<Hand>& input) {
     // Update hands bank total
-    float handBankTotal = input->GetBankTotal();
-    std::shared_ptr<node<float>> bankNode = input->GetHandBankTotals()->InitNode(handBankTotal);
+    std::shared_ptr<node<float>> bankNode = input->GetHandBankTotals()->InitNode(input->GetBankTotal());
     input->SetHandBankTotals(bankNode);
     // Update hands cards total
-    int handCardsTotal = input->GetCardsTotal();
-    std::shared_ptr<node<int>> cardsTotalNode = input->GetHandCardTotals()->InitNode(handCardsTotal);
+    std::shared_ptr<node<int>> cardsTotalNode = input->GetHandCardTotals()->InitNode(input->GetCardsTotal());
     input->SetHandCardTotals(cardsTotalNode);
     // Update hands nets total
-    float handNetsTotal = input->GetNet();
-    std::shared_ptr<node<float>> netsTotalNode = input->GetHandNets()->InitNode(handNetsTotal);
+    std::shared_ptr<node<float>> netsTotalNode = input->GetHandNets()->InitNode(input->GetNet());
     input->SetHandNets(netsTotalNode);
     // Update hands played total
-    int handsPlayed = input->GetHandsPlayed();
-    handsPlayed++;
-    input->SetHandsPlayed(handsPlayed);
-    int handsPlayedTotal = input->GetHandsPlayed();
-    std::shared_ptr<node<int>> handsPlayedNode = input->GetHandPlayed()->InitNode(handsPlayedTotal);
+    std::shared_ptr<node<int>> handsPlayedNode = input->GetHandPlayed()->InitNode(input->GetHandsPlayed());
     input->SetHandPlayed(handsPlayedNode);
     // Update hands wagers total
-    float handWagerTotal = input->GetWager();
-    std::shared_ptr<node<float>> handWagerNode = input->GetHandWagers()->InitNode(handWagerTotal);
+    std::shared_ptr<node<float>> handWagerNode = input->GetHandWagers()->InitNode(input->GetWager());
     input->SetHandWagers(handWagerNode);
 }

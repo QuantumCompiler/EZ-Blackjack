@@ -339,9 +339,16 @@ Hand Hand::CheckSameParamInHand(const std::string referenceParameter, const std:
 */
 Hand Hand::CopyVariables(std::shared_ptr<Hand>& input) {
     // Copy name, bank total, and wager to respective hand
-    this->SetName(input->GetName());
     this->SetBankTotal(input->GetBankTotal());
+    this->SetHandsPlayed(input->GetHandsPlayed());
+    this->SetName(input->GetName());
     this->SetWager(input->GetWager());
+    // Copy linked lists of player
+    this->GetHandBankTotals() = input->GetHandBankTotals();
+    this->GetHandCardTotals() = input->GetHandCardTotals();
+    this->GetHandNets() = input->GetHandNets();
+    this->GetHandPlayed() = input->GetHandPlayed();
+    this->GetHandWagers() = input->GetHandWagers();
     return *this;
 }
 
@@ -738,6 +745,7 @@ Hand Hand::UpdateBank(const int choice, const float& wager) {
     int handsLost = this->GetHandsLost();
     int handsPushed = this->GetHandsPushed();
     int handsBJ = this->GetHandsBlackjack();
+    int handsPlayed = this->GetHandsPlayed();
     switch (choice) {
     // 0 - Player withdraws money from bank (places wager)
     case 0:
@@ -746,6 +754,8 @@ Hand Hand::UpdateBank(const int choice, const float& wager) {
     // 1 - Player wins hand
     case 1:
         handsWon++;
+        handsPlayed++;
+        this->SetHandsPlayed(handsPlayed);
         this->SetHandsWon(handsWon);
         this->SetBankTotal(this->GetBankTotal() + (2.0 * wager));
         this->SetNet(this->GetNet() + (this->GetBankTotal() - (prior_bank + wager)));
@@ -753,6 +763,8 @@ Hand Hand::UpdateBank(const int choice, const float& wager) {
     // 2 - Player loses hand
     case 2:
         handsLost++;
+        handsPlayed++;
+        this->SetHandsPlayed(handsPlayed);
         this->SetHandsLost(handsLost);
         this->SetBankTotal(prior_bank);
         this->SetNet(this->GetNet() + (this->GetBankTotal() - (prior_bank + wager)));
@@ -760,6 +772,8 @@ Hand Hand::UpdateBank(const int choice, const float& wager) {
     // 3 - Player pushes hand
     case 3:
         handsPushed++;
+        handsPlayed++;
+        this->SetHandsPlayed(handsPlayed);
         this->SetHandsPushed(handsPushed);
         this->SetBankTotal(this->GetBankTotal() + wager);
         this->SetNet(this->GetNet() + (this->GetBankTotal() - (prior_bank + wager)));
@@ -767,6 +781,8 @@ Hand Hand::UpdateBank(const int choice, const float& wager) {
     // 4 - Player wins blackjack
     case 4:
         handsBJ++;
+        handsPlayed++;
+        this->SetHandsPlayed(handsPlayed);
         this->SetHandsBlackjack(handsBJ);
         this->SetBankTotal(this->GetBankTotal() + wager + (1.5 * wager));
         this->SetNet(this->GetNet() + (this->GetBankTotal() - (prior_bank + wager)));
