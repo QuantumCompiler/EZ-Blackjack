@@ -899,7 +899,7 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
 *       This function does not return a value, it generates a csv of the statistics for a players hand
 */
 void csv_generator(std::shared_ptr<Hand>& input) {
-    std::string fileName = input->GetName() + " Results.csv";
+    std::string fileName = input->GetName() + " Hand Results.csv";
     std::ofstream file(fileName);
     if (file) {
         file << "Hand Number, Hand Wager, Hand Net, Hand Total, Bank Total" << std::endl;
@@ -917,7 +917,8 @@ void csv_generator(std::shared_ptr<Hand>& input) {
             handWagNode = handWagNode->nextNode;
         }
         file.close();
-        std::cout << "CSV File Created: " << fileName << std::endl;
+        progress_bar(LONG_TIME_SLEEP, "Creating CSV", fileName + " has been successfully created.");
+        time_sleep(MEDIUM_TIME_SLEEP); clear_terminal();
     }
     else {
         std::cout << "Error creating CSV File: " << fileName << std::endl;
@@ -1026,7 +1027,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Shoe>> dealer_logic(std::vecto
         }
         // Show the final hand of the dealer after playing
         std::cout << std::endl << "The " << dealerHand->GetDisplayName() << "'s final hand is:"; time_sleep(SHORT_TIME_SLEEP);
-        std::cout << std::endl << dealerHand->GetDisplayName() << " final hand "; dealerHand->ShowHand("", "cards"); time_sleep(SHORT_TIME_SLEEP);
+        std::cout << std::endl << dealerHand->GetDisplayName() << " final hand "; dealerHand->ShowHand("", "cards");
     }
     // All hands of player are over 21
     else {
