@@ -706,7 +706,7 @@ Hand Hand::ShowHand(std::string option, const std::string dealerShow) {
             else {
                 std::cout << "[";
             }
-            // Iterate through the cards in players hand
+            // Iterate through the cards in dealers hand
             for (int i = 0; i < this->GetPlayerCards()->GetSize(); i++) {
                 if (i == this->GetPlayerCards()->GetSize() - 1) {
                     std::cout << this->GetPlayerCards()->RetrieveNode(i)->data << "] ";
