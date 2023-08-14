@@ -2,8 +2,8 @@
 #ifndef HAND_H
 #define HAND_H
 #include "../HPP/Shoe.hpp"
-#define HashTableSIZE 10000
-#define HashTableITERATIONS 32
+#define HASTABLESIZE 10000
+#define HASHTABLEITERATIONS 32
 /*  Structure Player - Struct to resemble a playing card
 *   Data Members:
 *     Table Values:

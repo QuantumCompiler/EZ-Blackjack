@@ -22,7 +22,7 @@ Hand::Hand() {
     player->handPlayed = std::make_shared<LinkedList<int>>();
     player->handWagers = std::make_shared<LinkedList<float>>();
     player->playerCards = std::make_shared<LinkedList<Card>>();
-    player->hashTable = std::make_shared<HashTable>(HashTableSIZE, HashTableITERATIONS);
+    player->hashTable = std::make_shared<HashTable>(HASTABLESIZE, HASHTABLEITERATIONS);
     hands = std::make_shared<LinkedList<std::shared_ptr<Hand>>>();
     // Float Values Initialization
     this->SetBankTotal(0);
