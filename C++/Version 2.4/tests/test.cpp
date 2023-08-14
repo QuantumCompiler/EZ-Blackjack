@@ -545,8 +545,8 @@ TEST_F(test_x, ShoeClassDraw) {
 TEST_F(test_x, HandClassConst) {
     std::shared_ptr<Hand> testHand(new Hand);
     // Test initial table values
-    EXPECT_EQ(testHand->GetHashTable()->GetTable().size(), HashTableSIZE);
-    EXPECT_EQ(testHand->GetHashTable()->GetHashFuncIterations(), HashTableITERATIONS);
+    EXPECT_EQ(testHand->GetHashTable()->GetTable().size(), HASTABLESIZE);
+    EXPECT_EQ(testHand->GetHashTable()->GetHashFuncIterations(), HASHTABLEITERATIONS);
     for (int i = 0; i < testHand->GetHashTable()->GetTable().size(); i++) {
         EXPECT_FALSE(testHand->GetHashTable()->GetTable().at(i));
     }
