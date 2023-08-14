@@ -18,7 +18,9 @@ public:
     Shoe(); // Constructor
     ~Shoe(); // De-Constructor
     // Class Functions
-    Shoe CreateShoe(); // Creates shoe of cards
+    Shoe CopyShoe(const std::shared_ptr<Shoe> input);
+    Shoe CreateShoePrompt(); // Creates shoe of cards
+    Shoe CreateShoeSim(); // Creates a shoe for a simulate game
     std::shared_ptr<Card> Draw(); // Removes last card from shoe
     void EmptyShoe(); // Empties a shoe of cards
     void Shuffle(); // Shuffles shoe of cards

@@ -22,7 +22,8 @@ Hand::Hand() {
     player->handPlayed = std::make_shared<LinkedList<int>>();
     player->handWagers = std::make_shared<LinkedList<float>>();
     player->playerCards = std::make_shared<LinkedList<Card>>();
-    player->bloomFilter = std::make_shared<BloomFilter>(BLOOMFILTERSIZE, BLOOMFILTERITERATIONS);
+    player->hashTable = std::make_shared<HashTable>(HashTableSIZE, HashTableITERATIONS);
+    hands = std::make_shared<LinkedList<std::shared_ptr<Hand>>>();
     // Float Values Initialization
     this->SetBankTotal(0);
     this->SetInsuranceWager(0);
@@ -31,6 +32,7 @@ Hand::Hand() {
     // Integer Values Initialization
     this->SetCardsTotal(0);
     this->SetHandsBlackjack(0);
+    this->SetHandsCurrentlyHeld(1);
     this->SetHandsLost(0);
     this->SetHandsPlayed(0);
     this->SetHandsPushed(0);
@@ -50,6 +52,7 @@ Hand::Hand() {
     this->GetHandPlayed()->ClearList();
     this->GetHandWagers()->ClearList();
     this->GetPlayerCards()->ClearList();
+    this->GetPlayerHands()->ClearList();
 }
 
 // De-Constructor
@@ -138,7 +141,7 @@ Hand Hand::AddHandTotal() {
     return *this;
 }
 
-/*  BankDeposit - Updates the private data member "bankTotal" to represent a players bank total
+/*  BankDepositPrompt - Updates the private data member "bankTotal" to represent a players bank total
 *   Input:
 *       This function does not have any input parameters
 *   Algorithm:
@@ -152,7 +155,7 @@ Hand Hand::AddHandTotal() {
 *   Output:
 *       This function returns a Hand object after depositing currency into a players bank
 */
-Hand Hand::BankDeposit() {
+Hand Hand::BankDepositPrompt() {
     float input;
     while (true) {
         // Prompt user for deposit
@@ -186,7 +189,19 @@ Hand Hand::BankDeposit() {
         }
     }
     std::cout << std::endl << this->GetDisplayName() << " has decided to start with: " << this->GetDisplayBankTotal() << std::endl; time_sleep(SHORT_TIME_SLEEP);
-    // Update stats of player
+    return *this;
+}
+
+/*  BankDepositPrompt - Updates the private data member "bankTotal" to represent a players bank total for a simulated game
+*   Input:
+*       This function does not have any input parameters
+*   Algorithm:
+*       * First create a float value that represents the bank total of a player prior to depositing
+*   Output:
+*       This function returns a Hand object after depositing currency into a players bank
+*/
+Hand Hand::BankDepositSim(const float& input) {
+    this->SetBankTotal(input);
     return *this;
 }
 
@@ -211,8 +226,8 @@ Hand Hand::CheckBlackJack() {
         // Check if there is a card in hand that has a value of 10
         if (currentCard->data.GetCardValue() == 10) {
             // Check if there is an Ace in the hand and the hand only has 2 cards
-            if (this->GetBloomFilter()->Contains(this->GetFilterMatrix()[2][1]) && this->GetPlayerCards()->GetSize() == 2) {
-                this->GetBloomFilter()->AddToFilter(this->GetFilterMatrix()[1][4]);
+            if (this->GetHashTable()->Contains(this->GetTableMatrix()[2][1]) && this->GetPlayerCards()->GetSize() == 2) {
+                this->GetHashTable()->AddToFilter(this->GetTableMatrix()[1][4]);
                 break;
             }
         }
@@ -245,14 +260,14 @@ Hand Hand::CheckParamInHand(const std::string referenceParameter, const std::str
         // If the "referenceParameter" is a rank, check for a rank
         if (referenceParameter == "R") {
             if (currentCard->data.CheckCardParam(currentCard->data.GetRank(), checkingParameter)) {
-                this->GetBloomFilter()->AddToFilter(this->GetFilterMatrix()[2][1]);
+                this->GetHashTable()->AddToFilter(this->GetTableMatrix()[2][1]);
                 break;
             }
         }
         // If the "referenceParameter" is a suit, check for a suit
         else if (referenceParameter == "S") {
             if (currentCard->data.CheckCardParam(currentCard->data.GetSuit(), checkingParameter)) {
-                this->GetBloomFilter()->AddToFilter(this->GetFilterMatrix()[2][1]);
+                this->GetHashTable()->AddToFilter(this->GetTableMatrix()[2][1]);
                 break;
             }
         }
@@ -283,22 +298,22 @@ Hand Hand::CheckParamInHand(const std::string referenceParameter, const std::str
 *       This function returns a Hand object after checking if a specific parameter is the same in a players hand
 */
 Hand Hand::CheckSameParamInHand(const std::string referenceParameter, const std::string checkingParameter) {
-    std::vector<bool> filterCopy = this->GetBloomFilter()->GetFilter();
-    this->GetBloomFilter()->AddToFilter(this->GetFilterMatrix()[2][2]);
+    std::vector<bool> filterCopy = this->GetHashTable()->GetTable();
+    this->GetHashTable()->AddToFilter(this->GetTableMatrix()[2][2]);
     // Iterate over the cards in a players hand
     for (int i = 1; i < this->GetPlayerCards()->GetSize(); i++) {
         std::shared_ptr<node<Card>> currentCard = this->GetPlayerCards()->RetrieveNode(i);
         // If the "referenceParameter" is a rank, check for the same rank in a hand
         if (referenceParameter == "R") {
             if (!currentCard->data.CheckCardParam(currentCard->data.GetRank(), this->GetPlayerCards()->RetrieveNode(0)->data.GetRank()) || (!checkingParameter.empty() && !currentCard->data.CheckCardParam(currentCard->data.GetRank(), checkingParameter))) {
-                this->GetBloomFilter()->GetFilter() = filterCopy;
+                this->GetHashTable()->GetTable() = filterCopy;
                 break;
             }
         }
         // If the "referenceParameter" is a suit, check for the same suit in a hand
         if (referenceParameter == "S") {
             if (!currentCard->data.CheckCardParam(currentCard->data.GetSuit(), this->GetPlayerCards()->RetrieveNode(0)->data.GetSuit()) || (!checkingParameter.empty() && !currentCard->data.CheckCardParam(currentCard->data.GetSuit(), checkingParameter))) {
-                this->GetBloomFilter()->GetFilter() = filterCopy;
+                this->GetHashTable()->GetTable() = filterCopy;
                 break;
             }
         }
@@ -320,6 +335,7 @@ Hand Hand::CheckSameParamInHand(const std::string referenceParameter, const std:
 Hand Hand::CopyVariables(std::shared_ptr<Hand>& input) {
     // Copy name, bank total, and wager to respective hand
     this->SetBankTotal(input->GetBankTotal());
+    this->SetHandsCurrentlyHeld(input->GetHandsCurrentlyHeld());
     this->SetHandsPlayed(input->GetHandsPlayed());
     this->SetName(input->GetName());
     this->SetWager(input->GetWager());
@@ -329,6 +345,7 @@ Hand Hand::CopyVariables(std::shared_ptr<Hand>& input) {
     this->GetHandNets() = input->GetHandNets();
     this->GetHandPlayed() = input->GetHandPlayed();
     this->GetHandWagers() = input->GetHandWagers();
+    this->GetPlayerHands() = input->GetPlayerHands();
     return *this;
 }
 
@@ -370,7 +387,7 @@ Hand Hand::InsurancePrompt() {
         std::cin >> input; time_sleep(SHORT_TIME_SLEEP);
         // User has chosen to buy insurance, set insurance wager
         if (input == "y") {
-            this->GetBloomFilter()->AddToFilter(this->GetFilterMatrix()[0][4]);
+            this->GetHashTable()->AddToFilter(this->GetTableMatrix()[0][4]);
             this->SetInsuranceWager(round_input(0.5*this->GetWager()));
             this->UpdateBank(0,this->GetInsuranceWager());
             return *this;
@@ -387,6 +404,28 @@ Hand Hand::InsurancePrompt() {
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             continue;
         }
+    }
+}
+
+/*  InsuranceSim - Determines if a player is to place an insurance wager in a simulated hand
+*   Input:
+*       input - Constant boolean value that is passed by reference that indicates if a player is going to place an insurance wager or not
+*   Algorithm:
+*       * Update the players hash table to indicate that they have placed an insurance wager
+*       * Set the insurance wager for a player
+*       * Withdraw the currency from a players bank
+*   Output:
+*       This function returns a Hand object after prompting the user about buying insurance
+*/
+Hand Hand::InsuranceSim(const bool& input) {
+    if (input) {
+        this->GetHashTable()->AddToFilter(this->GetTableMatrix()[0][4]);
+        this->SetInsuranceWager(round_input(0.5*this->GetWager()));
+        this->UpdateBank(0,this->GetInsuranceWager());
+        return *this;
+    }
+    else {
+        return *this;
     }
 }
 
@@ -409,6 +448,19 @@ Hand Hand::NamePrompt() {
     return *this;
 }
 
+/*  NameSim - Sets the name of a player of a hand for a simulated game
+*   Input:
+*       input - Constant string object that is passed by reference to be set to the players name
+*   Algorithm:
+*       * Call the "SetName" function to set the private data member "name" to "input"
+*   Output:
+*       This function returns a Hand object after prompting the user about what their name will be
+*/
+Hand Hand::NameSim(const std::string& input) {
+    this->SetName(input);
+    return *this;
+}
+
 /*  ParametersCheck - Checks to see if certain parameters in regards to wagering are met
 *   Input:
 *       dealerHand - Hand object passed by reference that represents the dealer's hand
@@ -424,57 +476,69 @@ Hand Hand::NamePrompt() {
 */
 Hand Hand::ParametersCheck(std::shared_ptr<Hand>& dealerHand) {
     // Reset Parameters
+    // Clear same parameter check
+    if (this->GetHashTable()->Contains(this->GetTableMatrix()[2][2])) {
+        this->GetHashTable()->RemoveElement(this->GetTableMatrix()[2][2]);
+    }
+    // Clear blackjack check
+    if (this->GetHashTable()->Contains(this->GetTableMatrix()[1][4])) {
+        this->GetHashTable()->RemoveElement(this->GetTableMatrix()[1][4]);
+    }
+    // Clear dealer blackjack
+    if (dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4])) {
+        dealerHand->GetHashTable()->RemoveElement(dealerHand->GetTableMatrix()[1][4]);
+    }
     // Clear can split aces
-    if (this->GetBloomFilter()->Contains(this->GetFilterMatrix()[0][2])) {
-        this->GetBloomFilter()->RemoveElement(this->GetFilterMatrix()[0][2]);
+    if (this->GetHashTable()->Contains(this->GetTableMatrix()[0][2])) {
+        this->GetHashTable()->RemoveElement(this->GetTableMatrix()[0][2]);
     }
     // Clear can split hand
-    if (this->GetBloomFilter()->Contains(this->GetFilterMatrix()[0][3])) {
-        this->GetBloomFilter()->RemoveElement(this->GetFilterMatrix()[0][3]);
+    if (this->GetHashTable()->Contains(this->GetTableMatrix()[0][3])) {
+        this->GetHashTable()->RemoveElement(this->GetTableMatrix()[0][3]);
     }
     // Clear can buy insurance
-    if (this->GetBloomFilter()->Contains(this->GetFilterMatrix()[0][0])) {
-        this->GetBloomFilter()->RemoveElement(this->GetFilterMatrix()[0][0]);
+    if (this->GetHashTable()->Contains(this->GetTableMatrix()[0][0])) {
+        this->GetHashTable()->RemoveElement(this->GetTableMatrix()[0][0]);
     }
     // Clear can double down
-    if (this->GetBloomFilter()->Contains(this->GetFilterMatrix()[0][1])) {
-        this->GetBloomFilter()->RemoveElement(this->GetFilterMatrix()[0][1]);
+    if (this->GetHashTable()->Contains(this->GetTableMatrix()[0][1])) {
+        this->GetHashTable()->RemoveElement(this->GetTableMatrix()[0][1]);
     }
-    // Clear soft seventeen check
-    if (this->GetBloomFilter()->Contains(this->GetFilterMatrix()[3][2])) {
-        this->GetBloomFilter()->RemoveElement(this->GetFilterMatrix()[3][2]);
+    // Clear soft seventeen
+    if (this->GetHashTable()->Contains(this->GetTableMatrix()[3][2])) {
+        this->GetHashTable()->RemoveElement(this->GetTableMatrix()[3][2]);
     }
     this->CheckSameParamInHand("R");
     this->CheckBlackJack();
     // Dealer Checks
     dealerHand->CheckBlackJack();
     // Can Split Hand Check
-    if (this->GetBloomFilter()->Contains(this->GetFilterMatrix()[2][2])) {
+    if (this->GetHashTable()->Contains(this->GetTableMatrix()[2][2]) && this->GetPlayerCards()->GetSize() == 2) {
         // Player has enough money to split
         if (this->GetBankTotal() >= this->GetWager()) {
             // Checking if player has aces
             bool aces = this->GetPlayerCards()->RetrieveNode(0)->data.CheckCardParam(this->GetPlayerCards()->RetrieveNode(0)->data.GetRank(), Ranks[0]);
             // Player doesn't have Aces, can still split hand
             if (!aces) {
-                this->GetBloomFilter()->AddToFilter(this->GetFilterMatrix()[0][3]);
+                this->GetHashTable()->AddToFilter(this->GetTableMatrix()[0][3]);
             }
             // Player has Aces, can split Aces, can't split regular hand
             else {
-                this->GetBloomFilter()->AddToFilter(this->GetFilterMatrix()[0][2]);
+                this->GetHashTable()->AddToFilter(this->GetTableMatrix()[0][2]);
             }
         }
     }
     // Insurance Check
-    if (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetRank() == Ranks[0]) {
+    if (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetRank() == Ranks[0] && !this->GetHashTable()->Contains(this->GetTableMatrix()[2][0])) {
         // Player has enough money to buy insurance
         if (this->GetBankTotal() >= 0.5*this->GetWager()) {
-            this->GetBloomFilter()->AddToFilter(this->GetFilterMatrix()[0][0]);
+            this->GetHashTable()->AddToFilter(this->GetTableMatrix()[0][0]);
         }
     }
     // Can Double Down Check
-    if (!this->GetBloomFilter()->Contains(this->GetFilterMatrix()[2][0])) {
-        if (this->GetBankTotal() >= this->GetWager() && !this->GetBloomFilter()->Contains(this->GetFilterMatrix()[1][0])) {
-            this->GetBloomFilter()->AddToFilter(this->GetFilterMatrix()[0][1]);
+    if (!this->GetHashTable()->Contains(this->GetTableMatrix()[2][0]) && !this->GetHashTable()->Contains(this->GetTableMatrix()[1][3])) {
+        if (this->GetBankTotal() >= this->GetWager()) {
+            this->GetHashTable()->AddToFilter(this->GetTableMatrix()[0][1]);
         }
     }
     // Soft Seventeen Check
@@ -482,7 +546,7 @@ Hand Hand::ParametersCheck(std::shared_ptr<Hand>& dealerHand) {
         std::shared_ptr<node<Card>> current = this->GetPlayerCards()->GetRoot();
         while (current != nullptr) {
             if (current->data.GetRank() == Ranks[0] && current->data.GetCardValue() == 11) {
-                this->GetBloomFilter()->AddToFilter(this->GetFilterMatrix()[3][2]);
+                this->GetHashTable()->AddToFilter(this->GetTableMatrix()[3][2]);
                 break;
             }
             current = current->nextNode;
@@ -508,7 +572,7 @@ Hand Hand::ParametersCheck(std::shared_ptr<Hand>& dealerHand) {
 *   Output:
 *       This function returns a Hand object after setting the wager of a players hand
 */
-Hand Hand::PlaceWager() {
+Hand Hand::PlaceWagerPrompt() {
     float input;
     while (true) {
         // Prompt user for the wager that they would like place for their hand
@@ -560,11 +624,27 @@ Hand Hand::PlaceWager() {
     }
 }
 
+/*  PlaceWagerSim - Places a wager for a the hand of a simulated game
+*   Input:
+*       input - Constant float passed by reference to represent the wager for a given hand
+*   Algorithm:
+*       * Set the wager for the current hand
+*       * Update the bank total for the player
+*       * Return the hand object
+*   Output:
+*       This function returns a Hand object after setting the wager of a players hand
+*/
+Hand Hand::PlaceWagerSim(const float& input) {
+    this->SetWager(input);
+    this->UpdateBank(0, this->GetWager());
+    return *this;
+}
+
 /*  ResetHand - Resets some private data members of a player
 *   Input:
 *       This function does not have any input parameters
 *   Algorithm:
-*       * Resets bloom filter of player
+*       * Resets hash table of player
 *       * Resets all float values to 0.00
 *       * Resets all integer values to 0
 *       * Clears all string values
@@ -573,14 +653,15 @@ Hand Hand::PlaceWager() {
 *       This function returns a Hand object after resetting select private data members
 */
 Hand Hand::ResetHand() {
-    // Filter values
-    this->GetBloomFilter()->ClearFilter();
+    // Table values
+    this->GetHashTable()->ClearHashTable();
     // Float Values
     this->SetInsuranceWager(0.00);
     this->SetNet(0.00);
     this->SetWager(0.00);
     // Integer Values
     this->SetCardsTotal(0);
+    this->SetHandsCurrentlyHeld(1);
     // String Values
     this->GetDisplayBankTotal().clear();
     this->GetDisplayCardsTotal().clear();
@@ -589,6 +670,7 @@ Hand Hand::ResetHand() {
     this->GetDisplayWager().clear();
     // List Values
     this->GetPlayerCards()->ClearList();
+    this->GetPlayerHands()->ClearList();
     return *this;
 }
 
@@ -785,6 +867,11 @@ void Hand::SetHandsBlackjack(const int& input) {
     player->handsBlackjack = input;
 }
 
+// SethandsCurrentlyHeld - Mutates the private data member "handsCurrentlyHeld" by assigning it to "input"
+void Hand::SetHandsCurrentlyHeld(const int& input) {
+    player->handsCurrentlyHeld = input;
+}
+
 // SetHandsLost - Mutates the private data member "handsLost" by assigning it to "input"
 void Hand::SetHandsLost(const int& input) {
     player->handsLost = input;
@@ -883,15 +970,20 @@ void Hand::SetPlayerCards(std::shared_ptr<node<Card>>& input) {
     player->playerCards->AppendNode(input);
 }
 
-// ----- ----- ----- ----- ----- ----- ----- Getter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
-// GetBloomFilter - Retrieves the private data member "bloomFilter"
-std::shared_ptr<BloomFilter>& Hand::GetBloomFilter() {
-    return player->bloomFilter;
+// SetPlayerHands - Mutates the private data member "hands" bt assigning it to "input"
+void Hand::SetPlayerHands(std::shared_ptr<node<std::shared_ptr<Hand>>>& input) {
+    hands->AppendNode(input);
 }
 
-// GetFilterMatrix - Retrieves the private data member "filterMatrix"
-std::vector<std::vector<std::string>>& Hand::GetFilterMatrix() {
-    return player->filterMatrix;
+// ----- ----- ----- ----- ----- ----- ----- Getter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
+// GetHashTable - Retrieves the private data member "hashTable"
+std::shared_ptr<HashTable>& Hand::GetHashTable() {
+    return player->hashTable;
+}
+
+// GetTableMatrix - Retrieves the private data member "tableMatrix"
+std::vector<std::vector<std::string>>& Hand::GetTableMatrix() {
+    return player->tableMatrix;
 }
 
 // GetBankTotal - Retrieves the private data member "bankTotal"
@@ -922,6 +1014,11 @@ int& Hand::GetCardsTotal() {
 // GetHandsBlackjack - Retrieves the private data member "handsBlackjack"
 int& Hand::GetHandsBlackjack() {
     return player->handsBlackjack;
+}
+
+// GetHandsCurrentlyHeld - Retrieves the private data member "handsCurrentlyHeld"
+int& Hand::GetHandsCurrentlyHeld() {
+    return player->handsCurrentlyHeld;
 }
 
 // GetHandsLost - Retrieves the private data member "handsLost"
@@ -1007,4 +1104,9 @@ std::shared_ptr<LinkedList<float>>& Hand::GetHandWagers() {
 // GetPlayerCards - Retrieves the private data member "playerCards"
 std::shared_ptr<LinkedList<Card>>& Hand::GetPlayerCards() {
     return player->playerCards;
+}
+
+// GetPlayerHands - Retrieves the private data member "hands"
+std::shared_ptr<LinkedList<std::shared_ptr<Hand>>>& Hand::GetPlayerHands() {
+    return hands;
 }

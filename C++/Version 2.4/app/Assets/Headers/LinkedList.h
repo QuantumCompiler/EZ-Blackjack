@@ -1,7 +1,7 @@
 // ----- ----- ----- ----- ----- ----- ----- Includes ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 #ifndef LINKEDLIST_H
 #define LINKEDLIST_H
-#include "../HPP/BloomFilter.hpp"
+#include "../HPP/HashTable.hpp"
 
 // ----- ----- ----- ----- ----- ----- ----- References ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 // https://www.geeksforgeeks.org/templates-cpp/

@@ -95,7 +95,7 @@ void progress_bar(const long input, const std::string loadingMessage, const std:
     // Length of progress bar
     int progressLength = 30;
     // Generate random color for loading bar
-    int randomLoad = randomInt(33, 36);
+    int randomLoad = random_int(33, 36);
     for (int progress = 0; progress <= progressLength; progress++) {
         float percentage = static_cast<float>(progress) / progressLength * 100;
         std::cout << color_text(randomLoad, "[");
@@ -115,7 +115,7 @@ void progress_bar(const long input, const std::string loadingMessage, const std:
     std::this_thread::sleep_for(std::chrono::milliseconds(input / 2));
 }
 
-/*  randomInt - This function generates a random integer value for a given range
+/*  random_int - This function generates a random integer value for a given range
 *   Input:
 *       lowerBound - Constant integer value that represents the lower bound of the random integer
 *       upperBound - Constant integer value that represents the upper bound fo the random integer
@@ -126,7 +126,7 @@ void progress_bar(const long input, const std::string loadingMessage, const std:
 *   Output:
 *       ret - Integer value that represents a random integer value in a specified range
 */
-int randomInt(const int lowerBound, const int upperBound) {
+int random_int(const int lowerBound, const int upperBound) {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> dist(lowerBound, upperBound);

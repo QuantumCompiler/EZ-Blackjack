@@ -17,6 +17,32 @@ Shoe::Shoe() {
 // De-Constructor
 Shoe::~Shoe() {}
 
+/*  CopyShoe - Copies the cards of one shoe to another
+*   Input:
+*       input - Constant smart pointer of object type Shoe that represents the shoe being copied
+*   Algorithm:
+*       * Get the root of the shoe
+*       * Copy cards from input to the shoe that is being copied
+*       * Return the shoe
+*   Output:
+*       This function returns a copied shoe object
+*/
+Shoe Shoe::CopyShoe(const std::shared_ptr<Shoe> input) {
+    // Get root of input shoe
+    std::shared_ptr<node<Card>> current = input->GetCardsInShoe()->GetRoot();
+    // Add cards to current shoe being copied
+    while (current != nullptr) {
+        std::shared_ptr<Card> currentCard(new Card(current->data.GetRank(), current->data.GetSuit()));
+        std::shared_ptr<node<Card>> currentNode = this->GetCardsInShoe()->InitNode(currentCard);
+        this->GetCardsInShoe()->AppendNode(currentNode);
+        current = current->nextNode;
+    }
+    // Copy the number of decks value
+    this->SetNumOfDecks(input->GetNumOfDecks());
+    // Return the shoe
+    return *this;
+}
+
 /*  CreateShoe - Function that is responsible for creating the shoe that is to be played with
 *   Input:
 *       This function does not have input parameters
@@ -33,10 +59,10 @@ Shoe::~Shoe() {}
 *   Output:
 *       This function returns a shoe object by referencing the shoe object that is being assembled
 */
-Shoe Shoe::CreateShoe() {
+Shoe Shoe::CreateShoePrompt() {
     bool needInput = false;
     // If "numOfDecks" is greater than zero, no need to prompt for how many decks to play with
-    if (GetNumOfDecks() == 0) {
+    if (this->GetNumOfDecks() == 0) {
         needInput = true;
     }
     // Continue to prompt for the number of decks if it "numOfDecks" has not been set
@@ -69,9 +95,9 @@ Shoe Shoe::CreateShoe() {
             }
             // Result is a positive integer, set "input" to "numOfDecks"
             else {
-                SetNumOfDecks(input);
+                this->SetNumOfDecks(input);
                 // Prompt for multiple decks
-                if (GetNumOfDecks() > 1) {
+                if (this->GetNumOfDecks() > 1) {
                     std::cout << std::endl << "This shoe will be comprised of " << color_text(31, std::to_string(input)) << " decks of cards. " << color_text(31, std::to_string(input * 52))
                     << " cards total." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                 }
@@ -85,12 +111,37 @@ Shoe Shoe::CreateShoe() {
         }
     }
     // Construct the deck of cards
-    for (int i = 1; i <= GetNumOfDecks(); i++) {
+    for (int i = 1; i <= this->GetNumOfDecks(); i++) {
         for (const auto& rank : Ranks) {
             for (const auto& suit : Suits) {
                 std::shared_ptr<Card> card(new Card(rank, suit));
                 std::shared_ptr<node<Card>> node = this->GetCardsInShoe()->InitNode(card);
                 SetCardsInShoe(node);
+            }
+        }
+    }
+    // Shuffle the shoe of cards
+    this->Shuffle();
+    // Return the shoe of cards
+    return *this;
+}
+
+/*  CreateShoeSim - Function that is responsible for creating the shoe that is to be played with in a simulated game
+*   Input:
+*       This function does not have input parameters
+*   Algorithm:
+*       * Construct the shoe of cards for the given number of decks
+*   Output:
+*       This function returns a shoe object by referencing the shoe object that is being assembled
+*/
+Shoe Shoe::CreateShoeSim() {
+    // Construct the deck of cards
+    for (int i = 1; i <= this->GetNumOfDecks(); i++) {
+        for (const auto& rank : Ranks) {
+            for (const auto& suit : Suits) {
+                std::shared_ptr<Card> card(new Card(rank, suit));
+                std::shared_ptr<node<Card>> node = this->GetCardsInShoe()->InitNode(card);
+                this->SetCardsInShoe(node);
             }
         }
     }

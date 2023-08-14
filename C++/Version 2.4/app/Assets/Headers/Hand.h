@@ -2,11 +2,11 @@
 #ifndef HAND_H
 #define HAND_H
 #include "../HPP/Shoe.hpp"
-#define BLOOMFILTERSIZE 10000
-#define BLOOMFILTERITERATIONS 32
+#define HashTableSIZE 10000
+#define HashTableITERATIONS 32
 /*  Structure Player - Struct to resemble a playing card
 *   Data Members:
-*     Filter Values:
+*     Table Values:
 *       canBuyInsurance - String value that represents if a player is eligible to buy insurance
 *       canDoubleDown - String value that represents if a player is eligible to double down
 *       canSplitAces - String value that represents if a player is eligible to split Aces
@@ -35,6 +35,7 @@
 *     Integer Values:
 *       cardsTotal - Integer value that represents the total value of a players hand of cards
 *       handsBlackjack - Integer value that represents how many blackjack hands a player has had
+*       handsCurrentlyHeld - Integer value that represents the number of individual hands that a player has
 *       handsLost - Integer value that represents how many hands a player has lost
 *       handsPlayed - Integer value that represents the number of total hands played by a player
 *       handsPushed - Integer value that represents the number of total hands a player has pushed
@@ -56,9 +57,9 @@
 *       playerCards - Linked list of Cards that represent a players cards
 */
 struct Player {
-    // BloomFilter Filters
-    std::shared_ptr<BloomFilter> bloomFilter;
-    // Filter Values
+    // HashTable Filters
+    std::shared_ptr<HashTable> hashTable;
+    // Table Values
     std::string canBuyInsurance = "CanBuyInsurance";
     std::string canDoubleDown = "CanDoubleDown";
     std::string canSplitAces = "CanSplitAces";
@@ -79,8 +80,8 @@ struct Player {
     std::string softSeventeen = "SoftSevenTeen";
     std::string splitAcesResponse = "SplitAcesResponse";
     std::string splitHandResponse = "SplitHandResponse";
-    // Filter Matrix
-    std::vector<std::vector<std::string>> filterMatrix = {
+    // Table Matrix
+    std::vector<std::vector<std::string>> tableMatrix = {
         {canBuyInsurance, canDoubleDown, canSplitAces, canSplitHand, choseBuyInsurance},
         {choseDoubleDown, choseSplitAces, choseSplitHand, doubleDownResponse, hasBlackjack},
         {hasHit, paramInHand, sameParamInHand, shouldDoubleDown, shouldHit},
@@ -94,6 +95,7 @@ struct Player {
     // Integer Values
     int cardsTotal;
     int handsBlackjack;
+    int handsCurrentlyHeld;
     int handsLost;
     int handsPlayed;
     int handsPushed;
@@ -122,16 +124,20 @@ public:
     // Class Functions
     Hand AddCardToHand(std::shared_ptr<node<Card>>& input); // Adds card to hand
     Hand AddHandTotal(); // Adds current hand total
-    Hand BankDeposit(); // Deposits currency into a players bank
+    Hand BankDepositPrompt(); // Deposits currency into a players bank
+    Hand BankDepositSim(const float& input); // Deposits currency into a players bank for a simulated game
     Hand CheckBlackJack(); // Checks for if a player has blackjack
     Hand CheckParamInHand(const std::string referenceParameter, const std::string checkingParameter); // Checks if a player has a specific parameter in their hand
     Hand CheckSameParamInHand(const std::string referenceParameter, const std::string checkingParameter = ""); // Checks if a player has the same parameter in their hand
     Hand CopyVariables(std::shared_ptr<Hand>& input);
     Hand HitHand(std::shared_ptr<Shoe>& input); // Adds a card to a players hand from a shoe
     Hand InsurancePrompt(); // Prompts a player if they would like to place an insurance wager
+    Hand InsuranceSim(const bool& input); // Places an insurance wager for a simulate hand
     Hand NamePrompt(); // Prompts the player for a name that they would like to be called
+    Hand NameSim(const std::string& input); // Sets the name of a player of a hand for a simulated game
     Hand ParametersCheck(std::shared_ptr<Hand>& dealerHand); // Checks for certain parameters of how a player can play their hand
-    Hand PlaceWager(); // Prompts a player for how much currency they would like to place as a wager for a hand
+    Hand PlaceWagerPrompt(); // Prompts a player for how much currency they would like to place as a wager for a hand
+    Hand PlaceWagerSim(const float& input); // Places the wager for a players hand in a simulated game
     Hand ResetHand(); // Resets certain parameters for a players hand
     Hand ShowHand(std::string option = "", const std::string dealerShow = ""); 
     Hand UpdateBank(const int choice, const float& wager); // Updates the bank total of a player
@@ -144,6 +150,7 @@ public:
     // Integer Values
     void SetCardsTotal(const int& input); // Mutates "cardsTotal"
     void SetHandsBlackjack(const int& input); // Mutates "handsBlackjack"
+    void SetHandsCurrentlyHeld(const int& input); // Mutates "handsCurrentlyHeld"
     void SetHandsLost(const int& input); // Mutates "handsLost"
     void SetHandsPlayed(const int& input); // Mutates "handsPlayed"
     void SetHandsPushed(const int& input); // Mutates "handsPushed"
@@ -163,10 +170,11 @@ public:
     void SetHandPlayed(std::shared_ptr<node<int>>& input); // Mutates "handPlayed"
     void SetHandWagers(std::shared_ptr<node<float>>& input); // Mutates "handWagers"
     void SetPlayerCards(std::shared_ptr<node<Card>>& input); // Mutates "playerCards"
+    void SetPlayerHands(std::shared_ptr<node<std::shared_ptr<Hand>>>& input); // Mutates "playerHands"
     // Getter Functions
-    // Filter Values
-    std::shared_ptr<BloomFilter>& GetBloomFilter(); // Retrieves "bloomFilter"
-    std::vector<std::vector<std::string>>& GetFilterMatrix(); // Retrieves "filterMatrix"
+    // Table Values
+    std::shared_ptr<HashTable>& GetHashTable(); // Retrieves "hashTable"
+    std::vector<std::vector<std::string>>& GetTableMatrix(); // Retrieves "tableMatrix"
     // Float Values
     float& GetBankTotal(); // Retrieves "bankTotal"
     float& GetInsuranceWager(); // Retrieves "insuranceWager"
@@ -175,6 +183,7 @@ public:
     // Integer Values
     int& GetCardsTotal(); // Retrieves "cardsTotal"
     int& GetHandsBlackjack(); // Retrieves "handsBlackjack"
+    int& GetHandsCurrentlyHeld(); // Retrieves "handsCurrentlyHeld"
     int& GetHandsLost(); // Retrieves "handsLost"
     int& GetHandsPlayed(); // Retrieves "handsPlayed"
     int& GetHandsPushed(); // Retrieves "handsPushed"
@@ -194,8 +203,10 @@ public:
     std::shared_ptr<LinkedList<int>>& GetHandPlayed(); // Retrieves "handPlayed"
     std::shared_ptr<LinkedList<float>>& GetHandWagers(); // Retrieves "handWagers"
     std::shared_ptr<LinkedList<Card>>& GetPlayerCards(); // Retrieves "playerCards"
+    std::shared_ptr<LinkedList<std::shared_ptr<Hand>>>& GetPlayerHands(); // Retrieves "playerHands"
 private:
     std::shared_ptr<Player> player; // Private data member that encapsulates the Player structure
+    std::shared_ptr<LinkedList<std::shared_ptr<Hand>>> hands; // Private data member for the hands of a player
 };
 
 #endif

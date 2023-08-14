@@ -18,6 +18,7 @@
 *   Input:
 *       playerHand - Hand object that is passed by reference that represents the hand of a user
 *       dealerHand - Hand object that is passed by reference that represents the hand of a dealer
+*       showStrategy - Boolean value that is passed by reference that indicates if hints will be shown to a player
 *   Algorithm:
 *       * Check the parameters of the hand "playerHand"
 *       * Check if the player has a an Ace in their hand and if they have duplicate ranks in their hand
@@ -29,14 +30,14 @@
 *   Output:
 *       This function does not output any values, in modifies specific boolean values of "playerHand" and outputs a message to terminal
 */
-void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand) { 
+void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, bool showStrategy) { 
     // Remove "paramInHand" if present
-    if (playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[2][1])) {
-        playerHand->GetBloomFilter()->RemoveElement(playerHand->GetFilterMatrix()[2][1]);
+    if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[2][1])) {
+        playerHand->GetHashTable()->RemoveElement(playerHand->GetTableMatrix()[2][1]);
     }
     // Remove "sameParamInHand" if present
-    if (playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[2][2])) {
-        playerHand->GetBloomFilter()->RemoveElement(playerHand->GetFilterMatrix()[2][2]);
+    if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[2][2])) {
+        playerHand->GetHashTable()->RemoveElement(playerHand->GetTableMatrix()[2][2]);
     }
     // Check the parameters of "playerHand"
     playerHand->ParametersCheck(dealerHand);
@@ -52,8 +53,8 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
     std::string should_split_or_hit = "Blackjack strategy suggests that " + playerHand->GetDisplayName() + " should " + color_text(31, "hit") + " or " + color_text(31, "split") + ".";
     std::string should_stand = "Blackjack strategy suggests that " + playerHand->GetDisplayName() + " should " + color_text(31, "stand") + ".";
     // Logic for if a player is dealt the same rank and only two cards are in the hand with them having not decided if they want to split or not
-    if (((playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[0][3]) && !playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[3][4])) 
-        || (playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[0][2]) && !playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[3][3]))) && playerHand->GetPlayerCards()->GetSize() == 2) {
+    if (((playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][3]) && !playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[3][4])) 
+        || (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][2]) && !playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[3][3]))) && playerHand->GetPlayerCards()->GetSize() == 2) {
         // Check value of players cards
         switch (playerHand->GetCardsTotal()) {
             // Player card total is 4 (two, two) or 6 (three, three)
@@ -65,9 +66,11 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 2:
                     case 3:
                         // Player should split or hit
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[3][0]);
-                        std::cout << std::endl << should_split_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][0]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_split_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
                         break;
                     // Dealer is showing a 4, 5, 6 or 7
                     case 4:
@@ -75,8 +78,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 6:
                     case 7:
                         // Player should split
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[3][0]);
-                        std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][0]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
                         break;
                     case 8:
                     case 9:
@@ -84,8 +89,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 1:
                     case 11:
                         // Player should hit
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                        std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
                         break;
                     default:
                         break;
@@ -99,9 +106,11 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 5:
                     case 6:
                         // Player should split or hit
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[3][0]);
-                        std::cout << std::endl << should_split_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][0]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_split_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
                         break;
                     case 2:
                     case 3:
@@ -113,8 +122,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 1:
                     case 11:
                         // Player should hit
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                        std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
                         break;
                     default:
                         break;
@@ -129,8 +140,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 1:
                     case 11:
                         // Player should hit
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                        std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
                         break;
                     // Otherwise
                     case 2:
@@ -142,15 +155,19 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 8:
                     case 9:
                         // Player can double down
-                        if (playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[0][1])) {
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][3]);
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                            std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][3]);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
                         }
                         // Player cannot double down
                         else {
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
                         }
                         break;
                     default:
@@ -160,7 +177,7 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
             // Player card total is 12 (six, six || Ace, Ace) 
             case 12:
                 // Player has Aces
-                if (playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[2][1])) {
+                if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[2][1])) {
                     // Checking the value of the card that is face up of the dealer
                     switch (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
                         // Dealer is showing any card
@@ -176,8 +193,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                         case 1:
                         case 11:
                             // Player should split
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[3][0]);
-                            std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][0]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
                             break;
                         default:
                             break;
@@ -190,9 +209,11 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                         // Dealer is showing a 7
                         case 7:
                             // Player should split or hit
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[3][0]);
-                            std::cout << std::endl << should_split_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][0]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_split_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
                             break;
                         case 2:
                         case 3:
@@ -200,8 +221,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                         case 5:
                         case 6:
                             // Player should split
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[3][0]);
-                            std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][0]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
                             break;
                         case 8:
                         case 9:
@@ -209,8 +232,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                         case 1:
                         case 11:
                             // Player should hit
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
                             break;
                         default:
                             break;
@@ -224,9 +249,11 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     // Dealer is showing an 8
                     case 8:
                         // Player should split or hit
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[3][0]);
-                        std::cout << std::endl << should_split_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][0]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_split_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
                         break;
                     // Dealer is showing a 2 - 7
                     case 2:
@@ -236,8 +263,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 6:
                     case 7:
                         // Player should split
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[3][0]);
-                        std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][0]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
                         break;
                     // Otherwise
                     case 9:
@@ -245,8 +274,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 1:
                     case 11:
                         // Player should hit
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                        std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
                         break;
                     default:
                         break;
@@ -269,8 +300,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 1:
                     case 11:
                         // Player should split
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[3][0]);
-                        std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);            
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][0]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }          
                         break;
                     default:
                         break;
@@ -286,8 +319,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 1:
                     case 11:
                         // Player should stand
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[3][1]);
-                        std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP); 
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][1]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP); 
+                        }
                         break;
                     // Otherwise
                     case 2:
@@ -298,8 +333,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 8:
                     case 9:
                         // Player should split
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[3][0]);
-                        std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][0]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
                         break;
                     default:
                         break;
@@ -322,8 +359,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 1:
                     case 11:
                         // Player should stand
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[3][1]);
-                        std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP); 
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][1]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP); 
+                        }
                         break;
                     default:
                         break;
@@ -334,7 +373,7 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
         }
     }
     // Logic for if a player is dealt an Ace and only two cards are in the hand
-    else if (playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[2][1]) && !playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[2][2]) && playerHand->GetPlayerCards()->GetSize() == 2) {
+    else if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[2][1]) && !playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[2][2]) && playerHand->GetPlayerCards()->GetSize() == 2) {
         // Check value of players cards
         switch (playerHand->GetCardsTotal()) {
             // Player card total is 13 or 14 (Ace, 2 || Ace, 3)
@@ -346,17 +385,21 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 5:
                     case 6:
                         // Player can double down
-                        if (playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[0][1])) {
+                        if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
                             // Player should double down or hit
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][3]);
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                            std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][3]);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
                         }
                         // Player cannot double down
                         else {
                             // Player should hit
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
                         }
                         break;
                     // Dealer is showing 2 - 4 or 7 - Face or Ace
@@ -370,8 +413,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 11:
                     case 1:
                         // Player should hit
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                        std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
                         break;
                     default:
                         break;
@@ -387,17 +432,21 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 5:
                     case 6:
                         // Player can double down
-                        if (playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[0][1])) {
+                        if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
                             // Player should double down or hit
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][3]);
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                            std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][3]);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
                         }
                         // Player cannot double down
                         else {
                             // Player should hit
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
                         }              
                         break;
                     // Otherwise
@@ -410,8 +459,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 1:
                     case 11:
                         // Player should hit
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                        std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
                         break;
                     default:
                         break;
@@ -427,17 +478,21 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 5:
                     case 6:
                         // Player can double down
-                        if (playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[0][1])) {
+                        if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
                             // Player should double down or hit
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][3]);
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                            std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][3]);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
                         }
                         // Player cannot double down
                         else {
                             // Player should hit
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
                         }
                         break;
                     // Otherwise
@@ -449,8 +504,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 1:
                     case 11:
                         // Player should hit
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                        std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
                         break;
                     default:
                         break;
@@ -465,8 +522,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 7:
                     case 8:
                         // Player should stand
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[3][1]);
-                        std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP); 
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][1]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP); 
+                        }
                         break;
                     // Dealer is showing a 3, 4, 5, or 6
                     case 3:
@@ -474,16 +533,20 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 5:
                     case 6:
                         // Player can double down
-                        if (playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[0][1])) {
+                        if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
                             // Player should double down or stand
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][3]);
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[3][1]);
-                            std::cout << std::endl << should_double_down_or_stand << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][3]);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][1]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_double_down_or_stand << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
                         }
                         else {
                             // Player should stand
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[3][1]);
-                            std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP); 
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][1]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
                         }
                         break;
                     // Dealer is showing 9, Face, or Ace
@@ -492,8 +555,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 1:
                     case 11:
                         // Player should hit
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                        std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
                         break;
                     default:
                         break;
@@ -518,8 +583,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 1:
                     case 11:
                         // Player should stand
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[3][1]);
-                        std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP); 
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][1]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        } 
                         break;
                     default:
                         break;
@@ -554,8 +621,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 10:
                     case 11:
                         // Player should hit
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                        std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
                         break;
                     default:
                         break;
@@ -572,17 +641,21 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 5:
                     case 6:
                         // Player can double down
-                        if (playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[0][1])) {
+                        if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
                             // Player should double down or hit
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][3]);
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                            std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][3]);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
                         }
                         // Player cannot double down
                         else {
                             // Player should hit
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
                         }
                         break;
                     // Dealer is showing 7-Face or Ace
@@ -593,8 +666,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 11:
                     case 1:
                         // Player should hit
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                        std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
                         break;
                     default:
                         break;
@@ -614,17 +689,21 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 8:
                     case 9:
                         // Player can double down
-                        if (playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[0][1])) {
+                        if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
                             // Player should double down or hit
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][3]);
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                            std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][3]);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
                         }
                         // Player cannot double down
                         else {
                             // Player should hit
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
                         }
                         break;
                     // Dealer is showing a face card or Ace
@@ -632,8 +711,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 11:
                     case 1:
                         // Player should hit
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                        std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
                         break;
                     default:
                         break;
@@ -656,17 +737,21 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 10:
                     case 11:
                         // Player can double down
-                        if (playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[0][1])) {
+                        if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
                             // Player should double down or hit
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][3]);
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                            std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][3]);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
                         }
                         // Player cannot double down
                         else {
                             // Player should hit
-                            playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
                         }
                         break;
                     default:
@@ -687,16 +772,20 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 1:
                     case 11:
                         // Player should hit
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                        std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
                         break;
                     // Dealer is showing a 4-6
                     case 4:
                     case 5:
                     case 6:
                         // Player should stand
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[3][1]);
-                        std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP);  
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][1]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
                         break;
                     default:
                         break;
@@ -716,8 +805,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 5:
                     case 6:
                         // Player should stand
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[3][1]);
-                        std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP); 
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][1]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
                         break;
                     // Dealer is showing 7-Face or Ace
                     case 7:
@@ -727,8 +818,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 1:
                     case 11:
                         // Player should hit
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[2][4]);
-                        std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
                         break;
                     default:
                         break;
@@ -755,8 +848,10 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
                     case 1:
                     case 11:
                         // Player should stand
-                        playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[3][1]);
-                        std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP); 
+                        playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][1]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP); 
+                        }
                         break;
                     default:
                         break;
@@ -834,7 +929,7 @@ std::string csv_generator(std::shared_ptr<Hand>& input) {
 std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> deal_hand(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& inputShoe) {
     // Have player place wager
     if (playerHand->GetWager() == 0) {
-        playerHand->PlaceWager();
+        playerHand->PlaceWagerPrompt();
     }
     // Deal cards to players
     for (int i = 0; i < 4; i++) {
@@ -849,6 +944,39 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> 
     std::cout << std::endl << "Here are the initial hands of each player: " << std::endl << std::endl; time_sleep(SHORT_TIME_SLEEP);
     playerHand->ShowHand("initial");
     dealerHand->ShowHand("initial", "");
+    playerHand->ParametersCheck(dealerHand);
+    dealerHand->CheckBlackJack();
+    return std::make_tuple(playerHand, dealerHand, inputShoe);
+}
+
+
+/*  deal_hand_sim - Deals cards to players and shows the hands of each player after the deal for a simulated game
+*   Input:
+*       playerHand - Hand object passed by reference that represents the users hand
+*       dealerHand - Hand object passed by reference that represents the dealers hand
+*       inputShoe - Shoe object passed by reference that represents the show of of the game
+*       playerWager - Wafer that is to be placed for the player
+*   Algorithm:
+*       * Place wager for the players hand
+*       * Deal cards to a player and dealer
+*       * Return the Hand objects and the Shoe object
+*   Output:
+*       playerHand - Hand object that is modified after having cards added to it
+*       dealerHand - Hand object that is modified after having cards added to it
+*       inputShoe - Shoe object that is changed after having cards dealt from it
+*/
+std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> deal_hand_sim(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& inputShoe, const float& playerWager) {
+    // Place wager for player
+    playerHand->PlaceWagerSim(playerWager);
+    // Deal cards to players
+    for (int i = 0; i < 4; i++) {
+        if (i % 2 == 0) {
+            playerHand->HitHand(inputShoe);
+        }
+        else if (i % 2 == 1) {
+            dealerHand->HitHand(inputShoe);
+        }
+    }
     playerHand->ParametersCheck(dealerHand);
     dealerHand->CheckBlackJack();
     return std::make_tuple(playerHand, dealerHand, inputShoe);
@@ -894,16 +1022,16 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Shoe>> dealer_logic(std::vecto
         // Check if the dealer has an Ace in their hand
         dealerHand->CheckParamInHand("R", Ranks[0]);
         // Dealer has a hand total of seventeen or greater with no Ace in hand
-        if (dealerHand->GetCardsTotal() >= 17 && !dealerHand->GetBloomFilter()->Contains(dealerHand->GetFilterMatrix()[2][1])) {
+        if (dealerHand->GetCardsTotal() >= 17 && !dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[2][1])) {
             std::cout << std::endl << "The " << dealerHand->GetDisplayName() << " does not need to play their hand with a final total of " << dealerHand->GetDisplayCardsTotal() << "." << std::endl; time_sleep(SHORT_TIME_SLEEP);
         }
         // Dealer has less than 17 or has a soft 17
-        else if (dealerHand->GetCardsTotal() < 17 || dealerHand->GetBloomFilter()->Contains(dealerHand->GetFilterMatrix()[3][2])) {
+        else if (dealerHand->GetCardsTotal() < 17 || dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[3][2])) {
             std::cout << std::endl << "The " << dealerHand->GetDisplayName() << " will now play their hand." << std::endl; time_sleep(SHORT_TIME_SLEEP);
             // Dealer must continue to play and will hit on soft seventeen
-            while ((dealerHand->GetCardsTotal() < 17 || dealerHand->GetBloomFilter()->Contains(dealerHand->GetFilterMatrix()[3][2]))) {
+            while ((dealerHand->GetCardsTotal() < 17 || dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[3][2]))) {
                 // Dealer still has less than seventeen or possesses a soft seventeen
-                if (dealerHand->GetCardsTotal() < 17 || dealerHand->GetBloomFilter()->Contains(dealerHand->GetFilterMatrix()[3][2])) {
+                if (dealerHand->GetCardsTotal() < 17 || dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[3][2])) {
                     dealerHand->HitHand(shoe);
                     std::cout << dealerHand->GetDisplayName() << " hits hand: ";
                     dealerHand->ShowHand("", "cards");
@@ -911,7 +1039,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Shoe>> dealer_logic(std::vecto
                     continue;
                 }
                 // Dealer has 17 or higher and does not have a soft seventeen
-                else if (dealerHand->GetCardsTotal() >= 17 && !dealerHand->GetBloomFilter()->Contains(dealerHand->GetFilterMatrix()[3][2])) {
+                else if (dealerHand->GetCardsTotal() >= 17 && !dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[3][2])) {
                     break;
                 }
             }
@@ -961,12 +1089,12 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>, 
     // Define "hand_continue" boolean value to true
     bool hand_continue = true;
     // Player can buy insurance
-    if (playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[0][0])) {
+    if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][0])) {
         // Tell user that the dealer is showing an Ace and ask them if they would like to buy insurance
         std::cout << std::endl << "The " << dealerHand->GetDisplayName() << " is showing an " << dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetDisplayRank() << ". " << std::endl; time_sleep(SHORT_TIME_SLEEP);
         playerHand->InsurancePrompt();
         // Output a message telling the user they bought insurance
-        if (playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[0][4])) {
+        if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][4])) {
             std::cout << std::endl << playerHand->GetDisplayName() << " has chosen to buy insurance. Your insurance wager is " << playerHand->GetDisplayInsuranceWager() << "." << std::endl; time_sleep(SHORT_TIME_SLEEP);
         }
         // Output a message telling the user they refused to buy insurance
@@ -974,8 +1102,8 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>, 
             std::cout << std::endl << playerHand->GetDisplayName() << " has chosen to not buy insurance." << std::endl; time_sleep(SHORT_TIME_SLEEP);
         }
         // Both players have blackjack, hand ends
-        if (dealerHand->GetBloomFilter()->Contains(dealerHand->GetFilterMatrix()[1][4]) && playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[1][4])) {
-            if (playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[0][4])) {
+        if (dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]) && playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[1][4])) {
+            if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][4])) {
                 std::cout << std::endl << "Both players have blackjack. " << playerHand->GetDisplayName() << " wins insurance and pushes their original wager. " << std::endl; time_sleep(SHORT_TIME_SLEEP);
                 playerHand->UpdateBank(3, playerHand->GetWager());
                 playerHand->UpdateBank(5, playerHand->GetInsuranceWager());
@@ -992,8 +1120,8 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>, 
             stats_tracker(playerHand);
         }
         // Dealer has blackjack, player does not, hand ends
-        else if (dealerHand->GetBloomFilter()->Contains(dealerHand->GetFilterMatrix()[1][4]) && !playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[1][4])) {
-            if (playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[0][4])) {
+        else if (dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]) && !playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[1][4])) {
+            if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][4])) {
                 std::cout << std::endl << dealerHand->GetDisplayName() << " has blackjack but " << playerHand->GetDisplayName() << " does not. " << playerHand->GetDisplayName()
                 << " wins insurance but loses their original wager. "; time_sleep(SHORT_TIME_SLEEP);
                 playerHand->UpdateBank(2, playerHand->GetWager());
@@ -1012,8 +1140,8 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>, 
             stats_tracker(playerHand);
         }
         // Dealer does not have blackjack, player does, hand ends
-        else if (!dealerHand->GetBloomFilter()->Contains(dealerHand->GetFilterMatrix()[1][4]) && playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[1][4])) {
-            if (playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[0][4])) {
+        else if (!dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]) && playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[1][4])) {
+            if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][4])) {
                 std::cout << std::endl << playerHand->GetDisplayName() << " has blackjack and " << dealerHand->GetDisplayName() << " does not. " << playerHand->GetDisplayName()
                 << " loses insurance but wins their original wager. "; time_sleep(SHORT_TIME_SLEEP);
                 playerHand->UpdateBank(4, playerHand->GetWager());
@@ -1033,7 +1161,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>, 
         }
         // Neither player has blackjack, hand continues
         else {
-            if (playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[0][4])) {
+            if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][4])) {
                 std::cout << std::endl << "Neither player has blackjack. " << playerHand->GetDisplayName() << " loses their insurance wager. The hand will continue." << std::endl << std::endl; time_sleep(SHORT_TIME_SLEEP);
                 playerHand->UpdateBank(2, playerHand->GetInsuranceWager());
             }
@@ -1053,7 +1181,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>, 
             }
         }
         // Both players have blackjack, hand ends
-        if (dealerHand->GetBloomFilter()->Contains(dealerHand->GetFilterMatrix()[1][4]) && playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[1][4])) {
+        if (dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]) && playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[1][4])) {
             std::cout << std::endl << "Both players have blackjack. " << playerHand->GetDisplayName() << " pushes their original wager." << std::endl; time_sleep(SHORT_TIME_SLEEP);
             playerHand->UpdateBank(3, playerHand->GetWager());
             std::cout << std::endl << "Here are the final hands of the players:" << std::endl; time_sleep(SHORT_TIME_SLEEP);
@@ -1064,7 +1192,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>, 
             stats_tracker(playerHand);
         }
         // Dealer has blackjack, player does not, hand ends
-        else if (dealerHand->GetBloomFilter()->Contains(dealerHand->GetFilterMatrix()[1][4]) && !playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[1][4])) {
+        else if (dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]) && !playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[1][4])) {
             std::cout << std::endl << dealerHand->GetDisplayName() << " has blackjack but " << playerHand->GetDisplayName() << " does not. " << playerHand->GetDisplayName()
             << " loses their original wager." << std::endl; time_sleep(SHORT_TIME_SLEEP);
             playerHand->UpdateBank(2, playerHand->GetWager());
@@ -1076,7 +1204,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>, 
             stats_tracker(playerHand);
         }
         // Dealer does not have blackjack, player does, hand ends
-        else if (!dealerHand->GetBloomFilter()->Contains(dealerHand->GetFilterMatrix()[1][4]) && playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[1][4])) {
+        else if (!dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]) && playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[1][4])) {
             std::cout << std::endl << playerHand->GetDisplayName() << " has blackjack and " << dealerHand->GetDisplayName() << " does not. " << playerHand->GetDisplayName()
             << " wins their original wager." << std::endl; time_sleep(SHORT_TIME_SLEEP);
             playerHand->UpdateBank(4, playerHand->GetWager());
@@ -1084,6 +1212,105 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>, 
             playerHand->ShowHand("final");
             dealerHand->ShowHand("final", "show");
             std::cout << std::endl << playerHand->GetDisplayName() << " wins the current hand. " << playerHand->GetDisplayName() << " nets " << playerHand->GetDisplayNet() << " this hand." << std::endl; time_sleep(SHORT_TIME_SLEEP);
+            hand_continue = false;
+            stats_tracker(playerHand);
+        }
+        // Neither player has blackjack, hand continues
+        else {
+            hand_continue = true;
+        }
+    }
+    return std::make_tuple(playerHand, dealerHand, inputShoe, hand_continue);
+}
+
+/*  dealer_showing_ace_sim - Checks to see if the dealer is showing an Ace and if a player has blackjack or not for a simulated hand
+*   Input:
+*       playerHand - Hand object passed by reference that represents the user's hand
+*       dealerHand - Hand object passed by reference that represents the dealer's hand
+*       inputShoe - Shoe object passed by reference that represents the shoe that is being played with
+*       playerWager - Float value that represents the player wager that is to be placed
+*       buyInsurance - Boolean value that represents if insurance is to be purchased if possible
+*   Algorithm:
+*       * Deal hands to the players with the "deal_hand_sim" function
+*       * Create a boolean value "hand_continue" that keeps track if a hand is to be continued
+*       * Proceed to check if the player is able to buy insurance (This is done with the "ParametersCheck" function in "deal_hand")
+*       * Place insurance wager if chosen to do so
+*       * The "hand_continue" boolean value is updated for each case, depending on what the scenario is
+*       * Return values at the end of the if else statements
+*   Output:
+*       playerHand - Modified Hand object after checking for below cases that represents the players hand
+*       dealerHand - Hand object that represents the dealers hand after checking cases
+*       inputShoe - Shoe object that represents the game shoe that is being played with
+*/
+std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>, bool> dealer_showing_ace_sim(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& inputShoe, const float playerWager, const bool buyInsurance) {
+    // Deal hands to player
+    deal_hand_sim(playerHand, dealerHand, inputShoe, playerWager);
+    // Define "hand_continue" boolean value to true
+    bool hand_continue = true;
+    // Player can buy insurance
+    if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][0])) {
+        playerHand->InsuranceSim(buyInsurance);
+        // Both players have blackjack, hand ends
+        if (dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]) && playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[1][4])) {
+            if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][4])) {
+                playerHand->UpdateBank(3, playerHand->GetWager());
+                playerHand->UpdateBank(5, playerHand->GetInsuranceWager());
+            }
+            else {
+                playerHand->UpdateBank(3, playerHand->GetWager());
+            }
+            hand_continue = false;
+            stats_tracker(playerHand);
+        }
+        // Dealer has blackjack, player does not, hand ends
+        else if (dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]) && !playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[1][4])) {
+            if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][4])) {
+                playerHand->UpdateBank(2, playerHand->GetWager());
+                playerHand->UpdateBank(5, playerHand->GetInsuranceWager());
+            }
+            else {
+                playerHand->UpdateBank(2, playerHand->GetWager());
+            }
+            hand_continue = false;
+            stats_tracker(playerHand);
+        }
+        // Dealer does not have blackjack, player does, hand ends
+        else if (!dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]) && playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[1][4])) {
+            if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][4])) {
+                playerHand->UpdateBank(4, playerHand->GetWager());
+                playerHand->UpdateBank(2, playerHand->GetInsuranceWager());
+            }
+            else {
+                playerHand->UpdateBank(4, playerHand->GetWager());
+            }
+            hand_continue = false;
+            stats_tracker(playerHand);
+        }
+        // Neither player has blackjack, hand continues
+        else {
+            if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][4])) {
+                playerHand->UpdateBank(2, playerHand->GetInsuranceWager());
+            }
+            hand_continue = true;
+        }
+    }
+    // Player is not able to buy insurance
+    else {
+        // Both players have blackjack, hand ends
+        if (dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]) && playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[1][4])) {
+            playerHand->UpdateBank(3, playerHand->GetWager());
+            hand_continue = false;
+            stats_tracker(playerHand);
+        }
+        // Dealer has blackjack, player does not, hand ends
+        else if (dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]) && !playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[1][4])) {
+            playerHand->UpdateBank(2, playerHand->GetWager());
+            hand_continue = false;
+            stats_tracker(playerHand);
+        }
+        // Dealer does not have blackjack, player does, hand ends
+        else if (!dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]) && playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[1][4])) {
+            playerHand->UpdateBank(4, playerHand->GetWager());
             hand_continue = false;
             stats_tracker(playerHand);
         }
@@ -1397,10 +1624,10 @@ void play_game() {
     dealerHand->SetName("Dealer");
     humanHand->NamePrompt();
     // Deposit currency for users
-    humanHand->BankDeposit();
+    humanHand->BankDepositPrompt();
     // Create Shoe object
     std::shared_ptr<Shoe> gameShoe(new Shoe);
-    gameShoe->CreateShoe();
+    gameShoe->CreateShoePrompt();
     // Card count minimum
     int min_card_count = 13;
     // Play game while the cards in the shoe is greater than 13 and the users bank total is greater than 0
@@ -1431,7 +1658,7 @@ void play_game() {
                         std::cout << std::endl; progress_bar(LONG_TIME_SLEEP, std::to_string(gameShoe->GetCardsInShoe()->GetSize()) + " cards left in shoe.", "Shuffling a new shoe.");
                         gameShoe->EmptyShoe();
                         gameShoe->SetNumOfDecks(gameShoe->GetNumOfDecks());
-                        gameShoe->CreateShoe();
+                        gameShoe->CreateShoePrompt();
                         clear_terminal();
                         break;
                     }
@@ -1469,7 +1696,7 @@ void play_game() {
                 std::cin >> redeposit; time_sleep(SHORT_TIME_SLEEP);
                 // Player has chosen to re-deposit currency into their bank
                 if (redeposit == "y") {
-                    humanHand->BankDeposit(); time_sleep(MEDIUM_TIME_SLEEP);
+                    humanHand->BankDepositPrompt(); time_sleep(MEDIUM_TIME_SLEEP);
                     // Proceed with same shoe if greater than minimum card count
                     if (gameShoe->GetCardsInShoe()->GetSize() >= min_card_count) {
                         std::cout << std::endl; progress_bar(LONG_TIME_SLEEP, std::to_string(gameShoe->GetCardsInShoe()->GetSize()) + " cards left in shoe.", "Dealing new hands.");
@@ -1479,7 +1706,7 @@ void play_game() {
                         std::cout << std::endl; progress_bar(LONG_TIME_SLEEP, std::to_string(gameShoe->GetCardsInShoe()->GetSize()) + " cards left in shoe.", "Shuffling a new shoe.");
                         gameShoe->EmptyShoe();
                         gameShoe->SetNumOfDecks(gameShoe->GetNumOfDecks());
-                        gameShoe->CreateShoe();
+                        gameShoe->CreateShoePrompt();
                     }
                     clear_terminal();
                     break;
@@ -1547,7 +1774,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> 
     // Check the parameters of the given hand
     currentPlayerHand->ParametersCheck(dealerHand);
     // Player did not split Aces
-    if (!masterPlayerHand->GetBloomFilter()->Contains(masterPlayerHand->GetFilterMatrix()[1][1])) {
+    if (!masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetTableMatrix()[1][1])) {
         // Correctly label the current hand of the player
         std::string response;
         std::string hand_tracker;
@@ -1575,25 +1802,25 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> 
         // Process the logic of if a player needs to be prompted for what they should do in a hand
         while ((response != "h" && response != "s" && response != "d") && currentPlayerHand->GetCardsTotal() < 21) {
             // Prompts for if the player has not hit their current hand yet
-            if (!currentPlayerHand->GetBloomFilter()->Contains(currentPlayerHand->GetFilterMatrix()[2][0])) {
+            if (!currentPlayerHand->GetHashTable()->Contains(currentPlayerHand->GetTableMatrix()[2][0])) {
                 // Player is playing a split hand
-                if (masterPlayerHand->GetBloomFilter()->Contains(masterPlayerHand->GetFilterMatrix()[1][2])) {
+                if (masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetTableMatrix()[1][2])) {
                     // Show current hand of player and dealer hand
                     std::cout << std::endl << "Here are the initial hands of each player for hand " << std::to_string(hand_counter) << ":" << std::endl; time_sleep(SHORT_TIME_SLEEP);
                     currentPlayerHand->ShowHand("initial " + hand_tracker);
                     dealerHand->ShowHand("initial");
                     // Player can double down their current split hand
-                    if (currentPlayerHand->GetBloomFilter()->Contains(currentPlayerHand->GetFilterMatrix()[0][1])) {
+                    if (currentPlayerHand->GetHashTable()->Contains(currentPlayerHand->GetTableMatrix()[0][1])) {
                         // Prompt player what they would like to do
                         std::cout << std::endl << "Would you like to hit, stand, or double down for hand " << std::to_string(hand_counter) << "?" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-                        blackjack_strategy(currentPlayerHand, dealerHand);
+                        blackjack_strategy(currentPlayerHand, dealerHand, true);
                         std::cout << std::endl << "Enter (h) to hit, (s) to stand, and (d) to double down for " << std::to_string(hand_counter) << ": "; time_sleep(SHORT_TIME_SLEEP);
                     }
                     // Player can't double down their current split hand
                     else {
                         // Prompt player what they would like to do
                         std::cout << std::endl << "Would you like to hit or stand for hand " << std::to_string(hand_counter) << "?" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-                        blackjack_strategy(currentPlayerHand, dealerHand);
+                        blackjack_strategy(currentPlayerHand, dealerHand, true);
                         std::cout << std::endl << "Enter (h) to hit and (s) to stand for " << std::to_string(hand_counter) << ": "; time_sleep(SHORT_TIME_SLEEP);
                     }
                     std::cin >> response;
@@ -1602,17 +1829,17 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> 
                 // Player is not playing a split hand
                 else {
                     // Player can double down their current hand
-                    if (currentPlayerHand->GetBloomFilter()->Contains(currentPlayerHand->GetFilterMatrix()[0][1])) {
+                    if (currentPlayerHand->GetHashTable()->Contains(currentPlayerHand->GetTableMatrix()[0][1])) {
                         // Prompt player what they would like to do
                         std::cout << std::endl << "Would you like to hit, stand, or double down?" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-                        blackjack_strategy(currentPlayerHand, dealerHand);
+                        blackjack_strategy(currentPlayerHand, dealerHand, true);
                         std::cout << std::endl << "Enter (h) to hit, (s) to stand, and (d) to double down: "; time_sleep(SHORT_TIME_SLEEP);
                     }
                     // Player can't double down their current hand
                     else {
                         // Prompt player what they would like to do
                         std::cout << std::endl << "Would you like to hit or stand?" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-                        blackjack_strategy(currentPlayerHand, dealerHand);
+                        blackjack_strategy(currentPlayerHand, dealerHand, true);
                         std::cout << std::endl << "Enter (h) to hit and (s) to stand: "; time_sleep(SHORT_TIME_SLEEP);
                     }
                     std::cin >> response;
@@ -1622,7 +1849,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> 
             // Player has hit their current hand
             else {
                 // Show hand of current player in their split hands
-                if (masterPlayerHand->GetBloomFilter()->Contains(masterPlayerHand->GetFilterMatrix()[1][2])) {
+                if (masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetTableMatrix()[1][2])) {
                     currentPlayerHand->ShowHand("current " + hand_tracker);
                 }
                 // Show hand of current player
@@ -1633,7 +1860,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> 
                 dealerHand->ShowHand("initial");
                 // Prompt player what they would like to do
                 std::cout << std::endl << "Would you like to hit (h) or stand (s)?" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-                blackjack_strategy(currentPlayerHand, dealerHand);
+                blackjack_strategy(currentPlayerHand, dealerHand, true);
                 std::cout << std::endl << "Enter (h) to hit and (s) to stand: "; time_sleep(SHORT_TIME_SLEEP);
                 std::cin >> response;
                 std::cout << std::endl; time_sleep(SHORT_TIME_SLEEP);
@@ -1641,14 +1868,14 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> 
             // Player has chosen to hit their hand
             if (response == "h") {
                 // Set has hit to be true and hit the current hand
-                currentPlayerHand->GetBloomFilter()->AddToFilter(currentPlayerHand->GetFilterMatrix()[2][0]);
+                currentPlayerHand->GetHashTable()->AddToFilter(currentPlayerHand->GetTableMatrix()[2][0]);
                 currentPlayerHand->HitHand(shoe);
                 // Player has busted their current hand
                 if (currentPlayerHand->GetCardsTotal() > 21) {
                     // Tell player they have busted on their current hand
                     std::cout << currentPlayerHand->GetDisplayName() << " has chosen to hit and busted. Final hand total: " << currentPlayerHand->GetDisplayCardsTotal() << "." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                     // Show hand of current split hand and hide dealers hand
-                    if (masterPlayerHand->GetBloomFilter()->Contains(masterPlayerHand->GetFilterMatrix()[1][2])) {
+                    if (masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetTableMatrix()[1][2])) {
                         std::cout << std::endl << "Here is " << currentPlayerHand->GetDisplayName() << "'s final hand for hand " << std::to_string(hand_counter)
                         << " and the " << dealerHand->GetDisplayName() << "'s current hand:" << std::endl; time_sleep(SHORT_TIME_SLEEP);
                         currentPlayerHand->ShowHand("final " + hand_tracker);
@@ -1667,7 +1894,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> 
                     // Tell player they have hit their current hand
                     std::cout << currentPlayerHand->GetDisplayName() << " has chosen to hit. Current hand total: " << currentPlayerHand->GetDisplayCardsTotal() << "." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                     // Prompt for if this is a split hand
-                    if (masterPlayerHand->GetBloomFilter()->Contains(masterPlayerHand->GetFilterMatrix()[1][2])) {
+                    if (masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetTableMatrix()[1][2])) {
                         std::cout << std::endl << "Here are the current hands of each player for hand " << std::to_string(hand_counter) << ":" << std::endl; time_sleep(SHORT_TIME_SLEEP);
                     }
                     // Prompt for if this is a singular hand
@@ -1680,7 +1907,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> 
                     // Tell player they have achieved 21
                     std::cout << currentPlayerHand->GetDisplayName() << " has chosen to hit. Final hand total: " << currentPlayerHand->GetDisplayCardsTotal() << "." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                     // Show hand of current split hand
-                    if (masterPlayerHand->GetBloomFilter()->Contains(masterPlayerHand->GetFilterMatrix()[1][2])) {
+                    if (masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetTableMatrix()[1][2])) {
                         std::cout << std::endl << "Here is " << masterPlayerHand->GetDisplayName() << "'s final hand for hand " << std::to_string(hand_counter) << " and the " 
                         << dealerHand->GetDisplayName() << "'s current hand:" << std::endl; time_sleep(SHORT_TIME_SLEEP);
                         currentPlayerHand->ShowHand("final " + hand_tracker);
@@ -1701,7 +1928,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> 
                 // Tell player they have chosen to stay
                 std::cout << currentPlayerHand->GetDisplayName() << " has chosen to stand. Final hand total: " << currentPlayerHand->GetDisplayCardsTotal() << "." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                 // Show hands of current hand in split hands
-                if (masterPlayerHand->GetBloomFilter()->Contains(masterPlayerHand->GetFilterMatrix()[1][2])) {
+                if (masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetTableMatrix()[1][2])) {
                     std::cout << std::endl << "Here is " << currentPlayerHand->GetDisplayName() << "'s final hand for hand " << std::to_string(hand_counter)
                     << " and the " << dealerHand->GetDisplayName() << "'s current hand:" << std::endl; time_sleep(SHORT_TIME_SLEEP);
                     currentPlayerHand->ShowHand("final " + hand_tracker);
@@ -1719,9 +1946,9 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> 
             // Player has chosen to double down
             else if (response == "d") {
                 // Player can double down
-                if (currentPlayerHand->GetBloomFilter()->Contains(currentPlayerHand->GetFilterMatrix()[0][1])) {
+                if (currentPlayerHand->GetHashTable()->Contains(currentPlayerHand->GetTableMatrix()[0][1])) {
                     // Update bank totals of player and hit hand
-                    currentPlayerHand->GetBloomFilter()->AddToFilter(currentPlayerHand->GetFilterMatrix()[1][0]);
+                    currentPlayerHand->GetHashTable()->AddToFilter(currentPlayerHand->GetTableMatrix()[1][0]);
                     currentPlayerHand->UpdateBank(0, currentPlayerHand->GetWager());
                     currentPlayerHand->SetWager(2 * currentPlayerHand->GetWager());
                     currentPlayerHand->HitHand(shoe);
@@ -1730,14 +1957,14 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> 
                         // Tell player they have busted on their current hand
                         std::cout << currentPlayerHand->GetDisplayName() << " has doubled down and busted. Final hand total: " << currentPlayerHand->GetDisplayCardsTotal() << "." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                         // Show current hand of split hand
-                        if (masterPlayerHand->GetBloomFilter()->Contains(masterPlayerHand->GetFilterMatrix()[1][2])) {
+                        if (masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetTableMatrix()[1][2])) {
                             std::cout << std::endl << "Here is " << currentPlayerHand->GetDisplayName() << "'s final hand for hand " << std::to_string(hand_counter)
                             << " and the " << dealerHand->GetDisplayName() << "'s current hand:" << std::endl; time_sleep(SHORT_TIME_SLEEP);
                             currentPlayerHand->ShowHand("final " + hand_tracker);
                             dealerHand->ShowHand("current");
                         }
                         // Show singular hand
-                        else if (!masterPlayerHand->GetBloomFilter()->Contains(masterPlayerHand->GetFilterMatrix()[1][2])) {
+                        else if (!masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetTableMatrix()[1][2])) {
                             std::cout << std::endl << "Here is the final hand for " << currentPlayerHand->GetDisplayName() << " and the final hand of the " 
                             << dealerHand->GetDisplayName() << ":" << std::endl; time_sleep(SHORT_TIME_SLEEP);
                             currentPlayerHand->ShowHand("final");
@@ -1751,7 +1978,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> 
                         // Tell player they have reached 21
                         std::cout << currentPlayerHand->GetDisplayName() << " has doubled down. Final hand total: " << currentPlayerHand->GetDisplayCardsTotal() << "." << std::endl; 
                         // Show current hand of split hand
-                        if (masterPlayerHand->GetBloomFilter()->Contains(masterPlayerHand->GetFilterMatrix()[1][2])) {
+                        if (masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetTableMatrix()[1][2])) {
                             std::cout << std::endl << "Here is " << currentPlayerHand->GetDisplayName() << "'s final hand for hand " << std::to_string(hand_counter) << " and the " 
                             << dealerHand->GetDisplayName() << "'s current hand:" << std::endl; time_sleep(SHORT_TIME_SLEEP);
                             currentPlayerHand->ShowHand("final " + hand_tracker);
@@ -1778,7 +2005,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> 
             }
             // Player has entered and incorrect value for a choice
             else if (response != "h" && response != "s" && response != "d") {
-                if (!masterPlayerHand->GetBloomFilter()->Contains(masterPlayerHand->GetFilterMatrix()[1][2])) {
+                if (!masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetTableMatrix()[1][2])) {
                     std::cout << color_text(31, "Invalid choice") << "." << std::endl; 
                 }
                 else {
@@ -1788,7 +2015,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> 
                 continue;
             }
         }
-        if (currentPlayerHand->GetCardsTotal() == 21 && masterPlayerHand->GetBloomFilter()->Contains(masterPlayerHand->GetFilterMatrix()[1][2])) {
+        if (currentPlayerHand->GetCardsTotal() == 21 && masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetTableMatrix()[1][2])) {
             std::cout << std::endl << currentPlayerHand->GetDisplayName() << " has gotten " << currentPlayerHand->GetDisplayCardsTotal() << "! You no longer need to play this hand: Your final hand is:" << std::endl; time_sleep(SHORT_TIME_SLEEP);
             currentPlayerHand->ShowHand("final " + hand_tracker);
         }
@@ -1858,21 +2085,21 @@ std::tuple<std::vector<std::shared_ptr<Hand>>, std::shared_ptr<Hand>, std::share
     int hand_count = 1;
     std::vector<std::shared_ptr<Hand>> new_hand;
     // Check if player can split their hand
-    if (playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[0][2]) || playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[0][3])) {
+    if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][2]) || playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][3])) {
         // Player can split aces
-        if (playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[0][2])) {
+        if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][2])) {
             std::string aces_response;
             while (aces_response.empty()) {
                 // Prompt player to enter response to split aces
                 std::cout << std::endl << "You have the same rank of " << playerHand->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() << " in your hand." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                 std::cout << std::endl << "Would you like to split your hand? You may only split your hand once." << std::endl; time_sleep(SHORT_TIME_SLEEP);
-                blackjack_strategy(playerHand, dealerHand);
+                blackjack_strategy(playerHand, dealerHand, true);
                 std::cout << std::endl << "Enter (y) for yes and (n) for no: "; time_sleep(SHORT_TIME_SLEEP);
                 std::cin >> aces_response; std::cout << std::endl;
                 // Player has chosen to split aces
                 if (aces_response == "y") {
-                    playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[1][1]);
-                    playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[3][3]);
+                    playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[1][1]);
+                    playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][3]);
                     std::cout << playerHand->GetDisplayName() << " has chosen to split their " << playerHand->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() << "'s." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                     std::cout << std::endl << "Here are the current hands of both players: " << std::endl; time_sleep(SHORT_TIME_SLEEP);
                     std::vector<std::shared_ptr<Hand>> split_aces = split_hand(playerHand);
@@ -1900,7 +2127,7 @@ std::tuple<std::vector<std::shared_ptr<Hand>>, std::shared_ptr<Hand>, std::share
                 }
                 // Player has chosen to not split aces
                 else if (aces_response == "n") {
-                    playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[3][3]);
+                    playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][3]);
                     std::cout << playerHand->GetDisplayName() << " has chosen not to split their " << playerHand->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() << "'s." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                     std::cout << std::endl << "Here are the current hands of both players: " << std::endl; time_sleep(SHORT_TIME_SLEEP);
                     playerHand->ShowHand();
@@ -1916,19 +2143,19 @@ std::tuple<std::vector<std::shared_ptr<Hand>>, std::shared_ptr<Hand>, std::share
             }
         }
         // Player can split normal hand
-        else if (playerHand->GetBloomFilter()->Contains(playerHand->GetFilterMatrix()[0][3])) {
+        else if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][3])) {
             std::string same_rank_response;
             while (same_rank_response.empty()) {
                 // Prompt player to enter response to split hand
                 std::cout << std::endl << "You have the same rank of " << playerHand->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() << " in your hand." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                 std::cout << std::endl << "Would you like to split your hand? You can split up to four times." << std::endl; time_sleep(SHORT_TIME_SLEEP);
-                blackjack_strategy(playerHand, dealerHand);
+                blackjack_strategy(playerHand, dealerHand, true);
                 std::cout << std::endl << "Enter (y) for yes and (n) for no: "; time_sleep(SHORT_TIME_SLEEP);
                 std::cin >> same_rank_response; std::cout << std::endl; 
                 // Player has chosen to split their hand
                 if (same_rank_response == "y") {
-                    playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[1][2]);
-                    playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[3][4]);
+                    playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[1][2]);
+                    playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][4]);
                     std::cout << playerHand->GetDisplayName() << " has chosen to split their " << playerHand->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() << "'s." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                     std::cout << std::endl << "Here are the current hands of both players: " << std::endl; time_sleep(SHORT_TIME_SLEEP);
                     std::vector<std::shared_ptr<Hand>> splitHand = split_hand(playerHand);
@@ -1959,14 +2186,14 @@ std::tuple<std::vector<std::shared_ptr<Hand>>, std::shared_ptr<Hand>, std::share
                     }
                     dealerHand->ShowHand();
                     // Player can split hand again
-                    if (checkingHand->GetBloomFilter()->Contains(checkingHand->GetFilterMatrix()[0][3])) {
-                        while (split_counter < 4 && checkingHand->GetBloomFilter()->Contains(checkingHand->GetFilterMatrix()[0][3])) {
+                    if (checkingHand->GetHashTable()->Contains(checkingHand->GetTableMatrix()[0][3])) {
+                        while (split_counter < 4 && checkingHand->GetHashTable()->Contains(checkingHand->GetTableMatrix()[0][3])) {
                             std::string split_again;
                             // Prompt player if they want to split again
                             while (split_again != "y" || split_again != "n") {
                                 std::cout << std::endl << "You have pulled the same rank of " << checkingHand->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() << " again." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                                 std::cout << std::endl << "Would you like to split your current hand again?" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-                                blackjack_strategy(checkingHand, dealerHand);
+                                blackjack_strategy(checkingHand, dealerHand, true);
                                 std::cout << std::endl << "Enter (y) for yes and (n) for no: "; time_sleep(SHORT_TIME_SLEEP);
                                 std::cin >> split_again; std::cout << std::endl;
                                 if (split_again == "y") {
@@ -1996,7 +2223,7 @@ std::tuple<std::vector<std::shared_ptr<Hand>>, std::shared_ptr<Hand>, std::share
                                 splitHands.at(i)->CopyVariables(checkingHand);
                             }
                             // Player has chosen to split their hand again
-                            if (checkingHand->GetBloomFilter()->Contains(checkingHand->GetFilterMatrix()[0][3]) && split_again == "y") {
+                            if (checkingHand->GetHashTable()->Contains(checkingHand->GetTableMatrix()[0][3]) && split_again == "y") {
                                 // Player is eligible to split their hand again
                                 if (split_counter < 4) {
                                     std::cout << playerHand->GetDisplayName() << " has chosen to split their hand again." << std::endl; time_sleep(SHORT_TIME_SLEEP);
@@ -2056,17 +2283,17 @@ std::tuple<std::vector<std::shared_ptr<Hand>>, std::shared_ptr<Hand>, std::share
                                 }
                             }
                             // Player has chosen to not split their hand again or can't
-                            else if (!checkingHand->GetBloomFilter()->Contains(checkingHand->GetFilterMatrix()[0][3]) || split_again == "n") {
+                            else if (!checkingHand->GetHashTable()->Contains(checkingHand->GetTableMatrix()[0][3]) || split_again == "n") {
                                 checkingHand->CheckSameParamInHand("R");
                                 // Player cannot split their hand again
-                                if (!checkingHand->GetBloomFilter()->Contains(checkingHand->GetFilterMatrix()[0][3])) {
+                                if (!checkingHand->GetHashTable()->Contains(checkingHand->GetTableMatrix()[0][3])) {
                                     // Player doesn't have the currency to split their hand again
                                     if (checkingHand->GetBankTotal() < checkingHand->GetWager()) {
                                         std::cout << "You pulled the same rank of " << checkingHand->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() << " again but you do not have enough currency to continue splitting. You can no longer split your hands." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                                         std::cout << std::endl << "Total times split: " << color_text(31, std::to_string(split_counter)) << ". The current hands of each player are:" << std::endl; time_sleep(SHORT_TIME_SLEEP);
                                     }
                                     // Player did not pull the same rank again
-                                    else if (!checkingHand->GetBloomFilter()->Contains(checkingHand->GetFilterMatrix()[2][2])) {
+                                    else if (!checkingHand->GetHashTable()->Contains(checkingHand->GetTableMatrix()[2][2])) {
                                         std::cout << "You did not pull the same rank of " << checkingHand->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() << " again. You can no longer split your hands." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                                         std::cout << std::endl << "Total times split: " << color_text(31, std::to_string(split_counter)) << ". The current hands of each player are:" << std::endl; time_sleep(SHORT_TIME_SLEEP);
                                     }
@@ -2127,10 +2354,10 @@ std::tuple<std::vector<std::shared_ptr<Hand>>, std::shared_ptr<Hand>, std::share
                         new_hand = splitHands;
                     }
                     // Player can't split hand again
-                    else if (!checkingHand->GetBloomFilter()->Contains(checkingHand->GetFilterMatrix()[0][3])) {
+                    else if (!checkingHand->GetHashTable()->Contains(checkingHand->GetTableMatrix()[0][3])) {
                         checkingHand->CheckSameParamInHand("R");
                         // Player doesn't have the currency to split again
-                        if (checkingHand->GetBloomFilter()->Contains(checkingHand->GetFilterMatrix()[2][2])) {
+                        if (checkingHand->GetHashTable()->Contains(checkingHand->GetTableMatrix()[2][2])) {
                             std::cout << std::endl << "You pulled the same rank of " << checkingHand->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() << " again but you do not have enough currency to continue splitting. You can no longer split your hands." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                             std::cout << std::endl << "Total times split: " << color_text(31, std::to_string(split_counter)) << ". The current hands of each player are:" << std::endl; time_sleep(SHORT_TIME_SLEEP);
                             int loop_counter = 1;
@@ -2178,7 +2405,7 @@ std::tuple<std::vector<std::shared_ptr<Hand>>, std::shared_ptr<Hand>, std::share
                 }
                 // Player has chosen to not split their hand
                 else if (same_rank_response == "n") {
-                    playerHand->GetBloomFilter()->AddToFilter(playerHand->GetFilterMatrix()[3][4]);
+                    playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][4]);
                     std::cout << playerHand->GetDisplayName() << " has chosen not to split their " << playerHand->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() << "'s." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                     std::cout << std::endl << "Here are the current hands of both players: " << std::endl; time_sleep(SHORT_TIME_SLEEP);
                     playerHand->ShowHand();
@@ -2201,6 +2428,92 @@ std::tuple<std::vector<std::shared_ptr<Hand>>, std::shared_ptr<Hand>, std::share
     return std::make_tuple(new_hand, playerHand, dealerHand, shoe, hand_count);
 }
 
+/*  same_rank_check_sim - Checks to see if the player has the same rank in their hand and if they want to split their hand
+*   Input:
+*       playerHand - Hand object passed by reference that represents the players hand that is being checked for the below conditions
+*       dealerHand - Hand object passed by reference that represents the dealers hand that is being checked against the players
+*       shoe - Shoe object passed by reference that represents the shoe in the game that is being played with
+*       splitChoice - Boolean value that determines if a player is going to split their hand if eligible
+*   Algorithm:
+*       * First check if the player is able to split their hand or not
+*       * If player is eligible to split hand, continue to split until they are no longer eligible (see inline comments for more details)
+*       * Otherwise, return the values and continue with the logic of the game
+*   Output:
+*       new_hand - Vector of Hand objects, this can either be singular or multiple depending on the checks and choices of the players hand
+*       playerHand - Hand object that represents the players hand and variables that originally were fed into the function that are now modified
+*       dealerHand - Hand object that represents the dealers hand with all of their variables
+*       shoe - Shoe object that represents the shoe that is being played with by the player and dealer
+*/
+std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> same_rank_check_sim(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& shoe, bool splitChoice) {
+    int maxSplitHands = 5;
+    // Original hand
+    if (playerHand->GetPlayerHands()->GetSize() == 0) {
+        // Check original hand for if it can split
+        blackjack_strategy(playerHand, dealerHand, false);
+        // Player can split aces
+        if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][2])) {
+            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][3]);
+            // Player has chosen to split
+            if (splitChoice && playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[3][0])) {
+                playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[1][1]);
+                // Split hand
+                split_hand_sim(playerHand);
+                // Hit hands
+                playerHand->GetPlayerHands()->RetrieveNode(0)->data->HitHand(shoe);
+                playerHand->GetPlayerHands()->RetrieveNode(-1)->data->HitHand(shoe);
+            }
+        }
+        // Player can split normal hand
+        else if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][3])) {
+            playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][4]);
+            // Player has chosen to split
+            if (splitChoice && playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[3][0])) {
+                playerHand->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[1][2]);
+                // Split hand
+                split_hand_sim(playerHand);
+                // Hit latest hand
+                playerHand->GetPlayerHands()->RetrieveNode(0)->data->HitHand(shoe);
+                // Check if the player can split their top most hand again
+                blackjack_strategy(playerHand->GetPlayerHands()->RetrieveNode(0)->data, dealerHand, false);
+                // Player is eligible to split their hand again
+                if (playerHand->GetHandsCurrentlyHeld() < maxSplitHands) {
+                    same_rank_check_sim(playerHand, dealerHand, shoe, true);
+                }
+            }
+            else {
+                std::shared_ptr<node<std::shared_ptr<Hand>>> newHand = playerHand->GetPlayerHands()->InitNode(playerHand);
+                playerHand->SetPlayerHands(newHand);
+            }
+        }
+        else {
+            std::shared_ptr<node<std::shared_ptr<Hand>>> newHand = playerHand->GetPlayerHands()->InitNode(playerHand);
+            playerHand->SetPlayerHands(newHand);
+        }
+    }
+    // Hand has already been split
+    else {
+        blackjack_strategy(playerHand->GetPlayerHands()->RetrieveNode(0)->data, dealerHand, false);
+        if (playerHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][3])) {
+            playerHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[3][4]);
+            // Player has chosen to split
+            if (splitChoice && playerHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(playerHand->GetTableMatrix()[3][0])) {
+                playerHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->AddToFilter(playerHand->GetTableMatrix()[1][2]);
+                // Split hand
+                split_hand_sim(playerHand);
+                // Hit latest hand
+                playerHand->GetPlayerHands()->RetrieveNode(0)->data->HitHand(shoe);
+                // Check if the player can split their top most hand again
+                blackjack_strategy(playerHand->GetPlayerHands()->RetrieveNode(0)->data, dealerHand, false);
+                // Player is eligible to split their hand again
+                if (playerHand->GetHandsCurrentlyHeld() < maxSplitHands) {
+                    same_rank_check_sim(playerHand, dealerHand, shoe, true);
+                }
+            }
+        }
+    }
+    return std::make_tuple(playerHand, dealerHand, shoe);
+}
+
 /*  split_hand - Splits the hand of a current player and produces two new hands for the player
 *   Input:
 *       input - Hand object passed by reference that represents the original hand of the user
@@ -2214,6 +2527,9 @@ std::tuple<std::vector<std::shared_ptr<Hand>>, std::shared_ptr<Hand>, std::share
 std::vector<std::shared_ptr<Hand>> split_hand(std::shared_ptr<Hand>& input) {
     // Create a vector of hands for the player
     std::vector<std::shared_ptr<Hand>> split_hands;
+    int handsTotal = input->GetHandsCurrentlyHeld();
+    handsTotal++;
+    input->SetHandsCurrentlyHeld(handsTotal);
     // Update the bank of the player
     input->UpdateBank(0, input->GetWager());
     // Append card from players original hand, copy the variables of the input hand, and then add the hand to the vector of new hands
@@ -2228,6 +2544,58 @@ std::vector<std::shared_ptr<Hand>> split_hand(std::shared_ptr<Hand>& input) {
         current = current->nextNode;
     }
     return split_hands;
+}
+
+/*  split_hand_sim - Splits the current hand of a player and appends the hands to the players private data member "hands"
+*   Input:
+*       input - Hand object that represents the hand that is going to be split
+*   Algorithm:
+*       * Increment the hands currently held variable by one
+*       * Update the bank total
+*       * Determine how the hand will be split (see inline comments)
+*       * Copy variables of each individual hand 
+*   Output:
+*       This function does not return a value, it appends hands to a current hand's linked list
+*/
+void split_hand_sim(std::shared_ptr<Hand>& input) {
+    // Get current hands total and increment by 1
+    int handsTotal = input->GetHandsCurrentlyHeld();
+    handsTotal++;
+    input->SetHandsCurrentlyHeld(handsTotal);
+    // Update the hands bank total
+    input->UpdateBank(0, input->GetWager());
+    // Create new hand object
+    std::shared_ptr<Hand> newHand(new Hand);
+    // "hands" of "input" is not empty
+    if (input->GetPlayerHands()->GetSize() != 0) {
+        Card copyCard = input->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data;
+        input->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->RemoveNode(-1);
+        std::shared_ptr<Card> tempCard(new Card(copyCard));
+        std::shared_ptr<node<Card>> tempCardNode = newHand->GetPlayerCards()->InitNode(tempCard);
+        newHand->AddCardToHand(tempCardNode);
+        std::shared_ptr<node<std::shared_ptr<Hand>>> newHandNode = input->GetPlayerHands()->InitNode(newHand);
+        input->GetPlayerHands()->InsertNode(newHandNode, 0);
+    }
+    // "hands" of "input" is empty
+    else {
+        std::shared_ptr<node<Card>> currentCard = input->GetPlayerCards()->GetRoot();
+        // Traverse cards in hand, append them to players private data member "hands"
+        while (currentCard != nullptr) {
+            std::shared_ptr<Hand> newHand(new Hand);
+            std::shared_ptr<Card> tempCard(new Card(currentCard->data.GetRank(), currentCard->data.GetSuit()));
+            std::shared_ptr<node<Card>> tempCardNode = newHand->GetPlayerCards()->InitNode(tempCard);
+            newHand->AddCardToHand(tempCardNode);
+            std::shared_ptr<node<std::shared_ptr<Hand>>> newHandNode = input->GetPlayerHands()->InitNode(newHand);
+            input->GetPlayerHands()->InsertNode(newHandNode, 0);
+            currentCard = currentCard->nextNode;
+        }
+    }
+    // Copy Variables
+    std::shared_ptr<node<std::shared_ptr<Hand>>> currentHand = input->GetPlayerHands()->RetrieveNode(0);
+    while (currentHand != nullptr) {
+        currentHand->data->CopyVariables(input);
+        currentHand = currentHand->nextNode;
+    }
 }
 
 /*  stats_tracker - Updates the stat trackers of a current hand
