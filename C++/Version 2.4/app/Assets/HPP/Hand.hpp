@@ -227,7 +227,7 @@ Hand Hand::CheckBlackJack() {
         if (currentCard->data.GetCardValue() == 10) {
             // Check if there is an Ace in the hand and the hand only has 2 cards
             if (this->GetHashTable()->Contains(this->GetTableMatrix()[2][1]) && this->GetPlayerCards()->GetSize() == 2) {
-                this->GetHashTable()->AddToFilter(this->GetTableMatrix()[1][4]);
+                this->GetHashTable()->AddToTable(this->GetTableMatrix()[1][4]);
                 break;
             }
         }
@@ -260,14 +260,14 @@ Hand Hand::CheckParamInHand(const std::string referenceParameter, const std::str
         // If the "referenceParameter" is a rank, check for a rank
         if (referenceParameter == "R") {
             if (currentCard->data.CheckCardParam(currentCard->data.GetRank(), checkingParameter)) {
-                this->GetHashTable()->AddToFilter(this->GetTableMatrix()[2][1]);
+                this->GetHashTable()->AddToTable(this->GetTableMatrix()[2][1]);
                 break;
             }
         }
         // If the "referenceParameter" is a suit, check for a suit
         else if (referenceParameter == "S") {
             if (currentCard->data.CheckCardParam(currentCard->data.GetSuit(), checkingParameter)) {
-                this->GetHashTable()->AddToFilter(this->GetTableMatrix()[2][1]);
+                this->GetHashTable()->AddToTable(this->GetTableMatrix()[2][1]);
                 break;
             }
         }
@@ -299,7 +299,7 @@ Hand Hand::CheckParamInHand(const std::string referenceParameter, const std::str
 */
 Hand Hand::CheckSameParamInHand(const std::string referenceParameter, const std::string checkingParameter) {
     std::vector<bool> filterCopy = this->GetHashTable()->GetTable();
-    this->GetHashTable()->AddToFilter(this->GetTableMatrix()[2][2]);
+    this->GetHashTable()->AddToTable(this->GetTableMatrix()[2][2]);
     // Iterate over the cards in a players hand
     for (int i = 1; i < this->GetPlayerCards()->GetSize(); i++) {
         std::shared_ptr<node<Card>> currentCard = this->GetPlayerCards()->RetrieveNode(i);
@@ -387,7 +387,7 @@ Hand Hand::InsurancePrompt() {
         std::cin >> input; time_sleep(SHORT_TIME_SLEEP);
         // User has chosen to buy insurance, set insurance wager
         if (input == "y") {
-            this->GetHashTable()->AddToFilter(this->GetTableMatrix()[0][4]);
+            this->GetHashTable()->AddToTable(this->GetTableMatrix()[0][4]);
             this->SetInsuranceWager(round_input(0.5*this->GetWager()));
             this->UpdateBank(0,this->GetInsuranceWager());
             return *this;
@@ -419,7 +419,7 @@ Hand Hand::InsurancePrompt() {
 */
 Hand Hand::InsuranceSim(const bool& input) {
     if (input) {
-        this->GetHashTable()->AddToFilter(this->GetTableMatrix()[0][4]);
+        this->GetHashTable()->AddToTable(this->GetTableMatrix()[0][4]);
         this->SetInsuranceWager(round_input(0.5*this->GetWager()));
         this->UpdateBank(0,this->GetInsuranceWager());
         return *this;
@@ -520,11 +520,11 @@ Hand Hand::ParametersCheck(std::shared_ptr<Hand>& dealerHand) {
             bool aces = this->GetPlayerCards()->RetrieveNode(0)->data.CheckCardParam(this->GetPlayerCards()->RetrieveNode(0)->data.GetRank(), Ranks[0]);
             // Player doesn't have Aces, can still split hand
             if (!aces) {
-                this->GetHashTable()->AddToFilter(this->GetTableMatrix()[0][3]);
+                this->GetHashTable()->AddToTable(this->GetTableMatrix()[0][3]);
             }
             // Player has Aces, can split Aces, can't split regular hand
             else {
-                this->GetHashTable()->AddToFilter(this->GetTableMatrix()[0][2]);
+                this->GetHashTable()->AddToTable(this->GetTableMatrix()[0][2]);
             }
         }
     }
@@ -532,13 +532,13 @@ Hand Hand::ParametersCheck(std::shared_ptr<Hand>& dealerHand) {
     if (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetRank() == Ranks[0] && !this->GetHashTable()->Contains(this->GetTableMatrix()[2][0])) {
         // Player has enough money to buy insurance
         if (this->GetBankTotal() >= 0.5*this->GetWager()) {
-            this->GetHashTable()->AddToFilter(this->GetTableMatrix()[0][0]);
+            this->GetHashTable()->AddToTable(this->GetTableMatrix()[0][0]);
         }
     }
     // Can Double Down Check
     if (!this->GetHashTable()->Contains(this->GetTableMatrix()[2][0]) && !this->GetHashTable()->Contains(this->GetTableMatrix()[1][3])) {
         if (this->GetBankTotal() >= this->GetWager()) {
-            this->GetHashTable()->AddToFilter(this->GetTableMatrix()[0][1]);
+            this->GetHashTable()->AddToTable(this->GetTableMatrix()[0][1]);
         }
     }
     // Soft Seventeen Check
@@ -546,7 +546,7 @@ Hand Hand::ParametersCheck(std::shared_ptr<Hand>& dealerHand) {
         std::shared_ptr<node<Card>> current = this->GetPlayerCards()->GetRoot();
         while (current != nullptr) {
             if (current->data.GetRank() == Ranks[0] && current->data.GetCardValue() == 11) {
-                this->GetHashTable()->AddToFilter(this->GetTableMatrix()[3][2]);
+                this->GetHashTable()->AddToTable(this->GetTableMatrix()[3][2]);
                 break;
             }
             current = current->nextNode;
