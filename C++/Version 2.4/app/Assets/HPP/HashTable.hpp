@@ -22,7 +22,7 @@ HashTable::HashTable(int bitSize, int numHashIterations) {
 // ~HashTable - Bloom table deconstructor
 HashTable::~HashTable() {}
 
-/*  AddToFilter - Adds element to hash table
+/*  AddToTable - Adds element to hash table
 *   Input:
 *       input - Constant string value that is passed by reference to represent the element that will be added to a table
 *   Algorithm:
@@ -32,7 +32,7 @@ HashTable::~HashTable() {}
 *   Output:
 *       This function does not return a value, it adds an element to the container in the hash table
 */
-void HashTable::AddToFilter(const std::string& input) {
+void HashTable::AddToTable(const std::string& input) {
     // Calculate hash code and bucket index of input value
     this->SetHashCode(input);
     this->SetBucket(this->GetHashCode());

@@ -29,7 +29,7 @@ public:
     HashTable(int bitSize, int numHashIterations); // Constructor
     ~HashTable(); // De-Constructor
     // ---- ---- ---- Member Functions ---- ---- ---- //
-    void AddToFilter(const std::string& input); // Add element to table
+    void AddToTable(const std::string& input); // Add element to table
     unsigned int CalculateBucketIndex(const unsigned int& input); // Calculates the bucket index of a hash code
     unsigned int CalculateHashCode(const std::string& input); // Calculates the hash code for the table
     void ClearHashTable(); // Clear table
