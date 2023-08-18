@@ -537,7 +537,7 @@ Hand Hand::ParametersCheck(std::shared_ptr<Hand>& dealerHand) {
     }
     // Can Double Down Check
     if (!this->GetHashTable()->Contains(this->GetTableMatrix()[2][0]) && !this->GetHashTable()->Contains(this->GetTableMatrix()[1][3])) {
-        if (this->GetBankTotal() >= this->GetWager()) {
+        if (this->GetBankTotal() >= this->GetWager() && this->GetPlayerCards()->GetSize() == 2) {
             this->GetHashTable()->AddToTable(this->GetTableMatrix()[0][1]);
         }
     }
