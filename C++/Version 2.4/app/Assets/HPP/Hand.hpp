@@ -298,23 +298,25 @@ Hand Hand::CheckParamInHand(const std::string referenceParameter, const std::str
 *       This function returns a Hand object after checking if a specific parameter is the same in a players hand
 */
 Hand Hand::CheckSameParamInHand(const std::string referenceParameter, const std::string checkingParameter) {
-    std::vector<bool> filterCopy = this->GetHashTable()->GetTable();
+    std::vector<bool> tableCopy = this->GetHashTable()->GetTable();
     this->GetHashTable()->AddToTable(this->GetTableMatrix()[2][2]);
     // Iterate over the cards in a players hand
-    for (int i = 1; i < this->GetPlayerCards()->GetSize(); i++) {
-        std::shared_ptr<node<Card>> currentCard = this->GetPlayerCards()->RetrieveNode(i);
-        // If the "referenceParameter" is a rank, check for the same rank in a hand
-        if (referenceParameter == "R") {
-            if (!currentCard->data.CheckCardParam(currentCard->data.GetRank(), this->GetPlayerCards()->RetrieveNode(0)->data.GetRank()) || (!checkingParameter.empty() && !currentCard->data.CheckCardParam(currentCard->data.GetRank(), checkingParameter))) {
-                this->GetHashTable()->GetTable() = filterCopy;
-                break;
+    if (this->GetPlayerCards()->GetSize() > 1) {
+        for (int i = 1; i < this->GetPlayerCards()->GetSize(); i++) {
+            std::shared_ptr<node<Card>> currentCard = this->GetPlayerCards()->RetrieveNode(i);
+            // If the "referenceParameter" is a rank, check for the same rank in a hand
+            if (referenceParameter == "R") {
+                if (!currentCard->data.CheckCardParam(currentCard->data.GetRank(), this->GetPlayerCards()->RetrieveNode(0)->data.GetRank()) || (!checkingParameter.empty() && !currentCard->data.CheckCardParam(currentCard->data.GetRank(), checkingParameter))) {
+                    this->GetHashTable()->GetTable() = tableCopy;
+                    break;
+                }
             }
-        }
-        // If the "referenceParameter" is a suit, check for the same suit in a hand
-        if (referenceParameter == "S") {
-            if (!currentCard->data.CheckCardParam(currentCard->data.GetSuit(), this->GetPlayerCards()->RetrieveNode(0)->data.GetSuit()) || (!checkingParameter.empty() && !currentCard->data.CheckCardParam(currentCard->data.GetSuit(), checkingParameter))) {
-                this->GetHashTable()->GetTable() = filterCopy;
-                break;
+            // If the "referenceParameter" is a suit, check for the same suit in a hand
+            if (referenceParameter == "S") {
+                if (!currentCard->data.CheckCardParam(currentCard->data.GetSuit(), this->GetPlayerCards()->RetrieveNode(0)->data.GetSuit()) || (!checkingParameter.empty() && !currentCard->data.CheckCardParam(currentCard->data.GetSuit(), checkingParameter))) {
+                    this->GetHashTable()->GetTable() = tableCopy;
+                    break;
+                }
             }
         }
     }
@@ -537,7 +539,7 @@ Hand Hand::ParametersCheck(std::shared_ptr<Hand>& dealerHand) {
     }
     // Can Double Down Check
     if (!this->GetHashTable()->Contains(this->GetTableMatrix()[2][0]) && !this->GetHashTable()->Contains(this->GetTableMatrix()[1][3])) {
-        if (this->GetBankTotal() >= this->GetWager() && this->GetPlayerCards()->GetSize() == 2) {
+        if (this->GetBankTotal() >= this->GetWager() && this->GetPlayerCards()->GetSize() <= 2) {
             this->GetHashTable()->AddToTable(this->GetTableMatrix()[0][1]);
         }
     }
