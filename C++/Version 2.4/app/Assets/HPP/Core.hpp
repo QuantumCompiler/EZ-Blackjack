@@ -2060,17 +2060,28 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> 
 *       dealerHand - Returns the dealers hand
 *       shoe - Returns the modified shoe object that is being used for the players to play with
 */
-std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> player_logic_sim(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& shoe) {
-    std::shared_ptr<Hand> currentHand = playerHand->GetPlayerHands()->RetrieveNode(0)->data;
-    std::shared_ptr<node<std::shared_ptr<Hand>>> currentHandNode = playerHand->GetPlayerHands()->InitNode(currentHand);
+std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> player_logic_sim(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& shoe, bool splitChoice) {
+    auto same_rank_results = same_rank_check_sim(playerHand, dealerHand, shoe, splitChoice);
+    playerHand = std::get<0>(same_rank_results);
+    dealerHand = std::get<1>(same_rank_results);
+    shoe = std::get<2>(same_rank_results);
+    std::shared_ptr<node<std::shared_ptr<Hand>>> currentHandNode = playerHand->GetPlayerHands()->GetRoot();
     while (currentHandNode != nullptr) {
+        std::shared_ptr<Hand> currentHand = currentHandNode->data;
+        currentHand->GetHashTable()->ClearHashTable();
+        if (currentHand->GetPlayerCards()->GetSize() == 1) {
+            currentHand->HitHand(shoe);
+        }
         // Player did not split aces
         if (!playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[1][1])) {
-            if (currentHand->GetPlayerCards()->GetSize() == 1) {
-                currentHand->HitHand(shoe);
-            }
-            blackjack_strategy(currentHand, dealerHand, false);
             while (currentHand->GetCardsTotal() < 21) {
+                currentHand->GetHashTable()->ClearHashTable();
+                blackjack_strategy(currentHand, dealerHand, false);
+                // Player should stand
+                if (currentHand->GetHashTable()->Contains(currentHand->GetTableMatrix()[3][1])) {
+                    currentHand->GetHashTable()->AddToTable(currentHand->GetTableMatrix()[1][3]);
+                    break;
+                }
                 // Player should double down
                 if (currentHand->GetHashTable()->Contains(currentHand->GetTableMatrix()[2][3])) {
                     currentHand->GetHashTable()->AddToTable(currentHand->GetTableMatrix()[1][0]);
@@ -2087,15 +2098,22 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> 
                     currentHand->HitHand(shoe);
                     continue;
                 }
-                // Player should stand
-                if (currentHand->GetHashTable()->Contains(currentHand->GetTableMatrix()[3][1])) {
-                    currentHand->GetHashTable()->AddToTable(currentHand->GetTableMatrix()[1][3]);
-                    break;
+                else {
+                    playerHand->ShowHand("Original Hand");
+                    currentHand->ShowHand("Fucked Hand");
+                    for (int i = 0; i < currentHand->GetTableMatrix().size(); i++) {
+                        for (int j = 0; j < currentHand->GetTableMatrix()[i].size(); j++) {
+                            std::cout << currentHand->GetHashTable()->Contains(currentHand->GetTableMatrix()[i][j]) << " ";
+                        }
+                        std::cout << std::endl;
+                    }
+                    std::cout << currentHand->GetHandsCurrentlyHeld() << std::endl;
+                    time_sleep(30000);
                 }
             }
         }
-        playerHand->SetWager(currentHandNode->data->GetWager());
-        playerHand->SetBankTotal(currentHandNode->data->GetBankTotal());
+        playerHand->SetWager(currentHand->GetWager());
+        playerHand->SetBankTotal(currentHand->GetBankTotal());
         currentHandNode = currentHandNode->nextNode;
     }
     return std::make_tuple(playerHand, dealerHand, shoe);
