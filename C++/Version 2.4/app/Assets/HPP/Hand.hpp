@@ -825,7 +825,6 @@ Hand Hand::UpdateBank(const int choice, const float& wager) {
         return *this;
     default:
         return *this;
-        break;
     }
 }
 
