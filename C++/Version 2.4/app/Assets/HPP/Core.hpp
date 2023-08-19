@@ -1652,7 +1652,52 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>> hand_comparison_logic(s
     }
     // Update the stats of the current hand for the player
     stats_tracker(playerHand);
-    // Return the player hand, dealer hand, and the shoe
+    // Return the player hand, dealer hand
+    return std::make_tuple(playerHand, dealerHand);
+}
+
+/*  hand_comparison_logic_sim - Compares the hand of a player to that of the dealer and determines if they push, win, or lose
+*   Input:
+*       playerHand - Hand object that is passed by reference that represents the current hand that is being examined
+*       dealerHand - Hand object that is passed by reference that represents the dealers hand that is being examined against for the players hand
+*   Algorithm:
+*       
+*       * Return the player hand and dealer hand
+*   Output:
+*       playerHand - Hand object that represents the updated player hand after the function is done executing
+*       dealerHand - Hand object that represents the dealers hand after the function is done executing
+*/
+std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>> hand_comparison_logic_sim(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand) {
+    for (int i = 0; i < playerHand->GetPlayerHands()->GetSize(); i++) {
+        playerHand->GetPlayerHands()->RetrieveNode(i)->data->CopyVariables(playerHand);
+        // Player has a hand total of less than or equal to 21
+        if (playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetCardsTotal() <= 21) {
+            // Player and dealer have the same hand total
+            if (playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetCardsTotal() == dealerHand->GetCardsTotal()) {
+                // Player pushes their current hand
+                playerHand->GetPlayerHands()->RetrieveNode(i)->data->UpdateBank(3, playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager());
+            }
+            // Dealer wins
+            else if (dealerHand->GetCardsTotal() > playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetCardsTotal() && dealerHand->GetCardsTotal() <= 21) {
+                // Player loses their current hand
+                playerHand->GetPlayerHands()->RetrieveNode(i)->data->UpdateBank(2, playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager());
+            }
+            // Player wins
+            else if (dealerHand->GetCardsTotal() < playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetCardsTotal() || dealerHand->GetCardsTotal() > 21) {
+                playerHand->GetPlayerHands()->RetrieveNode(i)->data->UpdateBank(1, playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager());
+            }
+        }
+        // Player has a hand total of 21 or greater
+        else {
+            // Player loses their current hand
+            playerHand->GetPlayerHands()->RetrieveNode(i)->data->UpdateBank(2, playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager());
+        }
+        // Update master player hand's bank total and net value
+        playerHand->CopyVariables(playerHand->GetPlayerHands()->RetrieveNode(i)->data);
+        // Update the stats of the current hand for the player
+        stats_tracker(playerHand);
+    }
+    // Return the player and dealer hand
     return std::make_tuple(playerHand, dealerHand);
 }
 
@@ -2123,6 +2168,7 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> 
     std::shared_ptr<node<std::shared_ptr<Hand>>> currentHandNode = playerHand->GetPlayerHands()->GetRoot();
     while (currentHandNode != nullptr) {
         std::shared_ptr<Hand> currentHand = currentHandNode->data;
+        currentHand->SetBankTotal(playerHand->GetBankTotal());
         // Hit the current hand of the player if it only has one card present
         if (currentHand->GetPlayerCards()->GetSize() == 1) {
             currentHand->HitHand(shoe);
