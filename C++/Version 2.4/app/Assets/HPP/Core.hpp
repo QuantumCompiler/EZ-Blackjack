@@ -1454,6 +1454,43 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> 
     return std::make_tuple(playerHand, dealerHand, shoe);
 }
 
+/*  game_logic_sim - Processes the logic required for a single hand of blackjack amongst players and dealer
+*   Input:
+*       playerHand - Hand object that is passed by reference that represents the users hand that is being played with
+*       dealerHand - Hand object that is passed by reference that represents the dealers hand that is being played with
+*       shoe - Shoe object that is passed by reference that represents the game shoe that is being played with
+*       handWager - Float value that represents the wager that is to be placed for a given players hand
+*   Algorithm:
+*       * Process the dealer_showing_ace function and return its values
+*       * Determine if the hand must continue after dealer_showing_ace
+*           * If it continues, process the following functions: same_rank_check, player_logic, dealer_logic, hand_comparison_logic
+*           * If it does not continue, proceed to return the objects that have been modified
+*       * Return the playerHand, dealerHand, and shoe objects
+*   Output:
+*       playerHand - Hand object that represents the modified hand object that represents the player after a hand has been played
+*       dealerHand - Hand object that represents the modified hand object that represents the dealer after a hand has been played
+*       shoe - Shoe object that represents the game shoe that represents the shoe after a hand has been played
+*/
+std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> game_logic_sim(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& shoe, float handWager) {
+    // Process the dealer_showing_ace_sim function
+    auto dealerAce = dealer_showing_ace_sim(playerHand, dealerHand, shoe, handWager, false);
+    // auto dealerAce = dealer_showing_ace_sim(playerHand, dealerHand, shoe);
+    // If neither player has blackjack, continue
+    if (std::get<3>(dealerAce)) {
+        // Process the player_logic_sim function
+        auto playerLogic = player_logic_sim(playerHand, dealerHand, shoe, true);
+        // Process the dealer_logic_sim function
+        auto dealerLogic = dealer_logic_sim(playerHand, dealerHand, shoe);
+        // Process the hand_comparison_logic_sim function
+        auto handLogic = hand_comparison_logic_sim(playerHand, dealerHand);
+    }
+    // If a player has blackjack return the player and dealer hand along with the game shoe
+    playerHand->ResetHand();
+    dealerHand->ResetHand();
+    // Return the player and dealer hand and the game shoe
+    return std::make_tuple(playerHand, dealerHand, shoe);
+}
+
 /*  hand_comparison_logic - Compares the hand of a player to that of the dealer and determines if they push, win, or lose
 *   Input:
 *       playerHand - Hand object that is passed by reference that represents the current hand that is being examined
@@ -2257,8 +2294,8 @@ void plotBarChart(const std::string& input) {
     fprintf(plt, "set style fill solid\n"); // Set style of the bars
     fprintf(plt, "set grid\n"); // Show a grid
     // Set axis ranges
-    fprintf(plt, "set xrange [0:]\n"); // Set x range
-    fprintf(plt, "set yrange [0:]\n"); // Set y range
+    fprintf(plt, "set xrange [0:*]\n"); // Set x range
+    fprintf(plt, "set yrange [0:*]\n"); // Set y range
     // Plot the data
     fprintf(plt, "plot '%s' every ::1 using 1:2 with boxes lc rgb 'blue'\n", fileName);
     // Close gnuplot
@@ -2713,6 +2750,46 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> 
         }
     }
     return std::make_tuple(playerHand, dealerHand, shoe);
+}
+
+void simulate_game() {
+    clear_terminal();
+    progress_bar(LONG_TIME_SLEEP, "Loading Game", "Ready To Simulate :)");
+    clear_terminal();
+    // Create hand objects
+    std::shared_ptr<Hand> humanHand(new Hand());
+    std::shared_ptr<Hand> dealerHand(new Hand());
+    humanHand->NameSim("Borby");
+    dealerHand->NameSim("Dealer");
+    float initBank = 200;
+    humanHand->BankDepositSim(initBank);
+    // Create shoe object
+    std::shared_ptr<Shoe> gameShoe(new Shoe());
+    gameShoe->SetNumOfDecks(random_int(1, 6));
+    gameShoe->CreateShoeSim();
+    // Remaining card count minimum
+    int min_card_count = 13;
+    // Set initial hand wager for player
+    float handWager = initBank / 10;
+    // Play until player runs out of currency
+    while ((gameShoe->GetCardsInShoe()->GetSize() >= min_card_count && humanHand->GetBankTotal() > 0)) {
+        // Go all in for hand wager if remaining bank total is less than initial wager
+        if (humanHand->GetBankTotal() < handWager) {
+            handWager = humanHand->GetBankTotal();
+        }
+        auto gameLogic = game_logic_sim(humanHand, dealerHand, gameShoe, handWager);
+        if (gameShoe->GetCardsInShoe()->GetSize() < min_card_count) {
+            gameShoe->EmptyShoe();
+            gameShoe->CreateShoeSim();
+            continue;
+        }
+        else {
+            continue;
+        }
+    }
+    std::string csvFile = csv_generator(humanHand);
+    std::string txtFile = txt_generator(humanHand, csvFile, 0, 4);
+    plotBarChart(txtFile);
 }
 
 /*  split_hand - Splits the hand of a current player and produces two new hands for the player
