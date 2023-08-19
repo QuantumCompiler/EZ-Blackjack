@@ -904,7 +904,8 @@ std::string csv_generator(std::shared_ptr<Hand>& input) {
         file.close();
         // Output message that file has been successfully created
         progress_bar(LONG_TIME_SLEEP, "Creating CSV ", fileName + " has been successfully created.");
-        time_sleep(MEDIUM_TIME_SLEEP); clear_terminal();
+        time_sleep(MEDIUM_TIME_SLEEP); 
+        // clear_terminal();
     }
     // File failed to open
     else {
@@ -1661,7 +1662,12 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>> hand_comparison_logic(s
 *       playerHand - Hand object that is passed by reference that represents the current hand that is being examined
 *       dealerHand - Hand object that is passed by reference that represents the dealers hand that is being examined against for the players hand
 *   Algorithm:
-*       
+*       * Iterate all of the players current hands
+*       * Copy the intrinsic values of a hand to that of the master hand
+*       * Process the logic of the individual hand for what the outcome of the current hand is (see inline comments)
+*       * Update the master players values
+*       * Update the stats for the current hand
+*       * Update the stats for the master hand if they only have one hand
 *       * Return the player hand and dealer hand
 *   Output:
 *       playerHand - Hand object that represents the updated player hand after the function is done executing
@@ -1669,7 +1675,16 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>> hand_comparison_logic(s
 */
 std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>> hand_comparison_logic_sim(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand) {
     for (int i = 0; i < playerHand->GetPlayerHands()->GetSize(); i++) {
-        playerHand->GetPlayerHands()->RetrieveNode(i)->data->CopyVariables(playerHand);
+        // Copy intrinsic values of a hand
+        playerHand->GetPlayerHands()->RetrieveNode(i)->data->SetBankTotal(playerHand->GetBankTotal());
+        playerHand->GetPlayerHands()->RetrieveNode(i)->data->SetHandsCurrentlyHeld(playerHand->GetHandsCurrentlyHeld());
+        playerHand->GetPlayerHands()->RetrieveNode(i)->data->SetHandsPlayed(playerHand->GetHandsPlayed());
+        playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandBankTotals() = playerHand->GetHandBankTotals();
+        playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandCardTotals() = playerHand->GetHandCardTotals();
+        playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandNets() = playerHand->GetHandNets();
+        playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandPlayed() = playerHand->GetHandPlayed();
+        playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandWagers() = playerHand->GetHandWagers();
+        playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerHands() = playerHand->GetPlayerHands();
         // Player has a hand total of less than or equal to 21
         if (playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetCardsTotal() <= 21) {
             // Player and dealer have the same hand total
@@ -1695,7 +1710,12 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>> hand_comparison_logic_s
         // Update master player hand's bank total and net value
         playerHand->CopyVariables(playerHand->GetPlayerHands()->RetrieveNode(i)->data);
         // Update the stats of the current hand for the player
-        stats_tracker(playerHand);
+        if (playerHand->GetPlayerHands()->GetSize() > 1) {
+            stats_tracker(playerHand->GetPlayerHands()->RetrieveNode(i)->data);
+        }
+        else {
+            stats_tracker(playerHand);
+        }
     }
     // Return the player and dealer hand
     return std::make_tuple(playerHand, dealerHand);
