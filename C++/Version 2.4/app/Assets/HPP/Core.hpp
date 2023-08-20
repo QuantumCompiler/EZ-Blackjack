@@ -865,6 +865,35 @@ void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>
     }
 }
 
+/*  row_counter - Counts the number of rows for a given column in a csv file
+*   Input:
+*       file - Constant string value that is passed by reference that represents the csv file that is going to be parsed
+*   Algorithm:
+*       * Create the return value for the number of rows that are to be counted
+*       * Open the file, output an error if it is unable to open
+*       * Parse the csv and count the number of rows in the file
+*       * Close the file, return the number of rows that have been calculated
+*/
+size_t row_counter(const std::string& file) {
+    // Create row count variable
+    int rowCount = 0;
+    // Open the file
+    std::ifstream inputFile(file);
+    if (!inputFile.is_open()) {
+        std::cerr << "Failed to open the file." << std::endl;
+        return 1;
+    }
+    // Parse the csv and count the number of rows
+    std::string line;
+    while (std::getline(inputFile, line)) {
+        rowCount++;
+    }
+    // Close the file
+    inputFile.close();
+    // Return the "rowCount" variable
+    return rowCount;
+}
+
 /*  csv_generator - Generates a CSV file for the game of a player
 *   Input:
 *       input - Hand object passed by reference that represents the hand that is going to have a csv made of it
@@ -1914,8 +1943,7 @@ void play_game() {
         }
     }
     std::string csvFile = csv_generator(humanHand);
-    std::string txtFile = txt_generator(humanHand, csvFile, 0, 4);
-    plotBarChart(txtFile);
+    plot(csvFile, 4);
 }
 
 /*  player_logic - Processes the possible options of what a player can do on their current hand
@@ -2268,39 +2296,117 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> 
     return std::make_tuple(playerHand, dealerHand, shoe);
 }
 
-/*  plotBarChart - Creates a bar chart of the results from a text file of a players hand
+/*  plot - Creates a bar chart of data from a csv for a given column in the csv file
 *   Input:
-*       input - Constant string that is passed by reference that represents the name of the file
+*       file - Constant string value that is passed by reference that represents the csv file that is to be plotted
+*       yColumn - Integer value that represents the column in the csv file that is to be plotted against 
 *   Algorithm:
-*       * Create a gnuplot object
-*       * Check if the file opened successfully
-*       * Set plot properties
-*       * Set axis ranges
-*       * Plot the data of the text file
+*       * Create plot titles
+*       * Modify the plot titles for the respective column that is being plotted
+*       * Create gnuplot object
+*       * Process the logic if the file is unable to open
+*       * Count the max number of rows in the file
+*       * Set the plot properties
+*       * Set the axis properties
+*       * Send the plot command
+*       * Read the data from the csv file
+*       * Parse the csv file
+*       * Skip the header of the file
+*           * Get the corresponding x value (hand number)
+*           * Get the corresponding y value (from specified column)
+*       * End the data signal from gnuplot
+*       * Close the file
 *       * Close gnuplot
-*   Output
-*       This function does not return a value
+*   Output:
+*       This function does not return a value, it produces a plot of values for a given
 */
-void plotBarChart(const std::string& input) {
-    const char* fileName = input.c_str();
+void plot(const std::string& file, int yColumn) {
+    // Plot titles
+    std::string plotTitle;
+    std::string xAxisLabel = "Hand Number of Player";
+    std::string yAxisLabel;
+    std::string legendName;
+    // Change plot titles
+    if (yColumn == 1) {
+        plotTitle = "Individual Hand Wagers of Player";
+        legendName = "Hand Wager";
+        yAxisLabel = "Hand Wager of Player";
+    }
+    else if (yColumn == 2) {
+        plotTitle = "Individual Hand Nets of Player";
+        legendName = "Hand Net";
+        yAxisLabel = "Hand Net of Player";
+    }
+    else if (yColumn == 3) {
+        plotTitle = "Individual Cards Total of Player";
+        legendName = "Cards Total";
+        yAxisLabel = "Hand Cards Total of Player";
+    }
+    else if (yColumn == 4) {
+        plotTitle = "Individual Bank Totals of Player";
+        legendName = "Bank Total";
+        yAxisLabel = "Hand Bank Totals of Player";
+    }
+    const char* fileName = file.c_str();
     // Create gnuplot object
-    FILE *plt = popen("gnuplot -persist", "w");
+    FILE* plt = popen("gnuplot -persist", "w");
     // File failed to open
     if (plt == NULL) {
+        std::cerr << "Failed to open a pipe to Gnuplot." << std::endl;
         return;
     }
+    // Get max row value
+    size_t xMax = row_counter(file);
     // Set plot properties
-    fprintf(plt, "set boxwidth 0.25 relative\n"); // Set box width
-    fprintf(plt, "set style fill solid\n"); // Set style of the bars
-    fprintf(plt, "set grid\n"); // Show a grid
-    // Set axis ranges
-    fprintf(plt, "set xrange [0:*]\n"); // Set x range
-    fprintf(plt, "set yrange [0:*]\n"); // Set y range
-    // Plot the data
-    fprintf(plt, "plot '%s' every ::1 using 1:2 with boxes lc rgb 'blue'\n", fileName);
+    fprintf(plt, "set boxwidth 0.25 relative\n");
+    fprintf(plt, "set style fill solid\n");
+    fprintf(plt, "set grid\n");
+    fprintf(plt, "set title \"%s\"\n", plotTitle.c_str());
+    // Set axis properties
+    fprintf(plt, "set xlabel \"%s\"\n", xAxisLabel.c_str());
+    fprintf(plt, "set xrange [0:%lu]\n", xMax);
+    fprintf(plt, "set ylabel \"%s\"\n", yAxisLabel.c_str());
+    fprintf(plt, "set yrange [0:*]\n");
+    // Send the plot command right before sending the data
+    fprintf(plt, "plot '-' using 1:2 with boxes title \"%s\"\n", legendName.c_str());
+    // Read data from CSV file
+    std::ifstream inputFile(fileName);
+    if (!inputFile.is_open()) {
+        std::cerr << "Failed to open the file." << std::endl;
+        pclose(plt);
+        return;
+    }
+    std::string line;
+    int lineNumber = 0;
+    // Parse the csv file
+    while (std::getline(inputFile, line)) {
+        lineNumber++;
+        // Skip the header of the file
+        if (lineNumber > 1) {
+            std::istringstream iss(line);
+            std::string value;
+            double x, y;
+            // Get x value (always from first column)
+            std::getline(iss, value, ',');
+            x = std::stod(value);
+            // Get y value (from yColumn)
+            for (int i = 1; i < yColumn; i++) {
+                std::getline(iss, value, ',');
+            }
+            if (std::getline(iss, value, ',')) {
+                y = std::stod(value);
+                fprintf(plt, "%f %f\n", x, y);
+            }
+        }
+    }
+    // End of data signal for Gnuplot
+    fprintf(plt, "e\n");
+    // Close file
+    inputFile.close();
     // Close gnuplot
     pclose(plt);
 }
+
 
 /*  same_rank_check - Checks to see if the player has the same rank in their hand and if they want to split their hand
 *   Input:
@@ -2752,6 +2858,14 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> 
     return std::make_tuple(playerHand, dealerHand, shoe);
 }
 
+/*  simulate_game - Simulates a game of blackjack for given parameters
+*   Input:
+*       There are no input parameters for this function
+*   Algorithm:
+*       * See inline comments
+*   Output:
+*       This function does not return a value, it simulates a game of blackjack
+*/
 void simulate_game() {
     clear_terminal();
     progress_bar(LONG_TIME_SLEEP, "Loading Game", "Ready To Simulate :)");
@@ -2770,13 +2884,18 @@ void simulate_game() {
     // Remaining card count minimum
     int min_card_count = 13;
     // Set initial hand wager for player
-    float handWager = initBank / 10;
+    float initWager = initBank / 10;
+    float handWager = 0;
     // Play until player runs out of currency
     while ((gameShoe->GetCardsInShoe()->GetSize() >= min_card_count && humanHand->GetBankTotal() > 0)) {
         // Go all in for hand wager if remaining bank total is less than initial wager
-        if (humanHand->GetBankTotal() < handWager) {
+        if (humanHand->GetBankTotal() < initWager) {
             handWager = humanHand->GetBankTotal();
         }
+        else {
+            handWager = initWager;
+        }
+        // Process the game logic for a simulated hand
         auto gameLogic = game_logic_sim(humanHand, dealerHand, gameShoe, handWager);
         if (gameShoe->GetCardsInShoe()->GetSize() < min_card_count) {
             gameShoe->EmptyShoe();
@@ -2787,9 +2906,10 @@ void simulate_game() {
             continue;
         }
     }
+    // Generate csv of statistics for a game
     std::string csvFile = csv_generator(humanHand);
-    std::string txtFile = txt_generator(humanHand, csvFile, 0, 4);
-    plotBarChart(txtFile);
+    // Plot hand number and post hand bank total
+    plot(csvFile, 4);
 }
 
 /*  split_hand - Splits the hand of a current player and produces two new hands for the player
@@ -2904,98 +3024,4 @@ void stats_tracker(std::shared_ptr<Hand>& input) {
     // Update hands wagers total
     std::shared_ptr<node<float>> handWagerNode = input->GetHandWagers()->InitNode(input->GetWager());
     input->SetHandWagers(handWagerNode);
-}
-
-/*  txt_generator - Generates a text file off of a given csv file that is fed into the function
-*   Input:
-*       input - Hand object that is passed by reference that represents the player who's statistics are being generated
-*       csvFilename - Constant string value that is passed by reference that represents the csv file that is going to be converted to a txt file
-*       firstInt - Constant integer value that represents the first row of a csv file that will be converted into a txt file
-*       secondInt - Constant integer value that represents the second row of a csv file that will be converted into a txt file
-*   Algorithm:
-*       * Generate name for the text file
-*       * Generate objects for files
-*       * Test if the files open, return name of string if file fails to open
-*       * Create header names of file
-*       * Grab the first row of the csv file
-*       * Write the header of the file
-*       * Write to text file while contents are present in the csv file
-*       * Close file and return name of file
-*   Output:
-*       fileName - After creating the txt file, this function returns the name of the file that has been created
-*/
-std::string txt_generator(std::shared_ptr<Hand>& input, const std::string& csvFilename, const int firstInt, const int secondInt) {
-    // Generate a name for the txt file
-    std::string txtFilename = input->GetName() + " Results.txt";
-    // Generate an ifstream object of the csv file
-    std::ifstream csvFile(csvFilename);
-    // Generate an ofstream object of the txt file
-    std::ofstream txtFile(txtFilename);
-    // csv or txt file failed to open, return the string
-    if (!csvFile.is_open() || !txtFile.is_open()) {
-        return txtFilename;
-    }
-    // Create headers for the columns of the txt file
-    std::string firstColumn;
-    std::string secondColumn;
-    // Generate the name of the first column
-    switch (firstInt) {
-        case 0:
-            firstColumn = "Hand Number";
-            break;
-        case 1:
-            firstColumn = "Hand Wager";
-            break;
-        case 2:
-            firstColumn = "Hand Net";
-            break;
-        case 3:
-            firstColumn = "Hand Total";
-            break;
-        case 4:
-            firstColumn = "Bank Total";
-            break;
-        default:
-            break;
-    }
-    // Generate the name of the second column
-    switch (secondInt) {
-        case 0:
-            secondColumn = "Hand Number";
-            break;
-        case 1:
-            secondColumn = "Hand Wager";
-            break;
-        case 2:
-            secondColumn = "Hand Net";
-            break;
-        case 3:
-            secondColumn = "Hand Total";
-            break;
-        case 4:
-            secondColumn = "Bank Total";
-            break;
-        default:
-            break;
-    }
-    // Grab the row of csv file
-    std::string line;
-    std::getline(csvFile, line);
-    // Write the header of the csv file
-    txtFile << firstColumn << " " << secondColumn << std::endl;
-    // Keep writing to txt file while there is still data in the csv file
-    while(std::getline(csvFile, line)) {
-        std::istringstream ss(line);
-        std::string value;
-        std::vector<std::string> values;
-        while (std::getline(ss, value, ',')) {
-            values.push_back(value);
-        }
-        txtFile << values[firstInt] << " " << values[secondInt] << std::endl;
-    }
-    // Close files
-    csvFile.close();
-    txtFile.close();
-    // Return name of txt file
-    return txtFilename;
 }

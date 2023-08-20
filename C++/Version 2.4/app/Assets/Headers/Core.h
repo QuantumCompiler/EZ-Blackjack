@@ -4,6 +4,7 @@
 #include "../HPP/Hand.hpp"
 
 void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, bool showStrategy, bool splitOverride); // Strategy for how to play blackjack
+size_t row_counter(const std::string& file, size_t columnIndex);
 std::string csv_generator(std::shared_ptr<Hand>& input); // Generates a csv of the statistics for a game
 std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> deal_hand(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& inputShoe); // Deals a hand to a player and dealer
 std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> deal_hand_sim(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& inputShoe, const float& playerWager); // Deals a hand to a player and dealer in a simulated game
@@ -18,13 +19,12 @@ std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>> hand_comparison_logic_s
 void play_game(); // Provides a game for a player to play
 std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> player_logic(std::shared_ptr<Hand>& currentPlayerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Hand>& masterPlayerHand, std::shared_ptr<Shoe>& shoe, int& hand_counter);
 std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> player_logic_sim(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& shoe, bool splitChoice); // Processes logic of player
-void plotBarChart(const std::string& input); // Plots a bar chart of the results from a .txt file
+void plot(const std::string& file, int yColumn); // Plots a bar chart from a csv file
 std::tuple<std::vector<std::shared_ptr<Hand>>, std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>, int> same_rank_check(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& shoe); // Checks for the same rank of a player
 std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> same_rank_check_sim(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& shoe, bool splitChoice); // Checks for the same rank of a player
 void simulate_game(); // Provides a simulated game for a player
 std::vector<std::shared_ptr<Hand>> split_hand(std::shared_ptr<Hand>& input); // Splits the hand of a player
 void split_hand_sim(std::shared_ptr<Hand>& input); // Splits the hand of a player for a simulated hand
 void stats_tracker(std::shared_ptr<Hand>& input); // Updates the statistics for a game
-std::string txt_generator(std::shared_ptr<Hand>& input, const std::string& csvFilename, const int firstInt, const int secondInt); // Generates a txt file of the data from a csv file
 
 #endif
