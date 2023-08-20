@@ -1,4 +1,4 @@
-// // ----- ----- ----- ----- ----- ----- ----- Includes ----- ----- ----- ----- ----- ----- ----- ----- ----- //
+// ----- ----- ----- ----- ----- ----- ----- Includes ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 #include "../Headers/Hand.h"
 
 // ----- ----- ----- ----- ----- ----- ----- Class Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
@@ -7,7 +7,6 @@
 *       There is no input required for constructing this class
 *   Initialization:
 *       Create necessary objects in construction
-*       Boolean Values - All boolean values set to false
 *       Float Values - All float values set to zero
 *       Integer Values - All integer values set to zero
 *       String Values - All string values set to empty
@@ -15,44 +14,21 @@
 */
 Hand::Hand() {
     // Object construction
-    player = std::make_shared<Player>();
-    player->handBankTotals = std::make_shared<LinkedList<float>>();
-    player->handCardTotals = std::make_shared<LinkedList<int>>();
-    player->handNets = std::make_shared<LinkedList<float>>();
-    player->handPlayed = std::make_shared<LinkedList<int>>();
-    player->handWagers = std::make_shared<LinkedList<float>>();
-    player->playerCards = std::make_shared<LinkedList<Card>>();
-    player->hashTable = std::make_shared<HashTable>(HASTABLESIZE, HASHTABLEITERATIONS);
-    hands = std::make_shared<LinkedList<std::shared_ptr<Hand>>>();
+    individualHand = std::make_shared<IndividualHand>();
+    individualHand->playerCards = std::make_shared<LinkedList<Card>>();
+    individualHand->hashTable = std::make_shared<HashTable>(HASTABLESIZE, HASHTABLEITERATIONS);
     // Float Values Initialization
-    this->SetBankTotal(0);
     this->SetInsuranceWager(0);
     this->SetNet(0);
     this->SetWager(0);
     // Integer Values Initialization
     this->SetCardsTotal(0);
-    this->SetHandsBlackjack(0);
-    this->SetHandsCurrentlyHeld(1);
-    this->SetHandsLost(0);
-    this->SetHandsPlayed(0);
-    this->SetHandsPushed(0);
-    this->SetHandsWon(0);
-    // String Values Initialization
-    this->GetDisplayBankTotal().clear();
     this->GetDisplayCardsTotal().clear();
     this->GetDisplayInsuranceWager().clear();
-    this->GetDisplayName().clear();
     this->GetDisplayNet().clear();
     this->GetDisplayWager().clear();
-    this->GetName().clear();
     // List Values Initialization
-    this->GetHandBankTotals()->ClearList();
-    this->GetHandCardTotals()->ClearList();
-    this->GetHandNets()->ClearList();
-    this->GetHandPlayed()->ClearList();
-    this->GetHandWagers()->ClearList();
     this->GetPlayerCards()->ClearList();
-    this->GetPlayerHands()->ClearList();
 }
 
 // De-Constructor
@@ -138,70 +114,6 @@ Hand Hand::AddHandTotal() {
     }
     currentCard = this->GetPlayerCards()->GetRoot();
     this->SetCardsTotal(running_hand_value);
-    return *this;
-}
-
-/*  BankDepositPrompt - Updates the private data member "bankTotal" to represent a players bank total
-*   Input:
-*       This function does not have any input parameters
-*   Algorithm:
-*       * First create a float value that represents the bank total of a player prior to depositing
-*       * Enter an error catching block that will help us determine if a player has entered a correct value for a bank total
-*           * If the value entered is not a float, then we output an error message and clear the inputs
-*           * If the value entered is a float or an integer
-*               * We check to see if it is less than or equal to zero, if it is, we output an error message and require another input
-*               * If it is greater than zero, then we set the private data member "bankTotal" to the "input" with SetBankTotal
-*       * We then initialize some values for the statistics tracking of the player
-*   Output:
-*       This function returns a Hand object after depositing currency into a players bank
-*/
-Hand Hand::BankDepositPrompt() {
-    float input;
-    while (true) {
-        // Prompt user for deposit
-        std::cout << std::endl << "Please enter the amount you'd like to deposit into your bank: "; time_sleep(SHORT_TIME_SLEEP);
-        std::cin >> input; time_sleep(SHORT_TIME_SLEEP);
-        const std::type_info& result = typeid(input);
-        std::string checkResult = result.name();
-        // Check if value is not a float or integer
-        if (checkResult != "f" && checkResult != "i") {
-            std::cout << std::endl << color_text(31, "Invalid Response") << ". Please re-enter your submission." << std::endl; time_sleep(SHORT_TIME_SLEEP);
-            clear_terminal();
-            checkResult.clear();
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            continue;
-        }
-        // Check if value is a float or integer
-        else if (checkResult == "f" || checkResult == "i") {
-            if (input <= 0) {
-                std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(round_input(input))) << ". Please re-enter a positive value." << std::endl; time_sleep(SHORT_TIME_SLEEP);
-                clear_terminal();
-                checkResult.clear();
-                std::cin.clear();
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                continue;
-            }
-            else {
-                this->SetBankTotal(input);
-                break;
-            }
-        }
-    }
-    std::cout << std::endl << this->GetDisplayName() << " has decided to start with: " << this->GetDisplayBankTotal() << std::endl; time_sleep(SHORT_TIME_SLEEP);
-    return *this;
-}
-
-/*  BankDepositPrompt - Updates the private data member "bankTotal" to represent a players bank total for a simulated game
-*   Input:
-*       This function does not have any input parameters
-*   Algorithm:
-*       * First create a float value that represents the bank total of a player prior to depositing
-*   Output:
-*       This function returns a Hand object after depositing currency into a players bank
-*/
-Hand Hand::BankDepositSim(const float& input) {
-    this->SetBankTotal(input);
     return *this;
 }
 
@@ -327,27 +239,13 @@ Hand Hand::CheckSameParamInHand(const std::string referenceParameter, const std:
 *   Input:
 *       input - Hand object passed by reference that is used to copy data members from
 *   Algorithm:
-*       * Copy the name of "input" for the current hand with SetName
-*       * Copy the bank total of "input" for the current hand with SetBankTotal
 *       * Copy the wager of "input" for the current hand with SetWager
-*       * Copy the lists of the "input" hand
 *   Output:
 *       This function returns a Hand object after copying select variables
 */
 Hand Hand::CopyVariables(std::shared_ptr<Hand>& input) {
-    // Copy name, bank total, and wager to respective hand
-    this->SetBankTotal(input->GetBankTotal());
-    this->SetHandsCurrentlyHeld(input->GetHandsCurrentlyHeld());
-    this->SetHandsPlayed(input->GetHandsPlayed());
-    this->SetName(input->GetName());
+    // Copy wager
     this->SetWager(input->GetWager());
-    // Copy linked lists of player
-    this->GetHandBankTotals() = input->GetHandBankTotals();
-    this->GetHandCardTotals() = input->GetHandCardTotals();
-    this->GetHandNets() = input->GetHandNets();
-    this->GetHandPlayed() = input->GetHandPlayed();
-    this->GetHandWagers() = input->GetHandWagers();
-    this->GetPlayerHands() = input->GetPlayerHands();
     return *this;
 }
 
@@ -369,7 +267,7 @@ Hand Hand::HitHand(std::shared_ptr<Shoe>& input) {
 
 /*  InsurancePrompt - Prompts a player if they would like to buy insurance
 *   Input:
-*       This function does not have any input parameters
+*       bank - Float value that is passed by reference that represents a players bank
 *   Algorithm:
 *       * Create a string and prompt the user if they would like to buy insurance
 *       * Check to see if the input is yes or no
@@ -381,7 +279,7 @@ Hand Hand::HitHand(std::shared_ptr<Shoe>& input) {
 *   Output:
 *       This function returns a Hand object after prompting the user about buying insurance
 */
-Hand Hand::InsurancePrompt() {
+Hand Hand::InsurancePrompt(float& bank) {
     std::string input;
     while (true) {
         // Prompt user for insurance
@@ -391,7 +289,7 @@ Hand Hand::InsurancePrompt() {
         if (input == "y") {
             this->GetHashTable()->AddToTable(this->GetTableMatrix()[0][4]);
             this->SetInsuranceWager(round_input(0.5*this->GetWager()));
-            this->UpdateBank(0,this->GetInsuranceWager());
+            bank -= this->GetInsuranceWager();
             return *this;
         }
         // User has chosen to not buy insurance, do not take insurance wager
@@ -411,6 +309,7 @@ Hand Hand::InsurancePrompt() {
 
 /*  InsuranceSim - Determines if a player is to place an insurance wager in a simulated hand
 *   Input:
+*       bank - Float value that is passed by reference that represents a players bank total
 *       input - Constant boolean value that is passed by reference that indicates if a player is going to place an insurance wager or not
 *   Algorithm:
 *       * Update the players hash table to indicate that they have placed an insurance wager
@@ -419,48 +318,16 @@ Hand Hand::InsurancePrompt() {
 *   Output:
 *       This function returns a Hand object after prompting the user about buying insurance
 */
-Hand Hand::InsuranceSim(const bool& input) {
+Hand Hand::InsuranceSim(float& bank, const bool& input) {
     if (input) {
         this->GetHashTable()->AddToTable(this->GetTableMatrix()[0][4]);
         this->SetInsuranceWager(round_input(0.5*this->GetWager()));
-        this->UpdateBank(0,this->GetInsuranceWager());
+        bank -= this->GetInsuranceWager();
         return *this;
     }
     else {
         return *this;
     }
-}
-
-/*  NamePrompt - Prompts a user to input a name for their player
-*   Input:
-*       This function does not have any input parameters
-*   Algorithm:
-*       * Create a string value "input" and prompt the user for what they want their name to be
-*       * Call the "SetName" function to set the private data member "name" to "input"
-*   Output:
-*       This function returns a Hand object after prompting the user about what their name will be
-*/
-Hand Hand::NamePrompt() {
-    std::string input;
-    // Prompt user for their name
-    std::cout << std::endl << "Please enter a name for your player: "; time_sleep(SHORT_TIME_SLEEP);
-    std::getline(std::cin, input); time_sleep(SHORT_TIME_SLEEP);
-    // Set the players name to "input"
-    this->SetName(input);
-    return *this;
-}
-
-/*  NameSim - Sets the name of a player of a hand for a simulated game
-*   Input:
-*       input - Constant string object that is passed by reference to be set to the players name
-*   Algorithm:
-*       * Call the "SetName" function to set the private data member "name" to "input"
-*   Output:
-*       This function returns a Hand object after prompting the user about what their name will be
-*/
-Hand Hand::NameSim(const std::string& input) {
-    this->SetName(input);
-    return *this;
 }
 
 /*  ParametersCheck - Checks to see if certain parameters in regards to wagering are met
@@ -476,7 +343,7 @@ Hand Hand::NameSim(const std::string& input) {
 *   Output:
 *       This function returns a Hand object after checking the parameters in the current hand
 */
-Hand Hand::ParametersCheck(std::shared_ptr<Hand>& dealerHand) {
+Hand Hand::ParametersCheck(std::shared_ptr<Hand>& dealerHand, const float& playerBank) {
     // Reset Parameters
     // Clear same parameter check
     if (this->GetHashTable()->Contains(this->GetTableMatrix()[2][2])) {
@@ -517,7 +384,7 @@ Hand Hand::ParametersCheck(std::shared_ptr<Hand>& dealerHand) {
     // Can Split Hand Check
     if (this->GetHashTable()->Contains(this->GetTableMatrix()[2][2]) && this->GetPlayerCards()->GetSize() == 2) {
         // Player has enough money to split
-        if (this->GetBankTotal() >= this->GetWager()) {
+        if (playerBank >= this->GetWager()) {
             // Checking if player has aces
             bool aces = this->GetPlayerCards()->RetrieveNode(0)->data.CheckCardParam(this->GetPlayerCards()->RetrieveNode(0)->data.GetRank(), Ranks[0]);
             // Player doesn't have Aces, can still split hand
@@ -533,13 +400,13 @@ Hand Hand::ParametersCheck(std::shared_ptr<Hand>& dealerHand) {
     // Insurance Check
     if (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetRank() == Ranks[0] && !this->GetHashTable()->Contains(this->GetTableMatrix()[2][0])) {
         // Player has enough money to buy insurance
-        if (this->GetBankTotal() >= 0.5*this->GetWager()) {
+        if (playerBank >= 0.5*this->GetWager()) {
             this->GetHashTable()->AddToTable(this->GetTableMatrix()[0][0]);
         }
     }
     // Can Double Down Check
     if (!this->GetHashTable()->Contains(this->GetTableMatrix()[2][0]) && !this->GetHashTable()->Contains(this->GetTableMatrix()[1][3])) {
-        if (this->GetBankTotal() >= this->GetWager() && this->GetPlayerCards()->GetSize() <= 2) {
+        if (playerBank >= this->GetWager() && this->GetPlayerCards()->GetSize() <= 2) {
             this->GetHashTable()->AddToTable(this->GetTableMatrix()[0][1]);
         }
     }
@@ -557,9 +424,9 @@ Hand Hand::ParametersCheck(std::shared_ptr<Hand>& dealerHand) {
     return *this;
 }
 
-/*  PlaceWager - Prompts the user to input a wager for their hand
+/*  PlaceWagerPrompt - Prompts the user to input a wager for their hand
 *   Input:
-*       This function does not have any input parameters
+*       bank - Float value that is passed by reference that represents a players bank total
 *   Algorithm:
 *       * Create a float value "input" and prompt the user for their wager they would like to place
 *       * Check to see if the input is valid
@@ -574,11 +441,11 @@ Hand Hand::ParametersCheck(std::shared_ptr<Hand>& dealerHand) {
 *   Output:
 *       This function returns a Hand object after setting the wager of a players hand
 */
-Hand Hand::PlaceWagerPrompt() {
+Hand Hand::PlaceWagerPrompt(float& bank) {
     float input;
     while (true) {
         // Prompt user for the wager that they would like place for their hand
-        std::cout << std::endl << "Please enter a wager for this hand. Current bank total: " << this->GetDisplayBankTotal() << ": "; time_sleep(SHORT_TIME_SLEEP);
+        std::cout << std::endl << "Please enter a wager for this hand. Current bank total: " << color_text(33, std::to_string(round_input(bank))) << ": "; time_sleep(SHORT_TIME_SLEEP);
         std::cin >> input; time_sleep(SHORT_TIME_SLEEP);
         const std::type_info& result = typeid(input);
         std::string checkResult = result.name();
@@ -605,9 +472,9 @@ Hand Hand::PlaceWagerPrompt() {
             // User has entered a value that is greater than zero
             else {
                 // User has entered a wager that is greater than their bank, return to beginning of while loop
-                if (input > this->GetBankTotal()) {
+                if (input > bank) {
                     std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(round_input(input))) << ". You must enter a wager that is less than or equal to your bank total "
-                    << this->GetDisplayBankTotal() << ". Please re-enter your submission." << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                    << color_text(33, std::to_string(round_input(bank))) << ". Please re-enter your submission." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                     clear_terminal();
                     checkResult.clear();
                     std::cin.clear();
@@ -617,8 +484,8 @@ Hand Hand::PlaceWagerPrompt() {
                 // User has entered a valid input for a wager, set the private data member "wager" to "input"
                 else {
                     this->SetWager(input);
-                    this->UpdateBank(0, this->GetWager());
-                    std::cout << std::endl << GetDisplayName() << " has wagered: " << this->GetDisplayWager() << " with a current bank total " << this->GetDisplayBankTotal() << "." << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                    bank -= this->GetWager();
+                    std::cout << std::endl << "Player has wagered: " << this->GetDisplayWager() << " with a current bank total " << color_text(33, std::to_string(round_input(bank))) << "." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                     return *this;
                 }
             }
@@ -628,7 +495,8 @@ Hand Hand::PlaceWagerPrompt() {
 
 /*  PlaceWagerSim - Places a wager for a the hand of a simulated game
 *   Input:
-*       input - Constant float passed by reference to represent the wager for a given hand
+*       bank - Constant float passed by reference to represent the bank of a player
+*       wager - Float passed by reference to represent the wager for a given hand
 *   Algorithm:
 *       * Set the wager for the current hand
 *       * Update the bank total for the player
@@ -636,9 +504,9 @@ Hand Hand::PlaceWagerPrompt() {
 *   Output:
 *       This function returns a Hand object after setting the wager of a players hand
 */
-Hand Hand::PlaceWagerSim(const float& input) {
-    this->SetWager(input);
-    this->UpdateBank(0, this->GetWager());
+Hand Hand::PlaceWagerSim(float& bank, const float& wager) {
+    this->SetWager(wager);
+    bank -= wager;
     return *this;
 }
 
@@ -663,451 +531,125 @@ Hand Hand::ResetHand() {
     this->SetWager(0.00);
     // Integer Values
     this->SetCardsTotal(0);
-    this->SetHandsCurrentlyHeld(1);
     // String Values
-    this->GetDisplayBankTotal().clear();
     this->GetDisplayCardsTotal().clear();
     this->GetDisplayInsuranceWager().clear();
     this->GetDisplayNet().clear();
     this->GetDisplayWager().clear();
     // List Values
     this->GetPlayerCards()->ClearList();
-    this->GetPlayerHands()->ClearList();
     return *this;
-}
-
-/*  ShowHand - This function displays the cards that are present in a players hand
-*   Input:
-*       option - String value that represents a custom hand tracker (e.g. First, Second, etc.)
-*       dealerShow - Constant string value that determines if the dealer is to show both hands
-*   Algorithm:
-*       * Begin by checking to see if the "option" string is empty
-*           * If it is, set it to current
-*       * Create string objects that represent certain trackers for the output
-*       * Check to see if the player is not the dealer
-*           * If it is, create some more string objects to represent parameters
-*           * Iterate through the cards in the players hand
-*           * Add the hand total and display the other hand parameters
-*       * If the player is the dealer
-*           * If the dealer is hiding a card, output a special message to console
-*           * If the dealer is showing both cards, do the same as a non dealer player
-*   Output:
-*       This function returns a Hand object after displaying what cards they have
-*/
-Hand Hand::ShowHand(std::string option, const std::string dealerShow) {
-    // Test to see if the option value is empty
-    if (option.empty()) {
-        option = "current";
-    }
-    // Modify the string values
-    std::string optionMod = color_text(34, option);
-    std::string handTotalMod = color_text(36, "Hand Total");
-    // The player is not the dealer
-    if (this->GetName() != "Dealer") {
-        // Modify more string values
-        std::string handWager = color_text(32, "Hand Wager");
-        std::string bankTotal = color_text(33, "Bank Total");
-        std::cout << this->GetDisplayName() << "'s " << optionMod << " hand: [";
-        // Iterate through the cards in players hand
-        for (int i = 0; i < this->GetPlayerCards()->GetSize(); i++) {
-            if (i == this->GetPlayerCards()->GetSize() - 1) {
-                std::cout << this->GetPlayerCards()->RetrieveNode(i)->data << "] ";
-            }
-            else {
-                std::cout << this->GetPlayerCards()->RetrieveNode(i)->data << " , ";
-            }
-        }
-        // Add hand total and display players hand parameters
-        this->AddHandTotal();
-        std::cout << handTotalMod << ": " << this->GetDisplayCardsTotal() << " , " << handWager << ": " << this->GetDisplayWager() << " , " << bankTotal << ": " << this->GetDisplayBankTotal() << std::endl; time_sleep(SHORT_TIME_SLEEP);
-    }
-    // The player is the dealer
-    else if (this->GetName() == "Dealer") {
-        // Dealer is hiding a card
-        if (dealerShow.empty()) {
-            std::string backCardMod = color_text(36, std::to_string(this->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()));
-            std::cout << this->GetDisplayName() << "'s " << optionMod << " hand : [Hidden, " << this->GetPlayerCards()->RetrieveNode(-1)->data << "] " << handTotalMod << ": " << backCardMod << std::endl; time_sleep(SHORT_TIME_SLEEP);
-        }
-        // Dealer is showing both cards
-        else {
-            if (dealerShow != "cards") {
-                std::cout << this->GetDisplayName() << "'s " << optionMod << " hand: [";
-            }
-            // Specialized display of cards
-            else {
-                std::cout << "[";
-            }
-            // Iterate through the cards in dealers hand
-            for (int i = 0; i < this->GetPlayerCards()->GetSize(); i++) {
-                if (i == this->GetPlayerCards()->GetSize() - 1) {
-                    std::cout << this->GetPlayerCards()->RetrieveNode(i)->data << "] ";
-                }
-                else {
-                    std::cout << this->GetPlayerCards()->RetrieveNode(i)->data << " , ";
-                }
-            }
-            // Add hand total and display players hand parameters
-            this->AddHandTotal();
-            std::cout << handTotalMod << ": " << this->GetDisplayCardsTotal() << std::endl; time_sleep(SHORT_TIME_SLEEP);
-        }
-    }
-    return *this;
-}
-
-/*  UpdateBank - Updates the bank of a player
-*   Input:
-*       choice - Constant integer that is supposed to represent the outcome of a hand
-*       wager - Constant float passed by reference that is the wager being used to update the bank
-*   Algorithm:
-*       * Grab the prior bank value with "prior_bank"
-*       * The following codes represent what the choices mean
-*           * 0 - Player withdraws money from bank (placing wager)
-*           * 1 - Player wins hand
-*           * 2 - Player loses hand
-*           * 3 - Player pushes hand
-*           * 4 - Player wins blackjack
-*           * 5 - Player wins insurance
-*   Output:
-*       This function returns a Hand object after updating the players bank
-*/
-Hand Hand::UpdateBank(const int choice, const float& wager) {
-    float prior_bank = this->GetBankTotal();
-    int handsWon = this->GetHandsWon();
-    int handsLost = this->GetHandsLost();
-    int handsPushed = this->GetHandsPushed();
-    int handsBJ = this->GetHandsBlackjack();
-    int handsPlayed = this->GetHandsPlayed();
-    switch (choice) {
-    // 0 - Player withdraws money from bank (places wager)
-    case 0:
-        this->SetBankTotal(prior_bank - wager);
-        return *this;
-    // 1 - Player wins hand
-    case 1:
-        handsWon++;
-        handsPlayed++;
-        this->SetHandsPlayed(handsPlayed);
-        this->SetHandsWon(handsWon);
-        this->SetBankTotal(this->GetBankTotal() + (2.0 * wager));
-        this->SetNet(this->GetNet() + (this->GetBankTotal() - (prior_bank + wager)));
-        return *this;
-    // 2 - Player loses hand
-    case 2:
-        handsLost++;
-        handsPlayed++;
-        this->SetHandsPlayed(handsPlayed);
-        this->SetHandsLost(handsLost);
-        this->SetBankTotal(prior_bank);
-        this->SetNet(this->GetNet() + (this->GetBankTotal() - (prior_bank + wager)));
-        return *this;
-    // 3 - Player pushes hand
-    case 3:
-        handsPushed++;
-        handsPlayed++;
-        this->SetHandsPlayed(handsPlayed);
-        this->SetHandsPushed(handsPushed);
-        this->SetBankTotal(this->GetBankTotal() + wager);
-        this->SetNet(this->GetNet() + (this->GetBankTotal() - (prior_bank + wager)));
-        return *this;
-    // 4 - Player wins blackjack
-    case 4:
-        handsBJ++;
-        handsPlayed++;
-        this->SetHandsPlayed(handsPlayed);
-        this->SetHandsBlackjack(handsBJ);
-        this->SetBankTotal(this->GetBankTotal() + wager + (1.5 * wager));
-        this->SetNet(this->GetNet() + (this->GetBankTotal() - (prior_bank + wager)));
-        return *this;
-    // 5 - Player wins insurance
-    case 5:
-        this->SetBankTotal(this->GetBankTotal() + (3 * wager));
-        this->SetNet(this->GetNet() + (this->GetBankTotal() - (prior_bank + wager)));
-        return *this;
-    default:
-        return *this;
-    }
 }
 
 // ----- ----- ----- ----- ----- ----- ----- Setter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
-// SetBankTotal - Mutates the private data member "bankTotal" by assigning it to "input"
-void Hand::SetBankTotal(const float& input) {
-    float rounded_input = round_input(input);
-    player->bankTotal = rounded_input;
-    this->SetDisplayBankTotal();
-}
-
 // SetInsuranceWager - Mutates the private data member "insuranceWager" by assigning it to "input"
 void Hand::SetInsuranceWager(const float& input) {
     float rounded_input = round_input(input);
-    player->insuranceWager = rounded_input;
+    individualHand->insuranceWager = rounded_input;
     this->SetDisplayInsuranceWager();
 }
 
 // SetNet - Mutates the private data member "net" by assigning it to "input"
 void Hand::SetNet(const float& input) {
     float rounded_input = round_input(input);
-    player->net = rounded_input;
+    individualHand->net = rounded_input;
     this->SetDisplayNet();
 }
 
 // SetWager - Mutates the private data member "wager" by assigning it to "input"
 void Hand::SetWager(const float& input) {
     float rounded_input = round_input(input);
-    player->wager = rounded_input;
+    individualHand->wager = rounded_input;
     this->SetDisplayWager();
 }
 
 // SetCardsTotal - Mutates the private data member "cardsTotal" by assigning it to "input"
 void Hand::SetCardsTotal(const int& input) {
-    player->cardsTotal = input;
+    individualHand->cardsTotal = input;
     this->SetDisplayCardsTotal();
-}
-
-// SetHandsBlackjack - Mutates the private data member "handsBlackjack" by assigning it to "input"
-void Hand::SetHandsBlackjack(const int& input) {
-    player->handsBlackjack = input;
-}
-
-// SethandsCurrentlyHeld - Mutates the private data member "handsCurrentlyHeld" by assigning it to "input"
-void Hand::SetHandsCurrentlyHeld(const int& input) {
-    player->handsCurrentlyHeld = input;
-}
-
-// SetHandsLost - Mutates the private data member "handsLost" by assigning it to "input"
-void Hand::SetHandsLost(const int& input) {
-    player->handsLost = input;
-}
-
-// SetHandsPlayed - Mutates the private data member "handsPlayed" by assigning it to "input"
-void Hand::SetHandsPlayed(const int& input) {
-    player->handsPlayed = input;
-}
-
-// SetHandsPushed - Mutates the private data member "handsPushed" by assigning it to "input"
-void Hand::SetHandsPushed(const int& input) {
-    player->handsPushed = input;
-}
-
-// SetHandsWon - Mutates the private data member "handsWon" by assigning it to "input"
-void Hand::SetHandsWon(const int& input) {
-    player->handsWon = input;
-}
-
-// SetDisplayBankTotal - Mutates the private data member "displayBankTotal" by assigning it to "input"
-void Hand::SetDisplayBankTotal() {
-    std::string modified_input = color_text(33, round_to_string(GetBankTotal()));
-    player->displayBankTotal = modified_input;
 }
 
 // SetDisplayCardsTotal - Mutates the private data member "displayCardsTotal" by assigning it to "input"
 void Hand::SetDisplayCardsTotal() {
     std::string modified_input = color_text(35, std::to_string(GetCardsTotal()));
-    player->displayCardsTotal = modified_input;
+    individualHand->displayCardsTotal = modified_input;
 }
 
 // SetDisplayInsuranceWager - Mutates the private data member "displayInsuranceWager" by assigning it to "input"
 void Hand::SetDisplayInsuranceWager() {
     std::string modified_input = color_text(31, round_to_string(GetInsuranceWager()));
-    player->displayInsuranceWager = modified_input;
-}
-
-// SetDisplayName - Mutates the private data member "displayName" by assigning it to "input"
-void Hand::SetDisplayName() {
-    std::string modified_input;
-    if (GetName() != "Dealer") {
-        modified_input = color_text(34, GetName());
-    }
-    else {
-        modified_input = color_text(31, GetName());
-    }
-    player->displayName = modified_input;
+    individualHand->displayInsuranceWager = modified_input;
 }
 
 // SetDisplayNet - Mutates the private data member "displayNet" by assigning it to "input"
 void Hand::SetDisplayNet() {
     std::string modified_input = color_text(33, round_to_string(GetNet()));
-    player->displayNet = modified_input;
+    individualHand->displayNet = modified_input;
 }
 
 // SetDisplayWager - Mutates the private data member "displayWager" bt assigning it to "input"
 void Hand::SetDisplayWager() {
     std::string modified_input = color_text(31, round_to_string(GetWager()));
-    player->displayWager = modified_input;
-}
-
-// SetName - Mutates the private data member "name" bt assigning it to "input"
-void Hand::SetName(const std::string& input) {
-    player->name = input;
-    this->SetDisplayName();
-}
-
-// SetHandBankTotals - Mutates the private data member "handBankTotals" bt assigning it to "input"
-void Hand::SetHandBankTotals(std::shared_ptr<node<float>>& input) {
-    player->handBankTotals->AppendNode(input);
-}
-
-// SetHandCardTotals - Mutates the private data member "handCardTotals" bt assigning it to "input"
-void Hand::SetHandCardTotals(std::shared_ptr<node<int>>& input) {
-    player->handCardTotals->AppendNode(input);
-}
-
-// SetHandNets - Mutates the private data member "handNets" bt assigning it to "input"
-void Hand::SetHandNets(std::shared_ptr<node<float>>& input) {
-    player->handNets->AppendNode(input);
-}
-
-// SetHandPlayed - Mutates the private data member "handPlayed" bt assigning it to "input"
-void Hand::SetHandPlayed(std::shared_ptr<node<int>>& input) {
-    player->handPlayed->AppendNode(input);
-}
-
-// SetHandWagers - Mutates the private data member "handWagers" bt assigning it to "input"
-void Hand::SetHandWagers(std::shared_ptr<node<float>>& input) {
-    player->handWagers->AppendNode(input);
+    individualHand->displayWager = modified_input;
 }
 
 // SetPlayerCards - Mutates the private data member "playerCards" bt assigning it to "input"
 void Hand::SetPlayerCards(std::shared_ptr<node<Card>>& input) {
-    player->playerCards->AppendNode(input);
-}
-
-// SetPlayerHands - Mutates the private data member "hands" bt assigning it to "input"
-void Hand::SetPlayerHands(std::shared_ptr<node<std::shared_ptr<Hand>>>& input) {
-    hands->AppendNode(input);
+    individualHand->playerCards->AppendNode(input);
 }
 
 // ----- ----- ----- ----- ----- ----- ----- Getter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 // GetHashTable - Retrieves the private data member "hashTable"
 std::shared_ptr<HashTable>& Hand::GetHashTable() {
-    return player->hashTable;
+    return individualHand->hashTable;
 }
 
 // GetTableMatrix - Retrieves the private data member "tableMatrix"
 std::vector<std::vector<std::string>>& Hand::GetTableMatrix() {
-    return player->tableMatrix;
-}
-
-// GetBankTotal - Retrieves the private data member "bankTotal"
-float& Hand::GetBankTotal() {
-    return player->bankTotal;
+    return individualHand->tableMatrix;
 }
 
 // GetInsuranceWager - Retrieves the private data member "insuranceWager"
 float& Hand::GetInsuranceWager() {
-    return player->insuranceWager;
+    return individualHand->insuranceWager;
 }
 
 // GetNet - Retrieves the private data member "net"
 float& Hand::GetNet() {
-    return player->net;
+    return individualHand->net;
 }
 
 // GetWager - Retrieves the private data member "wager"
 float& Hand::GetWager() {
-    return player->wager;
+    return individualHand->wager;
 }
 
 // GetCardsTotal - Retrieves the private data member "cardsTotal"
 int& Hand::GetCardsTotal() {
-    return player->cardsTotal;
-}
-
-// GetHandsBlackjack - Retrieves the private data member "handsBlackjack"
-int& Hand::GetHandsBlackjack() {
-    return player->handsBlackjack;
-}
-
-// GetHandsCurrentlyHeld - Retrieves the private data member "handsCurrentlyHeld"
-int& Hand::GetHandsCurrentlyHeld() {
-    return player->handsCurrentlyHeld;
-}
-
-// GetHandsLost - Retrieves the private data member "handsLost"
-int& Hand::GetHandsLost() {
-    return player->handsLost;
-}
-
-// GetHandsPlayed - Retrieves the private data member "handsPlayed"
-int& Hand::GetHandsPlayed() {
-    return player->handsPlayed;
-}
-
-// GetHandsPushed - Retrieves the private data member "handsPushed"
-int& Hand::GetHandsPushed() {
-    return player->handsPushed;
-}
-
-// GetHandsWon - Retrieves the private data member "handsWon"
-int& Hand::GetHandsWon() {
-    return player->handsWon;
-}
-
-// GetDisplayBankTotal - Retrieves the private data member "displayBankTotal"
-std::string& Hand::GetDisplayBankTotal() {
-    return player->displayBankTotal;
+    return individualHand->cardsTotal;
 }
 
 // GetDisplayCardsTotal - Retrieves the private data member "displayCardsTotal"
 std::string& Hand::GetDisplayCardsTotal() {
-    return player->displayCardsTotal;
+    return individualHand->displayCardsTotal;
 }
 
 // GetDisplayInsuranceWager - Retrieves the private data member "displayInsuranceWager"
 std::string& Hand::GetDisplayInsuranceWager() {
-    return player->displayInsuranceWager;
-}
-
-// GetDisplayName - Retrieves the private data member "displayName"
-std::string& Hand::GetDisplayName() {
-    return player->displayName;
+    return individualHand->displayInsuranceWager;
 }
 
 // GetDisplayNet - Retrieves the private data member "displayNet"
 std::string& Hand::GetDisplayNet() {
-    return player->displayNet;
+    return individualHand->displayNet;
 }
 
 // GetDisplayWager - Retrieves the private data member "displayWager"
 std::string& Hand::GetDisplayWager() {
-    return player->displayWager;
-}
-
-// GetName - Retrieves the private data member "name"
-std::string& Hand::GetName() {
-    return player->name;
-}
-
-// GetHandBankTotals - Retrieves the private data member "handBankTotals"
-std::shared_ptr<LinkedList<float>>& Hand::GetHandBankTotals() {
-    return player->handBankTotals;
-}
-
-// GetHandCardTotals - Retrieves the private data member "handCardTotals"
-std::shared_ptr<LinkedList<int>>& Hand::GetHandCardTotals() {
-    return player->handCardTotals;
-}
-
-// GetHandNets - Retrieves the private data member "handNets"
-std::shared_ptr<LinkedList<float>>& Hand::GetHandNets() {
-    return player->handNets;
-}
-
-// GetHandPlayed - Retrieves the private data member "handPlayed"
-std::shared_ptr<LinkedList<int>>& Hand::GetHandPlayed() {
-    return player->handPlayed;
-}
-
-// GetHandWagers - Retrieves the private data member "handWagers"
-std::shared_ptr<LinkedList<float>>& Hand::GetHandWagers() {
-    return player->handWagers;
+    return individualHand->displayWager;
 }
 
 // GetPlayerCards - Retrieves the private data member "playerCards"
 std::shared_ptr<LinkedList<Card>>& Hand::GetPlayerCards() {
-    return player->playerCards;
-}
-
-// GetPlayerHands - Retrieves the private data member "hands"
-std::shared_ptr<LinkedList<std::shared_ptr<Hand>>>& Hand::GetPlayerHands() {
-    return hands;
+    return individualHand->playerCards;
 }

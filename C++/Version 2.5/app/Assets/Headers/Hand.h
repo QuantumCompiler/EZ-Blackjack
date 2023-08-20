@@ -1,10 +1,10 @@
-// // ----- ----- ----- ----- ----- ----- ----- Includes ----- ----- ----- ----- ----- ----- ----- ----- ----- //
+// ----- ----- ----- ----- ----- ----- ----- Includes ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 #ifndef HAND_H
 #define HAND_H
 #include "../HPP/Shoe.hpp"
 #define HASTABLESIZE 10000
 #define HASHTABLEITERATIONS 32
-/*  Structure Player - Struct to resemble a playing card
+/*  Structure IndividualHand - Struct to resemble a playing card
 *   Data Members:
 *     Table Values:
 *       canBuyInsurance - String value that represents if a player is eligible to buy insurance
@@ -28,35 +28,20 @@
 *       splitAcesResponse - String value that represents if a player has decided on if they would like to split Aces or not
 *       splitHandResponse - String value that represents if a player has decided on if they would like to split their hand or not
 *     Float Values:
-*       bankTotal - Float value that represents the total value of a players currency they can play with
 *       insuranceWager - Float value that represents the wager of which a player places for insurance
 *       net - Float value that represents the net of a hand that has been played
 *       wager - Float value that represents the wager that is placed on a hand that is being played
 *     Integer Values:
 *       cardsTotal - Integer value that represents the total value of a players hand of cards
-*       handsBlackjack - Integer value that represents how many blackjack hands a player has had
-*       handsCurrentlyHeld - Integer value that represents the number of individual hands that a player has
-*       handsLost - Integer value that represents how many hands a player has lost
-*       handsPlayed - Integer value that represents the number of total hands played by a player
-*       handsPushed - Integer value that represents the number of total hands a player has pushed
-*       handsWon - Integer value that represents the number of total hands a player has won
 *     String Values:
-*       displayBankTotal - String value that represents the modified private data member "bankTotal"
 *       displayCardsTotal - String value that represents the modified private data member "cardsTotal"
 *       displayInsuranceWager - String value that represents the modified private data member "insuranceWager"
-*       displayName - String value that represents the modified private data member "name"
 *       displayNet - String value that represents the modified private data member "net"
 *       displayWager - String value that represents the modified private data member "wager"
-*       name - String value that represents the name of a player
 *     List Values:
-*       handBankTotals - Linked list of float values that represent a players bank totals after each hand
-*       handCardTotals - Linked list of integers that represent a players hand totals
-*       handNets - Linked list of float values that represent a players nets after each hand
-*       handPlayed - Linked list of integer values that represents the hand played in a game
-*       handWagers - Linked list of float values that represent a players wager for each hand
 *       playerCards - Linked list of Cards that represent a players cards
 */
-struct Player {
+struct IndividualHand {
     // HashTable Filters
     std::shared_ptr<HashTable> hashTable;
     // Table Values
@@ -87,6 +72,12 @@ struct Player {
         {hasHit, paramInHand, sameParamInHand, shouldDoubleDown, shouldHit},
         {shouldSplit, shouldStand, softSeventeen, splitAcesResponse, splitHandResponse}
     };
+    // std::vector<std::vector<std::string>> tableMatrix2 = {
+    //     {canBuyInsurance, canDoubleDown, canSplitAces, canSplitHand, choseBuyInsurance},
+    //     {choseDoubleDown, choseSplitAces, choseSplitHand, doubleDownResponse, hasBlackjack},
+    //     {hasHit, paramInHand, sameParamInHand, shouldDoubleDown, shouldHit},
+    //     {shouldSplit, shouldStand, softSeventeen, splitAcesResponse, splitHandResponse}
+    // };
     // Float Values
     float bankTotal;
     float insuranceWager;
@@ -94,26 +85,12 @@ struct Player {
     float wager;
     // Integer Values
     int cardsTotal;
-    int handsBlackjack;
-    int handsCurrentlyHeld;
-    int handsLost;
-    int handsPlayed;
-    int handsPushed;
-    int handsWon;
     // Strings
-    std::string displayBankTotal;
     std::string displayCardsTotal;
     std::string displayInsuranceWager;
-    std::string displayName;
     std::string displayNet;
     std::string displayWager;
-    std::string name;
     // Lists
-    std::shared_ptr<LinkedList<float>> handBankTotals;
-    std::shared_ptr<LinkedList<int>> handCardTotals;
-    std::shared_ptr<LinkedList<float>> handNets;
-    std::shared_ptr<LinkedList<int>> handPlayed;
-    std::shared_ptr<LinkedList<float>> handWagers;
     std::shared_ptr<LinkedList<Card>> playerCards;
 };
 class Hand {
@@ -124,89 +101,50 @@ public:
     // Class Functions
     Hand AddCardToHand(std::shared_ptr<node<Card>>& input); // Adds card to hand
     Hand AddHandTotal(); // Adds current hand total
-    Hand BankDepositPrompt(); // Deposits currency into a players bank
-    Hand BankDepositSim(const float& input); // Deposits currency into a players bank for a simulated game
     Hand CheckBlackJack(); // Checks for if a player has blackjack
     Hand CheckParamInHand(const std::string referenceParameter, const std::string checkingParameter); // Checks if a player has a specific parameter in their hand
     Hand CheckSameParamInHand(const std::string referenceParameter, const std::string checkingParameter = ""); // Checks if a player has the same parameter in their hand
     Hand CopyVariables(std::shared_ptr<Hand>& input);
     Hand HitHand(std::shared_ptr<Shoe>& input); // Adds a card to a players hand from a shoe
-    Hand InsurancePrompt(); // Prompts a player if they would like to place an insurance wager
-    Hand InsuranceSim(const bool& input); // Places an insurance wager for a simulate hand
-    Hand NamePrompt(); // Prompts the player for a name that they would like to be called
-    Hand NameSim(const std::string& input); // Sets the name of a player of a hand for a simulated game
-    Hand ParametersCheck(std::shared_ptr<Hand>& dealerHand); // Checks for certain parameters of how a player can play their hand
-    Hand PlaceWagerPrompt(); // Prompts a player for how much currency they would like to place as a wager for a hand
-    Hand PlaceWagerSim(const float& input); // Places the wager for a players hand in a simulated game
+    Hand InsurancePrompt(float& bank); // Prompts a player if they would like to place an insurance wager
+    Hand InsuranceSim(float& bank, const bool& input); // Places an insurance wager for a simulate hand
+    Hand ParametersCheck(std::shared_ptr<Hand>& dealerHand, const float& playerBank); // Checks for certain parameters of how a player can play their hand
+    Hand PlaceWagerPrompt(float& bank); // Prompts a player for how much currency they would like to place as a wager for a hand
+    Hand PlaceWagerSim(float& bank, const float& wager); // Places the wager for a players hand in a simulated game
     Hand ResetHand(); // Resets certain parameters for a players hand
-    Hand ShowHand(std::string option = "", const std::string dealerShow = ""); 
-    Hand UpdateBank(const int choice, const float& wager); // Updates the bank total of a player
     // Setter Functions
     // Float Values
-    void SetBankTotal(const float& input); // Mutates "bankTotal"
     void SetInsuranceWager(const float& input); // Mutates "insuranceWager"
     void SetNet(const float& input); // Mutates "net"
     void SetWager(const float& input); // Mutates "wager"
     // Integer Values
     void SetCardsTotal(const int& input); // Mutates "cardsTotal"
-    void SetHandsBlackjack(const int& input); // Mutates "handsBlackjack"
-    void SetHandsCurrentlyHeld(const int& input); // Mutates "handsCurrentlyHeld"
-    void SetHandsLost(const int& input); // Mutates "handsLost"
-    void SetHandsPlayed(const int& input); // Mutates "handsPlayed"
-    void SetHandsPushed(const int& input); // Mutates "handsPushed"
-    void SetHandsWon(const int& input); // Mutates "handsWon"
     // String Values
-    void SetDisplayBankTotal(); // Mutates "displayBankTotal"
     void SetDisplayCardsTotal(); // Mutates "displayCardsTotal"
     void SetDisplayInsuranceWager(); // Mutates "displayInsuranceWager"
-    void SetDisplayName(); // Mutates "displayName"
     void SetDisplayNet(); // Mutates "displayNet"
     void SetDisplayWager(); // Mutates "displayWager"
-    void SetName(const std::string& input); // Mutates "name"
     // List Values
-    void SetHandBankTotals(std::shared_ptr<node<float>>& input); // Mutates "handBankTotals"
-    void SetHandCardTotals(std::shared_ptr<node<int>>& input); // Mutates "handCardTotals"
-    void SetHandNets(std::shared_ptr<node<float>>& input); // Mutates "handNets"
-    void SetHandPlayed(std::shared_ptr<node<int>>& input); // Mutates "handPlayed"
-    void SetHandWagers(std::shared_ptr<node<float>>& input); // Mutates "handWagers"
     void SetPlayerCards(std::shared_ptr<node<Card>>& input); // Mutates "playerCards"
-    void SetPlayerHands(std::shared_ptr<node<std::shared_ptr<Hand>>>& input); // Mutates "playerHands"
     // Getter Functions
     // Table Values
     std::shared_ptr<HashTable>& GetHashTable(); // Retrieves "hashTable"
     std::vector<std::vector<std::string>>& GetTableMatrix(); // Retrieves "tableMatrix"
     // Float Values
-    float& GetBankTotal(); // Retrieves "bankTotal"
     float& GetInsuranceWager(); // Retrieves "insuranceWager"
     float& GetNet(); // Retrieves "net"
     float& GetWager(); // Retrieves "wager"
     // Integer Values
     int& GetCardsTotal(); // Retrieves "cardsTotal"
-    int& GetHandsBlackjack(); // Retrieves "handsBlackjack"
-    int& GetHandsCurrentlyHeld(); // Retrieves "handsCurrentlyHeld"
-    int& GetHandsLost(); // Retrieves "handsLost"
-    int& GetHandsPlayed(); // Retrieves "handsPlayed"
-    int& GetHandsPushed(); // Retrieves "handsPushed"
-    int& GetHandsWon(); // Retrieves "handsWon"
     // String Values
-    std::string& GetDisplayBankTotal(); // Retrieves "displayBankTotal"
     std::string& GetDisplayCardsTotal(); // Retrieves "displayCardsTotal"
     std::string& GetDisplayInsuranceWager(); // Retrieves "displayInsuranceWager"
-    std::string& GetDisplayName(); // Retrieves "displayName"
     std::string& GetDisplayNet(); // Retrieves "displayNet"
     std::string& GetDisplayWager(); // Retrieves "displayWager"
-    std::string& GetName(); // Retrieves "name"
     // List Values
-    std::shared_ptr<LinkedList<float>>& GetHandBankTotals(); // Retrieves "handBankTotals"
-    std::shared_ptr<LinkedList<int>>& GetHandCardTotals(); // Retrieves "handCardTotals"
-    std::shared_ptr<LinkedList<float>>& GetHandNets(); // Retrieves "handNets"
-    std::shared_ptr<LinkedList<int>>& GetHandPlayed(); // Retrieves "handPlayed"
-    std::shared_ptr<LinkedList<float>>& GetHandWagers(); // Retrieves "handWagers"
     std::shared_ptr<LinkedList<Card>>& GetPlayerCards(); // Retrieves "playerCards"
-    std::shared_ptr<LinkedList<std::shared_ptr<Hand>>>& GetPlayerHands(); // Retrieves "playerHands"
 private:
-    std::shared_ptr<Player> player; // Private data member that encapsulates the Player structure
-    std::shared_ptr<LinkedList<std::shared_ptr<Hand>>> hands; // Private data member for the hands of a player
+    std::shared_ptr<IndividualHand> individualHand; // Private data member that encapsulates the IndividualHand structure
 };
 
 #endif
