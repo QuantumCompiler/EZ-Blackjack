@@ -537,6 +537,8 @@ TEST_F(test_x, ShoeClassDraw) {
     }
 }
 
+
+
 /////////////////////////////////////////
 // Hand Class Test
 /////////////////////////////////////////
@@ -551,47 +553,18 @@ TEST_F(test_x, HandClassConst) {
         EXPECT_FALSE(testHand->GetHashTable()->GetTable().at(i));
     }
     // Test initial float values
-    EXPECT_EQ(testHand->GetBankTotal(), 0);
     EXPECT_EQ(testHand->GetInsuranceWager(), 0);
     EXPECT_EQ(testHand->GetNet(), 0);
     EXPECT_EQ(testHand->GetWager(), 0);
     // Test initial integer values
     EXPECT_EQ(testHand->GetCardsTotal(), 0);
-    EXPECT_EQ(testHand->GetHandsBlackjack(), 0);
-    EXPECT_EQ(testHand->GetHandsLost(), 0);
-    EXPECT_EQ(testHand->GetHandsPlayed(), 0);
-    EXPECT_EQ(testHand->GetHandsPushed(), 0);
-    EXPECT_EQ(testHand->GetHandsWon(), 0);
     // Test initial string values
-    EXPECT_EQ(testHand->GetDisplayBankTotal(), "");
     EXPECT_EQ(testHand->GetDisplayCardsTotal(), "");
     EXPECT_EQ(testHand->GetDisplayInsuranceWager(), "");
-    EXPECT_EQ(testHand->GetDisplayName(), "");
     EXPECT_EQ(testHand->GetDisplayNet(), "");
     EXPECT_EQ(testHand->GetDisplayWager(), "");
-    EXPECT_EQ(testHand->GetName(), "");
     // Test linked list sizes
-    EXPECT_EQ(testHand->GetHandBankTotals()->GetSize(), 0);
-    EXPECT_EQ(testHand->GetHandCardTotals()->GetSize(), 0);
-    EXPECT_EQ(testHand->GetHandNets()->GetSize(), 0);
-    EXPECT_EQ(testHand->GetHandPlayed()->GetSize(), 0);
-    EXPECT_EQ(testHand->GetHandWagers()->GetSize(), 0);
     EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 0);
-}
-
-// Hand class, set name test
-TEST_F(test_x, HandClassName) {
-    // Create object
-    std::shared_ptr<Hand> testHand(new Hand);
-    EXPECT_TRUE(testHand->GetName() == "");
-    testHand->NameSim("Borby");
-    EXPECT_TRUE(testHand->GetName() == "Borby");
-    testHand->NameSim("Borby Johnson");
-    EXPECT_TRUE(testHand->GetName() == "Borby Johnson");
-    testHand->NameSim("Dealer");
-    EXPECT_TRUE(testHand->GetName() == "Dealer");
-    testHand->GetName().clear();
-    EXPECT_TRUE(testHand->GetName() == "");
 }
 
 // Hand class, add card to hand test
@@ -631,18 +604,6 @@ TEST_F(test_x, HandClassAdd) {
     testHand->AddCardToHand(testNode);
     EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 5);
     EXPECT_EQ(testHand->GetCardsTotal(), 30);
-}
-
-// Hand class, bank deposit test
-TEST_F(test_x, HandClassDeposit) {
-    // Create test hand
-    std::shared_ptr<Hand> testHand(new Hand);
-    float value;
-    for (int i = 0; i < 200; i++) {
-        value = static_cast<int>(i);
-        testHand->BankDepositSim(value);
-        EXPECT_EQ(testHand->GetBankTotal(), value);
-    }
 }
 
 // Hand class, check parameter test
@@ -798,115 +759,50 @@ TEST_F(test_x, HandClassHitHand) {
     }
 }
 
-// Hand class, update hand test
-TEST_F(test_x, HandClassUpdate) {
-    std::shared_ptr<Hand> testHand(new Hand);
-    int bankValue = 100;
-    int loopValue = 1;
-    int wagerValue = loopValue;
-    testHand->SetBankTotal(bankValue);
-    // Test deposit
-    while (testHand->GetBankTotal() > 0) {
-        testHand->SetWager(wagerValue);
-        testHand->UpdateBank(0, testHand->GetWager());
-        EXPECT_EQ(testHand->GetBankTotal(), bankValue - loopValue);
-        loopValue++;
-    }
-    testHand->SetBankTotal(bankValue);
-    loopValue = 1;
-    wagerValue = loopValue;
-    // Test win
-    while (testHand->GetBankTotal() < 200) {
-        testHand->SetWager(wagerValue);
-        testHand->UpdateBank(0, testHand->GetWager());
-        testHand->UpdateBank(1, testHand->GetWager());
-        EXPECT_EQ(testHand->GetBankTotal(), bankValue + loopValue);
-        loopValue++;
-    }
-    testHand->SetBankTotal(bankValue);
-    loopValue = 1;
-    wagerValue = loopValue;
-    // Test loss
-    while(testHand->GetBankTotal() > 0) {
-        testHand->SetWager(wagerValue);
-        testHand->UpdateBank(0, testHand->GetWager());
-        testHand->UpdateBank(2, testHand->GetWager());
-        EXPECT_EQ(testHand->GetBankTotal(), bankValue - loopValue);
-        loopValue++;
-    }
-    testHand->SetBankTotal(bankValue);
-    loopValue = 1;
-    wagerValue = loopValue;
-    // Test push
-    while (loopValue < 100) {
-        testHand->SetWager(wagerValue);
-        testHand->UpdateBank(0, testHand->GetWager());
-        testHand->UpdateBank(3, testHand->GetWager());
-        EXPECT_EQ(testHand->GetBankTotal(), bankValue);
-        loopValue++;
-    }
-    testHand->SetBankTotal(bankValue);
-    loopValue = 1;
-    wagerValue = loopValue;
-    // Test blackjack
-    while (testHand->GetBankTotal() < 250) {
-        testHand->SetWager(wagerValue);
-        testHand->UpdateBank(0, testHand->GetWager());
-        testHand->UpdateBank(4, testHand->GetWager());
-        EXPECT_EQ(testHand->GetBankTotal(), bankValue + 1.5*loopValue);
-        loopValue++;
-    }
-    testHand->SetBankTotal(bankValue);
-    loopValue = 1;
-    wagerValue = loopValue;
-    // Test insurance
-    while (testHand->GetBankTotal() < 200) {
-        testHand->SetWager(wagerValue);
-        testHand->SetInsuranceWager(testHand->GetWager());
-        testHand->UpdateBank(0, testHand->GetWager());
-        testHand->UpdateBank(5, testHand->GetInsuranceWager());
-        EXPECT_EQ(testHand->GetBankTotal(), bankValue + 2.0*loopValue);
-        loopValue++;
-    }  
-}
-
 // Hand class, place wager
 TEST_F(test_x, HandClassPlaceWager) {
     // Create objects
     std::shared_ptr<Hand> testHand(new Hand);
-    testHand->BankDepositSim(100);
     float wager = 5;
-    float priorBank = 0;
-    while (testHand->GetBankTotal() >= 0) {
-        priorBank = testHand->GetBankTotal();
-        EXPECT_EQ(testHand->GetBankTotal(), priorBank);
-        testHand->PlaceWagerSim(wager);
-        EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetWager());
+    float bank = 100;
+    float priorBank = bank;
+    int loopCounter = 0;
+    while (bank >= 0) {
+        loopCounter++;
+        testHand->PlaceWagerSim(bank, wager);
+        EXPECT_EQ(bank, priorBank - loopCounter * testHand->GetWager());
     }
+}
+
+// Hand class, copy variables test
+TEST_F(test_x, HandClassCopy) {
+    std::shared_ptr<Hand> hand1(new Hand);
+    std::shared_ptr<Hand> hand1Copy(new Hand);
+    hand1->SetWager(10);
+    hand1Copy->CopyVariables(hand1);
+    ASSERT_EQ(hand1->GetWager(), 10);
+    ASSERT_EQ(hand1Copy->GetWager(), 10);
 }
 
 // Hand class, create an insurance wager for a player
 TEST_F(test_x, HandClassInsuranceDeposit) {
     // Create objects
     std::shared_ptr<Hand> testHand(new Hand);
-    testHand->BankDepositSim(100);
     float wager = 5;
+    float bank = 100;
     float priorBank = 0;
-    while (testHand->GetBankTotal() >= 0) {
-        priorBank = testHand->GetBankTotal();
+    while (bank > wager) {
+        priorBank = bank;
         // No insurance check
+        testHand->PlaceWagerSim(bank, wager);
         {
-            testHand->SetBankTotal(priorBank);
-            testHand->PlaceWagerSim(wager);
-            testHand->InsuranceSim(false);
-            EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetWager());
+            testHand->InsuranceSim(bank, false);
+            EXPECT_EQ(bank, priorBank - testHand->GetWager());
         }
         // Insurance check
         {
-            testHand->SetBankTotal(priorBank);
-            testHand->PlaceWagerSim(wager);
-            testHand->InsuranceSim(true);
-            EXPECT_EQ(testHand->GetBankTotal(), priorBank - wager - testHand->GetInsuranceWager());
+            testHand->InsuranceSim(bank, true);
+            EXPECT_EQ(bank, priorBank - wager - testHand->GetInsuranceWager());
         }
     }
 }
@@ -925,15 +821,14 @@ TEST_F(test_x, HandClassParameterCheck) {
     dealerHand->AddCardToHand(testNode);
     testHand->AddCardToHand(testNode);
     testHand->AddCardToHand(testNode);
-    testHand->SetBankTotal(100);
-    testHand->SetName("Borby");
+    float bank = 100;
     // Test can double down
     for (int i = 1; i <= 200; i++) {
         testHand->SetWager(i);
         {
             {
-                testHand->ParametersCheck(dealerHand);
-                if (testHand->GetBankTotal() >= testHand->GetWager()) {
+                testHand->ParametersCheck(dealerHand, bank);
+                if (bank >= testHand->GetWager()) {
                     EXPECT_TRUE(testHand->GetHashTable()->Contains("CanDoubleDown"));
                 }
                 else {
@@ -944,13 +839,13 @@ TEST_F(test_x, HandClassParameterCheck) {
             testHand->GetHashTable()->AddToTable("DoubleDownResponse");
             {
                 testHand->GetHashTable()->AddToTable("CanDoubleDown");
-                testHand->ParametersCheck(dealerHand);
+                testHand->ParametersCheck(dealerHand, bank);
                 EXPECT_FALSE(testHand->GetHashTable()->Contains("CanDoubleDown"));
             }
             testHand->GetHashTable()->ClearHashTable();
         }
         testHand->GetHashTable()->AddToTable("HasHit");
-        testHand->ParametersCheck(dealerHand);
+        testHand->ParametersCheck(dealerHand, bank);
         EXPECT_FALSE(testHand->GetHashTable()->Contains("CanDoubleDown"));
         testHand->GetHashTable()->ClearHashTable();
     }
@@ -963,7 +858,7 @@ TEST_F(test_x, HandClassParameterCheck) {
         testHand->AddCardToHand(testNode);  
     }
     testHand->GetHashTable()->AddToTable("SoftSevenTeen");
-    testHand->ParametersCheck(dealerHand);
+    testHand->ParametersCheck(dealerHand, bank);
     EXPECT_TRUE(testHand->GetHashTable()->Contains("SoftSevenTeen"));
     testHand->GetPlayerCards()->ClearList();
     testHand->GetHashTable()->ClearHashTable();
@@ -975,7 +870,7 @@ TEST_F(test_x, HandClassParameterCheck) {
     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
     testHand->AddCardToHand(testNode);
     testHand->GetHashTable()->AddToTable("SoftSevenTeen");
-    testHand->ParametersCheck(dealerHand);
+    testHand->ParametersCheck(dealerHand, bank);
     EXPECT_FALSE(testHand->GetHashTable()->Contains("SoftSevenTeen"));
     testHand->GetPlayerCards()->ClearList();
     testHand->GetHashTable()->ClearHashTable();
@@ -989,7 +884,7 @@ TEST_F(test_x, HandClassParameterCheck) {
         testHand->AddCardToHand(testNode);  
     }
     testHand->GetHashTable()->AddToTable("SoftSevenTeen");
-    testHand->ParametersCheck(dealerHand);
+    testHand->ParametersCheck(dealerHand, bank);
     EXPECT_FALSE(testHand->GetHashTable()->Contains("SoftSevenTeen"));
     testHand->GetPlayerCards()->ClearList();
     testHand->AddCardToHand(testNode);
@@ -1010,7 +905,7 @@ TEST_F(test_x, HandClassParameterCheck) {
                 for (int k = 1; k <= 400; k++) {
                     testHand->SetWager(k);
                     testHand->GetHashTable()->AddToTable("CanBuyInsurance");
-                    testHand->ParametersCheck(dealerHand);
+                    testHand->ParametersCheck(dealerHand, bank);
                     if (k <= 200) {
                         EXPECT_TRUE(testHand->GetHashTable()->Contains("CanBuyInsurance"));
                     }
@@ -1022,7 +917,7 @@ TEST_F(test_x, HandClassParameterCheck) {
             }
             else {
                 testHand->GetHashTable()->AddToTable("CanBuyInsurance");
-                testHand->ParametersCheck(dealerHand);
+                testHand->ParametersCheck(dealerHand, bank);
                 EXPECT_FALSE(testHand->GetHashTable()->Contains("CanBuyInsurance"));
             }
             dealerHand->GetPlayerCards()->RemoveNode(-1);
@@ -1051,7 +946,7 @@ TEST_F(test_x, HandClassParameterCheck) {
                     testHand->SetWager(k);
                     testHand->GetHashTable()->AddToTable("CanSplitAces");
                     testHand->GetHashTable()->AddToTable("CanSplitHand");
-                    testHand->ParametersCheck(dealerHand);
+                    testHand->ParametersCheck(dealerHand, bank);
                     testHand->CheckParamInHand("R", Ranks[0]);
                     if (k <= 100) {
                         if (testHand->GetHashTable()->Contains("ParamInHand")) {
@@ -1073,7 +968,7 @@ TEST_F(test_x, HandClassParameterCheck) {
             else {
                 testHand->GetHashTable()->AddToTable("CanSplitAces");
                 testHand->GetHashTable()->AddToTable("CanSplitHand");
-                testHand->ParametersCheck(dealerHand);
+                testHand->ParametersCheck(dealerHand, bank);
                 EXPECT_FALSE(testHand->GetHashTable()->Contains("CanSplitAces"));
                 EXPECT_FALSE(testHand->GetHashTable()->Contains("CanSplitHand"));
             }
@@ -1092,16 +987,12 @@ TEST_F(test_x, HandClassReset) {
     testShoe->SetNumOfDecks(1);
     testShoe->CreateShoeSim();
     // Set dummy values
-    testHand->SetName("Borby");
-    testHand->SetBankTotal(100);
     testHand->SetWager(10);
     testHand->SetInsuranceWager(5);
     testHand->SetNet(5);
     testHand->HitHand(testShoe);
     testHand->HitHand(testShoe);
-    EXPECT_EQ(testHand->GetName(), "Borby");
     EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-    EXPECT_EQ(testHand->GetBankTotal(), 100);
     EXPECT_EQ(testHand->GetInsuranceWager(), 5);
     EXPECT_EQ(testHand->GetNet(), 5);
     EXPECT_EQ(testHand->GetWager(), 10);
@@ -1109,15 +1000,11 @@ TEST_F(test_x, HandClassReset) {
         for (int j = 0; j < 5; j++) {
             testHand->GetHashTable()->AddToTable(testHand->GetTableMatrix()[i][j]);
             EXPECT_TRUE(testHand->GetHashTable()->Contains(testHand->GetTableMatrix()[i][j]));
-            // unsigned int testHash = testHand->GetHashTable()->CalculateHashCode(testHand->GetTableMatrix()[i][j]);
-            // unsigned int testBucket = testHash % testHand->GetHashTable()->GetTable().size();
-            // std::cout << color_text(31, testHand->GetTableMatrix()[i][j]) << " " << color_text(32, std::to_string(testHash)) << " " << color_text(34, std::to_string(testBucket)) << std::endl;
         }
     }
     // Reset Hand
     testHand->ResetHand();
     EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 0);
-    EXPECT_EQ(testHand->GetBankTotal(), 100);
     EXPECT_EQ(testHand->GetInsuranceWager(), 0);
     EXPECT_EQ(testHand->GetNet(), 0);
     EXPECT_EQ(testHand->GetWager(), 0);
@@ -1128,2633 +1015,2617 @@ TEST_F(test_x, HandClassReset) {
     }
 }
 
-// Hand class, copy variables test
-TEST_F(test_x, HandClassCopy) {
-    std::shared_ptr<Hand> hand1(new Hand);
-    std::shared_ptr<Hand> hand1Copy(new Hand);
-    hand1->SetName("Borby");
-    hand1->SetBankTotal(100);
-    hand1->SetWager(10);
-    hand1Copy->CopyVariables(hand1);
-    ASSERT_EQ(hand1->GetName(), "Borby");
-    ASSERT_EQ(hand1->GetBankTotal(), 100);
-    ASSERT_EQ(hand1->GetWager(), 10);
-    ASSERT_EQ(hand1Copy->GetName(), "Borby");
-    ASSERT_EQ(hand1Copy->GetBankTotal(), 100);
-    ASSERT_EQ(hand1Copy->GetWager(), 10);
-}
+// /////////////////////////////////////////
+// // Core Functions Tests
+// /////////////////////////////////////////
 
-/////////////////////////////////////////
-// Core Functions Tests
-/////////////////////////////////////////
+// // Blackjack strategy test, no duplicate ranks, no ace in hand off deal
+// TEST_F(test_x, BlackjackStrat){
+//     // Create hands and card objects
+//     std::shared_ptr<Hand> userHand(new Hand);
+//     std::shared_ptr<Hand> dealerHand(new Hand);
+//     std::shared_ptr<Card> testCard(new Card);
+//     std::shared_ptr<node<Card>> testNode;
+//     userHand->SetBankTotal(100);
+//     // Add first card to dealer
+//     testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+//     testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//     dealerHand->SetPlayerCards(testNode);
+//     // Add dummy cards to user hand
+//     testCard = std::make_shared<Card>(Ranks[1], Suits[0]);
+//     testNode = userHand->GetPlayerCards()->InitNode(testCard);
+//     userHand->SetPlayerCards(testNode);
+//     testCard = std::make_shared<Card>(Ranks[12], Suits[0]);
+//     testNode = userHand->GetPlayerCards()->InitNode(testCard);
+//     userHand->SetPlayerCards(testNode);
+//     // Player has a card total of 4 through 8
+//     for (int i = 4; i <= 8; i++) {
+//         userHand->SetCardsTotal(i);
+//         userHand->SetWager(10);
+//         for (int j = 0; j < 13; j++) {
+//             // Add card to dealer hand
+//             testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             dealerHand->SetPlayerCards(testNode);
+//             blackjack_strategy(userHand, dealerHand, false, false);
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//             EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//             dealerHand->GetPlayerCards()->RemoveNode(-1);
+//             userHand->GetHashTable()->ClearHashTable();
+//         }
+//     }
+//     // Player has a card total of 9
+//     userHand->SetCardsTotal(9);
+//     for (int i = 0; i < 13; i++) {
+//         // Add card to dealer hand
+//         testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//         testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//         dealerHand->SetPlayerCards(testNode);
+//         // Dealer has a 2 - 6
+//         if (i != 0 && i < 6) {
+//             // Test strategy for if a player can double down
+//             {   
+//                 // Set wager
+//                 userHand->SetWager(10);
+//                 // Test strategy
+//                 blackjack_strategy(userHand, dealerHand, false, false);
+//                 EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                 EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 userHand->GetHashTable()->ClearHashTable();
+//             }
+//             // Test strategy for if a player cannot double down
+//             {
+//                 // Set wager
+//                 userHand->SetWager(200);
+//                 // Test strategy
+//                 blackjack_strategy(userHand, dealerHand, false, false);
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                 EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 userHand->GetHashTable()->ClearHashTable();
+//             }
+//         }
+//         // Otherwise
+//         else {
+//             // Set wager
+//             userHand->SetWager(10);
+//             // Test strategy
+//             blackjack_strategy(userHand, dealerHand, false, false);
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//             EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//             userHand->GetHashTable()->ClearHashTable();
+//         }    
+//         dealerHand->GetPlayerCards()->RemoveNode(-1);
+//     }
+//     // Player has a card total of 10
+//     userHand->SetCardsTotal(10);
+//     for (int i = 0; i < 13; i++) {
+//         // Add card to dealer hand
+//         testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//         testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//         dealerHand->SetPlayerCards(testNode);
+//         // Dealer has a 2 - 9
+//         if (i != 0 && i < 9) {
+//             // Test strategy for if a player can double down
+//             {
+//                 // Set wager
+//                 userHand->SetWager(10);
+//                 // Test strategy
+//                 blackjack_strategy(userHand, dealerHand, false, false);
+//                 EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                 EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 userHand->GetHashTable()->ClearHashTable();
+//             }
+//             // Test strategy for if a player cannot double down
+//             {
+//                 // Set wager
+//                 userHand->SetWager(200);
+//                 // Test strategy
+//                 blackjack_strategy(userHand, dealerHand, false, false);
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                 EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 userHand->GetHashTable()->ClearHashTable();
+//             }
+//         }
+//         // Otherwise
+//         else {
+//             // Set wager
+//             userHand->SetWager(10);
+//             // Test strategy
+//             blackjack_strategy(userHand, dealerHand, false, false);
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//             EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//             userHand->GetHashTable()->ClearHashTable();
+//         }
+//         dealerHand->GetPlayerCards()->RemoveNode(-1);
+//     }
+//     // Player has a hand card value of 11
+//     userHand->SetCardsTotal(11);
+//     for (int i = 0; i < 13; i++) {
+//         // Player can double down
+//         {
+//             userHand->SetWager(10);
+//             // Add card to dealer hand
+//             testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             dealerHand->SetPlayerCards(testNode);
+//             // Test strategy - Can double down
+//             blackjack_strategy(userHand, dealerHand, false, false);
+//             EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//             EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//             userHand->GetHashTable()->ClearHashTable();
+//             // Remove last card from dealer hand
+//             dealerHand->GetPlayerCards()->RemoveNode(-1);           
+//         }
+//         // Player cannot double down
+//         {
+//             userHand->SetWager(200);
+//             // Add card to dealer hand
+//             testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             dealerHand->SetPlayerCards(testNode);
+//             // Test strategy - Can double down
+//             blackjack_strategy(userHand, dealerHand, false, false);
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//             EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//             userHand->GetHashTable()->ClearHashTable();
+//             // Remove last card from dealer hand
+//             dealerHand->GetPlayerCards()->RemoveNode(-1);     
+//         }
+//     }
+//     // Player has a hand card value of 12
+//     userHand->SetCardsTotal(12);
+//     for (int i = 0; i < 13; i++) {
+//         userHand->SetWager(10);
+//         // Add card to dealer hand
+//         testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//         testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//         dealerHand->SetPlayerCards(testNode);
+//         blackjack_strategy(userHand, dealerHand, false, false);
+//         // Test strategy for 4, 5, and 6 cards
+//         if (i == 3 || i == 4 || i == 5) {
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//             EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//         }
+//         // Test strategy for other cards
+//         else {
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//             EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//         }
+//         dealerHand->GetPlayerCards()->RemoveNode(-1);  
+//         userHand->GetHashTable()->ClearHashTable();
+//     }
+//     // Player has a hand card value of 13 through 16
+//     for (int i = 13; i <= 16; i++) {
+//         userHand->SetCardsTotal(i);
+//         userHand->SetWager(10);
+//         for (int j = 0; j < 13; j++) {
+//             // Add card to dealer hand
+//             testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             dealerHand->SetPlayerCards(testNode);
+//             blackjack_strategy(userHand, dealerHand, false, false);
+//             // Test strategy for 2 through 6
+//             if (j != 0 && j < 6) {
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                 EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//             }
+//             // Test strategy otherwise
+//             else {
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                 EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//             }
+//             dealerHand->GetPlayerCards()->RemoveNode(-1);
+//             userHand->GetHashTable()->ClearHashTable();
+//         }
+//     }
+//     // Player has a hand card value of 17 through 21
+//     for (int i = 17; i <= 21; i++) {
+//         userHand->SetCardsTotal(i);
+//         userHand->SetWager(10);
+//         for (int j = 0; j < 13; j++) {
+//             // Add card to dealer hand
+//             testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             dealerHand->SetPlayerCards(testNode);
+//             blackjack_strategy(userHand, dealerHand, false, false);
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//             EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//             dealerHand->GetPlayerCards()->RemoveNode(-1);
+//             userHand->GetHashTable()->ClearHashTable();
+//         }
+//     }
+// }
 
-// Blackjack strategy test, no duplicate ranks, no ace in hand off deal
-TEST_F(test_x, BlackjackStrat){
-    // Create hands and card objects
-    std::shared_ptr<Hand> userHand(new Hand);
-    std::shared_ptr<Hand> dealerHand(new Hand);
-    std::shared_ptr<Card> testCard(new Card);
-    std::shared_ptr<node<Card>> testNode;
-    userHand->SetBankTotal(100);
-    // Add first card to dealer
-    testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
-    testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-    dealerHand->SetPlayerCards(testNode);
-    // Add dummy cards to user hand
-    testCard = std::make_shared<Card>(Ranks[1], Suits[0]);
-    testNode = userHand->GetPlayerCards()->InitNode(testCard);
-    userHand->SetPlayerCards(testNode);
-    testCard = std::make_shared<Card>(Ranks[12], Suits[0]);
-    testNode = userHand->GetPlayerCards()->InitNode(testCard);
-    userHand->SetPlayerCards(testNode);
-    // Player has a card total of 4 through 8
-    for (int i = 4; i <= 8; i++) {
-        userHand->SetCardsTotal(i);
-        userHand->SetWager(10);
-        for (int j = 0; j < 13; j++) {
-            // Add card to dealer hand
-            testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            dealerHand->SetPlayerCards(testNode);
-            blackjack_strategy(userHand, dealerHand, false, false);
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-            EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-            dealerHand->GetPlayerCards()->RemoveNode(-1);
-            userHand->GetHashTable()->ClearHashTable();
-        }
-    }
-    // Player has a card total of 9
-    userHand->SetCardsTotal(9);
-    for (int i = 0; i < 13; i++) {
-        // Add card to dealer hand
-        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-        dealerHand->SetPlayerCards(testNode);
-        // Dealer has a 2 - 6
-        if (i != 0 && i < 6) {
-            // Test strategy for if a player can double down
-            {   
-                // Set wager
-                userHand->SetWager(10);
-                // Test strategy
-                blackjack_strategy(userHand, dealerHand, false, false);
-                EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                userHand->GetHashTable()->ClearHashTable();
-            }
-            // Test strategy for if a player cannot double down
-            {
-                // Set wager
-                userHand->SetWager(200);
-                // Test strategy
-                blackjack_strategy(userHand, dealerHand, false, false);
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                userHand->GetHashTable()->ClearHashTable();
-            }
-        }
-        // Otherwise
-        else {
-            // Set wager
-            userHand->SetWager(10);
-            // Test strategy
-            blackjack_strategy(userHand, dealerHand, false, false);
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-            EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-            userHand->GetHashTable()->ClearHashTable();
-        }    
-        dealerHand->GetPlayerCards()->RemoveNode(-1);
-    }
-    // Player has a card total of 10
-    userHand->SetCardsTotal(10);
-    for (int i = 0; i < 13; i++) {
-        // Add card to dealer hand
-        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-        dealerHand->SetPlayerCards(testNode);
-        // Dealer has a 2 - 9
-        if (i != 0 && i < 9) {
-            // Test strategy for if a player can double down
-            {
-                // Set wager
-                userHand->SetWager(10);
-                // Test strategy
-                blackjack_strategy(userHand, dealerHand, false, false);
-                EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                userHand->GetHashTable()->ClearHashTable();
-            }
-            // Test strategy for if a player cannot double down
-            {
-                // Set wager
-                userHand->SetWager(200);
-                // Test strategy
-                blackjack_strategy(userHand, dealerHand, false, false);
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                userHand->GetHashTable()->ClearHashTable();
-            }
-        }
-        // Otherwise
-        else {
-            // Set wager
-            userHand->SetWager(10);
-            // Test strategy
-            blackjack_strategy(userHand, dealerHand, false, false);
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-            EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-            userHand->GetHashTable()->ClearHashTable();
-        }
-        dealerHand->GetPlayerCards()->RemoveNode(-1);
-    }
-    // Player has a hand card value of 11
-    userHand->SetCardsTotal(11);
-    for (int i = 0; i < 13; i++) {
-        // Player can double down
-        {
-            userHand->SetWager(10);
-            // Add card to dealer hand
-            testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            dealerHand->SetPlayerCards(testNode);
-            // Test strategy - Can double down
-            blackjack_strategy(userHand, dealerHand, false, false);
-            EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-            EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-            userHand->GetHashTable()->ClearHashTable();
-            // Remove last card from dealer hand
-            dealerHand->GetPlayerCards()->RemoveNode(-1);           
-        }
-        // Player cannot double down
-        {
-            userHand->SetWager(200);
-            // Add card to dealer hand
-            testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            dealerHand->SetPlayerCards(testNode);
-            // Test strategy - Can double down
-            blackjack_strategy(userHand, dealerHand, false, false);
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-            EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-            userHand->GetHashTable()->ClearHashTable();
-            // Remove last card from dealer hand
-            dealerHand->GetPlayerCards()->RemoveNode(-1);     
-        }
-    }
-    // Player has a hand card value of 12
-    userHand->SetCardsTotal(12);
-    for (int i = 0; i < 13; i++) {
-        userHand->SetWager(10);
-        // Add card to dealer hand
-        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-        dealerHand->SetPlayerCards(testNode);
-        blackjack_strategy(userHand, dealerHand, false, false);
-        // Test strategy for 4, 5, and 6 cards
-        if (i == 3 || i == 4 || i == 5) {
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-            EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-        }
-        // Test strategy for other cards
-        else {
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-            EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-        }
-        dealerHand->GetPlayerCards()->RemoveNode(-1);  
-        userHand->GetHashTable()->ClearHashTable();
-    }
-    // Player has a hand card value of 13 through 16
-    for (int i = 13; i <= 16; i++) {
-        userHand->SetCardsTotal(i);
-        userHand->SetWager(10);
-        for (int j = 0; j < 13; j++) {
-            // Add card to dealer hand
-            testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            dealerHand->SetPlayerCards(testNode);
-            blackjack_strategy(userHand, dealerHand, false, false);
-            // Test strategy for 2 through 6
-            if (j != 0 && j < 6) {
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-            }
-            // Test strategy otherwise
-            else {
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-            }
-            dealerHand->GetPlayerCards()->RemoveNode(-1);
-            userHand->GetHashTable()->ClearHashTable();
-        }
-    }
-    // Player has a hand card value of 17 through 21
-    for (int i = 17; i <= 21; i++) {
-        userHand->SetCardsTotal(i);
-        userHand->SetWager(10);
-        for (int j = 0; j < 13; j++) {
-            // Add card to dealer hand
-            testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            dealerHand->SetPlayerCards(testNode);
-            blackjack_strategy(userHand, dealerHand, false, false);
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-            EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-            dealerHand->GetPlayerCards()->RemoveNode(-1);
-            userHand->GetHashTable()->ClearHashTable();
-        }
-    }
-}
+// // Blackjack strategy test, no duplicate ranks, Ace in hand off deal
+// TEST_F(test_x, BlackjackStratAces) {
+//     // Create hands
+//     std::shared_ptr<Hand> userHand(new Hand);
+//     std::shared_ptr<Hand> dealerHand(new Hand);
+//     std::shared_ptr<Card> testCard(new Card);
+//     std::shared_ptr<node<Card>> testNode;
+//     userHand->SetBankTotal(100);
+//     // Add first card to dealer
+//     testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+//     testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//     dealerHand->SetPlayerCards(testNode);
+//     dealerHand->AddHandTotal();
+//     // Add first card to player - Ace
+//     testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+//     testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//     userHand->SetPlayerCards(testNode);
+//     userHand->AddHandTotal();
+//     // Player has a card total of 13 or 14 (Ace, 2 || Ace, 3)
+//     for (int i = 1; i <= 2; i++) {
+//         testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//         testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//         userHand->SetPlayerCards(testNode);
+//         userHand->AddHandTotal();
+//         for (int j = 0; j < 13; j++) {
+//             // Add card to dealer hand
+//             testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             dealerHand->SetPlayerCards(testNode);
+//             // Card being added is a 5 or 6
+//             if (j == 4 || j == 5) {
+//                 // Player can double down
+//                 {
+//                     // Set wager
+//                     userHand->SetWager(10);
+//                     // Test strategy - Can double down
+//                     blackjack_strategy(userHand, dealerHand, false, false);
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                     userHand->GetHashTable()->ClearHashTable();
+//                 }
+//                 // Player can't double down
+//                 {
+//                     // Set wager
+//                     userHand->SetWager(200);
+//                     // Test strategy - Can't double down
+//                     blackjack_strategy(userHand, dealerHand, false, false);
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                     userHand->GetHashTable()->ClearHashTable();
+//                 }
+//             }
+//             // Otherwise
+//             else {
+//                 // Set wager
+//                 userHand->SetWager(10);
+//                 // Test strategy - Can't double down
+//                 blackjack_strategy(userHand, dealerHand, false, false);
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                 EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 userHand->GetHashTable()->ClearHashTable();
+//             }
+//             dealerHand->GetPlayerCards()->RemoveNode(-1);
+//         }
+//         userHand->GetPlayerCards()->RemoveNode(-1);
+//         userHand->AddHandTotal();
+//     }
+//     // Player has a card total of 15 or 16 (Ace, 4 || Ace, 5)
+//     for (int i = 3; i <= 4; i++) {
+//         testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//         testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//         userHand->SetPlayerCards(testNode);
+//         userHand->AddHandTotal();
+//         for (int j = 0; j < 13; j++) {
+//             // Add card to dealer hand
+//             testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             dealerHand->SetPlayerCards(testNode);
+//             // Card being added is a 4, 5, or 6
+//             if (j == 3 || j == 4 || j == 5) {
+//                 // Player can double down
+//                 {
+//                     // Set wager
+//                     userHand->SetWager(10);
+//                     // Test strategy - Can double down
+//                     blackjack_strategy(userHand, dealerHand, false, false);
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                     userHand->GetHashTable()->ClearHashTable();
+//                 }
+//                 // Player can't double down
+//                 {
+//                     // Set wager
+//                     userHand->SetWager(200);
+//                     // Test strategy - Can't double down
+//                     blackjack_strategy(userHand, dealerHand, false, false);
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                     userHand->GetHashTable()->ClearHashTable();
+//                 }
+//             }
+//             // Otherwise
+//             else {
+//                 // Set wager
+//                 userHand->SetWager(10);
+//                 // Test strategy
+//                 blackjack_strategy(userHand, dealerHand, false, false);
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                 EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 userHand->GetHashTable()->ClearHashTable();
+//             }
+//             dealerHand->GetPlayerCards()->RemoveNode(-1);
+//         }
+//         userHand->GetPlayerCards()->RemoveNode(-1);
+//         userHand->AddHandTotal();
+//     }
+//     // Player has a card total of 17 (Ace, 6)
+//     {
+//         testCard = std::make_shared<Card>(Ranks[5], Suits[0]);
+//         testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//         userHand->SetPlayerCards(testNode);
+//         userHand->AddHandTotal();
+//         for (int i = 0; i < 13; i++) {
+//             // Add card to dealer hand
+//             testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             dealerHand->SetPlayerCards(testNode);
+//             if (i >= 2 && i <= 5) {
+//                 // Player can double down
+//                 {
+//                     // Set wager
+//                     userHand->SetWager(10);
+//                     // Test strategy - Can double down
+//                     blackjack_strategy(userHand, dealerHand, false, false);
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                     userHand->GetHashTable()->ClearHashTable();
+//                 }
+//                 // Player can't double down
+//                 {
+//                     // Set wager
+//                     userHand->SetWager(200);
+//                     // Test strategy - Can't double down
+//                     blackjack_strategy(userHand, dealerHand, false, false);
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                     userHand->GetHashTable()->ClearHashTable();
+//                 }
+//             }
+//             // Otherwise
+//             else {
+//                 // Set wager
+//                 userHand->SetWager(10);
+//                 // Test strategy
+//                 blackjack_strategy(userHand, dealerHand, false, false);
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                 EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 userHand->GetHashTable()->ClearHashTable();
+//             }
+//             dealerHand->GetPlayerCards()->RemoveNode(-1);
+//         }
+//         userHand->GetPlayerCards()->RemoveNode(-1);
+//         userHand->AddHandTotal();
+//     }
+//     // Player card total is 18 (Ace, 7)
+//     {
+//         testCard = std::make_shared<Card>(Ranks[6], Suits[0]);
+//         testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//         userHand->SetPlayerCards(testNode);
+//         userHand->AddHandTotal();
+//         for (int i = 0; i < 13; i++) {
+//             // Add card to dealer hand
+//             testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             dealerHand->SetPlayerCards(testNode);
+//             if (i == 1 || i == 6 || i == 7) {
+//                 // Set wager
+//                 userHand->SetWager(10);
+//                 // Test strategy
+//                 blackjack_strategy(userHand, dealerHand, false, false);
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                 EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 userHand->GetHashTable()->ClearHashTable();
+//             }
+//             else if (i >= 2 && i <= 5) {
+//                 // Player can double down
+//                 {
+//                     // Set wager
+//                     userHand->SetWager(10);
+//                     // Test strategy - Can double down
+//                     blackjack_strategy(userHand, dealerHand, false, false);
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                     userHand->GetHashTable()->ClearHashTable();
+//                 }
+//                 // Player can't double down
+//                 {
+//                     // Set wager
+//                     userHand->SetWager(200);
+//                     // Test strategy - Can't double down
+//                     blackjack_strategy(userHand, dealerHand, false, false);
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                     userHand->GetHashTable()->ClearHashTable();
+//                 }
+//             }
+//             else {
+//                 // Set wager
+//                 userHand->SetWager(10);
+//                 // Test strategy
+//                 blackjack_strategy(userHand, dealerHand, false, false);
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                 EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 userHand->GetHashTable()->ClearHashTable();
+//             }
+//             dealerHand->GetPlayerCards()->RemoveNode(-1);
+//         }
+//         userHand->GetPlayerCards()->RemoveNode(-1);
+//         userHand->AddHandTotal();
+//     }
+//     // Player card total is 19, 20, or 21 (Ace, 8 || Ace, 9 || Ace, Ten)
+//     for (int i = 8; i <= 12; i++) {
+//         testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//         testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//         userHand->SetPlayerCards(testNode);
+//         userHand->AddHandTotal();
+//         for (int j = 0; j < 13; j++) {
+//             // Add card to dealer hand
+//             testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             dealerHand->SetPlayerCards(testNode);
+//             // Set wager
+//             userHand->SetWager(200);
+//             // Test strategy
+//             blackjack_strategy(userHand, dealerHand, false, false);
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//             EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//             EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//             dealerHand->GetPlayerCards()->RemoveNode(-1);
+//             userHand->GetHashTable()->ClearHashTable();
+//         }
+//         userHand->GetPlayerCards()->RemoveNode(-1);
+//         userHand->AddHandTotal();
+//     }
+// }
 
-// Blackjack strategy test, no duplicate ranks, Ace in hand off deal
-TEST_F(test_x, BlackjackStratAces) {
-    // Create hands
-    std::shared_ptr<Hand> userHand(new Hand);
-    std::shared_ptr<Hand> dealerHand(new Hand);
-    std::shared_ptr<Card> testCard(new Card);
-    std::shared_ptr<node<Card>> testNode;
-    userHand->SetBankTotal(100);
-    // Add first card to dealer
-    testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
-    testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-    dealerHand->SetPlayerCards(testNode);
-    dealerHand->AddHandTotal();
-    // Add first card to player - Ace
-    testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
-    testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-    userHand->SetPlayerCards(testNode);
-    userHand->AddHandTotal();
-    // Player has a card total of 13 or 14 (Ace, 2 || Ace, 3)
-    for (int i = 1; i <= 2; i++) {
-        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-        userHand->SetPlayerCards(testNode);
-        userHand->AddHandTotal();
-        for (int j = 0; j < 13; j++) {
-            // Add card to dealer hand
-            testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            dealerHand->SetPlayerCards(testNode);
-            // Card being added is a 5 or 6
-            if (j == 4 || j == 5) {
-                // Player can double down
-                {
-                    // Set wager
-                    userHand->SetWager(10);
-                    // Test strategy - Can double down
-                    blackjack_strategy(userHand, dealerHand, false, false);
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                    userHand->GetHashTable()->ClearHashTable();
-                }
-                // Player can't double down
-                {
-                    // Set wager
-                    userHand->SetWager(200);
-                    // Test strategy - Can't double down
-                    blackjack_strategy(userHand, dealerHand, false, false);
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                    userHand->GetHashTable()->ClearHashTable();
-                }
-            }
-            // Otherwise
-            else {
-                // Set wager
-                userHand->SetWager(10);
-                // Test strategy - Can't double down
-                blackjack_strategy(userHand, dealerHand, false, false);
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                userHand->GetHashTable()->ClearHashTable();
-            }
-            dealerHand->GetPlayerCards()->RemoveNode(-1);
-        }
-        userHand->GetPlayerCards()->RemoveNode(-1);
-        userHand->AddHandTotal();
-    }
-    // Player has a card total of 15 or 16 (Ace, 4 || Ace, 5)
-    for (int i = 3; i <= 4; i++) {
-        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-        userHand->SetPlayerCards(testNode);
-        userHand->AddHandTotal();
-        for (int j = 0; j < 13; j++) {
-            // Add card to dealer hand
-            testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            dealerHand->SetPlayerCards(testNode);
-            // Card being added is a 4, 5, or 6
-            if (j == 3 || j == 4 || j == 5) {
-                // Player can double down
-                {
-                    // Set wager
-                    userHand->SetWager(10);
-                    // Test strategy - Can double down
-                    blackjack_strategy(userHand, dealerHand, false, false);
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                    userHand->GetHashTable()->ClearHashTable();
-                }
-                // Player can't double down
-                {
-                    // Set wager
-                    userHand->SetWager(200);
-                    // Test strategy - Can't double down
-                    blackjack_strategy(userHand, dealerHand, false, false);
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                    userHand->GetHashTable()->ClearHashTable();
-                }
-            }
-            // Otherwise
-            else {
-                // Set wager
-                userHand->SetWager(10);
-                // Test strategy
-                blackjack_strategy(userHand, dealerHand, false, false);
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                userHand->GetHashTable()->ClearHashTable();
-            }
-            dealerHand->GetPlayerCards()->RemoveNode(-1);
-        }
-        userHand->GetPlayerCards()->RemoveNode(-1);
-        userHand->AddHandTotal();
-    }
-    // Player has a card total of 17 (Ace, 6)
-    {
-        testCard = std::make_shared<Card>(Ranks[5], Suits[0]);
-        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-        userHand->SetPlayerCards(testNode);
-        userHand->AddHandTotal();
-        for (int i = 0; i < 13; i++) {
-            // Add card to dealer hand
-            testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            dealerHand->SetPlayerCards(testNode);
-            if (i >= 2 && i <= 5) {
-                // Player can double down
-                {
-                    // Set wager
-                    userHand->SetWager(10);
-                    // Test strategy - Can double down
-                    blackjack_strategy(userHand, dealerHand, false, false);
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                    userHand->GetHashTable()->ClearHashTable();
-                }
-                // Player can't double down
-                {
-                    // Set wager
-                    userHand->SetWager(200);
-                    // Test strategy - Can't double down
-                    blackjack_strategy(userHand, dealerHand, false, false);
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                    userHand->GetHashTable()->ClearHashTable();
-                }
-            }
-            // Otherwise
-            else {
-                // Set wager
-                userHand->SetWager(10);
-                // Test strategy
-                blackjack_strategy(userHand, dealerHand, false, false);
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                userHand->GetHashTable()->ClearHashTable();
-            }
-            dealerHand->GetPlayerCards()->RemoveNode(-1);
-        }
-        userHand->GetPlayerCards()->RemoveNode(-1);
-        userHand->AddHandTotal();
-    }
-    // Player card total is 18 (Ace, 7)
-    {
-        testCard = std::make_shared<Card>(Ranks[6], Suits[0]);
-        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-        userHand->SetPlayerCards(testNode);
-        userHand->AddHandTotal();
-        for (int i = 0; i < 13; i++) {
-            // Add card to dealer hand
-            testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            dealerHand->SetPlayerCards(testNode);
-            if (i == 1 || i == 6 || i == 7) {
-                // Set wager
-                userHand->SetWager(10);
-                // Test strategy
-                blackjack_strategy(userHand, dealerHand, false, false);
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                userHand->GetHashTable()->ClearHashTable();
-            }
-            else if (i >= 2 && i <= 5) {
-                // Player can double down
-                {
-                    // Set wager
-                    userHand->SetWager(10);
-                    // Test strategy - Can double down
-                    blackjack_strategy(userHand, dealerHand, false, false);
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                    userHand->GetHashTable()->ClearHashTable();
-                }
-                // Player can't double down
-                {
-                    // Set wager
-                    userHand->SetWager(200);
-                    // Test strategy - Can't double down
-                    blackjack_strategy(userHand, dealerHand, false, false);
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                    userHand->GetHashTable()->ClearHashTable();
-                }
-            }
-            else {
-                // Set wager
-                userHand->SetWager(10);
-                // Test strategy
-                blackjack_strategy(userHand, dealerHand, false, false);
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                userHand->GetHashTable()->ClearHashTable();
-            }
-            dealerHand->GetPlayerCards()->RemoveNode(-1);
-        }
-        userHand->GetPlayerCards()->RemoveNode(-1);
-        userHand->AddHandTotal();
-    }
-    // Player card total is 19, 20, or 21 (Ace, 8 || Ace, 9 || Ace, Ten)
-    for (int i = 8; i <= 12; i++) {
-        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-        userHand->SetPlayerCards(testNode);
-        userHand->AddHandTotal();
-        for (int j = 0; j < 13; j++) {
-            // Add card to dealer hand
-            testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            dealerHand->SetPlayerCards(testNode);
-            // Set wager
-            userHand->SetWager(200);
-            // Test strategy
-            blackjack_strategy(userHand, dealerHand, false, false);
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-            EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-            EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-            dealerHand->GetPlayerCards()->RemoveNode(-1);
-            userHand->GetHashTable()->ClearHashTable();
-        }
-        userHand->GetPlayerCards()->RemoveNode(-1);
-        userHand->AddHandTotal();
-    }
-}
+// // Blackjack strategy test, duplicate ranks
+// TEST_F(test_x, BlackjackStratDuplicates) {
+//     // Create hands
+//     std::shared_ptr<Hand> userHand(new Hand);
+//     std::shared_ptr<Hand> dealerHand(new Hand);
+//     std::shared_ptr<Card> testCard(new Card);
+//     std::shared_ptr<node<Card>> testNode;
+//     userHand->SetBankTotal(100);
+//     // Add first card to dealer
+//     testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+//     testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//     dealerHand->SetPlayerCards(testNode);
+//     // Player card total is 4 (two, two) or 6 (three, three)
+//     for (int i = 1; i <= 2; i++) {
+//         // Add cards to player hand
+//         testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//         testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//         userHand->AddCardToHand(testNode);
+//         testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//         testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//         userHand->AddCardToHand(testNode);
+//         for (int j = 0; j < 13; j++) {
+//             // Add card to dealer hand
+//             testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             dealerHand->SetPlayerCards(testNode);
+//             userHand->SetWager(10);
+//             // Can split hand
+//             {
+//                 // Test strategy
+//                 blackjack_strategy(userHand, dealerHand, false, false);
+//                 if (j == 1 || j == 2) {
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 }
+//                 else if (j >= 3 && j <= 6) {
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));      
+//                 }
+//                 else {
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 }
+//                 userHand->GetHashTable()->ClearHashTable();      
+//             }
+//             // Can't split hand
+//             {
+//                 // Can't split
+//                 userHand->GetHashTable()->AddToTable(userHand->GetTableMatrix()[3][4]);
+//                 // Test strategy
+//                 blackjack_strategy(userHand, dealerHand, false, false);
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                 EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 // Can split
+//                 userHand->GetHashTable()->RemoveElement(userHand->GetTableMatrix()[3][4]);
+//                 userHand->GetHashTable()->ClearHashTable();
+//             }
+//             dealerHand->GetPlayerCards()->RemoveNode(-1);
+//         }
+//         userHand->GetPlayerCards()->RemoveNode(-1);
+//         userHand->GetPlayerCards()->RemoveNode(-1);
+//         userHand->AddHandTotal();
+//     }
+//     // Player card total is 8 (four, four)
+//     {
+//         // Add cards to player hand, set wager
+//         testCard = std::make_shared<Card>(Ranks[3], Suits[0]);
+//         testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//         userHand->AddCardToHand(testNode);
+//         testCard = std::make_shared<Card>(Ranks[3], Suits[0]);
+//         testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//         userHand->AddCardToHand(testNode);
+//         userHand->SetWager(10);
+//         for (int i = 0; i < 13; i++) {
+//             // Add card to dealer hand
+//             testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             dealerHand->SetPlayerCards(testNode);
+//             // Can split hand
+//             {
+//                 // Test strategy
+//                 blackjack_strategy(userHand, dealerHand, false, false);
+//                 if (i == 4 || i == 5) {
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 }
+//                 else {
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 }
+//                 userHand->GetHashTable()->ClearHashTable();
+//             }
+//             // Can't split hand
+//             {
+//                 // Can't split
+//                 userHand->GetHashTable()->AddToTable(userHand->GetTableMatrix()[3][4]);
+//                 // Test strategy
+//                 blackjack_strategy(userHand, dealerHand, false, false);
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                 EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 // Can split
+//                 userHand->GetHashTable()->RemoveElement(userHand->GetTableMatrix()[3][4]);
+//                 userHand->GetHashTable()->ClearHashTable();
+//             }
+//             dealerHand->GetPlayerCards()->RemoveNode(-1);
+//         }
+//         userHand->GetPlayerCards()->RemoveNode(-1);
+//         userHand->GetPlayerCards()->RemoveNode(-1);
+//         userHand->AddHandTotal();        
+//     }
+//     // Player card total is 10 (five, five)
+//     {
+//         // Add cards to player hand, set wager
+//         testCard = std::make_shared<Card>(Ranks[4], Suits[0]);
+//         testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//         userHand->AddCardToHand(testNode);
+//         testCard = std::make_shared<Card>(Ranks[4], Suits[0]);
+//         testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//         userHand->AddCardToHand(testNode);
+//         for (int i = 0; i < 13; i++) {
+//             // Add card to dealer hand
+//             testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             dealerHand->SetPlayerCards(testNode);
+//             if (i == 0 || i >= 9) {
+//                 // Set wager
+//                 userHand->SetWager(10);
+//                 // Test strategy
+//                 blackjack_strategy(userHand, dealerHand, false, false);
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                 EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 userHand->GetHashTable()->ClearHashTable();
+//             }
+//             else {
+//                 // Can double down
+//                 {
+//                     // Set wager
+//                     userHand->SetWager(10);
+//                     // Test strategy
+//                     blackjack_strategy(userHand, dealerHand, false, false);
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                     userHand->GetHashTable()->ClearHashTable();
+//                 }
+//                 // Cannot double down
+//                 {
+//                     // Set wager
+//                     userHand->SetWager(101);
+//                     // Test strategy
+//                     blackjack_strategy(userHand, dealerHand, false, false);
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                     userHand->GetHashTable()->ClearHashTable();
+//                 }
+//             }
+//             dealerHand->GetPlayerCards()->RemoveNode(-1);
+//         }
+//         userHand->GetPlayerCards()->RemoveNode(-1);
+//         userHand->GetPlayerCards()->RemoveNode(-1);
+//         userHand->AddHandTotal();
+//     }
+//     // Player card total is 12 (six, six || Ace, Ace) 
+//     {
+//         // Player has two sixes
+//         {
+//             // Add cards to player hand, set wager
+//             testCard = std::make_shared<Card>(Ranks[5], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             userHand->AddCardToHand(testNode);
+//             testCard = std::make_shared<Card>(Ranks[5], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             userHand->AddCardToHand(testNode);
+//             userHand->SetWager(10);
+//             for (int i = 0; i < 13; i++) {
+//                 // Add card to dealer hand
+//                 testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//                 testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//                 dealerHand->SetPlayerCards(testNode);
+//                 // Can split
+//                 {
+//                     // Test strategy
+//                     blackjack_strategy(userHand, dealerHand, false, false);
+//                     if (i >= 1 && i <= 5) {
+//                         EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                         EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                         EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                         EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                     }
+//                     else if (i == 6) {
+//                         EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                         EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                         EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                         EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                     }
+//                     else {
+//                         EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                         EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                         EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                         EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                     }
+//                     userHand->GetHashTable()->ClearHashTable();
+//                 }
+//                 // Can't split
+//                 {
+//                     userHand->GetHashTable()->AddToTable(userHand->GetTableMatrix()[3][4]);
+//                     // Test strategy
+//                     blackjack_strategy(userHand, dealerHand, false, false);
+//                     if ((i >= 1 && i <= 2) || (i == 0 || i >= 6)) {
+//                         EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                         EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                         EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                         EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                     }
+//                     else {
+//                         EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                         EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                         EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                         EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                     }
+//                     userHand->GetHashTable()->RemoveElement(userHand->GetTableMatrix()[3][4]);
+//                     userHand->GetHashTable()->ClearHashTable();
+//                 }
+//                 dealerHand->GetPlayerCards()->RemoveNode(-1);
+//             }
+//             userHand->GetPlayerCards()->RemoveNode(-1);
+//             userHand->GetPlayerCards()->RemoveNode(-1);
+//             userHand->AddHandTotal();
+//         }
+//         // Player has two aces
+//         {
+//             // Add cards to player hand, set wager
+//             testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             userHand->AddCardToHand(testNode);
+//             testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             userHand->AddCardToHand(testNode);
+//             userHand->SetWager(10);
+//             for (int i = 0; i < 13; i++) {
+//                 // Add card to dealer hand
+//                 testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//                 testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//                 dealerHand->SetPlayerCards(testNode);
+//                 // Can split
+//                 {
+//                     // Test strategy
+//                     blackjack_strategy(userHand, dealerHand, false, false);
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                     userHand->GetHashTable()->ClearHashTable();
+//                 }
+//                 // Can't split
+//                 {
+//                     userHand->GetHashTable()->AddToTable(userHand->GetTableMatrix()[3][3]);
+//                     // Test strategy
+//                     blackjack_strategy(userHand, dealerHand, false, false);
+//                     if ((i >= 1 && i <= 2) || (i == 0 || i >= 6)) {
+//                         EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                         EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                         EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                         EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                     }
+//                     else {
+//                         EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                         EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                         EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                         EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                     }
+//                     userHand->GetHashTable()->RemoveElement(userHand->GetTableMatrix()[3][3]);
+//                     userHand->GetHashTable()->ClearHashTable();
+//                 }
+//                 dealerHand->GetPlayerCards()->RemoveNode(-1);
+//             }
+//             userHand->GetPlayerCards()->RemoveNode(-1);
+//             userHand->GetPlayerCards()->RemoveNode(-1);
+//             userHand->AddHandTotal();
+//         }
+//     }
+//     // Player card total is 14 (seven, seven) 
+//     {
+//         // Add cards to player hand, set wager
+//             testCard = std::make_shared<Card>(Ranks[6], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             userHand->AddCardToHand(testNode);
+//             testCard = std::make_shared<Card>(Ranks[6], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             userHand->AddCardToHand(testNode);
+//             userHand->SetWager(10);
+//         for (int i = 0; i < 13; i++) {
+//             // Add card to dealer hand
+//             testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             dealerHand->SetPlayerCards(testNode);
+//             // Can split
+//             {
+//                 // Test strategy
+//                 blackjack_strategy(userHand, dealerHand, false, false);
+//                 if (i >= 1 && i <= 6) {
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 }
+//                 else if (i == 7) {
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 }
+//                 else {
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 }
+//                 userHand->GetHashTable()->ClearHashTable();
+//             }
+//             // Can't split
+//             {
+//                 userHand->GetHashTable()->AddToTable(userHand->GetTableMatrix()[3][4]);
+//                 // Test strategy
+//                 blackjack_strategy(userHand, dealerHand, false, false);
+//                 if (i >= 1 && i <= 5) {
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 }
+//                 else {
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 }
+//                 userHand->GetHashTable()->RemoveElement(userHand->GetTableMatrix()[3][4]);
+//                 userHand->GetHashTable()->ClearHashTable();
+//             }
+//             dealerHand->GetPlayerCards()->RemoveNode(-1);
+//         }
+//         userHand->GetPlayerCards()->RemoveNode(-1);
+//         userHand->GetPlayerCards()->RemoveNode(-1);
+//         userHand->AddHandTotal();
+//     }
+//     // Player card total is 16 (eight, eight)
+//     {
+//         // Add cards to player hand, set wager
+//         testCard = std::make_shared<Card>(Ranks[7], Suits[0]);
+//         testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//         userHand->AddCardToHand(testNode);
+//         testCard = std::make_shared<Card>(Ranks[7], Suits[0]);
+//         testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//         userHand->AddCardToHand(testNode);
+//         userHand->SetWager(10);
+//         for (int i = 0; i < 13; i++) {
+//             // Add card to dealer hand
+//             testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             dealerHand->SetPlayerCards(testNode);
+//             // Can split
+//             {
+//                 // Test strategy
+//                 blackjack_strategy(userHand, dealerHand, false, false);
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                 EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));       
+//                 userHand->GetHashTable()->ClearHashTable();         
+//             }
+//             // Can't split
+//             {
+//                 userHand->GetHashTable()->AddToTable(userHand->GetTableMatrix()[3][4]);
+//                 // Test strategy
+//                 blackjack_strategy(userHand, dealerHand, false, false);
+//                 if (i >= 1 && i <= 5) {
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 }
+//                 else {
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 }
+//                 userHand->GetHashTable()->RemoveElement(userHand->GetTableMatrix()[3][4]);
+//                 userHand->GetHashTable()->ClearHashTable();
+//             }
+//             dealerHand->GetPlayerCards()->RemoveNode(-1);
+//         }
+//         userHand->GetPlayerCards()->RemoveNode(-1);
+//         userHand->GetPlayerCards()->RemoveNode(-1);
+//         userHand->AddHandTotal();
+//     }
+//     // Player card total is 18 (nine, nine)
+//     {
+//         // Add cards to player hand, set wager
+//         testCard = std::make_shared<Card>(Ranks[8], Suits[0]);
+//         testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//         userHand->AddCardToHand(testNode);
+//         testCard = std::make_shared<Card>(Ranks[8], Suits[0]);
+//         testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//         userHand->AddCardToHand(testNode);
+//         userHand->SetWager(10);
+//         for (int i = 0; i < 13; i++) {
+//             // Add card to dealer hand
+//             testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             dealerHand->SetPlayerCards(testNode);
+//             // Can split
+//             {
+//                 // Test strategy
+//                 blackjack_strategy(userHand, dealerHand, false, false); 
+//                 if (i == 0 || i == 6 || i >= 9) {
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 }
+//                 else {
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                 }
+//                 userHand->GetHashTable()->ClearHashTable();
+//             }
+//             // Can't split
+//             {
+//                 userHand->GetHashTable()->AddToTable(userHand->GetTableMatrix()[3][4]);
+//                 // Test strategy
+//                 blackjack_strategy(userHand, dealerHand, false, false);
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                 EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                 EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));                
+//                 userHand->GetHashTable()->RemoveElement(userHand->GetTableMatrix()[3][4]);
+//                 userHand->GetHashTable()->ClearHashTable();
+//             }
+//             dealerHand->GetPlayerCards()->RemoveNode(-1);
+//         }
+//         userHand->GetPlayerCards()->RemoveNode(-1);
+//         userHand->GetPlayerCards()->RemoveNode(-1);
+//         userHand->AddHandTotal();
+//     }
+//     // Player card total is 20 (face, face)
+//     {
+//         // Add cards to player hand, set wager
+//         for (int i = 9; i <= 12; i++) {
+//             testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             userHand->AddCardToHand(testNode);
+//             testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//             testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//             userHand->AddCardToHand(testNode);
+//             userHand->SetWager(10);
+//             for (int j = 0; j < 13; j++) {
+//                 // Add card to dealer hand
+//                 testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
+//                 testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
+//                 dealerHand->SetPlayerCards(testNode);
+//                 // Can split
+//                 {
+//                     // Test strategy
+//                     blackjack_strategy(userHand, dealerHand, false, false);
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
+//                     userHand->GetHashTable()->ClearHashTable();
+//                 }
+//                 // Can't split
+//                 {
+//                     userHand->GetHashTable()->AddToTable(userHand->GetTableMatrix()[3][4]);
+//                     // Test strategy
+//                     blackjack_strategy(userHand, dealerHand, false, false);
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
+//                     EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
+//                     EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1])); 
+//                     userHand->GetHashTable()->RemoveElement(userHand->GetTableMatrix()[3][4]);    
+//                     userHand->GetHashTable()->ClearHashTable();               
+//                 }
+//                 dealerHand->GetPlayerCards()->RemoveNode(-1);
+//             }
+//             userHand->GetPlayerCards()->RemoveNode(-1);
+//             userHand->GetPlayerCards()->RemoveNode(-1);
+//             userHand->AddHandTotal();
+//         }
+//     }
+// }
 
-// Blackjack strategy test, duplicate ranks
-TEST_F(test_x, BlackjackStratDuplicates) {
-    // Create hands
-    std::shared_ptr<Hand> userHand(new Hand);
-    std::shared_ptr<Hand> dealerHand(new Hand);
-    std::shared_ptr<Card> testCard(new Card);
-    std::shared_ptr<node<Card>> testNode;
-    userHand->SetBankTotal(100);
-    // Add first card to dealer
-    testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
-    testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-    dealerHand->SetPlayerCards(testNode);
-    // Player card total is 4 (two, two) or 6 (three, three)
-    for (int i = 1; i <= 2; i++) {
-        // Add cards to player hand
-        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-        userHand->AddCardToHand(testNode);
-        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-        userHand->AddCardToHand(testNode);
-        for (int j = 0; j < 13; j++) {
-            // Add card to dealer hand
-            testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            dealerHand->SetPlayerCards(testNode);
-            userHand->SetWager(10);
-            // Can split hand
-            {
-                // Test strategy
-                blackjack_strategy(userHand, dealerHand, false, false);
-                if (j == 1 || j == 2) {
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                }
-                else if (j >= 3 && j <= 6) {
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));      
-                }
-                else {
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                }
-                userHand->GetHashTable()->ClearHashTable();      
-            }
-            // Can't split hand
-            {
-                // Can't split
-                userHand->GetHashTable()->AddToTable(userHand->GetTableMatrix()[3][4]);
-                // Test strategy
-                blackjack_strategy(userHand, dealerHand, false, false);
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                // Can split
-                userHand->GetHashTable()->RemoveElement(userHand->GetTableMatrix()[3][4]);
-                userHand->GetHashTable()->ClearHashTable();
-            }
-            dealerHand->GetPlayerCards()->RemoveNode(-1);
-        }
-        userHand->GetPlayerCards()->RemoveNode(-1);
-        userHand->GetPlayerCards()->RemoveNode(-1);
-        userHand->AddHandTotal();
-    }
-    // Player card total is 8 (four, four)
-    {
-        // Add cards to player hand, set wager
-        testCard = std::make_shared<Card>(Ranks[3], Suits[0]);
-        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-        userHand->AddCardToHand(testNode);
-        testCard = std::make_shared<Card>(Ranks[3], Suits[0]);
-        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-        userHand->AddCardToHand(testNode);
-        userHand->SetWager(10);
-        for (int i = 0; i < 13; i++) {
-            // Add card to dealer hand
-            testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            dealerHand->SetPlayerCards(testNode);
-            // Can split hand
-            {
-                // Test strategy
-                blackjack_strategy(userHand, dealerHand, false, false);
-                if (i == 4 || i == 5) {
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                }
-                else {
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                }
-                userHand->GetHashTable()->ClearHashTable();
-            }
-            // Can't split hand
-            {
-                // Can't split
-                userHand->GetHashTable()->AddToTable(userHand->GetTableMatrix()[3][4]);
-                // Test strategy
-                blackjack_strategy(userHand, dealerHand, false, false);
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                // Can split
-                userHand->GetHashTable()->RemoveElement(userHand->GetTableMatrix()[3][4]);
-                userHand->GetHashTable()->ClearHashTable();
-            }
-            dealerHand->GetPlayerCards()->RemoveNode(-1);
-        }
-        userHand->GetPlayerCards()->RemoveNode(-1);
-        userHand->GetPlayerCards()->RemoveNode(-1);
-        userHand->AddHandTotal();        
-    }
-    // Player card total is 10 (five, five)
-    {
-        // Add cards to player hand, set wager
-        testCard = std::make_shared<Card>(Ranks[4], Suits[0]);
-        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-        userHand->AddCardToHand(testNode);
-        testCard = std::make_shared<Card>(Ranks[4], Suits[0]);
-        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-        userHand->AddCardToHand(testNode);
-        for (int i = 0; i < 13; i++) {
-            // Add card to dealer hand
-            testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            dealerHand->SetPlayerCards(testNode);
-            if (i == 0 || i >= 9) {
-                // Set wager
-                userHand->SetWager(10);
-                // Test strategy
-                blackjack_strategy(userHand, dealerHand, false, false);
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                userHand->GetHashTable()->ClearHashTable();
-            }
-            else {
-                // Can double down
-                {
-                    // Set wager
-                    userHand->SetWager(10);
-                    // Test strategy
-                    blackjack_strategy(userHand, dealerHand, false, false);
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                    userHand->GetHashTable()->ClearHashTable();
-                }
-                // Cannot double down
-                {
-                    // Set wager
-                    userHand->SetWager(101);
-                    // Test strategy
-                    blackjack_strategy(userHand, dealerHand, false, false);
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                    userHand->GetHashTable()->ClearHashTable();
-                }
-            }
-            dealerHand->GetPlayerCards()->RemoveNode(-1);
-        }
-        userHand->GetPlayerCards()->RemoveNode(-1);
-        userHand->GetPlayerCards()->RemoveNode(-1);
-        userHand->AddHandTotal();
-    }
-    // Player card total is 12 (six, six || Ace, Ace) 
-    {
-        // Player has two sixes
-        {
-            // Add cards to player hand, set wager
-            testCard = std::make_shared<Card>(Ranks[5], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            userHand->AddCardToHand(testNode);
-            testCard = std::make_shared<Card>(Ranks[5], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            userHand->AddCardToHand(testNode);
-            userHand->SetWager(10);
-            for (int i = 0; i < 13; i++) {
-                // Add card to dealer hand
-                testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-                testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-                dealerHand->SetPlayerCards(testNode);
-                // Can split
-                {
-                    // Test strategy
-                    blackjack_strategy(userHand, dealerHand, false, false);
-                    if (i >= 1 && i <= 5) {
-                        EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                        EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                        EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                        EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                    }
-                    else if (i == 6) {
-                        EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                        EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                        EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                        EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                    }
-                    else {
-                        EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                        EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                        EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                        EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                    }
-                    userHand->GetHashTable()->ClearHashTable();
-                }
-                // Can't split
-                {
-                    userHand->GetHashTable()->AddToTable(userHand->GetTableMatrix()[3][4]);
-                    // Test strategy
-                    blackjack_strategy(userHand, dealerHand, false, false);
-                    if ((i >= 1 && i <= 2) || (i == 0 || i >= 6)) {
-                        EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                        EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                        EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                        EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                    }
-                    else {
-                        EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                        EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                        EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                        EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                    }
-                    userHand->GetHashTable()->RemoveElement(userHand->GetTableMatrix()[3][4]);
-                    userHand->GetHashTable()->ClearHashTable();
-                }
-                dealerHand->GetPlayerCards()->RemoveNode(-1);
-            }
-            userHand->GetPlayerCards()->RemoveNode(-1);
-            userHand->GetPlayerCards()->RemoveNode(-1);
-            userHand->AddHandTotal();
-        }
-        // Player has two aces
-        {
-            // Add cards to player hand, set wager
-            testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            userHand->AddCardToHand(testNode);
-            testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            userHand->AddCardToHand(testNode);
-            userHand->SetWager(10);
-            for (int i = 0; i < 13; i++) {
-                // Add card to dealer hand
-                testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-                testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-                dealerHand->SetPlayerCards(testNode);
-                // Can split
-                {
-                    // Test strategy
-                    blackjack_strategy(userHand, dealerHand, false, false);
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                    userHand->GetHashTable()->ClearHashTable();
-                }
-                // Can't split
-                {
-                    userHand->GetHashTable()->AddToTable(userHand->GetTableMatrix()[3][3]);
-                    // Test strategy
-                    blackjack_strategy(userHand, dealerHand, false, false);
-                    if ((i >= 1 && i <= 2) || (i == 0 || i >= 6)) {
-                        EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                        EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                        EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                        EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                    }
-                    else {
-                        EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                        EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                        EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                        EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                    }
-                    userHand->GetHashTable()->RemoveElement(userHand->GetTableMatrix()[3][3]);
-                    userHand->GetHashTable()->ClearHashTable();
-                }
-                dealerHand->GetPlayerCards()->RemoveNode(-1);
-            }
-            userHand->GetPlayerCards()->RemoveNode(-1);
-            userHand->GetPlayerCards()->RemoveNode(-1);
-            userHand->AddHandTotal();
-        }
-    }
-    // Player card total is 14 (seven, seven) 
-    {
-        // Add cards to player hand, set wager
-            testCard = std::make_shared<Card>(Ranks[6], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            userHand->AddCardToHand(testNode);
-            testCard = std::make_shared<Card>(Ranks[6], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            userHand->AddCardToHand(testNode);
-            userHand->SetWager(10);
-        for (int i = 0; i < 13; i++) {
-            // Add card to dealer hand
-            testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            dealerHand->SetPlayerCards(testNode);
-            // Can split
-            {
-                // Test strategy
-                blackjack_strategy(userHand, dealerHand, false, false);
-                if (i >= 1 && i <= 6) {
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                }
-                else if (i == 7) {
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                }
-                else {
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                }
-                userHand->GetHashTable()->ClearHashTable();
-            }
-            // Can't split
-            {
-                userHand->GetHashTable()->AddToTable(userHand->GetTableMatrix()[3][4]);
-                // Test strategy
-                blackjack_strategy(userHand, dealerHand, false, false);
-                if (i >= 1 && i <= 5) {
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                }
-                else {
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                }
-                userHand->GetHashTable()->RemoveElement(userHand->GetTableMatrix()[3][4]);
-                userHand->GetHashTable()->ClearHashTable();
-            }
-            dealerHand->GetPlayerCards()->RemoveNode(-1);
-        }
-        userHand->GetPlayerCards()->RemoveNode(-1);
-        userHand->GetPlayerCards()->RemoveNode(-1);
-        userHand->AddHandTotal();
-    }
-    // Player card total is 16 (eight, eight)
-    {
-        // Add cards to player hand, set wager
-        testCard = std::make_shared<Card>(Ranks[7], Suits[0]);
-        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-        userHand->AddCardToHand(testNode);
-        testCard = std::make_shared<Card>(Ranks[7], Suits[0]);
-        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-        userHand->AddCardToHand(testNode);
-        userHand->SetWager(10);
-        for (int i = 0; i < 13; i++) {
-            // Add card to dealer hand
-            testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            dealerHand->SetPlayerCards(testNode);
-            // Can split
-            {
-                // Test strategy
-                blackjack_strategy(userHand, dealerHand, false, false);
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));       
-                userHand->GetHashTable()->ClearHashTable();         
-            }
-            // Can't split
-            {
-                userHand->GetHashTable()->AddToTable(userHand->GetTableMatrix()[3][4]);
-                // Test strategy
-                blackjack_strategy(userHand, dealerHand, false, false);
-                if (i >= 1 && i <= 5) {
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                }
-                else {
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                }
-                userHand->GetHashTable()->RemoveElement(userHand->GetTableMatrix()[3][4]);
-                userHand->GetHashTable()->ClearHashTable();
-            }
-            dealerHand->GetPlayerCards()->RemoveNode(-1);
-        }
-        userHand->GetPlayerCards()->RemoveNode(-1);
-        userHand->GetPlayerCards()->RemoveNode(-1);
-        userHand->AddHandTotal();
-    }
-    // Player card total is 18 (nine, nine)
-    {
-        // Add cards to player hand, set wager
-        testCard = std::make_shared<Card>(Ranks[8], Suits[0]);
-        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-        userHand->AddCardToHand(testNode);
-        testCard = std::make_shared<Card>(Ranks[8], Suits[0]);
-        testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-        userHand->AddCardToHand(testNode);
-        userHand->SetWager(10);
-        for (int i = 0; i < 13; i++) {
-            // Add card to dealer hand
-            testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            dealerHand->SetPlayerCards(testNode);
-            // Can split
-            {
-                // Test strategy
-                blackjack_strategy(userHand, dealerHand, false, false); 
-                if (i == 0 || i == 6 || i >= 9) {
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                }
-                else {
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                }
-                userHand->GetHashTable()->ClearHashTable();
-            }
-            // Can't split
-            {
-                userHand->GetHashTable()->AddToTable(userHand->GetTableMatrix()[3][4]);
-                // Test strategy
-                blackjack_strategy(userHand, dealerHand, false, false);
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));                
-                userHand->GetHashTable()->RemoveElement(userHand->GetTableMatrix()[3][4]);
-                userHand->GetHashTable()->ClearHashTable();
-            }
-            dealerHand->GetPlayerCards()->RemoveNode(-1);
-        }
-        userHand->GetPlayerCards()->RemoveNode(-1);
-        userHand->GetPlayerCards()->RemoveNode(-1);
-        userHand->AddHandTotal();
-    }
-    // Player card total is 20 (face, face)
-    {
-        // Add cards to player hand, set wager
-        for (int i = 9; i <= 12; i++) {
-            testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            userHand->AddCardToHand(testNode);
-            testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-            testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-            userHand->AddCardToHand(testNode);
-            userHand->SetWager(10);
-            for (int j = 0; j < 13; j++) {
-                // Add card to dealer hand
-                testCard = std::make_shared<Card>(Ranks[j], Suits[0]);
-                testNode = dealerHand->GetPlayerCards()->InitNode(testCard);
-                dealerHand->SetPlayerCards(testNode);
-                // Can split
-                {
-                    // Test strategy
-                    blackjack_strategy(userHand, dealerHand, false, false);
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1]));
-                    userHand->GetHashTable()->ClearHashTable();
-                }
-                // Can't split
-                {
-                    userHand->GetHashTable()->AddToTable(userHand->GetTableMatrix()[3][4]);
-                    // Test strategy
-                    blackjack_strategy(userHand, dealerHand, false, false);
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][3]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[2][4]));
-                    EXPECT_FALSE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][0]));
-                    EXPECT_TRUE(userHand->GetHashTable()->Contains(userHand->GetTableMatrix()[3][1])); 
-                    userHand->GetHashTable()->RemoveElement(userHand->GetTableMatrix()[3][4]);    
-                    userHand->GetHashTable()->ClearHashTable();               
-                }
-                dealerHand->GetPlayerCards()->RemoveNode(-1);
-            }
-            userHand->GetPlayerCards()->RemoveNode(-1);
-            userHand->GetPlayerCards()->RemoveNode(-1);
-            userHand->AddHandTotal();
-        }
-    }
-}
+// // Deal hand test
+// TEST_F(test_x, DealHand) {
+//     // Create hands and shoe
+//     std::shared_ptr<Hand> testHand(new Hand);
+//     std::shared_ptr<Hand> dealerHand(new Hand);
+//     std::shared_ptr<Shoe> testShoe(new Shoe);
+//     testHand->SetName("Borby");
+//     dealerHand->SetName("Dealer");
+//     testHand->SetBankTotal(100);
+//     testHand->SetWager(10);
+//     testShoe->SetNumOfDecks(1);
+//     testShoe->CreateShoeSim();
+//     // Test function
+//     deal_hand_sim(testHand, dealerHand, testShoe, testHand->GetWager());
+//     EXPECT_EQ(testShoe->GetCardsInShoe()->GetSize(), 48);
+//     EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//     EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
+//     EXPECT_EQ(testHand->GetBankTotal(), 90);
+//     EXPECT_EQ(testHand->GetWager(), 10);
+// }
 
-// Deal hand test
-TEST_F(test_x, DealHand) {
-    // Create hands and shoe
-    std::shared_ptr<Hand> testHand(new Hand);
-    std::shared_ptr<Hand> dealerHand(new Hand);
-    std::shared_ptr<Shoe> testShoe(new Shoe);
-    testHand->SetName("Borby");
-    dealerHand->SetName("Dealer");
-    testHand->SetBankTotal(100);
-    testHand->SetWager(10);
-    testShoe->SetNumOfDecks(1);
-    testShoe->CreateShoeSim();
-    // Test function
-    deal_hand_sim(testHand, dealerHand, testShoe, testHand->GetWager());
-    EXPECT_EQ(testShoe->GetCardsInShoe()->GetSize(), 48);
-    EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-    EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
-    EXPECT_EQ(testHand->GetBankTotal(), 90);
-    EXPECT_EQ(testHand->GetWager(), 10);
-}
+// // Dealer showing Ace check
+// TEST_F(test_x, DealerShowingAce) {
+//     std::shared_ptr<Hand> testHand(new Hand);
+//     std::shared_ptr<Hand> dealerHand(new Hand);
+//     std::shared_ptr<Shoe> testShoe(new Shoe);
+//     std::shared_ptr<Shoe> copyShoe(new Shoe);
+//     std::shared_ptr<Card> testCard(new Card);
+//     std::shared_ptr<node<Card>> testNode;
+//     float priorBank = 0;
+//     float playerWager = 10;
+//     testHand->BankDepositSim(100);
+//     testHand->NameSim("Borby");
+//     dealerHand->NameSim("Dealer");
+//     priorBank = testHand->GetBankTotal();
+//     // Both players have blackjack
+//     for (int i = 9; i <= 12; i++) {
+//         testCard = std::make_shared<Card>(Ranks[0], Suits[3]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[0], Suits[2]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[i], Suits[1]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         EXPECT_EQ(testHand->GetBankTotal(), priorBank);
+//         copyShoe->CopyShoe(testShoe);
+//         // Player can buy insurance
+//         {
+//             // Player chose to buy insurance
+//             {
+//                 auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
+//                 EXPECT_EQ(testHand->GetWager(), playerWager);
+//                 EXPECT_EQ(testHand->GetInsuranceWager(), 0.5 * testHand->GetWager());
+//                 EXPECT_EQ(testHand->GetNet(), 2 * testHand->GetInsuranceWager());
+//                 EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
+//                 EXPECT_FALSE(std::get<3>(result));
+//                 testHand->SetBankTotal(priorBank);
+//                 testHand->ResetHand();
+//                 dealerHand->ResetHand();
+//             }
+//             // Player chose to not buy insurance
+//             testShoe->CopyShoe(copyShoe);
+//             {
+//                 auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, false);
+//                 EXPECT_EQ(testHand->GetWager(), playerWager);
+//                 EXPECT_EQ(testHand->GetInsuranceWager(), 0);
+//                 EXPECT_EQ(testHand->GetNet(), 0);
+//                 EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
+//                 EXPECT_FALSE(std::get<3>(result));
+//                 testHand->SetBankTotal(priorBank);
+//                 testHand->ResetHand();
+//                 dealerHand->ResetHand();
+//             }
+//             testShoe->GetCardsInShoe()->ClearList();
+//         }
+//         // Player cannot buy insurance
+//         {
+//             // Testing with true
+//             {
+//                 playerWager = 70;
+//                 while (playerWager <= priorBank) {
+//                     testShoe->CopyShoe(copyShoe);
+//                     auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
+//                     EXPECT_EQ(testHand->GetWager(), playerWager);
+//                     EXPECT_EQ(testHand->GetInsuranceWager(), 0);
+//                     EXPECT_EQ(testHand->GetNet(), 0);
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
+//                     EXPECT_FALSE(std::get<3>(result));
+//                     testHand->SetBankTotal(priorBank);
+//                     testHand->ResetHand();
+//                     dealerHand->ResetHand();
+//                     playerWager++;
+//                     testShoe->GetCardsInShoe()->ClearList();
+//                 }
+//             }
+//             // Testing with false
+//             {
+//                 playerWager = 70;
+//                 while (playerWager <= priorBank) {
+//                     testShoe->CopyShoe(copyShoe);
+//                     auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, false);
+//                     EXPECT_EQ(testHand->GetWager(), playerWager);
+//                     EXPECT_EQ(testHand->GetInsuranceWager(), 0);
+//                     EXPECT_EQ(testHand->GetNet(), 0);
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
+//                     EXPECT_FALSE(std::get<3>(result));
+//                     testHand->SetBankTotal(priorBank);
+//                     testHand->ResetHand();
+//                     dealerHand->ResetHand();
+//                     playerWager++;
+//                     testShoe->GetCardsInShoe()->ClearList();
+//                 }
+//             }
+//         }
+//         playerWager = 10;
+//     }
+//     testShoe->GetCardsInShoe()->ClearList();
+//     // Dealer has blackjack, player does not
+//     for (int i = 9; i <= 12; i++) {
+//         testCard = std::make_shared<Card>(Ranks[0], Suits[3]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[0], Suits[2]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[i], Suits[1]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[8], Suits[0]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         EXPECT_EQ(testHand->GetBankTotal(), priorBank);
+//         copyShoe->CopyShoe(testShoe);
+//         // Player can buy insurance
+//         {
+//             // Player chose to buy insurance
+//             {
+//                 auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
+//                 EXPECT_EQ(testHand->GetWager(), playerWager);
+//                 EXPECT_EQ(testHand->GetInsuranceWager(), 0.5 * testHand->GetWager());
+//                 EXPECT_EQ(testHand->GetNet(), 0);
+//                 EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
+//                 EXPECT_FALSE(std::get<3>(result));
+//                 testHand->SetBankTotal(priorBank);
+//                 testHand->ResetHand();
+//                 dealerHand->ResetHand();
+//             }
+//             // Player chose to not buy insurance
+//             testShoe->CopyShoe(copyShoe);
+//             {
+//                 auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, false);
+//                 EXPECT_EQ(testHand->GetWager(), playerWager);
+//                 EXPECT_EQ(testHand->GetInsuranceWager(), 0);
+//                 EXPECT_EQ(testHand->GetNet(), -testHand->GetWager());
+//                 EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
+//                 EXPECT_FALSE(std::get<3>(result));
+//                 testHand->SetBankTotal(priorBank);
+//                 testHand->ResetHand();
+//                 dealerHand->ResetHand();
+//             }
+//             testShoe->GetCardsInShoe()->ClearList();
+//         }
+//         // Player cannot buy insurance
+//         {
+//             // Testing with true
+//             {
+//                 playerWager = 70;
+//                 while (playerWager <= priorBank) {
+//                     testShoe->CopyShoe(copyShoe);
+//                     auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
+//                     EXPECT_EQ(testHand->GetWager(), playerWager);
+//                     EXPECT_EQ(testHand->GetInsuranceWager(), 0);
+//                     EXPECT_EQ(testHand->GetNet(), -testHand->GetWager());
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
+//                     EXPECT_FALSE(std::get<3>(result));
+//                     testHand->SetBankTotal(priorBank);
+//                     testHand->ResetHand();
+//                     dealerHand->ResetHand();
+//                     playerWager++;
+//                     testShoe->GetCardsInShoe()->ClearList();
+//                 }
+//             }
+//             // Testing with false
+//             {
+//                 playerWager = 70;
+//                 while (playerWager <= priorBank) {
+//                     testShoe->CopyShoe(copyShoe);
+//                     auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, false);
+//                     EXPECT_EQ(testHand->GetWager(), playerWager);
+//                     EXPECT_EQ(testHand->GetInsuranceWager(), 0);
+//                     EXPECT_EQ(testHand->GetNet(), -testHand->GetWager());
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
+//                     EXPECT_FALSE(std::get<3>(result));
+//                     testHand->SetBankTotal(priorBank);
+//                     testHand->ResetHand();
+//                     dealerHand->ResetHand();
+//                     playerWager++;
+//                     testShoe->GetCardsInShoe()->ClearList();
+//                 }
+//             }
+//         }
+//         playerWager = 10;
+//     }
+//     testShoe->GetCardsInShoe()->ClearList();
+//     // Player has blackjack, dealer does not
+//     for (int i = 9; i <= 12; i++) {
+//         testCard = std::make_shared<Card>(Ranks[0], Suits[3]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[0], Suits[2]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[8], Suits[1]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         EXPECT_EQ(testHand->GetBankTotal(), priorBank);
+//         copyShoe->CopyShoe(testShoe);
+//         // Player can buy insurance
+//         {
+//             // Player chose to buy insurance
+//             {
+//                 auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
+//                 EXPECT_EQ(testHand->GetWager(), playerWager);
+//                 EXPECT_EQ(testHand->GetInsuranceWager(), 0.5 * testHand->GetWager());
+//                 EXPECT_EQ(testHand->GetNet(), testHand->GetWager());
+//                 EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
+//                 EXPECT_FALSE(std::get<3>(result));
+//                 testHand->SetBankTotal(priorBank);
+//                 testHand->ResetHand();
+//                 dealerHand->ResetHand();
+//             }
+//             // Player chose to not buy insurance
+//             testShoe->CopyShoe(copyShoe);
+//             {
+//                 auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, false);
+//                 EXPECT_EQ(testHand->GetWager(), playerWager);
+//                 EXPECT_EQ(testHand->GetInsuranceWager(), 0);
+//                 EXPECT_EQ(testHand->GetNet(), 1.5 * testHand->GetWager());
+//                 EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
+//                 EXPECT_FALSE(std::get<3>(result));
+//                 testHand->SetBankTotal(priorBank);
+//                 testHand->ResetHand();
+//                 dealerHand->ResetHand();
+//             }
+//             testShoe->GetCardsInShoe()->ClearList();
+//         }
+//         // Player cannot buy insurance
+//         {
+//             // Testing with true
+//             {
+//                 playerWager = 70;
+//                 while (playerWager <= priorBank) {
+//                     testShoe->CopyShoe(copyShoe);
+//                     auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
+//                     EXPECT_EQ(testHand->GetWager(), playerWager);
+//                     EXPECT_EQ(testHand->GetInsuranceWager(), 0);
+//                     EXPECT_EQ(testHand->GetNet(), 1.5 * testHand->GetWager());
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
+//                     EXPECT_FALSE(std::get<3>(result));
+//                     testHand->SetBankTotal(priorBank);
+//                     testHand->ResetHand();
+//                     dealerHand->ResetHand();
+//                     playerWager++;
+//                     testShoe->GetCardsInShoe()->ClearList();
+//                 }
+//             }
+//             // Testing with false
+//             {
+//                 playerWager = 70;
+//                 while (playerWager <= priorBank) {
+//                     testShoe->CopyShoe(copyShoe);
+//                     auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, false);
+//                     EXPECT_EQ(testHand->GetWager(), playerWager);
+//                     EXPECT_EQ(testHand->GetInsuranceWager(), 0);
+//                     EXPECT_EQ(testHand->GetNet(), 1.5 * testHand->GetWager());
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
+//                     EXPECT_FALSE(std::get<3>(result));
+//                     testHand->SetBankTotal(priorBank);
+//                     testHand->ResetHand();
+//                     dealerHand->ResetHand();
+//                     playerWager++;
+//                     testShoe->GetCardsInShoe()->ClearList();
+//                 }
+//             }
+//         }
+//         playerWager = 10;
+//     }
+//     testShoe->GetCardsInShoe()->ClearList();
+//     // Neither player has blackjack
+//     for (int i = 0; i <= 8; i++) {
+//         testCard = std::make_shared<Card>(Ranks[0], Suits[3]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[0], Suits[2]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[i], Suits[1]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         EXPECT_EQ(testHand->GetBankTotal(), priorBank);
+//         copyShoe->CopyShoe(testShoe);
+//         // Player can buy insurance
+//         {
+//             // Player chose to buy insurance
+//             {
+//                 auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
+//                 EXPECT_EQ(testHand->GetWager(), playerWager);
+//                 EXPECT_EQ(testHand->GetInsuranceWager(), 0.5 * testHand->GetWager());
+//                 EXPECT_EQ(testHand->GetNet(), -testHand->GetInsuranceWager());
+//                 EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetInsuranceWager() - testHand->GetWager());
+//                 EXPECT_TRUE(std::get<3>(result));
+//                 testHand->SetBankTotal(priorBank);
+//                 testHand->ResetHand();
+//                 dealerHand->ResetHand();
+//             }
+//             // Player chose to not buy insurance
+//             testShoe->CopyShoe(copyShoe);
+//             {
+//                 auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, false);
+//                 EXPECT_EQ(testHand->GetWager(), playerWager);
+//                 EXPECT_EQ(testHand->GetInsuranceWager(), 0);
+//                 EXPECT_EQ(testHand->GetNet(), 0);
+//                 EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetInsuranceWager() - testHand->GetWager());
+//                 EXPECT_TRUE(std::get<3>(result));
+//                 testHand->SetBankTotal(priorBank);
+//                 testHand->ResetHand();
+//                 dealerHand->ResetHand();
+//             }
+//             testShoe->GetCardsInShoe()->ClearList();
+//         }
+//         // Player cannot buy insurance
+//         {
+//             // Testing with true
+//             {
+//                 playerWager = 70;
+//                 while (playerWager <= priorBank) {
+//                     testShoe->CopyShoe(copyShoe);
+//                     auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
+//                     EXPECT_EQ(testHand->GetWager(), playerWager);
+//                     EXPECT_EQ(testHand->GetInsuranceWager(), 0);
+//                     EXPECT_EQ(testHand->GetNet(), 0);
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetInsuranceWager() - testHand->GetWager());
+//                     EXPECT_TRUE(std::get<3>(result));
+//                     testHand->SetBankTotal(priorBank);
+//                     testHand->ResetHand();
+//                     dealerHand->ResetHand();
+//                     playerWager++;
+//                     testShoe->GetCardsInShoe()->ClearList();
+//                 }
+//             }
+//             // Testing with false
+//             {
+//                 playerWager = 70;
+//                 while (playerWager <= priorBank) {
+//                     testShoe->CopyShoe(copyShoe);
+//                     auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, false);
+//                     EXPECT_EQ(testHand->GetWager(), playerWager);
+//                     EXPECT_EQ(testHand->GetInsuranceWager(), 0);
+//                     EXPECT_EQ(testHand->GetNet(), 0);
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetInsuranceWager() - testHand->GetWager());
+//                     EXPECT_TRUE(std::get<3>(result));
+//                     testHand->SetBankTotal(priorBank);
+//                     testHand->ResetHand();
+//                     dealerHand->ResetHand();
+//                     playerWager++;
+//                     testShoe->GetCardsInShoe()->ClearList();
+//                 }
+//             }
+//         }
+//         playerWager = 10;
+//     }
+//     testShoe->GetCardsInShoe()->ClearList();
+//     // Dealer is not showing an Ace, player cannot buy insurance no matter what
+//     // Both players have blackjack
+//     for (int i = 9; i <= 12; i++) {
+//         testCard = std::make_shared<Card>(Ranks[i], Suits[3]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[0], Suits[2]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[0], Suits[1]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         EXPECT_EQ(testHand->GetBankTotal(), priorBank);
+//         copyShoe->CopyShoe(testShoe);
+//         // Player cannot buy insurance
+//         {
+//             // Testing with true
+//             {
+//                 playerWager = 10;
+//                 while (playerWager <= priorBank) {
+//                     testShoe->CopyShoe(copyShoe);
+//                     auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
+//                     EXPECT_EQ(testHand->GetWager(), playerWager);
+//                     EXPECT_EQ(testHand->GetInsuranceWager(), 0);
+//                     EXPECT_EQ(testHand->GetNet(), 0);
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
+//                     EXPECT_FALSE(std::get<3>(result));
+//                     testHand->SetBankTotal(priorBank);
+//                     testHand->ResetHand();
+//                     dealerHand->ResetHand();
+//                     playerWager++;
+//                     testShoe->GetCardsInShoe()->ClearList();
+//                 }
+//             }
+//             // Testing with false
+//             {
+//                 playerWager = 10;
+//                 while (playerWager <= priorBank) {
+//                     testShoe->CopyShoe(copyShoe);
+//                     auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, false);
+//                     EXPECT_EQ(testHand->GetWager(), playerWager);
+//                     EXPECT_EQ(testHand->GetInsuranceWager(), 0);
+//                     EXPECT_EQ(testHand->GetNet(), 0);
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
+//                     EXPECT_FALSE(std::get<3>(result));
+//                     testHand->SetBankTotal(priorBank);
+//                     testHand->ResetHand();
+//                     dealerHand->ResetHand();
+//                     playerWager++;
+//                     testShoe->GetCardsInShoe()->ClearList();
+//                 }
+//             }
+//         }
+//         playerWager = 10;
+//     }
+//     testShoe->GetCardsInShoe()->ClearList();
+//     // Dealer has blackjack, player does not
+//     for (int i = 9; i <= 12; i++) {
+//         testCard = std::make_shared<Card>(Ranks[i], Suits[3]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[1], Suits[2]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[0], Suits[1]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         EXPECT_EQ(testHand->GetBankTotal(), priorBank);
+//         copyShoe->CopyShoe(testShoe);
+//         // Player cannot buy insurance
+//         {
+//             // Testing with true
+//             {
+//                 playerWager = 10;
+//                 while (playerWager <= priorBank) {
+//                     testShoe->CopyShoe(copyShoe);
+//                     auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
+//                     EXPECT_EQ(testHand->GetWager(), playerWager);
+//                     EXPECT_EQ(testHand->GetInsuranceWager(), 0);
+//                     EXPECT_EQ(testHand->GetNet(), -testHand->GetWager());
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
+//                     EXPECT_FALSE(std::get<3>(result));
+//                     testHand->SetBankTotal(priorBank);
+//                     testHand->ResetHand();
+//                     dealerHand->ResetHand();
+//                     playerWager++;
+//                     testShoe->GetCardsInShoe()->ClearList();
+//                 }
+//             }
+//             // Testing with false
+//             {
+//                 playerWager = 10;
+//                 while (playerWager <= priorBank) {
+//                     testShoe->CopyShoe(copyShoe);
+//                     auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, false);
+//                     EXPECT_EQ(testHand->GetWager(), playerWager);
+//                     EXPECT_EQ(testHand->GetInsuranceWager(), 0);
+//                     EXPECT_EQ(testHand->GetNet(), -testHand->GetWager());
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
+//                     EXPECT_FALSE(std::get<3>(result));
+//                     testHand->SetBankTotal(priorBank);
+//                     testHand->ResetHand();
+//                     dealerHand->ResetHand();
+//                     playerWager++;
+//                     testShoe->GetCardsInShoe()->ClearList();
+//                 }
+//             }
+//         }
+//         playerWager = 10;
+//     }
+//     testShoe->GetCardsInShoe()->ClearList();
+//     // Player has blackjack, dealer does not
+//     for (int i = 9; i <= 12; i++) {
+//         testCard = std::make_shared<Card>(Ranks[8], Suits[3]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[i], Suits[2]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[0], Suits[1]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         EXPECT_EQ(testHand->GetBankTotal(), priorBank);
+//         copyShoe->CopyShoe(testShoe);
+//         // Player cannot buy insurance
+//         {
+//             // Testing with true
+//             {
+//                 playerWager = 10;
+//                 while (playerWager <= priorBank) {
+//                     testShoe->CopyShoe(copyShoe);
+//                     auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
+//                     EXPECT_EQ(testHand->GetWager(), playerWager);
+//                     EXPECT_EQ(testHand->GetInsuranceWager(), 0);
+//                     EXPECT_EQ(testHand->GetNet(), 1.5 * testHand->GetWager());
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
+//                     EXPECT_FALSE(std::get<3>(result));
+//                     testHand->SetBankTotal(priorBank);
+//                     testHand->ResetHand();
+//                     dealerHand->ResetHand();
+//                     playerWager++;
+//                     testShoe->GetCardsInShoe()->ClearList();
+//                 }
+//             }
+//             // Testing with false
+//             {
+//                 playerWager = 10;
+//                 while (playerWager <= priorBank) {
+//                     testShoe->CopyShoe(copyShoe);
+//                     auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, false);
+//                     EXPECT_EQ(testHand->GetWager(), playerWager);
+//                     EXPECT_EQ(testHand->GetInsuranceWager(), 0);
+//                     EXPECT_EQ(testHand->GetNet(), 1.5 * testHand->GetWager());
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
+//                     EXPECT_FALSE(std::get<3>(result));
+//                     testHand->SetBankTotal(priorBank);
+//                     testHand->ResetHand();
+//                     dealerHand->ResetHand();
+//                     playerWager++;
+//                     testShoe->GetCardsInShoe()->ClearList();
+//                 }
+//             }
+//         }
+//         playerWager = 10;
+//     }
+//     testShoe->GetCardsInShoe()->ClearList();
+//     // Neither player has blackjack
+//     for (int i = 9; i <= 12; i++) {
+//         testCard = std::make_shared<Card>(Ranks[1], Suits[3]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[1], Suits[2]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[i], Suits[1]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
+//         testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//         testShoe->GetCardsInShoe()->AppendNode(testNode);
+//         EXPECT_EQ(testHand->GetBankTotal(), priorBank);
+//         copyShoe->CopyShoe(testShoe);
+//         // Player cannot buy insurance
+//         {
+//             // Testing with true
+//             {
+//                 playerWager = 10;
+//                 while (playerWager <= priorBank) {
+//                     testShoe->CopyShoe(copyShoe);
+//                     auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
+//                     EXPECT_EQ(testHand->GetWager(), playerWager);
+//                     EXPECT_EQ(testHand->GetInsuranceWager(), 0);
+//                     EXPECT_EQ(testHand->GetNet(), 0);
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetWager());
+//                     EXPECT_TRUE(std::get<3>(result));
+//                     testHand->SetBankTotal(priorBank);
+//                     testHand->ResetHand();
+//                     dealerHand->ResetHand();
+//                     playerWager++;
+//                     testShoe->GetCardsInShoe()->ClearList();
+//                 }
+//             }
+//             // Testing with false
+//             {
+//                 playerWager = 10;
+//                 while (playerWager <= priorBank) {
+//                     testShoe->CopyShoe(copyShoe);
+//                     auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
+//                     EXPECT_EQ(testHand->GetWager(), playerWager);
+//                     EXPECT_EQ(testHand->GetInsuranceWager(), 0);
+//                     EXPECT_EQ(testHand->GetNet(), 0);
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetWager());
+//                     EXPECT_TRUE(std::get<3>(result));
+//                     testHand->SetBankTotal(priorBank);
+//                     testHand->ResetHand();
+//                     dealerHand->ResetHand();
+//                     playerWager++;
+//                     testShoe->GetCardsInShoe()->ClearList();
+//                 }
+//             }
+//         }
+//         playerWager = 10;
+//     }
+//     testShoe->GetCardsInShoe()->ClearList();
+// }
 
-// Dealer showing Ace check
-TEST_F(test_x, DealerShowingAce) {
-    std::shared_ptr<Hand> testHand(new Hand);
-    std::shared_ptr<Hand> dealerHand(new Hand);
-    std::shared_ptr<Shoe> testShoe(new Shoe);
-    std::shared_ptr<Shoe> copyShoe(new Shoe);
-    std::shared_ptr<Card> testCard(new Card);
-    std::shared_ptr<node<Card>> testNode;
-    float priorBank = 0;
-    float playerWager = 10;
-    testHand->BankDepositSim(100);
-    testHand->NameSim("Borby");
-    dealerHand->NameSim("Dealer");
-    priorBank = testHand->GetBankTotal();
-    // Both players have blackjack
-    for (int i = 9; i <= 12; i++) {
-        testCard = std::make_shared<Card>(Ranks[0], Suits[3]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[0], Suits[2]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[i], Suits[1]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        EXPECT_EQ(testHand->GetBankTotal(), priorBank);
-        copyShoe->CopyShoe(testShoe);
-        // Player can buy insurance
-        {
-            // Player chose to buy insurance
-            {
-                auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
-                EXPECT_EQ(testHand->GetWager(), playerWager);
-                EXPECT_EQ(testHand->GetInsuranceWager(), 0.5 * testHand->GetWager());
-                EXPECT_EQ(testHand->GetNet(), 2 * testHand->GetInsuranceWager());
-                EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
-                EXPECT_FALSE(std::get<3>(result));
-                testHand->SetBankTotal(priorBank);
-                testHand->ResetHand();
-                dealerHand->ResetHand();
-            }
-            // Player chose to not buy insurance
-            testShoe->CopyShoe(copyShoe);
-            {
-                auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, false);
-                EXPECT_EQ(testHand->GetWager(), playerWager);
-                EXPECT_EQ(testHand->GetInsuranceWager(), 0);
-                EXPECT_EQ(testHand->GetNet(), 0);
-                EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
-                EXPECT_FALSE(std::get<3>(result));
-                testHand->SetBankTotal(priorBank);
-                testHand->ResetHand();
-                dealerHand->ResetHand();
-            }
-            testShoe->GetCardsInShoe()->ClearList();
-        }
-        // Player cannot buy insurance
-        {
-            // Testing with true
-            {
-                playerWager = 70;
-                while (playerWager <= priorBank) {
-                    testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
-                    EXPECT_EQ(testHand->GetWager(), playerWager);
-                    EXPECT_EQ(testHand->GetInsuranceWager(), 0);
-                    EXPECT_EQ(testHand->GetNet(), 0);
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
-                    EXPECT_FALSE(std::get<3>(result));
-                    testHand->SetBankTotal(priorBank);
-                    testHand->ResetHand();
-                    dealerHand->ResetHand();
-                    playerWager++;
-                    testShoe->GetCardsInShoe()->ClearList();
-                }
-            }
-            // Testing with false
-            {
-                playerWager = 70;
-                while (playerWager <= priorBank) {
-                    testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, false);
-                    EXPECT_EQ(testHand->GetWager(), playerWager);
-                    EXPECT_EQ(testHand->GetInsuranceWager(), 0);
-                    EXPECT_EQ(testHand->GetNet(), 0);
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
-                    EXPECT_FALSE(std::get<3>(result));
-                    testHand->SetBankTotal(priorBank);
-                    testHand->ResetHand();
-                    dealerHand->ResetHand();
-                    playerWager++;
-                    testShoe->GetCardsInShoe()->ClearList();
-                }
-            }
-        }
-        playerWager = 10;
-    }
-    testShoe->GetCardsInShoe()->ClearList();
-    // Dealer has blackjack, player does not
-    for (int i = 9; i <= 12; i++) {
-        testCard = std::make_shared<Card>(Ranks[0], Suits[3]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[0], Suits[2]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[i], Suits[1]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[8], Suits[0]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        EXPECT_EQ(testHand->GetBankTotal(), priorBank);
-        copyShoe->CopyShoe(testShoe);
-        // Player can buy insurance
-        {
-            // Player chose to buy insurance
-            {
-                auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
-                EXPECT_EQ(testHand->GetWager(), playerWager);
-                EXPECT_EQ(testHand->GetInsuranceWager(), 0.5 * testHand->GetWager());
-                EXPECT_EQ(testHand->GetNet(), 0);
-                EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
-                EXPECT_FALSE(std::get<3>(result));
-                testHand->SetBankTotal(priorBank);
-                testHand->ResetHand();
-                dealerHand->ResetHand();
-            }
-            // Player chose to not buy insurance
-            testShoe->CopyShoe(copyShoe);
-            {
-                auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, false);
-                EXPECT_EQ(testHand->GetWager(), playerWager);
-                EXPECT_EQ(testHand->GetInsuranceWager(), 0);
-                EXPECT_EQ(testHand->GetNet(), -testHand->GetWager());
-                EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
-                EXPECT_FALSE(std::get<3>(result));
-                testHand->SetBankTotal(priorBank);
-                testHand->ResetHand();
-                dealerHand->ResetHand();
-            }
-            testShoe->GetCardsInShoe()->ClearList();
-        }
-        // Player cannot buy insurance
-        {
-            // Testing with true
-            {
-                playerWager = 70;
-                while (playerWager <= priorBank) {
-                    testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
-                    EXPECT_EQ(testHand->GetWager(), playerWager);
-                    EXPECT_EQ(testHand->GetInsuranceWager(), 0);
-                    EXPECT_EQ(testHand->GetNet(), -testHand->GetWager());
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
-                    EXPECT_FALSE(std::get<3>(result));
-                    testHand->SetBankTotal(priorBank);
-                    testHand->ResetHand();
-                    dealerHand->ResetHand();
-                    playerWager++;
-                    testShoe->GetCardsInShoe()->ClearList();
-                }
-            }
-            // Testing with false
-            {
-                playerWager = 70;
-                while (playerWager <= priorBank) {
-                    testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, false);
-                    EXPECT_EQ(testHand->GetWager(), playerWager);
-                    EXPECT_EQ(testHand->GetInsuranceWager(), 0);
-                    EXPECT_EQ(testHand->GetNet(), -testHand->GetWager());
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
-                    EXPECT_FALSE(std::get<3>(result));
-                    testHand->SetBankTotal(priorBank);
-                    testHand->ResetHand();
-                    dealerHand->ResetHand();
-                    playerWager++;
-                    testShoe->GetCardsInShoe()->ClearList();
-                }
-            }
-        }
-        playerWager = 10;
-    }
-    testShoe->GetCardsInShoe()->ClearList();
-    // Player has blackjack, dealer does not
-    for (int i = 9; i <= 12; i++) {
-        testCard = std::make_shared<Card>(Ranks[0], Suits[3]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[0], Suits[2]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[8], Suits[1]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        EXPECT_EQ(testHand->GetBankTotal(), priorBank);
-        copyShoe->CopyShoe(testShoe);
-        // Player can buy insurance
-        {
-            // Player chose to buy insurance
-            {
-                auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
-                EXPECT_EQ(testHand->GetWager(), playerWager);
-                EXPECT_EQ(testHand->GetInsuranceWager(), 0.5 * testHand->GetWager());
-                EXPECT_EQ(testHand->GetNet(), testHand->GetWager());
-                EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
-                EXPECT_FALSE(std::get<3>(result));
-                testHand->SetBankTotal(priorBank);
-                testHand->ResetHand();
-                dealerHand->ResetHand();
-            }
-            // Player chose to not buy insurance
-            testShoe->CopyShoe(copyShoe);
-            {
-                auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, false);
-                EXPECT_EQ(testHand->GetWager(), playerWager);
-                EXPECT_EQ(testHand->GetInsuranceWager(), 0);
-                EXPECT_EQ(testHand->GetNet(), 1.5 * testHand->GetWager());
-                EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
-                EXPECT_FALSE(std::get<3>(result));
-                testHand->SetBankTotal(priorBank);
-                testHand->ResetHand();
-                dealerHand->ResetHand();
-            }
-            testShoe->GetCardsInShoe()->ClearList();
-        }
-        // Player cannot buy insurance
-        {
-            // Testing with true
-            {
-                playerWager = 70;
-                while (playerWager <= priorBank) {
-                    testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
-                    EXPECT_EQ(testHand->GetWager(), playerWager);
-                    EXPECT_EQ(testHand->GetInsuranceWager(), 0);
-                    EXPECT_EQ(testHand->GetNet(), 1.5 * testHand->GetWager());
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
-                    EXPECT_FALSE(std::get<3>(result));
-                    testHand->SetBankTotal(priorBank);
-                    testHand->ResetHand();
-                    dealerHand->ResetHand();
-                    playerWager++;
-                    testShoe->GetCardsInShoe()->ClearList();
-                }
-            }
-            // Testing with false
-            {
-                playerWager = 70;
-                while (playerWager <= priorBank) {
-                    testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, false);
-                    EXPECT_EQ(testHand->GetWager(), playerWager);
-                    EXPECT_EQ(testHand->GetInsuranceWager(), 0);
-                    EXPECT_EQ(testHand->GetNet(), 1.5 * testHand->GetWager());
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
-                    EXPECT_FALSE(std::get<3>(result));
-                    testHand->SetBankTotal(priorBank);
-                    testHand->ResetHand();
-                    dealerHand->ResetHand();
-                    playerWager++;
-                    testShoe->GetCardsInShoe()->ClearList();
-                }
-            }
-        }
-        playerWager = 10;
-    }
-    testShoe->GetCardsInShoe()->ClearList();
-    // Neither player has blackjack
-    for (int i = 0; i <= 8; i++) {
-        testCard = std::make_shared<Card>(Ranks[0], Suits[3]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[0], Suits[2]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[i], Suits[1]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        EXPECT_EQ(testHand->GetBankTotal(), priorBank);
-        copyShoe->CopyShoe(testShoe);
-        // Player can buy insurance
-        {
-            // Player chose to buy insurance
-            {
-                auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
-                EXPECT_EQ(testHand->GetWager(), playerWager);
-                EXPECT_EQ(testHand->GetInsuranceWager(), 0.5 * testHand->GetWager());
-                EXPECT_EQ(testHand->GetNet(), -testHand->GetInsuranceWager());
-                EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetInsuranceWager() - testHand->GetWager());
-                EXPECT_TRUE(std::get<3>(result));
-                testHand->SetBankTotal(priorBank);
-                testHand->ResetHand();
-                dealerHand->ResetHand();
-            }
-            // Player chose to not buy insurance
-            testShoe->CopyShoe(copyShoe);
-            {
-                auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, false);
-                EXPECT_EQ(testHand->GetWager(), playerWager);
-                EXPECT_EQ(testHand->GetInsuranceWager(), 0);
-                EXPECT_EQ(testHand->GetNet(), 0);
-                EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetInsuranceWager() - testHand->GetWager());
-                EXPECT_TRUE(std::get<3>(result));
-                testHand->SetBankTotal(priorBank);
-                testHand->ResetHand();
-                dealerHand->ResetHand();
-            }
-            testShoe->GetCardsInShoe()->ClearList();
-        }
-        // Player cannot buy insurance
-        {
-            // Testing with true
-            {
-                playerWager = 70;
-                while (playerWager <= priorBank) {
-                    testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
-                    EXPECT_EQ(testHand->GetWager(), playerWager);
-                    EXPECT_EQ(testHand->GetInsuranceWager(), 0);
-                    EXPECT_EQ(testHand->GetNet(), 0);
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetInsuranceWager() - testHand->GetWager());
-                    EXPECT_TRUE(std::get<3>(result));
-                    testHand->SetBankTotal(priorBank);
-                    testHand->ResetHand();
-                    dealerHand->ResetHand();
-                    playerWager++;
-                    testShoe->GetCardsInShoe()->ClearList();
-                }
-            }
-            // Testing with false
-            {
-                playerWager = 70;
-                while (playerWager <= priorBank) {
-                    testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, false);
-                    EXPECT_EQ(testHand->GetWager(), playerWager);
-                    EXPECT_EQ(testHand->GetInsuranceWager(), 0);
-                    EXPECT_EQ(testHand->GetNet(), 0);
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetInsuranceWager() - testHand->GetWager());
-                    EXPECT_TRUE(std::get<3>(result));
-                    testHand->SetBankTotal(priorBank);
-                    testHand->ResetHand();
-                    dealerHand->ResetHand();
-                    playerWager++;
-                    testShoe->GetCardsInShoe()->ClearList();
-                }
-            }
-        }
-        playerWager = 10;
-    }
-    testShoe->GetCardsInShoe()->ClearList();
-    // Dealer is not showing an Ace, player cannot buy insurance no matter what
-    // Both players have blackjack
-    for (int i = 9; i <= 12; i++) {
-        testCard = std::make_shared<Card>(Ranks[i], Suits[3]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[0], Suits[2]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[0], Suits[1]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        EXPECT_EQ(testHand->GetBankTotal(), priorBank);
-        copyShoe->CopyShoe(testShoe);
-        // Player cannot buy insurance
-        {
-            // Testing with true
-            {
-                playerWager = 10;
-                while (playerWager <= priorBank) {
-                    testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
-                    EXPECT_EQ(testHand->GetWager(), playerWager);
-                    EXPECT_EQ(testHand->GetInsuranceWager(), 0);
-                    EXPECT_EQ(testHand->GetNet(), 0);
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
-                    EXPECT_FALSE(std::get<3>(result));
-                    testHand->SetBankTotal(priorBank);
-                    testHand->ResetHand();
-                    dealerHand->ResetHand();
-                    playerWager++;
-                    testShoe->GetCardsInShoe()->ClearList();
-                }
-            }
-            // Testing with false
-            {
-                playerWager = 10;
-                while (playerWager <= priorBank) {
-                    testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, false);
-                    EXPECT_EQ(testHand->GetWager(), playerWager);
-                    EXPECT_EQ(testHand->GetInsuranceWager(), 0);
-                    EXPECT_EQ(testHand->GetNet(), 0);
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
-                    EXPECT_FALSE(std::get<3>(result));
-                    testHand->SetBankTotal(priorBank);
-                    testHand->ResetHand();
-                    dealerHand->ResetHand();
-                    playerWager++;
-                    testShoe->GetCardsInShoe()->ClearList();
-                }
-            }
-        }
-        playerWager = 10;
-    }
-    testShoe->GetCardsInShoe()->ClearList();
-    // Dealer has blackjack, player does not
-    for (int i = 9; i <= 12; i++) {
-        testCard = std::make_shared<Card>(Ranks[i], Suits[3]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[1], Suits[2]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[0], Suits[1]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        EXPECT_EQ(testHand->GetBankTotal(), priorBank);
-        copyShoe->CopyShoe(testShoe);
-        // Player cannot buy insurance
-        {
-            // Testing with true
-            {
-                playerWager = 10;
-                while (playerWager <= priorBank) {
-                    testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
-                    EXPECT_EQ(testHand->GetWager(), playerWager);
-                    EXPECT_EQ(testHand->GetInsuranceWager(), 0);
-                    EXPECT_EQ(testHand->GetNet(), -testHand->GetWager());
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
-                    EXPECT_FALSE(std::get<3>(result));
-                    testHand->SetBankTotal(priorBank);
-                    testHand->ResetHand();
-                    dealerHand->ResetHand();
-                    playerWager++;
-                    testShoe->GetCardsInShoe()->ClearList();
-                }
-            }
-            // Testing with false
-            {
-                playerWager = 10;
-                while (playerWager <= priorBank) {
-                    testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, false);
-                    EXPECT_EQ(testHand->GetWager(), playerWager);
-                    EXPECT_EQ(testHand->GetInsuranceWager(), 0);
-                    EXPECT_EQ(testHand->GetNet(), -testHand->GetWager());
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
-                    EXPECT_FALSE(std::get<3>(result));
-                    testHand->SetBankTotal(priorBank);
-                    testHand->ResetHand();
-                    dealerHand->ResetHand();
-                    playerWager++;
-                    testShoe->GetCardsInShoe()->ClearList();
-                }
-            }
-        }
-        playerWager = 10;
-    }
-    testShoe->GetCardsInShoe()->ClearList();
-    // Player has blackjack, dealer does not
-    for (int i = 9; i <= 12; i++) {
-        testCard = std::make_shared<Card>(Ranks[8], Suits[3]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[i], Suits[2]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[0], Suits[1]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        EXPECT_EQ(testHand->GetBankTotal(), priorBank);
-        copyShoe->CopyShoe(testShoe);
-        // Player cannot buy insurance
-        {
-            // Testing with true
-            {
-                playerWager = 10;
-                while (playerWager <= priorBank) {
-                    testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
-                    EXPECT_EQ(testHand->GetWager(), playerWager);
-                    EXPECT_EQ(testHand->GetInsuranceWager(), 0);
-                    EXPECT_EQ(testHand->GetNet(), 1.5 * testHand->GetWager());
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
-                    EXPECT_FALSE(std::get<3>(result));
-                    testHand->SetBankTotal(priorBank);
-                    testHand->ResetHand();
-                    dealerHand->ResetHand();
-                    playerWager++;
-                    testShoe->GetCardsInShoe()->ClearList();
-                }
-            }
-            // Testing with false
-            {
-                playerWager = 10;
-                while (playerWager <= priorBank) {
-                    testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, false);
-                    EXPECT_EQ(testHand->GetWager(), playerWager);
-                    EXPECT_EQ(testHand->GetInsuranceWager(), 0);
-                    EXPECT_EQ(testHand->GetNet(), 1.5 * testHand->GetWager());
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank + testHand->GetNet());
-                    EXPECT_FALSE(std::get<3>(result));
-                    testHand->SetBankTotal(priorBank);
-                    testHand->ResetHand();
-                    dealerHand->ResetHand();
-                    playerWager++;
-                    testShoe->GetCardsInShoe()->ClearList();
-                }
-            }
-        }
-        playerWager = 10;
-    }
-    testShoe->GetCardsInShoe()->ClearList();
-    // Neither player has blackjack
-    for (int i = 9; i <= 12; i++) {
-        testCard = std::make_shared<Card>(Ranks[1], Suits[3]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[1], Suits[2]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[i], Suits[1]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        testCard = std::make_shared<Card>(Ranks[i], Suits[0]);
-        testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-        testShoe->GetCardsInShoe()->AppendNode(testNode);
-        EXPECT_EQ(testHand->GetBankTotal(), priorBank);
-        copyShoe->CopyShoe(testShoe);
-        // Player cannot buy insurance
-        {
-            // Testing with true
-            {
-                playerWager = 10;
-                while (playerWager <= priorBank) {
-                    testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
-                    EXPECT_EQ(testHand->GetWager(), playerWager);
-                    EXPECT_EQ(testHand->GetInsuranceWager(), 0);
-                    EXPECT_EQ(testHand->GetNet(), 0);
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetWager());
-                    EXPECT_TRUE(std::get<3>(result));
-                    testHand->SetBankTotal(priorBank);
-                    testHand->ResetHand();
-                    dealerHand->ResetHand();
-                    playerWager++;
-                    testShoe->GetCardsInShoe()->ClearList();
-                }
-            }
-            // Testing with false
-            {
-                playerWager = 10;
-                while (playerWager <= priorBank) {
-                    testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, playerWager, true);
-                    EXPECT_EQ(testHand->GetWager(), playerWager);
-                    EXPECT_EQ(testHand->GetInsuranceWager(), 0);
-                    EXPECT_EQ(testHand->GetNet(), 0);
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetWager());
-                    EXPECT_TRUE(std::get<3>(result));
-                    testHand->SetBankTotal(priorBank);
-                    testHand->ResetHand();
-                    dealerHand->ResetHand();
-                    playerWager++;
-                    testShoe->GetCardsInShoe()->ClearList();
-                }
-            }
-        }
-        playerWager = 10;
-    }
-    testShoe->GetCardsInShoe()->ClearList();
-}
+// // Split hand vector check
+// TEST_F(test_x, SplitHandVectorCheck) {
+//     std::shared_ptr<Hand> testHand1(new Hand);
+//     std::shared_ptr<Hand> testHand2(new Hand);
+//     std::shared_ptr<Card> testCard(new Card);
+//     std::shared_ptr<node<Card>> testNode;
+//     testHand1->SetName("Borby");
+//     testHand1->SetBankTotal(100);
+//     testHand1->SetWager(10);
+//     testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+//     testNode = testHand1->GetPlayerCards()->InitNode(testCard);
+//     testHand1->SetPlayerCards(testNode);
+//     testCard = std::make_shared<Card>(Ranks[12], Suits[1]);
+//     testNode = testHand1->GetPlayerCards()->InitNode(testCard);
+//     testHand1->SetPlayerCards(testNode);
+//     EXPECT_EQ(testHand1->GetPlayerCards()->GetSize(), 2);
+//     std::vector<std::shared_ptr<Hand>> newHands = split_hand(testHand1);
+//     testHand1 = newHands.at(0);
+//     testHand2 = newHands.at(1);
+//     EXPECT_EQ(newHands.size(), 2);
+//     EXPECT_EQ(testHand1->GetPlayerCards()->GetSize(), 1);
+//     EXPECT_EQ(testHand1->GetPlayerCards()->RetrieveNode(0)->data.GetRank(), Ranks[0]);
+//     EXPECT_EQ(testHand1->GetPlayerCards()->RetrieveNode(0)->data.GetSuit(), Suits[0]);
+//     EXPECT_EQ(testHand2->GetPlayerCards()->GetSize(), 1);
+//     EXPECT_EQ(testHand2->GetPlayerCards()->RetrieveNode(0)->data.GetRank(), Ranks[12]);
+//     EXPECT_EQ(testHand2->GetPlayerCards()->RetrieveNode(0)->data.GetSuit(), Suits[1]);
+// }
 
-// Split hand vector check
-TEST_F(test_x, SplitHandVectorCheck) {
-    std::shared_ptr<Hand> testHand1(new Hand);
-    std::shared_ptr<Hand> testHand2(new Hand);
-    std::shared_ptr<Card> testCard(new Card);
-    std::shared_ptr<node<Card>> testNode;
-    testHand1->SetName("Borby");
-    testHand1->SetBankTotal(100);
-    testHand1->SetWager(10);
-    testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
-    testNode = testHand1->GetPlayerCards()->InitNode(testCard);
-    testHand1->SetPlayerCards(testNode);
-    testCard = std::make_shared<Card>(Ranks[12], Suits[1]);
-    testNode = testHand1->GetPlayerCards()->InitNode(testCard);
-    testHand1->SetPlayerCards(testNode);
-    EXPECT_EQ(testHand1->GetPlayerCards()->GetSize(), 2);
-    std::vector<std::shared_ptr<Hand>> newHands = split_hand(testHand1);
-    testHand1 = newHands.at(0);
-    testHand2 = newHands.at(1);
-    EXPECT_EQ(newHands.size(), 2);
-    EXPECT_EQ(testHand1->GetPlayerCards()->GetSize(), 1);
-    EXPECT_EQ(testHand1->GetPlayerCards()->RetrieveNode(0)->data.GetRank(), Ranks[0]);
-    EXPECT_EQ(testHand1->GetPlayerCards()->RetrieveNode(0)->data.GetSuit(), Suits[0]);
-    EXPECT_EQ(testHand2->GetPlayerCards()->GetSize(), 1);
-    EXPECT_EQ(testHand2->GetPlayerCards()->RetrieveNode(0)->data.GetRank(), Ranks[12]);
-    EXPECT_EQ(testHand2->GetPlayerCards()->RetrieveNode(0)->data.GetSuit(), Suits[1]);
-}
+// // Split hand linked list check
+// TEST_F(test_x, SplitHandLinkedListCheck) {
+//     std::shared_ptr<Hand> testHand(new Hand);
+//     std::shared_ptr<Card> testCard(new Card);
+//     std::shared_ptr<node<Card>> testNode;
+//     testHand->SetName("Borby");
+//     testHand->SetBankTotal(100);
+//     testHand->SetWager(10);
+//     testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+//     testNode = testHand->GetPlayerCards()->InitNode(testCard);
+//     testHand->SetPlayerCards(testNode);
+//     testCard = std::make_shared<Card>(Ranks[12], Suits[1]);
+//     testNode = testHand->GetPlayerCards()->InitNode(testCard);
+//     testHand->SetPlayerCards(testNode);
+//     EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//     testHand->PlaceWagerSim(testHand->GetWager());
+//     split_hand_sim(testHand);
+//     EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 2);
+//     EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 2);
+//     EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 1);
+//     EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetRank(), Ranks[0]);
+//     EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetSuit(), Suits[0]);
+//     EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetCardValue(), 11);
+//     EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), 10);
+//     EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal(), 80);
+//     EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(-1)->data->GetPlayerCards()->GetSize(), 1);
+//     EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(-1)->data->GetPlayerCards()->RetrieveNode(0)->data.GetRank(), Ranks[12]);
+//     EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(-1)->data->GetPlayerCards()->RetrieveNode(0)->data.GetSuit(), Suits[1]);
+//     EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(-1)->data->GetPlayerCards()->RetrieveNode(0)->data.GetCardValue(), 10);
+//     EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(-1)->data->GetWager(), 10);
+//     EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(-1)->data->GetBankTotal(), 80);
+//     EXPECT_EQ(testHand->GetWager(), 10);
+//     EXPECT_EQ(testHand->GetBankTotal(), 80);
+// }
 
-// Split hand linked list check
-TEST_F(test_x, SplitHandLinkedListCheck) {
-    std::shared_ptr<Hand> testHand(new Hand);
-    std::shared_ptr<Card> testCard(new Card);
-    std::shared_ptr<node<Card>> testNode;
-    testHand->SetName("Borby");
-    testHand->SetBankTotal(100);
-    testHand->SetWager(10);
-    testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
-    testNode = testHand->GetPlayerCards()->InitNode(testCard);
-    testHand->SetPlayerCards(testNode);
-    testCard = std::make_shared<Card>(Ranks[12], Suits[1]);
-    testNode = testHand->GetPlayerCards()->InitNode(testCard);
-    testHand->SetPlayerCards(testNode);
-    EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-    testHand->PlaceWagerSim(testHand->GetWager());
-    split_hand_sim(testHand);
-    EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 2);
-    EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 2);
-    EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 1);
-    EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetRank(), Ranks[0]);
-    EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetSuit(), Suits[0]);
-    EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetCardValue(), 11);
-    EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), 10);
-    EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal(), 80);
-    EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(-1)->data->GetPlayerCards()->GetSize(), 1);
-    EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(-1)->data->GetPlayerCards()->RetrieveNode(0)->data.GetRank(), Ranks[12]);
-    EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(-1)->data->GetPlayerCards()->RetrieveNode(0)->data.GetSuit(), Suits[1]);
-    EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(-1)->data->GetPlayerCards()->RetrieveNode(0)->data.GetCardValue(), 10);
-    EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(-1)->data->GetWager(), 10);
-    EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(-1)->data->GetBankTotal(), 80);
-    EXPECT_EQ(testHand->GetWager(), 10);
-    EXPECT_EQ(testHand->GetBankTotal(), 80);
-}
+// // Same rank check test
+// TEST_F(test_x, SameRankCheck) {
+//     std::shared_ptr<Hand> testHand(new Hand);
+//     std::shared_ptr<Hand> dealerHand(new Hand);
+//     std::shared_ptr<Shoe> testShoe(new Shoe);
+//     std::shared_ptr<Shoe> copyShoe(new Shoe);
+//     std::shared_ptr<Card> testCard(new Card);
+//     std::shared_ptr<node<Card>> testNode;
+//     float priorBank = 100;
+//     float handWager = 10;
+//     testHand->NameSim("Borby");
+//     dealerHand->NameSim("Dealer");
+//     testHand->BankDepositSim(priorBank);
+//     priorBank = testHand->GetBankTotal();
+//     // Check for splitting Aces
+//     testCard = std::make_shared<Card>(Ranks[12], Suits[3]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[12], Suits[1]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[7], Suits[3]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[0], Suits[2]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[7], Suits[1]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     copyShoe->CopyShoe(testShoe);
+//     // Player chooses to split
+//     while (handWager < priorBank) {
+//         deal_hand_sim(testHand, dealerHand, testShoe, handWager);
+//         auto result = same_rank_check_sim(testHand, dealerHand, testShoe, true);
+//         // Player is eligible to split
+//         if (testHand->GetHashTable()->Contains(testHand->GetTableMatrix()[0][2])) {
+//             for (int i = 0; i < std::get<0>(result)->GetPlayerHands()->GetSize(); i++) {
+//                 EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->GetSize(), 2);
+//                 EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
+//                 EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), testHand->GetWager());
+//                 EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - 2 * testHand->GetWager());
+//                 EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(i)->data->GetCardsTotal(), 21);
+//                 EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//                 EXPECT_EQ(testHand->GetCardsTotal(), 12);
+//                 EXPECT_EQ(testHand->GetWager(), handWager);
+//                 EXPECT_EQ(testHand->GetBankTotal(), priorBank - 2 * testHand->GetWager());
+//                 EXPECT_EQ(testShoe->GetCardsInShoe()->GetSize(), 0);
+//             }
+//         }
+//         // Player cannot split
+//         else {
+//             EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->GetSize(), 1);
+//             EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
+//             EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), testHand->GetWager());
+//             EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal(), priorBank - testHand->GetWager());
+//             EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(0)->data->GetCardsTotal(), 12);
+//             EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//             EXPECT_EQ(testHand->GetCardsTotal(), 12);
+//             EXPECT_EQ(testHand->GetWager(), handWager);
+//             EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetWager());
+//             EXPECT_EQ(testShoe->GetCardsInShoe()->GetSize(), 2);
+//         }
+//         testHand->SetBankTotal(priorBank);
+//         testHand->ResetHand();
+//         dealerHand->ResetHand();
+//         testShoe->EmptyShoe();
+//         testShoe->CopyShoe(copyShoe);
+//         handWager++;
+//     }
+//     // Player chooses not to split
+//     {
+//         deal_hand_sim(testHand, dealerHand, testShoe, handWager);
+//         auto result = same_rank_check_sim(testHand, dealerHand, testShoe, false);
+//         EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->GetSize(), 1);
+//         EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
+//         EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), testHand->GetWager());
+//         EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal(), priorBank - testHand->GetWager());
+//         EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(0)->data->GetCardsTotal(), 12);
+//         EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//         EXPECT_EQ(testHand->GetCardsTotal(), 12);
+//         EXPECT_EQ(testHand->GetWager(), handWager);
+//         EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetWager());
+//         EXPECT_EQ(testShoe->GetCardsInShoe()->GetSize(), 2);
+//     }
+//     testShoe->EmptyShoe();
+//     testHand->ResetHand();
+//     dealerHand->ResetHand();
+//     testHand->SetBankTotal(priorBank);
+//     handWager = 10;
+//     // Random Number Generator
+//     int rankVal = random_int(1, 12);
+//     int dealerFirst = random_int(1, 12);
+//     int dealerSecond = random_int(1, 12);
+//     // Check for splitting hand
+//     testCard = std::make_shared<Card>(Ranks[rankVal], Suits[0]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[rankVal], Suits[1]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[rankVal], Suits[2]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[rankVal], Suits[3]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[dealerSecond], Suits[3]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[rankVal], Suits[2]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[dealerFirst], Suits[1]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[rankVal], Suits[0]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     copyShoe->CopyShoe(testShoe);
+//     // Max hands split check
+//     while (handWager < priorBank) {
+//         // Player has chosen to split their hand
+//         {
+//             deal_hand_sim(testHand, dealerHand, testShoe, handWager);
+//             EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
+//             EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
+//             EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//             EXPECT_EQ(testHand->GetWager(), handWager);
+//             EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//             auto result = same_rank_check_sim(testHand, dealerHand, testShoe, true);
+//             EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), testHand->GetPlayerHands()->GetSize());
+//             // Player has split hands
+//             if (testHand->GetHandsCurrentlyHeld() > 1) {
+//                 if (handWager <= 0.2 * priorBank) {
+//                     EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 5);
+//                     EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 5);
+//                     for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
+//                         if (i == 0) {
+//                             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
+//                         }
+//                         else {
+//                             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
+//                         }
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 5);
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
+//                     }
+//                     EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//                     EXPECT_EQ(testHand->GetWager(), handWager);
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//                 }
+//                 else if (handWager > 0.2 * priorBank && handWager <= 0.25 * priorBank) {
+//                     EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 4);
+//                     EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 4);
+//                     for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
+//                         if (i == 0) {
+//                             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
+//                         }
+//                         else {
+//                             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
+//                         }
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 4);
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
+//                     }
+//                     EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//                     EXPECT_EQ(testHand->GetWager(), handWager);
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//                 }
+//                 else if (handWager > 0.25 * priorBank && handWager <= 0.33 * priorBank) {
+//                     EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 3);
+//                     EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 3);
+//                     for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
+//                         if (i == 0) {
+//                             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
+//                         }
+//                         else {
+//                             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
+//                         }
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 3);
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
+//                     }
+//                     EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//                     EXPECT_EQ(testHand->GetWager(), handWager);
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//                 }
+//                 else if (handWager > 0.33 * priorBank && handWager <= 0.5 * priorBank) {
+//                     EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 2);
+//                     EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 2);
+//                     for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
+//                         if (i == 0) {
+//                             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
+//                         }
+//                         else {
+//                             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
+//                         }
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 2);
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
+//                     }
+//                     EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//                     EXPECT_EQ(testHand->GetWager(), handWager);
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//                 }
+//             }
+//             // Player does not have split hands
+//             else {
+//                 EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 1);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld(), 1);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), handWager);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
+//                 EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
+//                 EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//                 EXPECT_EQ(testHand->GetWager(), handWager);
+//                 EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//             }
+//             testHand->SetBankTotal(priorBank);
+//             testHand->ResetHand();
+//             dealerHand->ResetHand();
+//             testShoe->EmptyShoe();
+//             testShoe->CopyShoe(copyShoe);
+//         }
+//         // Player has chosen to not split their hand
+//         {
+//             deal_hand_sim(testHand, dealerHand, testShoe, handWager);
+//             EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
+//             EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
+//             EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//             EXPECT_EQ(testHand->GetWager(), handWager);
+//             EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//             auto result = same_rank_check_sim(testHand, dealerHand, testShoe, false);
+//             for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
+//                 if (i == 0) {
+//                     EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
+//                 }
+//                 else {
+//                     EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
+//                 }
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerHands()->GetSize(), 1);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 1);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld() * handWager);
+//             }
+//             testHand->SetBankTotal(priorBank);
+//             testHand->ResetHand();
+//             dealerHand->ResetHand();
+//             testShoe->EmptyShoe();
+//             testShoe->CopyShoe(copyShoe);
+//         }
+//         handWager++;
+//     }
+//     handWager = 10;
+//     // Random Number Generator
+//     rankVal = random_int(1, 12);
+//     dealerFirst = random_int(1, 12);
+//     dealerSecond = random_int(1, 12);
+//     // Check for splitting hand
+//     testCard = std::make_shared<Card>(Ranks[rankVal - 1], Suits[1]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[rankVal], Suits[2]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[rankVal], Suits[3]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[dealerSecond], Suits[3]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[rankVal], Suits[2]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[dealerFirst], Suits[1]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[rankVal], Suits[0]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     copyShoe->CopyShoe(testShoe);
+//     // Max hands split check
+//     while (handWager < priorBank) {
+//         // Player has chosen to split their hand
+//         {
+//             deal_hand_sim(testHand, dealerHand, testShoe, handWager);
+//             EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
+//             EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
+//             EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//             EXPECT_EQ(testHand->GetWager(), handWager);
+//             EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//             auto result = same_rank_check_sim(testHand, dealerHand, testShoe, true);
+//             EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), testHand->GetPlayerHands()->GetSize());
+//             // Player has split hands
+//             if (testHand->GetHandsCurrentlyHeld() > 1) {
+//                 if (handWager <= 0.25 * priorBank) {
+//                     EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 4);
+//                     EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 4);
+//                     for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
+//                         if (i == 0) {
+//                             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
+//                         }
+//                         else {
+//                             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
+//                         }
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 4);
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
+//                     }
+//                     EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//                     EXPECT_EQ(testHand->GetWager(), handWager);
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//                 }
+//                 else if (handWager > 0.25 * priorBank && handWager <= 0.33 * priorBank) {
+//                     EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 3);
+//                     EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 3);
+//                     for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
+//                         if (i == 0) {
+//                             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
+//                         }
+//                         else {
+//                             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
+//                         }
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 3);
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
+//                     }
+//                     EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//                     EXPECT_EQ(testHand->GetWager(), handWager);
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//                 }
+//                 else if (handWager > 0.33 * priorBank && handWager <= 0.5 * priorBank) {
+//                     EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 2);
+//                     EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 2);
+//                     for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
+//                         if (i == 0) {
+//                             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
+//                         }
+//                         else {
+//                             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
+//                         }
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 2);
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
+//                     }
+//                     EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//                     EXPECT_EQ(testHand->GetWager(), handWager);
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//                 }
+//             }
+//             // Player does not have split hands
+//             else {
+//                 EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 1);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld(), 1);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), handWager);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
+//                 EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
+//                 EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//                 EXPECT_EQ(testHand->GetWager(), handWager);
+//                 EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//             }
+//             testHand->SetBankTotal(priorBank);
+//             testHand->ResetHand();
+//             dealerHand->ResetHand();
+//             testShoe->EmptyShoe();
+//             testShoe->CopyShoe(copyShoe);
+//         }
+//         // Player has chosen to not split their hand
+//         {
+//             deal_hand_sim(testHand, dealerHand, testShoe, handWager);
+//             EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
+//             EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
+//             EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//             EXPECT_EQ(testHand->GetWager(), handWager);
+//             EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//             auto result = same_rank_check_sim(testHand, dealerHand, testShoe, false);
+//             for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
+//                 if (i == 0) {
+//                     EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
+//                 }
+//                 else {
+//                     EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
+//                 }
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerHands()->GetSize(), 1);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 1);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld() * handWager);
+//             }
+//             testHand->SetBankTotal(priorBank);
+//             testHand->ResetHand();
+//             dealerHand->ResetHand();
+//             testShoe->EmptyShoe();
+//             testShoe->CopyShoe(copyShoe);
+//         }
+//         handWager++;
+//     }
+//     handWager = 10;
+//     // Random Number Generator
+//     rankVal = random_int(1, 12);
+//     dealerFirst = random_int(1, 12);
+//     dealerSecond = random_int(1, 12);
+//     // Check for splitting hand
+//     testCard = std::make_shared<Card>(Ranks[rankVal - 1], Suits[2]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[rankVal], Suits[3]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[dealerSecond], Suits[3]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[rankVal], Suits[2]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[dealerFirst], Suits[1]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[rankVal], Suits[0]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     copyShoe->CopyShoe(testShoe);
+//     // Max hands split check
+//     while (handWager < priorBank) {
+//         // Player has chosen to split their hand
+//         {
+//             deal_hand_sim(testHand, dealerHand, testShoe, handWager);
+//             EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
+//             EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
+//             EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//             EXPECT_EQ(testHand->GetWager(), handWager);
+//             EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//             auto result = same_rank_check_sim(testHand, dealerHand, testShoe, true);
+//             EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), testHand->GetPlayerHands()->GetSize());
+//             // Player has split hands
+//             if (testHand->GetHandsCurrentlyHeld() > 1) {
+//                 if (handWager <= 0.33 * priorBank) {
+//                     EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 3);
+//                     EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 3);
+//                     for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
+//                         if (i == 0) {
+//                             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
+//                         }
+//                         else {
+//                             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
+//                         }
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 3);
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
+//                     }
+//                     EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//                     EXPECT_EQ(testHand->GetWager(), handWager);
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//                 }
+//                 else if (handWager > 0.33 * priorBank && handWager <= 0.5 * priorBank) {
+//                     EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 2);
+//                     EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 2);
+//                     for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
+//                         if (i == 0) {
+//                             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
+//                         }
+//                         else {
+//                             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
+//                         }
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 2);
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
+//                     }
+//                     EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//                     EXPECT_EQ(testHand->GetWager(), handWager);
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//                 }
+//             }
+//             // Player does not have split hands
+//             else {
+//                 EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 1);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld(), 1);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), handWager);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
+//                 EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
+//                 EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//                 EXPECT_EQ(testHand->GetWager(), handWager);
+//                 EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//             }
+//             testHand->SetBankTotal(priorBank);
+//             testHand->ResetHand();
+//             dealerHand->ResetHand();
+//             testShoe->EmptyShoe();
+//             testShoe->CopyShoe(copyShoe);
+//         }
+//         // Player has chosen to not split their hand
+//         {
+//             deal_hand_sim(testHand, dealerHand, testShoe, handWager);
+//             EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
+//             EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
+//             EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//             EXPECT_EQ(testHand->GetWager(), handWager);
+//             EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//             auto result = same_rank_check_sim(testHand, dealerHand, testShoe, false);
+//             for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
+//                 if (i == 0) {
+//                     EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
+//                 }
+//                 else {
+//                     EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
+//                 }
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerHands()->GetSize(), 1);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 1);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld() * handWager);
+//             }
+//             testHand->SetBankTotal(priorBank);
+//             testHand->ResetHand();
+//             dealerHand->ResetHand();
+//             testShoe->EmptyShoe();
+//             testShoe->CopyShoe(copyShoe);
+//         }
+//         handWager++;
+//     }
+//     handWager = 10;
+//     // Random Number Generator
+//     rankVal = random_int(1, 12);
+//     dealerFirst = random_int(1, 12);
+//     dealerSecond = random_int(1, 12);
+//     // Check for splitting hand
+//     testCard = std::make_shared<Card>(Ranks[rankVal - 1], Suits[2]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[dealerSecond], Suits[3]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[rankVal], Suits[2]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[dealerFirst], Suits[1]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[rankVal], Suits[0]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     copyShoe->CopyShoe(testShoe);
+//     // Max hands split check
+//     while (handWager < priorBank) {
+//         // Player has chosen to split their hand
+//         {
+//             deal_hand_sim(testHand, dealerHand, testShoe, handWager);
+//             EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
+//             EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
+//             EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//             EXPECT_EQ(testHand->GetWager(), handWager);
+//             EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//             auto result = same_rank_check_sim(testHand, dealerHand, testShoe, true);
+//             EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), testHand->GetPlayerHands()->GetSize());
+//             // Player has split hands
+//             if (testHand->GetHandsCurrentlyHeld() > 1) {
+//                 if (handWager <= 0.5 * priorBank) {
+//                     EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 2);
+//                     EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 2);
+//                     for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
+//                         if (i == 0) {
+//                             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
+//                         }
+//                         else {
+//                             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
+//                         }
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 2);
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
+//                     }
+//                     EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//                     EXPECT_EQ(testHand->GetWager(), handWager);
+//                     EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//                 }
+//             }
+//             // Player does not have split hands
+//             else {
+//                 EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 1);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld(), 1);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), handWager);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
+//                 EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
+//                 EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//                 EXPECT_EQ(testHand->GetWager(), handWager);
+//                 EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//             }
+//             testHand->SetBankTotal(priorBank);
+//             testHand->ResetHand();
+//             dealerHand->ResetHand();
+//             testShoe->EmptyShoe();
+//             testShoe->CopyShoe(copyShoe);
+//         }
+//         // Player has chosen to not split their hand
+//         {
+//             deal_hand_sim(testHand, dealerHand, testShoe, handWager);
+//             EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
+//             EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
+//             EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//             EXPECT_EQ(testHand->GetWager(), handWager);
+//             EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//             auto result = same_rank_check_sim(testHand, dealerHand, testShoe, false);
+//             for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
+//                 if (i == 0) {
+//                     EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
+//                 }
+//                 else {
+//                     EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
+//                 }
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerHands()->GetSize(), 1);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 1);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld() * handWager);
+//             }
+//             testHand->SetBankTotal(priorBank);
+//             testHand->ResetHand();
+//             dealerHand->ResetHand();
+//             testShoe->EmptyShoe();
+//             testShoe->CopyShoe(copyShoe);
+//         }
+//         handWager++;
+//     }
+//     handWager = 10;
+//     // Random Number Generator
+//     rankVal = random_int(1, 12);
+//     dealerFirst = random_int(1, 12);
+//     dealerSecond = random_int(1, 12);
+//     // Check for splitting hand
+//     testCard = std::make_shared<Card>(Ranks[dealerSecond], Suits[3]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[rankVal - 1], Suits[2]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[dealerFirst], Suits[1]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     testCard = std::make_shared<Card>(Ranks[rankVal], Suits[0]);
+//     testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
+//     testShoe->GetCardsInShoe()->AppendNode(testNode);
+//     copyShoe->CopyShoe(testShoe);
+//     // Max hands split check
+//     while (handWager < priorBank) {
+//         // Player has chosen to split their hand
+//         {
+//             deal_hand_sim(testHand, dealerHand, testShoe, handWager);
+//             EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
+//             EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
+//             EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//             EXPECT_EQ(testHand->GetWager(), handWager);
+//             EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//             auto result = same_rank_check_sim(testHand, dealerHand, testShoe, true);
+//             EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), testHand->GetPlayerHands()->GetSize());
+//             EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 1);
+//             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld(), 1);
+//             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
+//             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), handWager);
+//             EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
+//             EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
+//             EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//             EXPECT_EQ(testHand->GetWager(), handWager);
+//             EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//             testHand->SetBankTotal(priorBank);
+//             testHand->ResetHand();
+//             dealerHand->ResetHand();
+//             testShoe->EmptyShoe();
+//             testShoe->CopyShoe(copyShoe);
+//         }
+//         // Player has chosen to not split their hand
+//         {
+//             deal_hand_sim(testHand, dealerHand, testShoe, handWager);
+//             EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
+//             EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
+//             EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//             EXPECT_EQ(testHand->GetWager(), handWager);
+//             EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
+//             auto result = same_rank_check_sim(testHand, dealerHand, testShoe, false);
+//             for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
+//                 if (i == 0) {
+//                     EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
+//                 }
+//                 else {
+//                     EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
+//                 }
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerHands()->GetSize(), 1);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 1);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld() * handWager);
+//             }
+//             testHand->SetBankTotal(priorBank);
+//             testHand->ResetHand();
+//             dealerHand->ResetHand();
+//             testShoe->EmptyShoe();
+//             testShoe->CopyShoe(copyShoe);
+//         }
+//         handWager++;
+//     }
+// }
 
-// Same rank check test
-TEST_F(test_x, SameRankCheck) {
-    std::shared_ptr<Hand> testHand(new Hand);
-    std::shared_ptr<Hand> dealerHand(new Hand);
-    std::shared_ptr<Shoe> testShoe(new Shoe);
-    std::shared_ptr<Shoe> copyShoe(new Shoe);
-    std::shared_ptr<Card> testCard(new Card);
-    std::shared_ptr<node<Card>> testNode;
-    float priorBank = 100;
-    float handWager = 10;
-    testHand->NameSim("Borby");
-    dealerHand->NameSim("Dealer");
-    testHand->BankDepositSim(priorBank);
-    priorBank = testHand->GetBankTotal();
-    // Check for splitting Aces
-    testCard = std::make_shared<Card>(Ranks[12], Suits[3]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[12], Suits[1]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[7], Suits[3]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[0], Suits[2]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[7], Suits[1]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[0], Suits[0]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    copyShoe->CopyShoe(testShoe);
-    // Player chooses to split
-    while (handWager < priorBank) {
-        deal_hand_sim(testHand, dealerHand, testShoe, handWager);
-        auto result = same_rank_check_sim(testHand, dealerHand, testShoe, true);
-        // Player is eligible to split
-        if (testHand->GetHashTable()->Contains(testHand->GetTableMatrix()[0][2])) {
-            for (int i = 0; i < std::get<0>(result)->GetPlayerHands()->GetSize(); i++) {
-                EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->GetSize(), 2);
-                EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
-                EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), testHand->GetWager());
-                EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - 2 * testHand->GetWager());
-                EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(i)->data->GetCardsTotal(), 21);
-                EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-                EXPECT_EQ(testHand->GetCardsTotal(), 12);
-                EXPECT_EQ(testHand->GetWager(), handWager);
-                EXPECT_EQ(testHand->GetBankTotal(), priorBank - 2 * testHand->GetWager());
-                EXPECT_EQ(testShoe->GetCardsInShoe()->GetSize(), 0);
-            }
-        }
-        // Player cannot split
-        else {
-            EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->GetSize(), 1);
-            EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
-            EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), testHand->GetWager());
-            EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal(), priorBank - testHand->GetWager());
-            EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(0)->data->GetCardsTotal(), 12);
-            EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-            EXPECT_EQ(testHand->GetCardsTotal(), 12);
-            EXPECT_EQ(testHand->GetWager(), handWager);
-            EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetWager());
-            EXPECT_EQ(testShoe->GetCardsInShoe()->GetSize(), 2);
-        }
-        testHand->SetBankTotal(priorBank);
-        testHand->ResetHand();
-        dealerHand->ResetHand();
-        testShoe->EmptyShoe();
-        testShoe->CopyShoe(copyShoe);
-        handWager++;
-    }
-    // Player chooses not to split
-    {
-        deal_hand_sim(testHand, dealerHand, testShoe, handWager);
-        auto result = same_rank_check_sim(testHand, dealerHand, testShoe, false);
-        EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->GetSize(), 1);
-        EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
-        EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), testHand->GetWager());
-        EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal(), priorBank - testHand->GetWager());
-        EXPECT_EQ(std::get<0>(result)->GetPlayerHands()->RetrieveNode(0)->data->GetCardsTotal(), 12);
-        EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-        EXPECT_EQ(testHand->GetCardsTotal(), 12);
-        EXPECT_EQ(testHand->GetWager(), handWager);
-        EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetWager());
-        EXPECT_EQ(testShoe->GetCardsInShoe()->GetSize(), 2);
-    }
-    testShoe->EmptyShoe();
-    testHand->ResetHand();
-    dealerHand->ResetHand();
-    testHand->SetBankTotal(priorBank);
-    handWager = 10;
-    // Random Number Generator
-    int rankVal = random_int(1, 12);
-    int dealerFirst = random_int(1, 12);
-    int dealerSecond = random_int(1, 12);
-    // Check for splitting hand
-    testCard = std::make_shared<Card>(Ranks[rankVal], Suits[0]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[rankVal], Suits[1]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[rankVal], Suits[2]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[rankVal], Suits[3]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[dealerSecond], Suits[3]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[rankVal], Suits[2]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[dealerFirst], Suits[1]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[rankVal], Suits[0]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    copyShoe->CopyShoe(testShoe);
-    // Max hands split check
-    while (handWager < priorBank) {
-        // Player has chosen to split their hand
-        {
-            deal_hand_sim(testHand, dealerHand, testShoe, handWager);
-            EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
-            EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
-            EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-            EXPECT_EQ(testHand->GetWager(), handWager);
-            EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-            auto result = same_rank_check_sim(testHand, dealerHand, testShoe, true);
-            EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), testHand->GetPlayerHands()->GetSize());
-            // Player has split hands
-            if (testHand->GetHandsCurrentlyHeld() > 1) {
-                if (handWager <= 0.2 * priorBank) {
-                    EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 5);
-                    EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 5);
-                    for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
-                        if (i == 0) {
-                            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
-                        }
-                        else {
-                            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
-                        }
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 5);
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
-                    }
-                    EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-                    EXPECT_EQ(testHand->GetWager(), handWager);
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-                }
-                else if (handWager > 0.2 * priorBank && handWager <= 0.25 * priorBank) {
-                    EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 4);
-                    EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 4);
-                    for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
-                        if (i == 0) {
-                            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
-                        }
-                        else {
-                            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
-                        }
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 4);
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
-                    }
-                    EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-                    EXPECT_EQ(testHand->GetWager(), handWager);
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-                }
-                else if (handWager > 0.25 * priorBank && handWager <= 0.33 * priorBank) {
-                    EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 3);
-                    EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 3);
-                    for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
-                        if (i == 0) {
-                            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
-                        }
-                        else {
-                            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
-                        }
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 3);
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
-                    }
-                    EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-                    EXPECT_EQ(testHand->GetWager(), handWager);
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-                }
-                else if (handWager > 0.33 * priorBank && handWager <= 0.5 * priorBank) {
-                    EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 2);
-                    EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 2);
-                    for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
-                        if (i == 0) {
-                            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
-                        }
-                        else {
-                            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
-                        }
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 2);
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
-                    }
-                    EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-                    EXPECT_EQ(testHand->GetWager(), handWager);
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-                }
-            }
-            // Player does not have split hands
-            else {
-                EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 1);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld(), 1);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), handWager);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
-                EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
-                EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-                EXPECT_EQ(testHand->GetWager(), handWager);
-                EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-            }
-            testHand->SetBankTotal(priorBank);
-            testHand->ResetHand();
-            dealerHand->ResetHand();
-            testShoe->EmptyShoe();
-            testShoe->CopyShoe(copyShoe);
-        }
-        // Player has chosen to not split their hand
-        {
-            deal_hand_sim(testHand, dealerHand, testShoe, handWager);
-            EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
-            EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
-            EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-            EXPECT_EQ(testHand->GetWager(), handWager);
-            EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-            auto result = same_rank_check_sim(testHand, dealerHand, testShoe, false);
-            for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
-                if (i == 0) {
-                    EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
-                }
-                else {
-                    EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
-                }
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerHands()->GetSize(), 1);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 1);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld() * handWager);
-            }
-            testHand->SetBankTotal(priorBank);
-            testHand->ResetHand();
-            dealerHand->ResetHand();
-            testShoe->EmptyShoe();
-            testShoe->CopyShoe(copyShoe);
-        }
-        handWager++;
-    }
-    handWager = 10;
-    // Random Number Generator
-    rankVal = random_int(1, 12);
-    dealerFirst = random_int(1, 12);
-    dealerSecond = random_int(1, 12);
-    // Check for splitting hand
-    testCard = std::make_shared<Card>(Ranks[rankVal - 1], Suits[1]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[rankVal], Suits[2]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[rankVal], Suits[3]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[dealerSecond], Suits[3]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[rankVal], Suits[2]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[dealerFirst], Suits[1]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[rankVal], Suits[0]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    copyShoe->CopyShoe(testShoe);
-    // Max hands split check
-    while (handWager < priorBank) {
-        // Player has chosen to split their hand
-        {
-            deal_hand_sim(testHand, dealerHand, testShoe, handWager);
-            EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
-            EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
-            EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-            EXPECT_EQ(testHand->GetWager(), handWager);
-            EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-            auto result = same_rank_check_sim(testHand, dealerHand, testShoe, true);
-            EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), testHand->GetPlayerHands()->GetSize());
-            // Player has split hands
-            if (testHand->GetHandsCurrentlyHeld() > 1) {
-                if (handWager <= 0.25 * priorBank) {
-                    EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 4);
-                    EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 4);
-                    for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
-                        if (i == 0) {
-                            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
-                        }
-                        else {
-                            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
-                        }
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 4);
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
-                    }
-                    EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-                    EXPECT_EQ(testHand->GetWager(), handWager);
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-                }
-                else if (handWager > 0.25 * priorBank && handWager <= 0.33 * priorBank) {
-                    EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 3);
-                    EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 3);
-                    for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
-                        if (i == 0) {
-                            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
-                        }
-                        else {
-                            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
-                        }
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 3);
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
-                    }
-                    EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-                    EXPECT_EQ(testHand->GetWager(), handWager);
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-                }
-                else if (handWager > 0.33 * priorBank && handWager <= 0.5 * priorBank) {
-                    EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 2);
-                    EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 2);
-                    for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
-                        if (i == 0) {
-                            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
-                        }
-                        else {
-                            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
-                        }
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 2);
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
-                    }
-                    EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-                    EXPECT_EQ(testHand->GetWager(), handWager);
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-                }
-            }
-            // Player does not have split hands
-            else {
-                EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 1);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld(), 1);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), handWager);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
-                EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
-                EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-                EXPECT_EQ(testHand->GetWager(), handWager);
-                EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-            }
-            testHand->SetBankTotal(priorBank);
-            testHand->ResetHand();
-            dealerHand->ResetHand();
-            testShoe->EmptyShoe();
-            testShoe->CopyShoe(copyShoe);
-        }
-        // Player has chosen to not split their hand
-        {
-            deal_hand_sim(testHand, dealerHand, testShoe, handWager);
-            EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
-            EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
-            EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-            EXPECT_EQ(testHand->GetWager(), handWager);
-            EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-            auto result = same_rank_check_sim(testHand, dealerHand, testShoe, false);
-            for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
-                if (i == 0) {
-                    EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
-                }
-                else {
-                    EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
-                }
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerHands()->GetSize(), 1);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 1);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld() * handWager);
-            }
-            testHand->SetBankTotal(priorBank);
-            testHand->ResetHand();
-            dealerHand->ResetHand();
-            testShoe->EmptyShoe();
-            testShoe->CopyShoe(copyShoe);
-        }
-        handWager++;
-    }
-    handWager = 10;
-    // Random Number Generator
-    rankVal = random_int(1, 12);
-    dealerFirst = random_int(1, 12);
-    dealerSecond = random_int(1, 12);
-    // Check for splitting hand
-    testCard = std::make_shared<Card>(Ranks[rankVal - 1], Suits[2]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[rankVal], Suits[3]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[dealerSecond], Suits[3]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[rankVal], Suits[2]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[dealerFirst], Suits[1]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[rankVal], Suits[0]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    copyShoe->CopyShoe(testShoe);
-    // Max hands split check
-    while (handWager < priorBank) {
-        // Player has chosen to split their hand
-        {
-            deal_hand_sim(testHand, dealerHand, testShoe, handWager);
-            EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
-            EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
-            EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-            EXPECT_EQ(testHand->GetWager(), handWager);
-            EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-            auto result = same_rank_check_sim(testHand, dealerHand, testShoe, true);
-            EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), testHand->GetPlayerHands()->GetSize());
-            // Player has split hands
-            if (testHand->GetHandsCurrentlyHeld() > 1) {
-                if (handWager <= 0.33 * priorBank) {
-                    EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 3);
-                    EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 3);
-                    for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
-                        if (i == 0) {
-                            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
-                        }
-                        else {
-                            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
-                        }
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 3);
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
-                    }
-                    EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-                    EXPECT_EQ(testHand->GetWager(), handWager);
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-                }
-                else if (handWager > 0.33 * priorBank && handWager <= 0.5 * priorBank) {
-                    EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 2);
-                    EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 2);
-                    for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
-                        if (i == 0) {
-                            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
-                        }
-                        else {
-                            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
-                        }
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 2);
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
-                    }
-                    EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-                    EXPECT_EQ(testHand->GetWager(), handWager);
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-                }
-            }
-            // Player does not have split hands
-            else {
-                EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 1);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld(), 1);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), handWager);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
-                EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
-                EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-                EXPECT_EQ(testHand->GetWager(), handWager);
-                EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-            }
-            testHand->SetBankTotal(priorBank);
-            testHand->ResetHand();
-            dealerHand->ResetHand();
-            testShoe->EmptyShoe();
-            testShoe->CopyShoe(copyShoe);
-        }
-        // Player has chosen to not split their hand
-        {
-            deal_hand_sim(testHand, dealerHand, testShoe, handWager);
-            EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
-            EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
-            EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-            EXPECT_EQ(testHand->GetWager(), handWager);
-            EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-            auto result = same_rank_check_sim(testHand, dealerHand, testShoe, false);
-            for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
-                if (i == 0) {
-                    EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
-                }
-                else {
-                    EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
-                }
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerHands()->GetSize(), 1);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 1);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld() * handWager);
-            }
-            testHand->SetBankTotal(priorBank);
-            testHand->ResetHand();
-            dealerHand->ResetHand();
-            testShoe->EmptyShoe();
-            testShoe->CopyShoe(copyShoe);
-        }
-        handWager++;
-    }
-    handWager = 10;
-    // Random Number Generator
-    rankVal = random_int(1, 12);
-    dealerFirst = random_int(1, 12);
-    dealerSecond = random_int(1, 12);
-    // Check for splitting hand
-    testCard = std::make_shared<Card>(Ranks[rankVal - 1], Suits[2]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[dealerSecond], Suits[3]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[rankVal], Suits[2]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[dealerFirst], Suits[1]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[rankVal], Suits[0]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    copyShoe->CopyShoe(testShoe);
-    // Max hands split check
-    while (handWager < priorBank) {
-        // Player has chosen to split their hand
-        {
-            deal_hand_sim(testHand, dealerHand, testShoe, handWager);
-            EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
-            EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
-            EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-            EXPECT_EQ(testHand->GetWager(), handWager);
-            EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-            auto result = same_rank_check_sim(testHand, dealerHand, testShoe, true);
-            EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), testHand->GetPlayerHands()->GetSize());
-            // Player has split hands
-            if (testHand->GetHandsCurrentlyHeld() > 1) {
-                if (handWager <= 0.5 * priorBank) {
-                    EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 2);
-                    EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 2);
-                    for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
-                        if (i == 0) {
-                            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
-                        }
-                        else {
-                            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
-                        }
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 2);
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
-                    }
-                    EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-                    EXPECT_EQ(testHand->GetWager(), handWager);
-                    EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-                }
-            }
-            // Player does not have split hands
-            else {
-                EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 1);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld(), 1);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), handWager);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
-                EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
-                EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-                EXPECT_EQ(testHand->GetWager(), handWager);
-                EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-            }
-            testHand->SetBankTotal(priorBank);
-            testHand->ResetHand();
-            dealerHand->ResetHand();
-            testShoe->EmptyShoe();
-            testShoe->CopyShoe(copyShoe);
-        }
-        // Player has chosen to not split their hand
-        {
-            deal_hand_sim(testHand, dealerHand, testShoe, handWager);
-            EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
-            EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
-            EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-            EXPECT_EQ(testHand->GetWager(), handWager);
-            EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-            auto result = same_rank_check_sim(testHand, dealerHand, testShoe, false);
-            for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
-                if (i == 0) {
-                    EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
-                }
-                else {
-                    EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
-                }
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerHands()->GetSize(), 1);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 1);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld() * handWager);
-            }
-            testHand->SetBankTotal(priorBank);
-            testHand->ResetHand();
-            dealerHand->ResetHand();
-            testShoe->EmptyShoe();
-            testShoe->CopyShoe(copyShoe);
-        }
-        handWager++;
-    }
-    handWager = 10;
-    // Random Number Generator
-    rankVal = random_int(1, 12);
-    dealerFirst = random_int(1, 12);
-    dealerSecond = random_int(1, 12);
-    // Check for splitting hand
-    testCard = std::make_shared<Card>(Ranks[dealerSecond], Suits[3]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[rankVal - 1], Suits[2]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[dealerFirst], Suits[1]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    testCard = std::make_shared<Card>(Ranks[rankVal], Suits[0]);
-    testNode = testShoe->GetCardsInShoe()->InitNode(testCard);
-    testShoe->GetCardsInShoe()->AppendNode(testNode);
-    copyShoe->CopyShoe(testShoe);
-    // Max hands split check
-    while (handWager < priorBank) {
-        // Player has chosen to split their hand
-        {
-            deal_hand_sim(testHand, dealerHand, testShoe, handWager);
-            EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
-            EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
-            EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-            EXPECT_EQ(testHand->GetWager(), handWager);
-            EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-            auto result = same_rank_check_sim(testHand, dealerHand, testShoe, true);
-            EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), testHand->GetPlayerHands()->GetSize());
-            EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 1);
-            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld(), 1);
-            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
-            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), handWager);
-            EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHandsCurrentlyHeld() * handWager);
-            EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
-            EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-            EXPECT_EQ(testHand->GetWager(), handWager);
-            EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-            testHand->SetBankTotal(priorBank);
-            testHand->ResetHand();
-            dealerHand->ResetHand();
-            testShoe->EmptyShoe();
-            testShoe->CopyShoe(copyShoe);
-        }
-        // Player has chosen to not split their hand
-        {
-            deal_hand_sim(testHand, dealerHand, testShoe, handWager);
-            EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
-            EXPECT_EQ(testHand->GetHandsCurrentlyHeld(), 1);
-            EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-            EXPECT_EQ(testHand->GetWager(), handWager);
-            EXPECT_EQ(testHand->GetBankTotal(), priorBank - testHand->GetHandsCurrentlyHeld() * handWager);
-            auto result = same_rank_check_sim(testHand, dealerHand, testShoe, false);
-            for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
-                if (i == 0) {
-                    EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
-                }
-                else {
-                    EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 1);
-                }
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerHands()->GetSize(), 1);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld(), 1);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager(), handWager);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal(), priorBank - testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandsCurrentlyHeld() * handWager);
-            }
-            testHand->SetBankTotal(priorBank);
-            testHand->ResetHand();
-            dealerHand->ResetHand();
-            testShoe->EmptyShoe();
-            testShoe->CopyShoe(copyShoe);
-        }
-        handWager++;
-    }
-}
+// // Player Logic check test
+// TEST_F(test_x, PlayerLogic) {
+//     for (int i = 0; i < random_int(100, 1000); i++) {
+//         std::shared_ptr<Hand> testHand(new Hand);
+//         std::shared_ptr<Hand> dealerHand(new Hand);
+//         std::shared_ptr<Shoe> testShoe(new Shoe);
+//         std::shared_ptr<Card> testCard(new Card);
+//         std::shared_ptr<node<Card>> testNode;
+//         float priorBank = 100;
+//         float handWager = 10;
+//         testHand->NameSim("Borby");
+//         dealerHand->NameSim("Dealer");
+//         testHand->BankDepositSim(priorBank);
+//         priorBank = testHand->GetBankTotal();
+//         testShoe->SetNumOfDecks(1);
+//         testShoe->CreateShoeSim();
+//         while (testShoe->GetCardsInShoe()->GetSize() >= 13) {
+//             auto dsa_result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, handWager, false);
+//             // Neither player has blackjack
+//             if (std::get<3>(dsa_result)) {
+//                 auto pls_result = player_logic_sim(testHand, dealerHand, testShoe, true);
+//                 for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
+//                     // Player doubled down
+//                     if (testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[2][3])) {
+//                         EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][0]));
+//                         EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][3]));
+//                         EXPECT_EQ(testHand->GetBankTotal(), testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal());
+//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 3);
+//                         EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
+//                     }
+//                     // Player hit hand
+//                     else if (testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[2][4])) {
+//                         EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][0]));
+//                         EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[2][0]));
+//                         EXPECT_EQ(testHand->GetBankTotal(), testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal());
+//                         EXPECT_NE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
+//                         EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
+//                     }
+//                     // Player stood
+//                     else {
+//                         EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][0]));
+//                         EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[2][0]));
+//                         EXPECT_EQ(testHand->GetBankTotal(), testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal());
+//                         EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize() >= 2);
+//                         EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
+//                     }
+//                 }
+//             }
+//             // Someone has blackjack
+//             else {
+//                 EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][0]));
+//                 EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[2][0]));
+//                 if (testHand->GetCardsTotal() == 21) {
+//                     EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][4]));
+//                 }
+//                 else {
+//                     EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][4]));
+//                 }
+//                 if (dealerHand->GetCardsTotal() == 21) {
+//                     EXPECT_TRUE(dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]));
+//                 }
+//                 else {
+//                     EXPECT_FALSE(dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]));
+//                 }
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
+//                 EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), testHand->GetWager());
+//                 EXPECT_EQ(testHand->GetBankTotal(), testHand->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal());
+//             }
+//             testHand->ResetHand();
+//             dealerHand->ResetHand();
+//             testHand->BankDepositSim(priorBank);
+//         }
+//     }
+// }
 
-// Player Logic check test
-TEST_F(test_x, PlayerLogic) {
-    for (int i = 0; i < random_int(100, 1000); i++) {
-        std::shared_ptr<Hand> testHand(new Hand);
-        std::shared_ptr<Hand> dealerHand(new Hand);
-        std::shared_ptr<Shoe> testShoe(new Shoe);
-        std::shared_ptr<Card> testCard(new Card);
-        std::shared_ptr<node<Card>> testNode;
-        float priorBank = 100;
-        float handWager = 10;
-        testHand->NameSim("Borby");
-        dealerHand->NameSim("Dealer");
-        testHand->BankDepositSim(priorBank);
-        priorBank = testHand->GetBankTotal();
-        testShoe->SetNumOfDecks(1);
-        testShoe->CreateShoeSim();
-        while (testShoe->GetCardsInShoe()->GetSize() >= 13) {
-            auto dsa_result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, handWager, false);
-            // Neither player has blackjack
-            if (std::get<3>(dsa_result)) {
-                auto pls_result = player_logic_sim(testHand, dealerHand, testShoe, true);
-                for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
-                    // Player doubled down
-                    if (testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[2][3])) {
-                        EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][0]));
-                        EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][3]));
-                        EXPECT_EQ(testHand->GetBankTotal(), testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal());
-                        EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 3);
-                        EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
-                    }
-                    // Player hit hand
-                    else if (testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[2][4])) {
-                        EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][0]));
-                        EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[2][0]));
-                        EXPECT_EQ(testHand->GetBankTotal(), testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal());
-                        EXPECT_NE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
-                        EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
-                    }
-                    // Player stood
-                    else {
-                        EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][0]));
-                        EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[2][0]));
-                        EXPECT_EQ(testHand->GetBankTotal(), testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal());
-                        EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize() >= 2);
-                        EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
-                    }
-                }
-            }
-            // Someone has blackjack
-            else {
-                EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][0]));
-                EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[2][0]));
-                if (testHand->GetCardsTotal() == 21) {
-                    EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][4]));
-                }
-                else {
-                    EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][4]));
-                }
-                if (dealerHand->GetCardsTotal() == 21) {
-                    EXPECT_TRUE(dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]));
-                }
-                else {
-                    EXPECT_FALSE(dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]));
-                }
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
-                EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), testHand->GetWager());
-                EXPECT_EQ(testHand->GetBankTotal(), testHand->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal());
-            }
-            testHand->ResetHand();
-            dealerHand->ResetHand();
-            testHand->BankDepositSim(priorBank);
-        }
-    }
-}
+// // Dealer logic test check
+// TEST_F(test_x, DealerLogicTest) {
+//     for (int i = 0; i < random_int(100, 1000); i++) {
+//         std::shared_ptr<Hand> testHand(new Hand);
+//         std::shared_ptr<Hand> dealerHand(new Hand);
+//         std::shared_ptr<Shoe> testShoe(new Shoe);
+//         std::shared_ptr<Card> testCard(new Card);
+//         std::shared_ptr<node<Card>> testNode;
+//         float priorBank = 100;
+//         float handWager = 10;
+//         testHand->NameSim("Borby");
+//         dealerHand->NameSim("Dealer");
+//         testHand->BankDepositSim(priorBank);
+//         priorBank = testHand->GetBankTotal();
+//         testShoe->SetNumOfDecks(1);
+//         testShoe->CreateShoeSim();
+//         while (testShoe->GetCardsInShoe()->GetSize() >= 13) {
+//             auto dsa_result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, handWager, false);
+//             // Neither player has blackjack
+//             if (std::get<3>(dsa_result)) {
+//                 EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
+//                 EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//                 EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
+//                 EXPECT_TRUE(testHand->GetCardsTotal() < 21);
+//                 EXPECT_TRUE(dealerHand->GetCardsTotal() < 21);
+//                 auto pls_result = player_logic_sim(testHand, dealerHand, testShoe, true);
+//                 for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
+//                     EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize() >= 2);
+//                     EXPECT_EQ(testHand->GetBankTotal(), testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal());
+//                 }
+//                 auto dl_result = dealer_logic_sim(testHand, dealerHand, testShoe);
+//                 EXPECT_TRUE(dealerHand->GetPlayerCards()->GetSize() >= 2);
+//             }
+//             // Someone has blackjack
+//             else {
+//                 EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][0]));
+//                 EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[2][0]));
+//                 if (testHand->GetCardsTotal() == 21) {
+//                     EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][4]));
+//                 }
+//                 else {
+//                     EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][4]));
+//                 }
+//                 if (dealerHand->GetCardsTotal() == 21) {
+//                     EXPECT_TRUE(dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]));
+//                 }
+//                 else {
+//                     EXPECT_FALSE(dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]));
+//                 }
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
+//                 EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), testHand->GetWager());
+//                 EXPECT_EQ(testHand->GetBankTotal(), testHand->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal());
+//             }
+//             testHand->ResetHand();
+//             dealerHand->ResetHand();
+//             testHand->BankDepositSim(priorBank);
+//         }
+//     }
+// }
 
-// Dealer logic test check
-TEST_F(test_x, DealerLogicTest) {
-    for (int i = 0; i < random_int(100, 1000); i++) {
-        std::shared_ptr<Hand> testHand(new Hand);
-        std::shared_ptr<Hand> dealerHand(new Hand);
-        std::shared_ptr<Shoe> testShoe(new Shoe);
-        std::shared_ptr<Card> testCard(new Card);
-        std::shared_ptr<node<Card>> testNode;
-        float priorBank = 100;
-        float handWager = 10;
-        testHand->NameSim("Borby");
-        dealerHand->NameSim("Dealer");
-        testHand->BankDepositSim(priorBank);
-        priorBank = testHand->GetBankTotal();
-        testShoe->SetNumOfDecks(1);
-        testShoe->CreateShoeSim();
-        while (testShoe->GetCardsInShoe()->GetSize() >= 13) {
-            auto dsa_result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, handWager, false);
-            // Neither player has blackjack
-            if (std::get<3>(dsa_result)) {
-                EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
-                EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-                EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
-                EXPECT_TRUE(testHand->GetCardsTotal() < 21);
-                EXPECT_TRUE(dealerHand->GetCardsTotal() < 21);
-                auto pls_result = player_logic_sim(testHand, dealerHand, testShoe, true);
-                for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
-                    EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize() >= 2);
-                    EXPECT_EQ(testHand->GetBankTotal(), testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal());
-                }
-                auto dl_result = dealer_logic_sim(testHand, dealerHand, testShoe);
-                EXPECT_TRUE(dealerHand->GetPlayerCards()->GetSize() >= 2);
-            }
-            // Someone has blackjack
-            else {
-                EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][0]));
-                EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[2][0]));
-                if (testHand->GetCardsTotal() == 21) {
-                    EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][4]));
-                }
-                else {
-                    EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][4]));
-                }
-                if (dealerHand->GetCardsTotal() == 21) {
-                    EXPECT_TRUE(dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]));
-                }
-                else {
-                    EXPECT_FALSE(dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]));
-                }
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
-                EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), testHand->GetWager());
-                EXPECT_EQ(testHand->GetBankTotal(), testHand->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal());
-            }
-            testHand->ResetHand();
-            dealerHand->ResetHand();
-            testHand->BankDepositSim(priorBank);
-        }
-    }
-}
-
-// Hand comparison logic test
-TEST_F(test_x, HandComparisonLogic) {
-    for (int i = 0; i < random_int(100, 1000); i++) {
-        std::shared_ptr<Hand> testHand(new Hand);
-        std::shared_ptr<Hand> dealerHand(new Hand);
-        std::shared_ptr<Shoe> testShoe(new Shoe);
-        std::shared_ptr<Card> testCard(new Card);
-        std::shared_ptr<node<Card>> testNode;
-        float priorBank = 100;
-        float handWager = 10;
-        testHand->NameSim("Borby");
-        dealerHand->NameSim("Dealer");
-        testHand->BankDepositSim(priorBank);
-        priorBank = testHand->GetBankTotal();
-        testShoe->SetNumOfDecks(1);
-        testShoe->CreateShoeSim();
-        while (testShoe->GetCardsInShoe()->GetSize() >= 13) {
-            auto dsa_result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, handWager, false);
-            // Neither player has blackjack
-            if (std::get<3>(dsa_result)) {
-                EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
-                EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-                EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
-                EXPECT_TRUE(testHand->GetCardsTotal() < 21);
-                EXPECT_TRUE(dealerHand->GetCardsTotal() < 21);
-                auto pls_result = player_logic_sim(testHand, dealerHand, testShoe, true);
-                auto dl_result = dealer_logic_sim(testHand, dealerHand, testShoe);
-                auto hcl_result = hand_comparison_logic_sim(testHand, dealerHand);
-            }
-            // Someone has blackjack
-            else {
-                EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][0]));
-                EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[2][0]));
-                if (testHand->GetCardsTotal() == 21) {
-                    EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][4]));
-                }
-                else {
-                    EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][4]));
-                }
-                if (dealerHand->GetCardsTotal() == 21) {
-                    EXPECT_TRUE(dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]));
-                }
-                else {
-                    EXPECT_FALSE(dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]));
-                }
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
-                EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
-                EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), testHand->GetWager());
-                EXPECT_EQ(testHand->GetBankTotal(), testHand->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal());
-            }
-            testHand->ResetHand();
-            dealerHand->ResetHand();
-            testHand->BankDepositSim(priorBank);
-            // csv_generator(testHand);
-        }
-    }
-}
+// // Hand comparison logic test
+// TEST_F(test_x, HandComparisonLogic) {
+//     for (int i = 0; i < random_int(100, 1000); i++) {
+//         std::shared_ptr<Hand> testHand(new Hand);
+//         std::shared_ptr<Hand> dealerHand(new Hand);
+//         std::shared_ptr<Shoe> testShoe(new Shoe);
+//         std::shared_ptr<Card> testCard(new Card);
+//         std::shared_ptr<node<Card>> testNode;
+//         float priorBank = 100;
+//         float handWager = 10;
+//         testHand->NameSim("Borby");
+//         dealerHand->NameSim("Dealer");
+//         testHand->BankDepositSim(priorBank);
+//         priorBank = testHand->GetBankTotal();
+//         testShoe->SetNumOfDecks(1);
+//         testShoe->CreateShoeSim();
+//         while (testShoe->GetCardsInShoe()->GetSize() >= 13) {
+//             auto dsa_result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, handWager, false);
+//             // Neither player has blackjack
+//             if (std::get<3>(dsa_result)) {
+//                 EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
+//                 EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
+//                 EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
+//                 EXPECT_TRUE(testHand->GetCardsTotal() < 21);
+//                 EXPECT_TRUE(dealerHand->GetCardsTotal() < 21);
+//                 auto pls_result = player_logic_sim(testHand, dealerHand, testShoe, true);
+//                 auto dl_result = dealer_logic_sim(testHand, dealerHand, testShoe);
+//                 auto hcl_result = hand_comparison_logic_sim(testHand, dealerHand);
+//             }
+//             // Someone has blackjack
+//             else {
+//                 EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][0]));
+//                 EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[2][0]));
+//                 if (testHand->GetCardsTotal() == 21) {
+//                     EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][4]));
+//                 }
+//                 else {
+//                     EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetTableMatrix()[1][4]));
+//                 }
+//                 if (dealerHand->GetCardsTotal() == 21) {
+//                     EXPECT_TRUE(dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]));
+//                 }
+//                 else {
+//                     EXPECT_FALSE(dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]));
+//                 }
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
+//                 EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
+//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), testHand->GetWager());
+//                 EXPECT_EQ(testHand->GetBankTotal(), testHand->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal());
+//             }
+//             testHand->ResetHand();
+//             dealerHand->ResetHand();
+//             testHand->BankDepositSim(priorBank);
+//             // csv_generator(testHand);
+//         }
+//     }
+// }
