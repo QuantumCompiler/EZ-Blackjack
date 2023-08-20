@@ -4,11 +4,14 @@
 # Keep all .gitkeep files
 !.gitkeep
 
-# Ignore build director for version 2.2
+# Ignore build directory for version 2.2
 C++/Version 2.2/build/*
 
-# Ignore build director for version 2.3
+# Ignore build directory for version 2.3
 C++/Version 2.3/build/*
 
-# Ignore build director for version 2.4
+# Ignore build directory for version 2.4
 C++/Version 2.4/build/*
+
+# Ignore build directory for version 2.5
+C++/Version 2.5/build/*
