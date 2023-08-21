@@ -1015,6 +1015,105 @@ TEST_F(test_x, HandClassReset) {
     }
 }
 
+/////////////////////////////////////////
+// Player Class Tests
+/////////////////////////////////////////
+
+// Player class initialization
+TEST_F(test_x, PlayerClassInit) {
+    std::shared_ptr<Player> testPlayer(new Player());
+    EXPECT_EQ(testPlayer->GetBankTotal(), 0);
+    EXPECT_EQ(testPlayer->GetBlackjackHands(), 0);
+    EXPECT_EQ(testPlayer->GetCurrentHandsPossessed(), 0);
+    EXPECT_EQ(testPlayer->GetHandsLost(), 0);
+    EXPECT_EQ(testPlayer->GetHandsPlayed(), 0);
+    EXPECT_EQ(testPlayer->GetHandsPushed(), 0);
+    EXPECT_EQ(testPlayer->GetHandsWon(), 0);
+    EXPECT_EQ(testPlayer->GetCurrentHands()->GetSize(), 0);
+    EXPECT_EQ(testPlayer->GetTotalHandBankTotals()->GetSize(), 0);
+    EXPECT_EQ(testPlayer->GetTotalHandCardTotals()->GetSize(), 0);
+    EXPECT_EQ(testPlayer->GetTotalHandNets()->GetSize(), 0);
+    EXPECT_EQ(testPlayer->GetTotalHandsPlayed()->GetSize(), 0);
+    EXPECT_EQ(testPlayer->GetTotalHandWagers()->GetSize(), 0);
+    EXPECT_EQ(testPlayer->GetDisplayBankTotal(), "");
+    EXPECT_EQ(testPlayer->GetDisplayName(), "");
+    EXPECT_EQ(testPlayer->GetName(), "");
+}
+
+// Player class setter functions test
+TEST_F(test_x, PlayerClassSetters) {
+    // Test player
+    std::shared_ptr<Player> testPlayer(new Player());
+    // Float value tests
+    float bank = 1;
+    while (bank <= 100) {
+        testPlayer->SetBankTotal(bank);
+        EXPECT_EQ(testPlayer->GetBankTotal(), bank);
+        bank++;
+    }
+    // Integer value tests
+    for (int i = 1; i < random_int(100, 200); i++) {
+        testPlayer->SetBlackjackHands();
+        testPlayer->SetCurrentHandsPossessed();
+        testPlayer->SetHandsLost();
+        testPlayer->SetHandsPlayed();
+        testPlayer->SetHandsWon();
+        EXPECT_EQ(testPlayer->GetBlackjackHands(), i);
+        EXPECT_EQ(testPlayer->GetCurrentHandsPossessed(), i);
+        EXPECT_EQ(testPlayer->GetHandsLost(), i);
+        EXPECT_EQ(testPlayer->GetHandsPlayed(), i);
+        EXPECT_EQ(testPlayer->GetHandsWon(), i);
+    }
+    testPlayer->GetBlackjackHands() = 0;
+    testPlayer->GetCurrentHandsPossessed() = 0;
+    testPlayer->GetHandsLost() = 0;
+    testPlayer->GetHandsPlayed() = 0;
+    testPlayer->GetHandsWon() = 0;
+    // List tests
+    // Create shoe of cards
+    std::shared_ptr<Shoe> testShoe(new Shoe());
+    testShoe->SetNumOfDecks(1);
+    testShoe->CreateShoeSim();
+    // Create dummy hand
+    std::shared_ptr<Hand> testHand(new Hand());
+    testHand->HitHand(testShoe);
+    testHand->HitHand(testShoe);
+    // Add Hand to current hands
+    for (int i = 1; i <= random_int(500, 1000); i++) {
+        // Player hand tests
+        testPlayer->SetBankTotal(1000);
+        testHand->PlaceWagerSim(testPlayer->GetBankTotal(), i);
+        testHand->SetNet(testPlayer->GetBankTotal() + testHand->GetWager());
+        testPlayer->SetCurrentHands(testHand);
+        EXPECT_EQ(testPlayer->GetCurrentHands()->GetSize(), testPlayer->GetCurrentHandsPossessed());
+        EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(i - 1)->data->GetPlayerCards()->GetSize(), 2);
+        EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(i - 1)->data->GetWager(), i);
+        EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(i - 1)->data->GetNet(), testHand->GetNet());
+        // Total hand bank totals
+        testPlayer->SetTotalHandBankTotals(testPlayer->GetBankTotal());
+        EXPECT_EQ(testPlayer->GetTotalHandBankTotals()->GetSize(), i);
+        EXPECT_EQ(testPlayer->GetTotalHandBankTotals()->RetrieveNode(i - 1)->data, testPlayer->GetBankTotal());
+        // Total hand card totals
+        testPlayer->SetTotalHandCardTotals(testHand->GetCardsTotal());
+        EXPECT_EQ(testPlayer->GetTotalHandCardTotals()->GetSize(), i);
+        EXPECT_EQ(testPlayer->GetTotalHandCardTotals()->RetrieveNode(i - 1)->data, testPlayer->GetCurrentHands()->RetrieveNode(i - 1)->data->GetCardsTotal());
+        // Total hands played totals
+        testPlayer->SetTotalHandsPlayed(testPlayer->GetCurrentHands()->GetSize());
+        EXPECT_EQ(testPlayer->GetTotalHandsPlayed()->GetSize(), i);
+        EXPECT_EQ(testPlayer->GetTotalHandsPlayed()->RetrieveNode(i - 1)->data, testPlayer->GetTotalHandsPlayed()->GetSize());
+        // Total hand wager total
+        testPlayer->SetTotalHandWagers(testPlayer->GetCurrentHands()->RetrieveNode(i - 1)->data->GetWager());
+        EXPECT_EQ(testPlayer->GetTotalHandWagers()->GetSize(), i);
+        EXPECT_EQ(testPlayer->GetTotalHandWagers()->RetrieveNode(i - 1)->data, testPlayer->GetCurrentHands()->RetrieveNode(i - 1)->data->GetWager());
+    }
+    // String tests
+    std::string testName = "Borby";
+    for (int i = 0; i < random_int(500, 1000); i++) {
+        testPlayer->SetName(testName);
+        testName += 'y';
+    }
+}
+
 // /////////////////////////////////////////
 // // Core Functions Tests
 // /////////////////////////////////////////
