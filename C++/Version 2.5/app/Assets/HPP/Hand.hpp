@@ -15,7 +15,7 @@
 Hand::Hand() {
     // Object construction
     individualHand = std::make_shared<IndividualHand>();
-    individualHand->playerCards = std::make_shared<LinkedList<Card>>();
+    individualHand->PlayerCards = std::make_shared<LinkedList<Card>>();
     individualHand->hashTable = std::make_shared<HashTable>(HASTABLESIZE, HASHTABLEITERATIONS);
     // Float Values Initialization
     this->SetInsuranceWager(0);
@@ -593,9 +593,9 @@ void Hand::SetDisplayWager() {
     individualHand->displayWager = modified_input;
 }
 
-// SetPlayerCards - Mutates the private data member "playerCards" bt assigning it to "input"
+// SetPlayerCards - Mutates the private data member "PlayerCards" bt assigning it to "input"
 void Hand::SetPlayerCards(std::shared_ptr<node<Card>>& input) {
-    individualHand->playerCards->AppendNode(input);
+    individualHand->PlayerCards->AppendNode(input);
 }
 
 // ----- ----- ----- ----- ----- ----- ----- Getter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
@@ -649,7 +649,7 @@ std::string& Hand::GetDisplayWager() {
     return individualHand->displayWager;
 }
 
-// GetPlayerCards - Retrieves the private data member "playerCards"
+// GetPlayerCards - Retrieves the private data member "PlayerCards"
 std::shared_ptr<LinkedList<Card>>& Hand::GetPlayerCards() {
-    return individualHand->playerCards;
+    return individualHand->PlayerCards;
 }

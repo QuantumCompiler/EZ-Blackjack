@@ -39,7 +39,7 @@
 *       displayNet - String value that represents the modified private data member "net"
 *       displayWager - String value that represents the modified private data member "wager"
 *     List Values:
-*       playerCards - Linked list of Cards that represent a players cards
+*       PlayerCards - Linked list of Cards that represent a players cards
 */
 struct IndividualHand {
     // HashTable Filters
@@ -91,7 +91,7 @@ struct IndividualHand {
     std::string displayNet;
     std::string displayWager;
     // Lists
-    std::shared_ptr<LinkedList<Card>> playerCards;
+    std::shared_ptr<LinkedList<Card>> PlayerCards;
 };
 class Hand {
 public:
@@ -125,7 +125,7 @@ public:
     void SetDisplayNet(); // Mutates "displayNet"
     void SetDisplayWager(); // Mutates "displayWager"
     // List Values
-    void SetPlayerCards(std::shared_ptr<node<Card>>& input); // Mutates "playerCards"
+    void SetPlayerCards(std::shared_ptr<node<Card>>& input); // Mutates "PlayerCards"
     // Getter Functions
     // Table Values
     std::shared_ptr<HashTable>& GetHashTable(); // Retrieves "hashTable"
@@ -142,7 +142,7 @@ public:
     std::string& GetDisplayNet(); // Retrieves "displayNet"
     std::string& GetDisplayWager(); // Retrieves "displayWager"
     // List Values
-    std::shared_ptr<LinkedList<Card>>& GetPlayerCards(); // Retrieves "playerCards"
+    std::shared_ptr<LinkedList<Card>>& GetPlayerCards(); // Retrieves "PlayerCards"
 private:
     std::shared_ptr<IndividualHand> individualHand; // Private data member that encapsulates the IndividualHand structure
 };
