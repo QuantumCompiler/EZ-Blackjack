@@ -139,6 +139,7 @@ Player Player::ShowCurrentHand(std::shared_ptr<Hand>& inputHand, std::string opt
     std::string handTotalMod = color_text(36, "Hand Total");
     // The player is not the dealer
     if (this->GetName() != "Dealer") {
+        this->SetBankTotal(this->GetBankTotal());
         // Modify more string values
         std::string handWager = color_text(32, "Hand Wager");
         std::string bankTotal = color_text(33, "Bank Total");
