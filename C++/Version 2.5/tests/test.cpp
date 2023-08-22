@@ -1503,6 +1503,28 @@ TEST_F(test_x, PlayerClassUpdateBank) {
 // Core Functions Tests
 /////////////////////////////////////////
 
+// Deal hand test
+TEST_F(test_x, DealHand) {
+    // Create hands and shoe
+    std::shared_ptr<Player> testPlayer(new Player());
+    std::shared_ptr<Player> testDealer(new Player());
+    std::shared_ptr<Shoe> testShoe(new Shoe);
+    testPlayer->SetName("Borby");
+    testDealer->SetName("Dealer");
+    testPlayer->SetBankTotal(100);
+    float previousBank = testPlayer->GetBankTotal();
+    testShoe->SetNumOfDecks(1);
+    testShoe->CreateShoeSim();
+    int random_wager = random_int(1, 100);
+    // Test function
+    deal_hand_sim(testPlayer, testDealer, testShoe, random_wager);
+    EXPECT_EQ(testShoe->GetCardsInShoe()->GetSize(), 48);
+    EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
+    EXPECT_EQ(testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
+    EXPECT_EQ(testPlayer->GetBankTotal(), previousBank - random_wager);
+    EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager(), random_wager);
+}
+
 // // Blackjack strategy test, no duplicate ranks, no ace in hand off deal
 // TEST_F(test_x, BlackjackStrat){
 //     // Create hands and card objects
@@ -2533,27 +2555,6 @@ TEST_F(test_x, PlayerClassUpdateBank) {
 //             userHand->AddHandTotal();
 //         }
 //     }
-// }
-
-// // Deal hand test
-// TEST_F(test_x, DealHand) {
-//     // Create hands and shoe
-//     std::shared_ptr<Hand> testHand(new Hand);
-//     std::shared_ptr<Hand> dealerHand(new Hand);
-//     std::shared_ptr<Shoe> testShoe(new Shoe);
-//     testHand->SetName("Borby");
-//     dealerHand->SetName("Dealer");
-//     testHand->SetBankTotal(100);
-//     testHand->SetWager(10);
-//     testShoe->SetNumOfDecks(1);
-//     testShoe->CreateShoeSim();
-//     // Test function
-//     deal_hand_sim(testHand, dealerHand, testShoe, testHand->GetWager());
-//     EXPECT_EQ(testShoe->GetCardsInShoe()->GetSize(), 48);
-//     EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-//     EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
-//     EXPECT_EQ(testHand->GetBankTotal(), 90);
-//     EXPECT_EQ(testHand->GetWager(), 10);
 // }
 
 // // Dealer showing Ace check
