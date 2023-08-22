@@ -2,9 +2,9 @@
 #include "../Headers/Core.h"
 
 /*  Logical order of implementation of functions
-*   blackjack_strategy
 *   deal_hand
 *   dealer_showing_ace
+*   blackjack_strategy
 *   split_hand
 *   same_rank_check
 *   player_logic
@@ -865,35 +865,6 @@
 //     }
 // }
 
-// /*  row_counter - Counts the number of rows for a given column in a csv file
-// *   Input:
-// *       file - Constant string value that is passed by reference that represents the csv file that is going to be parsed
-// *   Algorithm:
-// *       * Create the return value for the number of rows that are to be counted
-// *       * Open the file, output an error if it is unable to open
-// *       * Parse the csv and count the number of rows in the file
-// *       * Close the file, return the number of rows that have been calculated
-// */
-// size_t row_counter(const std::string& file) {
-//     // Create row count variable
-//     int rowCount = 0;
-//     // Open the file
-//     std::ifstream inputFile(file);
-//     if (!inputFile.is_open()) {
-//         std::cerr << "Failed to open the file." << std::endl;
-//         return 1;
-//     }
-//     // Parse the csv and count the number of rows
-//     std::string line;
-//     while (std::getline(inputFile, line)) {
-//         rowCount++;
-//     }
-//     // Close the file
-//     inputFile.close();
-//     // Return the "rowCount" variable
-//     return rowCount;
-// }
-
 // /*  csv_generator - Generates a CSV file for the game of a player
 // *   Input:
 // *       input - Hand object passed by reference that represents the hand that is going to have a csv made of it
@@ -982,37 +953,37 @@
 // }
 
 
-// /*  deal_hand_sim - Deals cards to players and shows the hands of each player after the deal for a simulated game
-// *   Input:
-// *       playerHand - Hand object passed by reference that represents the users hand
-// *       dealerHand - Hand object passed by reference that represents the dealers hand
-// *       inputShoe - Shoe object passed by reference that represents the show of of the game
-// *       playerWager - Wafer that is to be placed for the player
-// *   Algorithm:
-// *       * Place wager for the players hand
-// *       * Deal cards to a player and dealer
-// *       * Return the Hand objects and the Shoe object
-// *   Output:
-// *       playerHand - Hand object that is modified after having cards added to it
-// *       dealerHand - Hand object that is modified after having cards added to it
-// *       inputShoe - Shoe object that is changed after having cards dealt from it
-// */
-// std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> deal_hand_sim(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& inputShoe, const float& playerWager) {
-//     // Place wager for player
-//     playerHand->PlaceWagerSim(playerWager);
-//     // Deal cards to players
-//     for (int i = 0; i < 4; i++) {
-//         if (i % 2 == 0) {
-//             playerHand->HitHand(inputShoe);
-//         }
-//         else if (i % 2 == 1) {
-//             dealerHand->HitHand(inputShoe);
-//         }
-//     }
-//     playerHand->ParametersCheck(dealerHand);
-//     dealerHand->CheckBlackJack();
-//     return std::make_tuple(playerHand, dealerHand, inputShoe);
-// }
+/*  deal_hand_sim - Deals cards to players and shows the hands of each player after the deal for a simulated game
+*   Input:
+*       inputShoe - Shoe object passed by reference that represents the show of of the game
+*       playerWager - Wafer that is to be placed for the player
+*   Algorithm:
+*       * Deal cards to a player and dealer
+*   Output:
+*       * This function does not return any values
+*/
+void deal_hand_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& inputShoe, const float& playerWager) {
+    // Create hands for players
+    std::shared_ptr<Hand> humanHand(new Hand());
+    std::shared_ptr<Hand> dealerHand(new Hand());
+    // Add hands to players
+    humanPlayer->SetCurrentHands(humanHand);
+    dealer->SetCurrentHands(dealerHand);
+    // Place wager for player
+    humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->PlaceWagerSim(humanPlayer->GetBankTotal(), playerWager);
+    // Deal cards to players
+    for (int i = 0; i < 4; i++) {
+        if (i % 2 == 0) {
+            humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->HitHand(inputShoe);
+        }
+        else if (i % 2 == 1) {
+            dealer->GetCurrentHands()->RetrieveNode(0)->data->HitHand(inputShoe);
+        }
+    }
+    // Check parameters of players
+    humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->ParametersCheck(dealerHand, humanPlayer->GetBankTotal());
+    dealer->GetCurrentHands()->RetrieveNode(0)->data->CheckBlackJack();
+}
 
 // /*  dealer_logic - Processes the logic for how the dealer should play their current hands
 // *   Input:
@@ -2407,6 +2378,34 @@
 //     pclose(plt);
 // }
 
+// /*  row_counter - Counts the number of rows for a given column in a csv file
+// *   Input:
+// *       file - Constant string value that is passed by reference that represents the csv file that is going to be parsed
+// *   Algorithm:
+// *       * Create the return value for the number of rows that are to be counted
+// *       * Open the file, output an error if it is unable to open
+// *       * Parse the csv and count the number of rows in the file
+// *       * Close the file, return the number of rows that have been calculated
+// */
+// size_t row_counter(const std::string& file) {
+//     // Create row count variable
+//     int rowCount = 0;
+//     // Open the file
+//     std::ifstream inputFile(file);
+//     if (!inputFile.is_open()) {
+//         std::cerr << "Failed to open the file." << std::endl;
+//         return 1;
+//     }
+//     // Parse the csv and count the number of rows
+//     std::string line;
+//     while (std::getline(inputFile, line)) {
+//         rowCount++;
+//     }
+//     // Close the file
+//     inputFile.close();
+//     // Return the "rowCount" variable
+//     return rowCount;
+// }
 
 // /*  same_rank_check - Checks to see if the player has the same rank in their hand and if they want to split their hand
 // *   Input:
