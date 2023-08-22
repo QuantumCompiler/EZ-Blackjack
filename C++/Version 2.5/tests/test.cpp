@@ -1114,9 +1114,394 @@ TEST_F(test_x, PlayerClassSetters) {
     }
 }
 
-// /////////////////////////////////////////
-// // Core Functions Tests
-// /////////////////////////////////////////
+// Update bank check test
+TEST_F(test_x, PlayerClassUpdateBank) {
+    // Test player
+    std::shared_ptr<Player> testPlayer(new Player());
+    testPlayer->SetName("Borby");
+    testPlayer->SetBankTotal(200);
+    float prior_bank = testPlayer->GetBankTotal();
+    // Creat shoe
+    std::shared_ptr<Shoe> testShoe(new Shoe());
+    testShoe->SetNumOfDecks(1);
+    testShoe->CreateShoeSim();
+    // Create dummy hand
+    std::shared_ptr<Hand> testHand(new Hand());
+    // Test deposit
+    for (int i = 1; i <= 100; i++) {
+        testHand->SetWager(i);
+        testPlayer->SetBankTotal(prior_bank);
+        testPlayer->UpdateBank(testHand, 0);
+        EXPECT_EQ(testPlayer->GetBankTotal(), prior_bank - testHand->GetWager());
+    }
+    // Test Win
+    for (int i = 1; i <= 100; i++) {
+        testPlayer->SetBankTotal(prior_bank);
+        testHand->PlaceWagerSim(testPlayer->GetBankTotal(), i);
+        testHand->SetNet(0);
+        testPlayer->UpdateBank(testHand, 1);
+        EXPECT_EQ(testPlayer->GetBankTotal(), prior_bank + i);
+        EXPECT_EQ(testPlayer->GetTotalHandBankTotals()->GetSize(), i);
+        EXPECT_EQ(testPlayer->GetTotalHandBankTotals()->RetrieveNode(i - 1)->data, prior_bank + i);
+        EXPECT_EQ(testPlayer->GetHandsPlayed(), i);
+        EXPECT_EQ(testPlayer->GetTotalHandsPlayed()->GetSize(), i);
+        EXPECT_EQ(testPlayer->GetTotalHandsPlayed()->RetrieveNode(i - 1)->data, i);
+        EXPECT_EQ(testHand->GetNet(), i);
+        EXPECT_EQ(testPlayer->GetTotalHandNets()->GetSize(), i);
+        EXPECT_EQ(testPlayer->GetTotalHandNets()->RetrieveNode(i - 1)->data, i);
+        EXPECT_EQ(testPlayer->GetHandsWon(), i);
+        EXPECT_EQ(testPlayer->GetHandsLost(), 0);
+        EXPECT_EQ(testPlayer->GetHandsPushed(), 0);
+        EXPECT_EQ(testPlayer->GetBlackjackHands(), 0);
+    }
+    testPlayer->SetBankTotal(prior_bank);
+    testPlayer->GetTotalHandBankTotals()->ClearList();
+    testPlayer->GetTotalHandsPlayed()->ClearList();
+    testPlayer->GetTotalHandNets()->ClearList();
+    testPlayer->GetHandsPlayed() = 0;
+    testPlayer->GetBlackjackHands() = 0;
+    testPlayer->GetHandsWon() = 0;
+    testPlayer->GetHandsLost() = 0;
+    testPlayer->GetHandsPushed() = 0;
+    // Test Lose
+    for (int i = 1; i <= 100; i++) {
+        testPlayer->SetBankTotal(prior_bank);
+        testHand->PlaceWagerSim(testPlayer->GetBankTotal(), i);
+        testHand->SetNet(0);
+        testPlayer->UpdateBank(testHand, 2);
+        EXPECT_EQ(testPlayer->GetBankTotal(), prior_bank - i);
+        EXPECT_EQ(testPlayer->GetTotalHandBankTotals()->GetSize(), i);
+        EXPECT_EQ(testPlayer->GetTotalHandBankTotals()->RetrieveNode(i - 1)->data, prior_bank - i);
+        EXPECT_EQ(testPlayer->GetHandsPlayed(), i);
+        EXPECT_EQ(testPlayer->GetTotalHandsPlayed()->GetSize(), i);
+        EXPECT_EQ(testPlayer->GetTotalHandsPlayed()->RetrieveNode(i - 1)->data, i);
+        EXPECT_EQ(testHand->GetNet(), -i);
+        EXPECT_EQ(testPlayer->GetTotalHandNets()->GetSize(), i);
+        EXPECT_EQ(testPlayer->GetTotalHandNets()->RetrieveNode(i - 1)->data, -i);
+        EXPECT_EQ(testPlayer->GetHandsWon(), 0);
+        EXPECT_EQ(testPlayer->GetHandsLost(), i);
+        EXPECT_EQ(testPlayer->GetHandsPushed(), 0);
+        EXPECT_EQ(testPlayer->GetBlackjackHands(), 0);
+    }
+    // Test Push
+    testPlayer->SetBankTotal(prior_bank);
+    testPlayer->GetTotalHandBankTotals()->ClearList();
+    testPlayer->GetTotalHandsPlayed()->ClearList();
+    testPlayer->GetTotalHandNets()->ClearList();
+    testPlayer->GetHandsPlayed() = 0;
+    testPlayer->GetBlackjackHands() = 0;
+    testPlayer->GetHandsWon() = 0;
+    testPlayer->GetHandsLost() = 0;
+    testPlayer->GetHandsPushed() = 0;
+    for (int i = 1; i <= 100; i++) {
+        testPlayer->SetBankTotal(prior_bank);
+        testHand->PlaceWagerSim(testPlayer->GetBankTotal(), i);
+        testHand->SetNet(0);
+        testPlayer->UpdateBank(testHand, 3);
+        EXPECT_EQ(testPlayer->GetBankTotal(), prior_bank);
+        EXPECT_EQ(testPlayer->GetTotalHandBankTotals()->GetSize(), i);
+        EXPECT_EQ(testPlayer->GetTotalHandBankTotals()->RetrieveNode(i - 1)->data, prior_bank);
+        EXPECT_EQ(testPlayer->GetHandsPlayed(), i);
+        EXPECT_EQ(testPlayer->GetTotalHandsPlayed()->GetSize(), i);
+        EXPECT_EQ(testPlayer->GetTotalHandsPlayed()->RetrieveNode(i - 1)->data, i);
+        EXPECT_EQ(testHand->GetNet(), 0);
+        EXPECT_EQ(testPlayer->GetTotalHandNets()->GetSize(), i);
+        EXPECT_EQ(testPlayer->GetTotalHandNets()->RetrieveNode(i - 1)->data, 0);
+        EXPECT_EQ(testPlayer->GetHandsWon(), 0);
+        EXPECT_EQ(testPlayer->GetHandsLost(), 0);
+        EXPECT_EQ(testPlayer->GetHandsPushed(), i);
+        EXPECT_EQ(testPlayer->GetBlackjackHands(), 0);
+    }
+    // Test Blackjack
+    testPlayer->SetBankTotal(prior_bank);
+    testPlayer->GetTotalHandBankTotals()->ClearList();
+    testPlayer->GetTotalHandsPlayed()->ClearList();
+    testPlayer->GetTotalHandNets()->ClearList();
+    testPlayer->GetHandsPlayed() = 0;
+    testPlayer->GetBlackjackHands() = 0;
+    testPlayer->GetHandsWon() = 0;
+    testPlayer->GetHandsLost() = 0;
+    testPlayer->GetHandsPushed() = 0;
+    for (int i = 1; i <= 100; i++) {
+        testPlayer->SetBankTotal(prior_bank);
+        testHand->PlaceWagerSim(testPlayer->GetBankTotal(), i);
+        testHand->SetNet(0);
+        testPlayer->UpdateBank(testHand, 4);
+        EXPECT_EQ(testPlayer->GetBankTotal(), prior_bank + 1.5 * i);
+        EXPECT_EQ(testPlayer->GetTotalHandBankTotals()->GetSize(), i);
+        EXPECT_EQ(testPlayer->GetTotalHandBankTotals()->RetrieveNode(i - 1)->data, prior_bank + 1.5 * i);
+        EXPECT_EQ(testPlayer->GetHandsPlayed(), i);
+        EXPECT_EQ(testPlayer->GetTotalHandsPlayed()->GetSize(), i);
+        EXPECT_EQ(testPlayer->GetTotalHandsPlayed()->RetrieveNode(i - 1)->data, i);
+        EXPECT_EQ(testHand->GetNet(), 1.5 * i);
+        EXPECT_EQ(testPlayer->GetTotalHandNets()->GetSize(), i);
+        EXPECT_EQ(testPlayer->GetTotalHandNets()->RetrieveNode(i - 1)->data, 1.5 * i);
+        EXPECT_EQ(testPlayer->GetHandsWon(), 0);
+        EXPECT_EQ(testPlayer->GetHandsLost(), 0);
+        EXPECT_EQ(testPlayer->GetHandsPushed(), 0);
+        EXPECT_EQ(testPlayer->GetBlackjackHands(), i);
+    }
+    // Test Insurance Win
+    testPlayer->SetBankTotal(prior_bank);
+    testPlayer->GetTotalHandBankTotals()->ClearList();
+    testPlayer->GetTotalHandsPlayed()->ClearList();
+    testPlayer->GetTotalHandNets()->ClearList();
+    testPlayer->GetHandsPlayed() = 0;
+    testPlayer->GetBlackjackHands() = 0;
+    testPlayer->GetHandsWon() = 0;
+    testPlayer->GetHandsLost() = 0;
+    testPlayer->GetHandsPushed() = 0;
+    for (int i = 1; i <= 100; i++) {
+        testPlayer->SetBankTotal(prior_bank);
+        testHand->PlaceWagerSim(testPlayer->GetBankTotal(), i);
+        testHand->InsuranceSim(testPlayer->GetBankTotal(), true);
+        EXPECT_EQ(testHand->GetInsuranceWager(), 0.5 * testHand->GetWager());
+        testHand->SetNet(0);
+        testPlayer->UpdateBank(testHand, 5);
+        EXPECT_EQ(testPlayer->GetBankTotal(), prior_bank);
+        EXPECT_EQ(testHand->GetNet(), 1.5 * i);
+    }
+    // Test Lose With Insurance Win
+    testPlayer->SetBankTotal(prior_bank);
+    testPlayer->GetTotalHandBankTotals()->ClearList();
+    testPlayer->GetTotalHandsPlayed()->ClearList();
+    testPlayer->GetTotalHandNets()->ClearList();
+    testPlayer->GetHandsPlayed() = 0;
+    testPlayer->GetBlackjackHands() = 0;
+    testPlayer->GetHandsWon() = 0;
+    testPlayer->GetHandsLost() = 0;
+    testPlayer->GetHandsPushed() = 0;
+    for (int i = 1; i <= 100; i++) {
+        testPlayer->SetBankTotal(prior_bank);
+        testHand->PlaceWagerSim(testPlayer->GetBankTotal(), i);
+        testHand->InsuranceSim(testPlayer->GetBankTotal(), true);
+        EXPECT_EQ(testHand->GetInsuranceWager(), 0.5 * testHand->GetWager());
+        testHand->SetNet(0);
+        testPlayer->UpdateBank(testHand, 5);
+        EXPECT_EQ(testPlayer->GetBankTotal(), prior_bank);
+        EXPECT_EQ(testHand->GetNet(), 1.5 * i);
+        {
+            testPlayer->UpdateBank(testHand, 2);
+            EXPECT_EQ(testPlayer->GetBankTotal(), prior_bank);
+            EXPECT_EQ(testPlayer->GetTotalHandBankTotals()->GetSize(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandBankTotals()->RetrieveNode(i - 1)->data, prior_bank);
+            EXPECT_EQ(testPlayer->GetHandsPlayed(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandsPlayed()->GetSize(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandsPlayed()->RetrieveNode(i - 1)->data, i);
+            EXPECT_EQ(testHand->GetNet(), 0);
+            EXPECT_EQ(testPlayer->GetTotalHandNets()->GetSize(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandNets()->RetrieveNode(i - 1)->data, 0);
+            EXPECT_EQ(testPlayer->GetHandsWon(), 0);
+            EXPECT_EQ(testPlayer->GetHandsLost(), i);
+            EXPECT_EQ(testPlayer->GetHandsPushed(), 0);
+            EXPECT_EQ(testPlayer->GetBlackjackHands(), 0);
+        }
+    }
+    testPlayer->SetBankTotal(prior_bank);
+    testPlayer->GetTotalHandBankTotals()->ClearList();
+    testPlayer->GetTotalHandsPlayed()->ClearList();
+    testPlayer->GetTotalHandNets()->ClearList();
+    testPlayer->GetHandsPlayed() = 0;
+    testPlayer->GetBlackjackHands() = 0;
+    testPlayer->GetHandsWon() = 0;
+    testPlayer->GetHandsLost() = 0;
+    testPlayer->GetHandsPushed() = 0;
+    // Test Push With Insurance Win
+    for (int i = 1; i <= 100; i++) {
+        testPlayer->SetBankTotal(prior_bank);
+        testHand->PlaceWagerSim(testPlayer->GetBankTotal(), i);
+        testHand->InsuranceSim(testPlayer->GetBankTotal(), true);
+        EXPECT_EQ(testHand->GetInsuranceWager(), 0.5 * testHand->GetWager());
+        testHand->SetNet(0);
+        testPlayer->UpdateBank(testHand, 5);
+        EXPECT_EQ(testPlayer->GetBankTotal(), prior_bank);
+        EXPECT_EQ(testHand->GetNet(), 1.5 * i);
+        {
+            testPlayer->UpdateBank(testHand, 3);
+            EXPECT_EQ(testPlayer->GetBankTotal(), prior_bank + i);
+            EXPECT_EQ(testPlayer->GetTotalHandBankTotals()->GetSize(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandBankTotals()->RetrieveNode(i - 1)->data, prior_bank + i);
+            EXPECT_EQ(testPlayer->GetHandsPlayed(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandsPlayed()->GetSize(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandsPlayed()->RetrieveNode(i - 1)->data, i);
+            EXPECT_EQ(testHand->GetNet(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandNets()->GetSize(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandNets()->RetrieveNode(i - 1)->data, i);
+            EXPECT_EQ(testPlayer->GetHandsWon(), 0);
+            EXPECT_EQ(testPlayer->GetHandsLost(), 0);
+            EXPECT_EQ(testPlayer->GetHandsPushed(), i);
+            EXPECT_EQ(testPlayer->GetBlackjackHands(), 0);
+        }
+    }
+    testPlayer->SetBankTotal(prior_bank);
+    testPlayer->GetTotalHandBankTotals()->ClearList();
+    testPlayer->GetTotalHandsPlayed()->ClearList();
+    testPlayer->GetTotalHandNets()->ClearList();
+    testPlayer->GetHandsPlayed() = 0;
+    testPlayer->GetBlackjackHands() = 0;
+    testPlayer->GetHandsWon() = 0;
+    testPlayer->GetHandsLost() = 0;
+    testPlayer->GetHandsPushed() = 0;
+    // Test Insurance Loss
+    for (int i = 1; i <= 100; i++) {
+        testPlayer->SetBankTotal(prior_bank);
+        testHand->PlaceWagerSim(testPlayer->GetBankTotal(), i);
+        testHand->InsuranceSim(testPlayer->GetBankTotal(), true);
+        EXPECT_EQ(testHand->GetInsuranceWager(), 0.5 * testHand->GetWager());
+        testHand->SetNet(0);
+        testPlayer->UpdateBank(testHand, 6);
+        EXPECT_EQ(testPlayer->GetBankTotal(), prior_bank -1.5 * i);
+        EXPECT_EQ(testHand->GetNet(), -0.5 * i);
+    }
+    testPlayer->SetBankTotal(prior_bank);
+    testPlayer->GetTotalHandBankTotals()->ClearList();
+    testPlayer->GetTotalHandsPlayed()->ClearList();
+    testPlayer->GetTotalHandNets()->ClearList();
+    testPlayer->GetHandsPlayed() = 0;
+    testPlayer->GetBlackjackHands() = 0;
+    testPlayer->GetHandsWon() = 0;
+    testPlayer->GetHandsLost() = 0;
+    testPlayer->GetHandsPushed() = 0;
+    // Test Win With Insurance Loss
+    for (int i = 1; i <= 100; i++) {
+        testPlayer->SetBankTotal(prior_bank);
+        testHand->PlaceWagerSim(testPlayer->GetBankTotal(), i);
+        testHand->InsuranceSim(testPlayer->GetBankTotal(), true);
+        EXPECT_EQ(testHand->GetInsuranceWager(), 0.5 * testHand->GetWager());
+        testHand->SetNet(0);
+        testPlayer->UpdateBank(testHand, 6);
+        EXPECT_EQ(testPlayer->GetBankTotal(), prior_bank -1.5 * i);
+        EXPECT_EQ(testHand->GetNet(), -0.5 * i);
+        {
+            testPlayer->UpdateBank(testHand, 1);
+            EXPECT_EQ(testPlayer->GetBankTotal(), prior_bank + 0.5 * i);
+            EXPECT_EQ(testPlayer->GetTotalHandBankTotals()->GetSize(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandBankTotals()->RetrieveNode(i - 1)->data, prior_bank + 0.5 * i);
+            EXPECT_EQ(testPlayer->GetHandsPlayed(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandsPlayed()->GetSize(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandsPlayed()->RetrieveNode(i - 1)->data, i);
+            EXPECT_EQ(testHand->GetNet(), 0.5 * i);
+            EXPECT_EQ(testPlayer->GetTotalHandNets()->GetSize(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandNets()->RetrieveNode(i - 1)->data, 0.5 * i);
+            EXPECT_EQ(testPlayer->GetHandsWon(), i);
+            EXPECT_EQ(testPlayer->GetHandsLost(), 0);
+            EXPECT_EQ(testPlayer->GetHandsPushed(), 0);
+            EXPECT_EQ(testPlayer->GetBlackjackHands(), 0);
+        }
+    }
+    testPlayer->SetBankTotal(prior_bank);
+    testPlayer->GetTotalHandBankTotals()->ClearList();
+    testPlayer->GetTotalHandsPlayed()->ClearList();
+    testPlayer->GetTotalHandNets()->ClearList();
+    testPlayer->GetHandsPlayed() = 0;
+    testPlayer->GetBlackjackHands() = 0;
+    testPlayer->GetHandsWon() = 0;
+    testPlayer->GetHandsLost() = 0;
+    testPlayer->GetHandsPushed() = 0;
+    // Test Lose With Insurance Loss
+    for (int i = 1; i <= 100; i++) {
+        testPlayer->SetBankTotal(prior_bank);
+        testHand->PlaceWagerSim(testPlayer->GetBankTotal(), i);
+        testHand->InsuranceSim(testPlayer->GetBankTotal(), true);
+        EXPECT_EQ(testHand->GetInsuranceWager(), 0.5 * testHand->GetWager());
+        testHand->SetNet(0);
+        testPlayer->UpdateBank(testHand, 6);
+        EXPECT_EQ(testPlayer->GetBankTotal(), prior_bank -1.5 * i);
+        EXPECT_EQ(testHand->GetNet(), -0.5 * i);
+        {
+            testPlayer->UpdateBank(testHand, 2);
+            EXPECT_EQ(testPlayer->GetBankTotal(), prior_bank - 1.5 * i);
+            EXPECT_EQ(testPlayer->GetTotalHandBankTotals()->GetSize(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandBankTotals()->RetrieveNode(i - 1)->data, prior_bank - 1.5 * i);
+            EXPECT_EQ(testPlayer->GetHandsPlayed(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandsPlayed()->GetSize(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandsPlayed()->RetrieveNode(i - 1)->data, i);
+            EXPECT_EQ(testHand->GetNet(), -1.5 * i);
+            EXPECT_EQ(testPlayer->GetTotalHandNets()->GetSize(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandNets()->RetrieveNode(i - 1)->data, -1.5 * i);
+            EXPECT_EQ(testPlayer->GetHandsWon(), 0);
+            EXPECT_EQ(testPlayer->GetHandsLost(), i);
+            EXPECT_EQ(testPlayer->GetHandsPushed(), 0);
+            EXPECT_EQ(testPlayer->GetBlackjackHands(), 0);
+        }
+    }
+    testPlayer->SetBankTotal(prior_bank);
+    testPlayer->GetTotalHandBankTotals()->ClearList();
+    testPlayer->GetTotalHandsPlayed()->ClearList();
+    testPlayer->GetTotalHandNets()->ClearList();
+    testPlayer->GetHandsPlayed() = 0;
+    testPlayer->GetBlackjackHands() = 0;
+    testPlayer->GetHandsWon() = 0;
+    testPlayer->GetHandsLost() = 0;
+    testPlayer->GetHandsPushed() = 0;
+    // Test Push With Insurance Loss
+    for (int i = 1; i <= 100; i++) {
+        testPlayer->SetBankTotal(prior_bank);
+        testHand->PlaceWagerSim(testPlayer->GetBankTotal(), i);
+        testHand->InsuranceSim(testPlayer->GetBankTotal(), true);
+        EXPECT_EQ(testHand->GetInsuranceWager(), 0.5 * testHand->GetWager());
+        testHand->SetNet(0);
+        testPlayer->UpdateBank(testHand, 6);
+        EXPECT_EQ(testPlayer->GetBankTotal(), prior_bank -1.5 * i);
+        EXPECT_EQ(testHand->GetNet(), -0.5 * i);
+        {
+            testPlayer->UpdateBank(testHand, 3);
+            EXPECT_EQ(testPlayer->GetBankTotal(), prior_bank - 0.5 * i);
+            EXPECT_EQ(testPlayer->GetTotalHandBankTotals()->GetSize(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandBankTotals()->RetrieveNode(i - 1)->data, prior_bank - 0.5 * i);
+            EXPECT_EQ(testPlayer->GetHandsPlayed(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandsPlayed()->GetSize(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandsPlayed()->RetrieveNode(i - 1)->data, i);
+            EXPECT_EQ(testHand->GetNet(), -0.5 * i);
+            EXPECT_EQ(testPlayer->GetTotalHandNets()->GetSize(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandNets()->RetrieveNode(i - 1)->data, -0.5 * i);
+            EXPECT_EQ(testPlayer->GetHandsWon(), 0);
+            EXPECT_EQ(testPlayer->GetHandsLost(), 0);
+            EXPECT_EQ(testPlayer->GetHandsPushed(), i);
+            EXPECT_EQ(testPlayer->GetBlackjackHands(), 0);
+        }
+    }
+    testPlayer->SetBankTotal(prior_bank);
+    testPlayer->GetTotalHandBankTotals()->ClearList();
+    testPlayer->GetTotalHandsPlayed()->ClearList();
+    testPlayer->GetTotalHandNets()->ClearList();
+    testPlayer->GetHandsPlayed() = 0;
+    testPlayer->GetBlackjackHands() = 0;
+    testPlayer->GetHandsWon() = 0;
+    testPlayer->GetHandsLost() = 0;
+    testPlayer->GetHandsPushed() = 0;
+    // Test Blackjack With Insurance Loss
+    for (int i = 1; i <= 100; i++) {
+        testPlayer->SetBankTotal(prior_bank);
+        testHand->PlaceWagerSim(testPlayer->GetBankTotal(), i);
+        testHand->InsuranceSim(testPlayer->GetBankTotal(), true);
+        EXPECT_EQ(testHand->GetInsuranceWager(), 0.5 * testHand->GetWager());
+        testHand->SetNet(0);
+        testPlayer->UpdateBank(testHand, 6);
+        EXPECT_EQ(testPlayer->GetBankTotal(), prior_bank -1.5 * i);
+        EXPECT_EQ(testHand->GetNet(), -0.5 * i);
+        {
+            testPlayer->UpdateBank(testHand, 4);
+            EXPECT_EQ(testPlayer->GetBankTotal(), prior_bank);
+            EXPECT_EQ(testPlayer->GetTotalHandBankTotals()->GetSize(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandBankTotals()->RetrieveNode(i - 1)->data, prior_bank);
+            EXPECT_EQ(testPlayer->GetHandsPlayed(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandsPlayed()->GetSize(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandsPlayed()->RetrieveNode(i - 1)->data, i);
+            EXPECT_EQ(testHand->GetNet(), 0);
+            EXPECT_EQ(testPlayer->GetTotalHandNets()->GetSize(), i);
+            EXPECT_EQ(testPlayer->GetTotalHandNets()->RetrieveNode(i - 1)->data, 0);
+            EXPECT_EQ(testPlayer->GetHandsWon(), 0);
+            EXPECT_EQ(testPlayer->GetHandsLost(), 0);
+            EXPECT_EQ(testPlayer->GetHandsPushed(), 0);
+            EXPECT_EQ(testPlayer->GetBlackjackHands(), i);
+        }
+    }
+}
+
+/////////////////////////////////////////
+// Core Functions Tests
+/////////////////////////////////////////
 
 // // Blackjack strategy test, no duplicate ranks, no ace in hand off deal
 // TEST_F(test_x, BlackjackStrat){
