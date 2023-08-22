@@ -202,11 +202,14 @@ Player Player::ShowCurrentHand(std::shared_ptr<Hand>& inputHand, std::string opt
 *           * 3 - Player pushes hand
 *           * 4 - Player wins blackjack
 *           * 5 - Player wins insurance
+*           * 6 - Player loses insurance
 *   Output:
 *       This function returns a Hand object after updating the players bank
 */
 Player Player::UpdateBank(std::shared_ptr<Hand>& inputHand, const int choice) {
     float prior_bank = this->GetBankTotal();
+    // Only necessary if a player previously won insurance bet
+    float insurance_net = inputHand->GetNet();
     switch (choice) {
     // 0 - Player withdraws money from bank (places wager)
     case 0:
@@ -214,36 +217,91 @@ Player Player::UpdateBank(std::shared_ptr<Hand>& inputHand, const int choice) {
         return *this;
     // 1 - Player wins hand
     case 1:
+        // Update hands won and hands played
         this->SetHandsWon();
         this->SetHandsPlayed();
-        this->SetBankTotal(prior_bank + (2.0 * inputHand->GetWager()));
-        inputHand->SetNet(inputHand->GetNet() + (this->GetBankTotal() - (prior_bank + inputHand->GetWager())));
+        // Player loses insurance, update net and bank
+        if (insurance_net < 0) {
+            inputHand->SetNet(inputHand->GetWager() + insurance_net);
+            this->SetBankTotal(prior_bank + 2 * inputHand->GetWager());
+        }
+        // Player did not place insurance, update net and bank
+        else {
+            inputHand->SetNet(inputHand->GetWager());
+            this->SetBankTotal(prior_bank + 2 * inputHand->GetWager());
+        }
+        // Update lists
+        this->SetTotalHandsPlayed(this->GetHandsPlayed());
+        this->SetTotalHandNets(inputHand->GetNet());
+        this->SetTotalHandBankTotals(this->GetBankTotal());
         return *this;
     // 2 - Player loses hand
     case 2:
+        // Update hands lost and hands played
         this->SetHandsLost();
         this->SetHandsPlayed();
-        this->SetBankTotal(prior_bank);
-        inputHand->SetNet(inputHand->GetNet() + (this->GetBankTotal() - (prior_bank + inputHand->GetWager())));
+        // Player has won insurance, update net and bank
+        if (insurance_net > 0) {
+            inputHand->SetNet(0);
+            this->SetBankTotal(prior_bank);
+        }
+        // Player did not place insurance or has lost insurance, update net and bank
+        else {
+            inputHand->SetNet(insurance_net - inputHand->GetWager());
+            this->SetBankTotal(prior_bank);
+        }
+        this->SetTotalHandsPlayed(this->GetHandsPlayed());
+        this->SetTotalHandNets(inputHand->GetNet());
+        this->SetTotalHandBankTotals(this->GetBankTotal());
         return *this;
     // 3 - Player pushes hand
     case 3:
+        // Update hands pushed and hands played
         this->SetHandsPushed();
         this->SetHandsPlayed();
-        this->SetBankTotal(prior_bank + inputHand->GetWager());
-        inputHand->SetNet(inputHand->GetNet() + (this->GetBankTotal() - (prior_bank + inputHand->GetWager())));
+        // Player has won insurance, update net and bank
+        if (insurance_net > 0) {
+            inputHand->SetNet(inputHand->GetWager());
+            this->SetBankTotal(prior_bank + inputHand->GetWager());
+        }
+        // Player did not place insurance or has lost insurance, update net and bank
+        else {
+            inputHand->SetNet(insurance_net);
+            this->SetBankTotal(prior_bank + inputHand->GetWager());
+        }
+        this->SetTotalHandsPlayed(this->GetHandsPlayed());
+        this->SetTotalHandNets(inputHand->GetNet());
+        this->SetTotalHandBankTotals(this->GetBankTotal());
         return *this;
     // 4 - Player wins blackjack
     case 4:
         this->SetBlackjackHands();
         this->SetHandsPlayed();
-        this->SetBankTotal(prior_bank + inputHand->GetWager() + (1.5 * inputHand->GetWager()));
-        inputHand->SetNet(inputHand->GetNet() + (this->GetBankTotal() - (prior_bank + inputHand->GetWager())));
+        // Player loses insurance, update net and bank
+        if (insurance_net < 0) {
+            inputHand->SetNet(0);
+            this->SetBankTotal(prior_bank + 1.5 * inputHand->GetWager());
+        }
+        // Player did not place insurance, update net and bank
+        else {
+            inputHand->SetNet(1.5 * inputHand->GetWager());
+            this->SetBankTotal(prior_bank + 2.5 * inputHand->GetWager());
+        }
+        this->SetTotalHandsPlayed(this->GetHandsPlayed());
+        this->SetTotalHandNets(inputHand->GetNet());
+        this->SetTotalHandBankTotals(this->GetBankTotal());
         return *this;
     // 5 - Player wins insurance
     case 5:
-        this->SetBankTotal(prior_bank + (3 * inputHand->GetWager()));
-        inputHand->SetNet(inputHand->GetNet() + (this->GetBankTotal() - (prior_bank + inputHand->GetWager())));
+        // Update net and bank
+        inputHand->SetNet(3 * inputHand->GetInsuranceWager());
+        this->SetBankTotal(prior_bank + (3 * inputHand->GetInsuranceWager()));
+        return *this;
+    // 6 - Player loses insurance
+    case 6:
+        // Update net and bank
+        inputHand->SetNet(-inputHand->GetInsuranceWager());
+        this->SetBankTotal(prior_bank);
         return *this;
     default:
         return *this;
