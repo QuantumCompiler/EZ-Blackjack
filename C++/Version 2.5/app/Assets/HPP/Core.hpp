@@ -955,12 +955,18 @@
 
 /*  deal_hand_sim - Deals cards to players and shows the hands of each player after the deal for a simulated game
 *   Input:
+*       humanPlayer - Player object that is passed by reference that represents a human player in a simulated game
+*       dealer - Player object that is passed by reference that represents a dealer in a simulated game
 *       inputShoe - Shoe object passed by reference that represents the show of of the game
 *       playerWager - Wafer that is to be placed for the player
 *   Algorithm:
-*       * Deal cards to a player and dealer
+*       * Create hands for the players
+*       * Add the hands to the player objects
+*       * Place the wager for the player
+*       * Deal cards to the players
+*       * Check for parameters in the players hand's
 *   Output:
-*       * This function does not return any values
+*       This function does not return any values
 */
 void deal_hand_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& inputShoe, const float& playerWager) {
     // Create hands for players
@@ -982,7 +988,7 @@ void deal_hand_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>
     }
     // Check parameters of players
     humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->ParametersCheck(dealerHand, humanPlayer->GetBankTotal());
-    dealer->GetCurrentHands()->RetrieveNode(0)->data->CheckBlackJack();
+    dealer->GetCurrentHands()->RetrieveNode(0)->data->ParametersCheck(dealerHand, 0);
 }
 
 // /*  dealer_logic - Processes the logic for how the dealer should play their current hands
@@ -1279,117 +1285,104 @@ void deal_hand_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>
 //     return std::make_tuple(playerHand, dealerHand, inputShoe, hand_continue);
 // }
 
-// /*  dealer_showing_ace_sim - Checks to see if the dealer is showing an Ace and if a player has blackjack or not for a simulated hand
-// *   Input:
-// *       playerHand - Hand object passed by reference that represents the user's hand
-// *       dealerHand - Hand object passed by reference that represents the dealer's hand
-// *       inputShoe - Shoe object passed by reference that represents the shoe that is being played with
-// *       playerWager - Float value that represents the player wager that is to be placed
-// *       buyInsurance - Boolean value that represents if insurance is to be purchased if possible
-// *   Algorithm:
-// *       * Deal hands to the players with the "deal_hand_sim" function
-// *       * Create a boolean value "hand_continue" that keeps track if a hand is to be continued
-// *       * Proceed to check if the player is able to buy insurance (This is done with the "ParametersCheck" function in "deal_hand")
-// *       * Place insurance wager if chosen to do so
-// *       * The "hand_continue" boolean value is updated for each case, depending on what the scenario is
-// *       * Return values at the end of the if else statements
-// *   Output:
-// *       playerHand - Modified Hand object after checking for below cases that represents the players hand
-// *       dealerHand - Hand object that represents the dealers hand after checking cases
-// *       inputShoe - Shoe object that represents the game shoe that is being played with
-// */
-// std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>, bool> dealer_showing_ace_sim(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& inputShoe, const float playerWager, const bool buyInsurance) {
-//     // Deal hands to player
-//     deal_hand_sim(playerHand, dealerHand, inputShoe, playerWager);
-//     std::shared_ptr<node<std::shared_ptr<Hand>>> insertHand = playerHand->GetPlayerHands()->InitNode(playerHand);
-//     // Define "hand_continue" boolean value to true
-//     bool hand_continue = true;
-//     // Player can buy insurance
-//     if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][0])) {
-//         playerHand->InsuranceSim(buyInsurance);
-//         // Both players have blackjack, hand ends
-//         if (dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]) && playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[1][4])) {
-//             if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][4])) {
-//                 playerHand->UpdateBank(3, playerHand->GetWager());
-//                 playerHand->UpdateBank(5, playerHand->GetInsuranceWager());
-//             }
-//             else {
-//                 playerHand->UpdateBank(3, playerHand->GetWager());
-//             }
-//             insertHand->data->CopyVariables(playerHand);
-//             playerHand->SetPlayerHands(insertHand);
-//             hand_continue = false;
-//             stats_tracker(playerHand);
-//         }
-//         // Dealer has blackjack, player does not, hand ends
-//         else if (dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]) && !playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[1][4])) {
-//             if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][4])) {
-//                 playerHand->UpdateBank(2, playerHand->GetWager());
-//                 playerHand->UpdateBank(5, playerHand->GetInsuranceWager());
-//             }
-//             else {
-//                 playerHand->UpdateBank(2, playerHand->GetWager());
-//             }
-//             insertHand->data->CopyVariables(playerHand);
-//             playerHand->SetPlayerHands(insertHand);
-//             hand_continue = false;
-//             stats_tracker(playerHand);
-//         }
-//         // Dealer does not have blackjack, player does, hand ends
-//         else if (!dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]) && playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[1][4])) {
-//             if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][4])) {
-//                 playerHand->UpdateBank(4, playerHand->GetWager());
-//                 playerHand->UpdateBank(2, playerHand->GetInsuranceWager());
-//             }
-//             else {
-//                 playerHand->UpdateBank(4, playerHand->GetWager());
-//             }
-//             insertHand->data->CopyVariables(playerHand);
-//             playerHand->SetPlayerHands(insertHand);
-//             hand_continue = false;
-//             stats_tracker(playerHand);
-//         }
-//         // Neither player has blackjack, hand continues
-//         else {
-//             if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][4])) {
-//                 playerHand->UpdateBank(2, playerHand->GetInsuranceWager());
-//             }
-//             hand_continue = true;
-//         }
-//     }
-//     // Player is not able to buy insurance
-//     else {
-//         // Both players have blackjack, hand ends
-//         if (dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]) && playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[1][4])) {
-//             playerHand->UpdateBank(3, playerHand->GetWager());
-//             insertHand->data->CopyVariables(playerHand);
-//             playerHand->SetPlayerHands(insertHand);
-//             hand_continue = false;
-//             stats_tracker(playerHand);
-//         }
-//         // Dealer has blackjack, player does not, hand ends
-//         else if (dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]) && !playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[1][4])) {
-//             playerHand->UpdateBank(2, playerHand->GetWager());
-//             insertHand->data->CopyVariables(playerHand);
-//             playerHand->SetPlayerHands(insertHand);
-//             hand_continue = false;
-//             stats_tracker(playerHand);
-//         }
-//         // Dealer does not have blackjack, player does, hand ends
-//         else if (!dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4]) && playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[1][4])) {
-//             playerHand->UpdateBank(4, playerHand->GetWager());
-//             insertHand->data->CopyVariables(playerHand);
-//             playerHand->SetPlayerHands(insertHand);
-//             hand_continue = false;
-//             stats_tracker(playerHand);
-//         }
-//         // Neither player has blackjack, hand continues
-//         else {
-//             hand_continue = true;
-//         }
-//     }
-//     return std::make_tuple(playerHand, dealerHand, inputShoe, hand_continue);
-// }
+/*  dealer_showing_ace_sim - Checks to see if the dealer is showing an Ace and if a player has blackjack or not for a simulated hand
+*   Input:
+*       playerHand - Hand object passed by reference that represents the user's hand
+*       dealerHand - Hand object passed by reference that represents the dealer's hand
+*       inputShoe - Shoe object passed by reference that represents the shoe that is being played with
+*       playerWager - Float value that represents the player wager that is to be placed
+*       buyInsurance - Boolean value that represents if insurance is to be purchased if possible
+*   Algorithm:
+*       * Deal hands to the players with the "deal_hand_sim" function
+*   Output:
+*       hand_continue - Boolean value that represents if a hand is to be continued
+*/
+bool dealer_showing_ace_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& inputShoe, const float playerWager, const bool buyInsurance) {
+    // Deal hands to player
+    deal_hand_sim(humanPlayer, dealer, inputShoe, playerWager);
+    // Define "hand_continue" boolean value to true
+    bool hand_continue = true;
+    // Define other boolean value
+    bool player_can_buy_insurance = humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetTableMatrix()[0][0]);
+    bool dealer_has_blackjack = dealer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(dealer->GetCurrentHands()->RetrieveNode(0)->data->GetTableMatrix()[1][4]);
+    bool player_has_blackjack = humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetTableMatrix()[1][4]);
+    bool player_bought_insurance = humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetTableMatrix()[0][4]);
+    // Player can buy insurance
+    if (player_can_buy_insurance) {
+        humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->InsuranceSim(humanPlayer->GetBankTotal(), buyInsurance);
+        player_bought_insurance = humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetTableMatrix()[0][4]);
+        // Both players have blackjack, hand ends
+        if (dealer_has_blackjack && player_has_blackjack) { 
+            // Player bought insurance
+            if (player_bought_insurance) {
+                humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 5);
+                humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 3);
+            }
+            // Player did not buy insurance
+            else {
+                humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 3);
+            }
+            // Hand continue false
+            hand_continue = false;
+        }
+        // Dealer has blackjack, player does not, hand ends
+        else if (dealer_has_blackjack && !player_has_blackjack) {
+            // Player bought insurance
+            if (player_bought_insurance) {
+                humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 5);
+                humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 2);
+            // Player did not buy insurance
+            }
+            else {
+                humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 2);
+            }
+            hand_continue = false;
+        }
+        // Dealer does not have blackjack, player does, hand ends
+        else if (!dealer_has_blackjack && player_has_blackjack) {
+            // Player bought insurance
+            if (player_bought_insurance) {
+                humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 6);
+                humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 4);
+            }
+            // Player did not buy insurance
+            else {
+                humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 4);
+            }
+            hand_continue = false;
+        }
+        // Neither player has blackjack, hand continues
+        else {
+            if (player_bought_insurance) {
+                humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 6);
+            }
+            hand_continue = true;
+        }
+    }
+    // Player is not able to buy insurance
+    else {
+        // Both players have blackjack, hand ends
+        if (dealer_has_blackjack && player_has_blackjack) {
+            humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 3);
+            hand_continue = false;
+        }
+        // Dealer has blackjack, player does not, hand ends
+        else if (dealer_has_blackjack && !player_has_blackjack) {
+            humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 2);
+            hand_continue = false;
+        }
+        // Dealer does not have blackjack, player does, hand ends
+        else if (!dealer_has_blackjack && player_has_blackjack) {
+            humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 4);
+            hand_continue = false;
+        }
+        // Neither player has blackjack, hand continues
+        else {
+            hand_continue = true;
+        }
+    }
+    return hand_continue;
+}
 
 // /*  game_logic - Processes the logic required for a single hand of blackjack amongst players and dealer
 // *   Input:
