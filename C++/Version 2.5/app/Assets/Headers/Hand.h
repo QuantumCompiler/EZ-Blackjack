@@ -72,12 +72,6 @@ struct IndividualHand {
         {hasHit, paramInHand, sameParamInHand, shouldDoubleDown, shouldHit},
         {shouldSplit, shouldStand, softSeventeen, splitAcesResponse, splitHandResponse}
     };
-    // std::vector<std::vector<std::string>> tableMatrix2 = {
-    //     {canBuyInsurance, canDoubleDown, canSplitAces, canSplitHand, choseBuyInsurance},
-    //     {choseDoubleDown, choseSplitAces, choseSplitHand, doubleDownResponse, hasBlackjack},
-    //     {hasHit, paramInHand, sameParamInHand, shouldDoubleDown, shouldHit},
-    //     {shouldSplit, shouldStand, softSeventeen, splitAcesResponse, splitHandResponse}
-    // };
     // Float Values
     float bankTotal;
     float insuranceWager;
