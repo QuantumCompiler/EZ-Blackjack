@@ -1315,8 +1315,7 @@ bool dealer_showing_ace_sim(std::shared_ptr<Player>& humanPlayer, std::shared_pt
         if (dealer_has_blackjack && player_has_blackjack) { 
             // Player bought insurance
             if (player_bought_insurance) {
-                humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 5);
-                humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 3);
+                humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 8);
             }
             // Player did not buy insurance
             else {
@@ -1329,8 +1328,7 @@ bool dealer_showing_ace_sim(std::shared_ptr<Player>& humanPlayer, std::shared_pt
         else if (dealer_has_blackjack && !player_has_blackjack) {
             // Player bought insurance
             if (player_bought_insurance) {
-                humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 5);
-                humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 2);
+                humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 6);
             // Player did not buy insurance
             }
             else {
@@ -1342,8 +1340,7 @@ bool dealer_showing_ace_sim(std::shared_ptr<Player>& humanPlayer, std::shared_pt
         else if (!dealer_has_blackjack && player_has_blackjack) {
             // Player bought insurance
             if (player_bought_insurance) {
-                humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 6);
-                humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 4);
+                humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 9);
             }
             // Player did not buy insurance
             else {
@@ -1353,9 +1350,6 @@ bool dealer_showing_ace_sim(std::shared_ptr<Player>& humanPlayer, std::shared_pt
         }
         // Neither player has blackjack, hand continues
         else {
-            if (player_bought_insurance) {
-                humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 6);
-            }
             hand_continue = true;
         }
     }
