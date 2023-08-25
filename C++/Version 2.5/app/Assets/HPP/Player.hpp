@@ -218,7 +218,7 @@ Player Player::UpdateBank(std::shared_ptr<Hand>& inputHand, const int choice) {
     switch (choice) {
     // 0 - Player withdraws money from bank (places wager)
     case 0:
-        this->SetBankTotal(this->GetBankTotal() - inputHand->GetWager());
+        this->SetBankTotal(this->GetBankTotal() - (inputHand->GetWager() - inputHand->GetInsuranceWager()));
         return *this;
     // 1 - Player wins hand
     case 1:
