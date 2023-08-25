@@ -3,7 +3,7 @@
 #define CORE_H
 #include "../HPP/Player.hpp"
 
-// void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, bool showStrategy, bool splitOverride); // Strategy for how to play blackjack
+void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Hand>& playerHand, std::shared_ptr<Player>& dealer, bool showStrategy, bool splitOverride); // Strategy for how to play blackjack
 // std::string csv_generator(std::shared_ptr<Hand>& input); // Generates a csv of the statistics for a game
 // std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> deal_hand(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& inputShoe); // Deals a hand to a player and dealer
 void deal_hand_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& inputShoe, const float& playerWager); // Deals a hand to a player and dealer in a simulated game
@@ -21,10 +21,9 @@ bool dealer_showing_ace_sim(std::shared_ptr<Player>& humanPlayer, std::shared_pt
 // void plot(const std::string& file, int yColumn); // Plots a bar chart from a csv file
 // size_t row_counter(const std::string& file, size_t columnIndex);
 // std::tuple<std::vector<std::shared_ptr<Hand>>, std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>, int> same_rank_check(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& shoe); // Checks for the same rank of a player
-// std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> same_rank_check_sim(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& shoe, bool splitChoice); // Checks for the same rank of a player
+void same_rank_check_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& shoe, bool splitChoice); // Checks for the same rank of a player
 // void simulate_game(); // Provides a simulated game for a player
-// std::vector<std::shared_ptr<Hand>> split_hand(std::shared_ptr<Hand>& input); // Splits the hand of a player
-// void split_hand_sim(std::shared_ptr<Hand>& input); // Splits the hand of a player for a simulated hand
+void split_hand(std::shared_ptr<Player>& humanPlayer); // Splits the hand of a player for a simulated hand
 // void stats_tracker(std::shared_ptr<Hand>& input); // Updates the statistics for a game
 
 #endif

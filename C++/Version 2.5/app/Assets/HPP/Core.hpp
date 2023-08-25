@@ -14,856 +14,857 @@
 *   play_game
 */
 
-// /*  blackjack_strategy - Provides a strategy for players on what is the best way to play a given hand in blackjack
-// *   Input:
-// *       playerHand - Hand object that is passed by reference that represents the hand of a user
-// *       dealerHand - Hand object that is passed by reference that represents the hand of a dealer
-// *       showStrategy - Boolean value that indicates if hints will be shown to a player
-// *       splitOverride - Boolean value that indicates if a split strategy is to be bypassed
-// *   Algorithm:
-// *       * Check the parameters of the hand "playerHand"
-// *       * Check if the player has a an Ace in their hand and if they have duplicate ranks in their hand
-// *       * Create template `should' statements that are output to terminal for certain conditions
-// *       * Process the logical steps for the following three scenarios:
-// *           * Player has duplicate ranks in their hand, is able to split, and has not spoken on whether they want to split ye
-// *           * Player is dealt and Ace and currently has two cards
-// *           * Any other scenario that doesn't match the above two
-// *   Output:
-// *       This function does not output any values, in modifies specific boolean values of "playerHand" and outputs a message to terminal
-// */
-// void blackjack_strategy(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, bool showStrategy, bool splitOverride) { 
-//     // Remove "paramInHand" if present
-//     if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[2][1])) {
-//         playerHand->GetHashTable()->RemoveElement(playerHand->GetTableMatrix()[2][1]);
-//     }
-//     // Remove "sameParamInHand" if present
-//     if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[2][2])) {
-//         playerHand->GetHashTable()->RemoveElement(playerHand->GetTableMatrix()[2][2]);
-//     }
-//     // Check the parameters of "playerHand"
-//     playerHand->ParametersCheck(dealerHand);
-//     // Check if "playerHand" has the same rank or if they have an Ace in their hand
-//     playerHand->CheckParamInHand("R", Ranks[0]);
-//     playerHand->CheckSameParamInHand("R");
-//     // Player `should' statements
-//     std::string should_double_down = "Blackjack strategy suggests that " + playerHand->GetDisplayName() + " should " + color_text(31, "double down") + ".";
-//     std::string should_double_down_or_hit = "Blackjack strategy suggests that " + playerHand->GetDisplayName() + " should " + color_text(31, "hit") + " or " + color_text(31, "double down") + ".";
-//     std::string should_double_down_or_stand = "Blackjack strategy suggests that " + playerHand->GetDisplayName() + " should " + color_text(31, "stand") + " or " + color_text(31, "double down") + ".";
-//     std::string should_hit = "Blackjack strategy suggests that " + playerHand->GetDisplayName() + " should " + color_text(31, "hit") + ".";
-//     std::string should_split = "Blackjack strategy suggests that " + playerHand->GetDisplayName() + " should " + color_text(31, "split") + ".";
-//     std::string should_split_or_hit = "Blackjack strategy suggests that " + playerHand->GetDisplayName() + " should " + color_text(31, "hit") + " or " + color_text(31, "split") + ".";
-//     std::string should_stand = "Blackjack strategy suggests that " + playerHand->GetDisplayName() + " should " + color_text(31, "stand") + ".";
-//     // Logic for if a player is dealt the same rank and only two cards are in the hand with them having not decided if they want to split or not
-//     if (((playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][3]) && !playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[3][4])) 
-//         || (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][2]) && !playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[3][3]))) 
-//         && playerHand->GetPlayerCards()->GetSize() == 2 && !splitOverride) {
-//         // Check value of players cards
-//         switch (playerHand->GetCardsTotal()) {
-//             // Player card total is 4 (two, two) or 6 (three, three)
-//             case 4:
-//             case 6:
-//                 // Checking the value of the card that is face up of the dealer
-//                 switch (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
-//                     // Dealer is showing a two or three
-//                     case 2:
-//                     case 3:
-//                         // Player should split or hit
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][0]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_split_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         }
-//                         break;
-//                     // Dealer is showing a 4, 5, 6 or 7
-//                     case 4:
-//                     case 5:
-//                     case 6:
-//                     case 7:
-//                         // Player should split
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][0]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         }
-//                         break;
-//                     case 8:
-//                     case 9:
-//                     case 10:
-//                     case 1:
-//                     case 11:
-//                         // Player should hit
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         }
-//                         break;
-//                     default:
-//                         break;
-//                 }
-//                 break;
-//             // Player card total is 8 (four, four)
-//             case 8:
-//                 // Checking the value of the card that is face up of the dealer
-//                 switch (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
-//                     // Dealer is showing a 5 or 6
-//                     case 5:
-//                     case 6:
-//                         // Player should split or hit
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][0]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_split_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         }
-//                         break;
-//                     case 2:
-//                     case 3:
-//                     case 4:
-//                     case 7:
-//                     case 8:
-//                     case 9:
-//                     case 10:
-//                     case 1:
-//                     case 11:
-//                         // Player should hit
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         }
-//                         break;
-//                     default:
-//                         break;
-//                 }
-//                 break;
-//             // Player card total is 10 (five, five)
-//             case 10:
-//                 // Checking the value of the card that is face up of the dealer
-//                 switch (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
-//                     // Dealer is showing a Face or an Ace
-//                     case 10:
-//                     case 1:
-//                     case 11:
-//                         // Player should hit
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         }
-//                         break;
-//                     // Otherwise
-//                     case 2:
-//                     case 3:
-//                     case 4:
-//                     case 5:
-//                     case 6:
-//                     case 7:
-//                     case 8:
-//                     case 9:
-//                         // Player can double down
-//                         if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][3]);
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                             if (showStrategy) {
-//                                 std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             }
-//                         }
-//                         // Player cannot double down
-//                         else {
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                             if (showStrategy) {
-//                                 std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             }
-//                         }
-//                         break;
-//                     default:
-//                         break;
-//                 }
-//                 break;
-//             // Player card total is 12 (six, six || Ace, Ace) 
-//             case 12:
-//                 // Player has Aces
-//                 if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[2][1])) {
-//                     // Checking the value of the card that is face up of the dealer
-//                     switch (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
-//                         // Dealer is showing any card
-//                         case 2:
-//                         case 3:
-//                         case 4:
-//                         case 5:
-//                         case 6:
-//                         case 7:
-//                         case 8:
-//                         case 9:
-//                         case 10:
-//                         case 1:
-//                         case 11:
-//                             // Player should split
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][0]);
-//                             if (showStrategy) {
-//                                 std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             }
-//                             break;
-//                         default:
-//                             break;
-//                     }
-//                 }
-//                 // Player has sixes
-//                 else {
-//                     // Checking the value of the card that is face up of the dealer
-//                     switch (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
-//                         // Dealer is showing a 7
-//                         case 7:
-//                             // Player should split or hit
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][0]);
-//                             if (showStrategy) {
-//                                 std::cout << std::endl << should_split_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             }
-//                             break;
-//                         case 2:
-//                         case 3:
-//                         case 4:
-//                         case 5:
-//                         case 6:
-//                             // Player should split
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][0]);
-//                             if (showStrategy) {
-//                                 std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             }
-//                             break;
-//                         case 8:
-//                         case 9:
-//                         case 10:
-//                         case 1:
-//                         case 11:
-//                             // Player should hit
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                             if (showStrategy) {
-//                                 std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             }
-//                             break;
-//                         default:
-//                             break;
-//                     }
-//                 }
-//                 break;
-//             // Player has a 14
-//             case 14:
-//                 // Checking the value of the card that is face up of the dealer
-//                 switch (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
-//                     // Dealer is showing an 8
-//                     case 8:
-//                         // Player should split or hit
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][0]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_split_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         }
-//                         break;
-//                     // Dealer is showing a 2 - 7
-//                     case 2:
-//                     case 3:
-//                     case 4:
-//                     case 5:
-//                     case 6:
-//                     case 7:
-//                         // Player should split
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][0]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         }
-//                         break;
-//                     // Otherwise
-//                     case 9:
-//                     case 10:
-//                     case 1:
-//                     case 11:
-//                         // Player should hit
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         }
-//                         break;
-//                     default:
-//                         break;
-//                 }
-//                 break;
-//             // Player card total is 16 (eight, eight)
-//             case 16:
-//                 // Checking the value of the card that is face up of the dealer
-//                 switch (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
-//                     // Dealer is showing any card
-//                     case 2:
-//                     case 3:
-//                     case 4:
-//                     case 5:
-//                     case 6:
-//                     case 7:
-//                     case 8:
-//                     case 9:
-//                     case 10:
-//                     case 1:
-//                     case 11:
-//                         // Player should split
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][0]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         }          
-//                         break;
-//                     default:
-//                         break;
-//                 }
-//                 break;
-//             // Player card total is 18 (nine, nine)
-//             case 18:
-//                 // Checking the value of the card that is face up of the dealer
-//                 switch (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
-//                     // Dealer is showing a 7, Face, or Ace
-//                     case 7:
-//                     case 10:
-//                     case 1:
-//                     case 11:
-//                         // Player should stand
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][1]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP); 
-//                         }
-//                         break;
-//                     // Otherwise
-//                     case 2:
-//                     case 3:
-//                     case 4:
-//                     case 5:
-//                     case 6:
-//                     case 8:
-//                     case 9:
-//                         // Player should split
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][0]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         }
-//                         break;
-//                     default:
-//                         break;
-//                 }
-//                 break;
-//             // Player card total is 20 (face, face)
-//             case 20:
-//                 // Checking the value of the card that is face up of the dealer
-//                 switch (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
-//                     // Dealer is showing any card
-//                     case 2:
-//                     case 3:
-//                     case 4:
-//                     case 5:
-//                     case 6:
-//                     case 7:
-//                     case 8:
-//                     case 9:
-//                     case 10:
-//                     case 1:
-//                     case 11:
-//                         // Player should stand
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][1]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP); 
-//                         }
-//                         break;
-//                     default:
-//                         break;
-//                 }
-//                 break;
-//             default:
-//                 break;
-//         }
-//     }
-//     // Logic for if a player is dealt an Ace and only two cards are in the hand
-//     else if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[2][1]) && !playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[2][2]) && playerHand->GetPlayerCards()->GetSize() == 2) {
-//         // Check value of players cards
-//         switch (playerHand->GetCardsTotal()) {
-//             // Player card total is 13 or 14 (Ace, 2 || Ace, 3)
-//             case 13:
-//             case 14:
-//                 // Checking the value of the card that is face up of the dealer
-//                 switch (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
-//                     // Dealer is showing 5 or 6
-//                     case 5:
-//                     case 6:
-//                         // Player can double down
-//                         if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
-//                             // Player should double down or hit
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][3]);
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                             if (showStrategy) {
-//                                 std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             }
-//                         }
-//                         // Player cannot double down
-//                         else {
-//                             // Player should hit
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                             if (showStrategy) {
-//                                 std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             }
-//                         }
-//                         break;
-//                     // Dealer is showing 2 - 4 or 7 - Face or Ace
-//                     case 2:
-//                     case 3:
-//                     case 4:
-//                     case 7:
-//                     case 8:
-//                     case 9:
-//                     case 10:
-//                     case 11:
-//                     case 1:
-//                         // Player should hit
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         }
-//                         break;
-//                     default:
-//                         break;
-//                 }
-//                 break;
-//             // Player card total is 15 or 16 (Ace, 4 || Ace, 5)
-//             case 15:
-//             case 16:
-//                 // Checking the value of the card that is face up of the dealer
-//                 switch (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
-//                     // Dealer is showing a 4, 5, or 6
-//                     case 4:
-//                     case 5:
-//                     case 6:
-//                         // Player can double down
-//                         if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
-//                             // Player should double down or hit
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][3]);
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                             if (showStrategy) {
-//                                 std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             }
-//                         }
-//                         // Player cannot double down
-//                         else {
-//                             // Player should hit
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                             if (showStrategy) {
-//                                 std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             }
-//                         }              
-//                         break;
-//                     // Otherwise
-//                     case 2:
-//                     case 3:
-//                     case 7:
-//                     case 8:
-//                     case 9:
-//                     case 10:
-//                     case 1:
-//                     case 11:
-//                         // Player should hit
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         }
-//                         break;
-//                     default:
-//                         break;
-//                 }
-//                 break;
-//             // Player card total is 17 (Ace, 6)
-//             case 17:
-//                 // Checking the value of the card that is face up of the dealer
-//                 switch (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
-//                     // Dealer is showing a 3, 4, 5, or 6
-//                     case 3:
-//                     case 4:
-//                     case 5:
-//                     case 6:
-//                         // Player can double down
-//                         if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
-//                             // Player should double down or hit
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][3]);
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                             if (showStrategy) {
-//                                 std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             }
-//                         }
-//                         // Player cannot double down
-//                         else {
-//                             // Player should hit
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                             if (showStrategy) {
-//                                 std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             }
-//                         }
-//                         break;
-//                     // Otherwise
-//                     case 2:
-//                     case 7:
-//                     case 8:
-//                     case 9:
-//                     case 10:
-//                     case 1:
-//                     case 11:
-//                         // Player should hit
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         }
-//                         break;
-//                     default:
-//                         break;
-//                 }
-//                 break;
-//             // Player card total is 18 (Ace, 7)
-//             case 18:
-//                 // Checking the value of the card that is face up of the dealer
-//                 switch (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
-//                     // Dealer is showing a 2, 7, or 8
-//                     case 2:
-//                     case 7:
-//                     case 8:
-//                         // Player should stand
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][1]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP); 
-//                         }
-//                         break;
-//                     // Dealer is showing a 3, 4, 5, or 6
-//                     case 3:
-//                     case 4:
-//                     case 5:
-//                     case 6:
-//                         // Player can double down
-//                         if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
-//                             // Player should double down or stand
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][3]);
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][1]);
-//                             if (showStrategy) {
-//                                 std::cout << std::endl << should_double_down_or_stand << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             }
-//                         }
-//                         else {
-//                             // Player should stand
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][1]);
-//                             if (showStrategy) {
-//                                 std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             }
-//                         }
-//                         break;
-//                     // Dealer is showing 9, Face, or Ace
-//                     case 9:
-//                     case 10:
-//                     case 1:
-//                     case 11:
-//                         // Player should hit
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         }
-//                         break;
-//                     default:
-//                         break;
-//                 }
-//                 break;
-//             // Player card total is 19, 20, or 21 (Ace, 8 || Ace, 9 || Ace, Ten)
-//             case 19:
-//             case 20:
-//             case 21:
-//                 // Checking the value of the card that is face up of the dealer
-//                 switch (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
-//                     // Dealer is showing any card
-//                     case 2:
-//                     case 3:
-//                     case 4:
-//                     case 5:
-//                     case 6:
-//                     case 7:
-//                     case 8:
-//                     case 9:
-//                     case 10:
-//                     case 1:
-//                     case 11:
-//                         // Player should stand
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][1]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         } 
-//                         break;
-//                     default:
-//                         break;
-//                 }
-//                 break;
-//             default:
-//                 break;
-//         }
-//     }
-//     // Logic for all other scenarios
-//     else {
-//         // Check value of players cards
-//         switch (playerHand->GetCardsTotal()) {
-//             // Player card total is 4-8
-//             case 4:
-//             case 5:
-//             case 6:
-//             case 7:
-//             case 8:
-//                 // Checking the value of the card that is face up of the dealer
-//                 switch (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
-//                     // Dealer is showing any card
-//                     case 1:
-//                     case 2:
-//                     case 3:
-//                     case 4:
-//                     case 5:
-//                     case 6:
-//                     case 7:
-//                     case 8:
-//                     case 9:
-//                     case 10:
-//                     case 11:
-//                         // Player should hit
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         }
-//                         break;
-//                     default:
-//                         break;
-//                 }
-//                 break;
-//             // Player card total is 9
-//             case 9:
-//                 // Checking the value of the card that is face up of the dealer
-//                 switch (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
-//                     // Dealer is showing 2-6
-//                     case 2:
-//                     case 3:
-//                     case 4:
-//                     case 5:
-//                     case 6:
-//                         // Player can double down
-//                         if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
-//                             // Player should double down or hit
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][3]);
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                             if (showStrategy) {
-//                                 std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             }
-//                         }
-//                         // Player cannot double down
-//                         else {
-//                             // Player should hit
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                             if (showStrategy) {
-//                                 std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             }
-//                         }
-//                         break;
-//                     // Dealer is showing 7-Face or Ace
-//                     case 7:
-//                     case 8:
-//                     case 9:
-//                     case 10:
-//                     case 11:
-//                     case 1:
-//                         // Player should hit
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         }
-//                         break;
-//                     default:
-//                         break;
-//                 }
-//                 break;
-//             // Player card total is 10
-//             case 10:
-//                 // Checking the value of the card that is face up of the dealer
-//                 switch (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
-//                     // Dealer is showing 2-9
-//                     case 2:
-//                     case 3:
-//                     case 4:
-//                     case 5:
-//                     case 6:
-//                     case 7:
-//                     case 8:
-//                     case 9:
-//                         // Player can double down
-//                         if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
-//                             // Player should double down or hit
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][3]);
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                             if (showStrategy) {
-//                                 std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             }
-//                         }
-//                         // Player cannot double down
-//                         else {
-//                             // Player should hit
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                             if (showStrategy) {
-//                                 std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             }
-//                         }
-//                         break;
-//                     // Dealer is showing a face card or Ace
-//                     case 10:
-//                     case 11:
-//                     case 1:
-//                         // Player should hit
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         }
-//                         break;
-//                     default:
-//                         break;
-//                 }
-//                 break;
-//             // Player card total is 11
-//             case 11:
-//                 // Checking the value of the card that is face up of the dealer
-//                 switch (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
-//                     // Dealer is showing any card
-//                     case 1:
-//                     case 2:
-//                     case 3:
-//                     case 4:
-//                     case 5:
-//                     case 6:
-//                     case 7:
-//                     case 8:
-//                     case 9:
-//                     case 10:
-//                     case 11:
-//                         // Player can double down
-//                         if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
-//                             // Player should double down or hit
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][3]);
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                             if (showStrategy) {
-//                                 std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             }
-//                         }
-//                         // Player cannot double down
-//                         else {
-//                             // Player should hit
-//                             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                             if (showStrategy) {
-//                                 std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             }
-//                         }
-//                         break;
-//                     default:
-//                         break;
-//                 }
-//                 break;
-//             // Player card total is 12
-//             case 12:
-//                 // Checking the value of the card that is face up of the dealer
-//                 switch (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
-//                     // Dealer is showing a 2,3 or 7-Face or Ace
-//                     case 2:
-//                     case 3:
-//                     case 7:
-//                     case 8:
-//                     case 9:
-//                     case 10:
-//                     case 1:
-//                     case 11:
-//                         // Player should hit
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         }
-//                         break;
-//                     // Dealer is showing a 4-6
-//                     case 4:
-//                     case 5:
-//                     case 6:
-//                         // Player should stand
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][1]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         }
-//                         break;
-//                     default:
-//                         break;
-//                 }
-//                 break;
-//             // Player card total is 13 through 16
-//             case 13:
-//             case 14:
-//             case 15:
-//             case 16:
-//                 // Checking the value of the card that is face up of the dealer
-//                 switch (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
-//                     // Dealer is showing 2-6
-//                     case 2:
-//                     case 3:
-//                     case 4:
-//                     case 5:
-//                     case 6:
-//                         // Player should stand
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][1]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         }
-//                         break;
-//                     // Dealer is showing 7-Face or Ace
-//                     case 7:
-//                     case 8:
-//                     case 9:
-//                     case 10:
-//                     case 1:
-//                     case 11:
-//                         // Player should hit
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         }
-//                         break;
-//                     default:
-//                         break;
-//                 }
-//                 break;
-//             // Player card total is 17 through 21
-//             case 17:
-//             case 18:
-//             case 19:
-//             case 20:
-//             case 21:
-//                 // Checking the value of the card that is face up of the dealer
-//                 switch (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
-//                     // Dealer is showing any card
-//                     case 2:
-//                     case 3:
-//                     case 4:
-//                     case 5:
-//                     case 6:
-//                     case 7:
-//                     case 8:
-//                     case 9:
-//                     case 10:
-//                     case 1:
-//                     case 11:
-//                         // Player should stand
-//                         playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][1]);
-//                         if (showStrategy) {
-//                             std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP); 
-//                         }
-//                         break;
-//                     default:
-//                         break;
-//                 }
-//                 break;
-//             default:
-//                 break;
-//         }
-//     }
-// }
+/*  blackjack_strategy - Provides a strategy for players on what is the best way to play a given hand in blackjack
+*   Input:
+*       humanPlayer - Player object that is passed by reference that represents a non dealer player
+*       playerHand - Hand object that represents the specific hand that is to be examined for the player
+*       dealer - Player object that represents the dealer of the game that hands are to be checked against
+*       showStrategy - Boolean value that represents if a the blackjack strategy is to be shown
+*       splitOverride - Boolean value that represents if the split check is to be overriden
+*   Algorithm:
+*       * Check the parameters of the hand "playerHand"
+*       * Check if the player has a an Ace in their hand and if they have duplicate ranks in their hand
+*       * Create template `should' statements that are output to terminal for certain conditions
+*       * Process the logical steps for the following three scenarios:
+*           * Player has duplicate ranks in their hand, is able to split, and has not spoken on whether they want to split ye
+*           * Player is dealt and Ace and currently has two cards
+*           * Any other scenario that doesn't match the above two
+*   Output:
+*       This function does not output any values, in modifies specific boolean values of "playerHand" and outputs a message to terminal
+*/
+void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Hand>& playerHand, std::shared_ptr<Player>& dealer, bool showStrategy, bool splitOverride) { 
+    // Remove "paramInHand" if present
+    if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[2][1])) {
+        playerHand->GetHashTable()->RemoveElement(playerHand->GetTableMatrix()[2][1]);
+    }
+    // Remove "sameParamInHand" if present
+    if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[2][2])) {
+        playerHand->GetHashTable()->RemoveElement(playerHand->GetTableMatrix()[2][2]);
+    }
+    // Check the parameters of the player
+    playerHand->ParametersCheck(dealer->GetCurrentHands()->RetrieveNode(0)->data, humanPlayer->GetBankTotal());
+    // Check if "playerHand" has the same rank or if they have an Ace in their hand
+    playerHand->CheckParamInHand("R", Ranks[0]);
+    playerHand->CheckSameParamInHand("R");
+    // Player `should' statements
+    std::string should_double_down = "Blackjack strategy suggests that " + humanPlayer->GetDisplayName() + " should " + color_text(31, "double down") + ".";
+    std::string should_double_down_or_hit = "Blackjack strategy suggests that " + humanPlayer->GetDisplayName() + " should " + color_text(31, "hit") + " or " + color_text(31, "double down") + ".";
+    std::string should_double_down_or_stand = "Blackjack strategy suggests that " + humanPlayer->GetDisplayName() + " should " + color_text(31, "stand") + " or " + color_text(31, "double down") + ".";
+    std::string should_hit = "Blackjack strategy suggests that " + humanPlayer->GetDisplayName() + " should " + color_text(31, "hit") + ".";
+    std::string should_split = "Blackjack strategy suggests that " + humanPlayer->GetDisplayName() + " should " + color_text(31, "split") + ".";
+    std::string should_split_or_hit = "Blackjack strategy suggests that " + humanPlayer->GetDisplayName() + " should " + color_text(31, "hit") + " or " + color_text(31, "split") + ".";
+    std::string should_stand = "Blackjack strategy suggests that " + humanPlayer->GetDisplayName() + " should " + color_text(31, "stand") + ".";
+    // Logic for if a player is dealt the same rank and only two cards are in the hand with them having not decided if they want to split or not
+    if (((playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][3]) && !playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[3][4])) 
+        || (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][2]) && !playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[3][3]))) 
+        && playerHand->GetPlayerCards()->GetSize() == 2 && !splitOverride) {
+        // Check value of players cards
+        switch (playerHand->GetCardsTotal()) {
+            // Player card total is 4 (two, two) or 6 (three, three)
+            case 4:
+            case 6:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
+                    // Dealer is showing a two or three
+                    case 2:
+                    case 3:
+                        // Player should split or hit
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][0]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_split_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
+                        break;
+                    // Dealer is showing a 4, 5, 6 or 7
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                        // Player should split
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][0]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
+                        break;
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 1:
+                    case 11:
+                        // Player should hit
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            // Player card total is 8 (four, four)
+            case 8:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
+                    // Dealer is showing a 5 or 6
+                    case 5:
+                    case 6:
+                        // Player should split or hit
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][0]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_split_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
+                        break;
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 1:
+                    case 11:
+                        // Player should hit
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            // Player card total is 10 (five, five)
+            case 10:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
+                    // Dealer is showing a Face or an Ace
+                    case 10:
+                    case 1:
+                    case 11:
+                        // Player should hit
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
+                        break;
+                    // Otherwise
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8:
+                    case 9:
+                        // Player can double down
+                        if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][3]);
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
+                        }
+                        // Player cannot double down
+                        else {
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            // Player card total is 12 (six, six || Ace, Ace) 
+            case 12:
+                // Player has Aces
+                if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[2][1])) {
+                    // Checking the value of the card that is face up of the dealer
+                    switch (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
+                        // Dealer is showing any card
+                        case 2:
+                        case 3:
+                        case 4:
+                        case 5:
+                        case 6:
+                        case 7:
+                        case 8:
+                        case 9:
+                        case 10:
+                        case 1:
+                        case 11:
+                            // Player should split
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][0]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                // Player has sixes
+                else {
+                    // Checking the value of the card that is face up of the dealer
+                    switch (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
+                        // Dealer is showing a 7
+                        case 7:
+                            // Player should split or hit
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][0]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_split_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
+                            break;
+                        case 2:
+                        case 3:
+                        case 4:
+                        case 5:
+                        case 6:
+                            // Player should split
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][0]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
+                            break;
+                        case 8:
+                        case 9:
+                        case 10:
+                        case 1:
+                        case 11:
+                            // Player should hit
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                break;
+            // Player has a 14
+            case 14:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
+                    // Dealer is showing an 8
+                    case 8:
+                        // Player should split or hit
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][0]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_split_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
+                        break;
+                    // Dealer is showing a 2 - 7
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                        // Player should split
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][0]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
+                        break;
+                    // Otherwise
+                    case 9:
+                    case 10:
+                    case 1:
+                    case 11:
+                        // Player should hit
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            // Player card total is 16 (eight, eight)
+            case 16:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
+                    // Dealer is showing any card
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 1:
+                    case 11:
+                        // Player should split
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][0]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }          
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            // Player card total is 18 (nine, nine)
+            case 18:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
+                    // Dealer is showing a 7, Face, or Ace
+                    case 7:
+                    case 10:
+                    case 1:
+                    case 11:
+                        // Player should stand
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][1]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP); 
+                        }
+                        break;
+                    // Otherwise
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 8:
+                    case 9:
+                        // Player should split
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][0]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_split << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            // Player card total is 20 (face, face)
+            case 20:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
+                    // Dealer is showing any card
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 1:
+                    case 11:
+                        // Player should stand
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][1]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP); 
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    // Logic for if a player is dealt an Ace and only two cards are in the hand
+    else if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[2][1]) && !playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[2][2]) && playerHand->GetPlayerCards()->GetSize() == 2) {
+        // Check value of players cards
+        switch (playerHand->GetCardsTotal()) {
+            // Player card total is 13 or 14 (Ace, 2 || Ace, 3)
+            case 13:
+            case 14:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
+                    // Dealer is showing 5 or 6
+                    case 5:
+                    case 6:
+                        // Player can double down
+                        if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
+                            // Player should double down or hit
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][3]);
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
+                        }
+                        // Player cannot double down
+                        else {
+                            // Player should hit
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
+                        }
+                        break;
+                    // Dealer is showing 2 - 4 or 7 - Face or Ace
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 11:
+                    case 1:
+                        // Player should hit
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            // Player card total is 15 or 16 (Ace, 4 || Ace, 5)
+            case 15:
+            case 16:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
+                    // Dealer is showing a 4, 5, or 6
+                    case 4:
+                    case 5:
+                    case 6:
+                        // Player can double down
+                        if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
+                            // Player should double down or hit
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][3]);
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
+                        }
+                        // Player cannot double down
+                        else {
+                            // Player should hit
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
+                        }              
+                        break;
+                    // Otherwise
+                    case 2:
+                    case 3:
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 1:
+                    case 11:
+                        // Player should hit
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            // Player card total is 17 (Ace, 6)
+            case 17:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
+                    // Dealer is showing a 3, 4, 5, or 6
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                        // Player can double down
+                        if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
+                            // Player should double down or hit
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][3]);
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
+                        }
+                        // Player cannot double down
+                        else {
+                            // Player should hit
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
+                        }
+                        break;
+                    // Otherwise
+                    case 2:
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 1:
+                    case 11:
+                        // Player should hit
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            // Player card total is 18 (Ace, 7)
+            case 18:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
+                    // Dealer is showing a 2, 7, or 8
+                    case 2:
+                    case 7:
+                    case 8:
+                        // Player should stand
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][1]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP); 
+                        }
+                        break;
+                    // Dealer is showing a 3, 4, 5, or 6
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                        // Player can double down
+                        if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
+                            // Player should double down or stand
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][3]);
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][1]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_double_down_or_stand << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
+                        }
+                        else {
+                            // Player should stand
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][1]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
+                        }
+                        break;
+                    // Dealer is showing 9, Face, or Ace
+                    case 9:
+                    case 10:
+                    case 1:
+                    case 11:
+                        // Player should hit
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            // Player card total is 19, 20, or 21 (Ace, 8 || Ace, 9 || Ace, Ten)
+            case 19:
+            case 20:
+            case 21:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
+                    // Dealer is showing any card
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 1:
+                    case 11:
+                        // Player should stand
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][1]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        } 
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    // Logic for all other scenarios
+    else {
+        // Check value of players cards
+        switch (playerHand->GetCardsTotal()) {
+            // Player card total is 4-8
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
+                    // Dealer is showing any card
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 11:
+                        // Player should hit
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            // Player card total is 9
+            case 9:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
+                    // Dealer is showing 2-6
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                        // Player can double down
+                        if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
+                            // Player should double down or hit
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][3]);
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
+                        }
+                        // Player cannot double down
+                        else {
+                            // Player should hit
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
+                        }
+                        break;
+                    // Dealer is showing 7-Face or Ace
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 11:
+                    case 1:
+                        // Player should hit
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            // Player card total is 10
+            case 10:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
+                    // Dealer is showing 2-9
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8:
+                    case 9:
+                        // Player can double down
+                        if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
+                            // Player should double down or hit
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][3]);
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
+                        }
+                        // Player cannot double down
+                        else {
+                            // Player should hit
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
+                        }
+                        break;
+                    // Dealer is showing a face card or Ace
+                    case 10:
+                    case 11:
+                    case 1:
+                        // Player should hit
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            // Player card total is 11
+            case 11:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
+                    // Dealer is showing any card
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 11:
+                        // Player can double down
+                        if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][1])) {
+                            // Player should double down or hit
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][3]);
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_double_down_or_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
+                        }
+                        // Player cannot double down
+                        else {
+                            // Player should hit
+                            playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                            if (showStrategy) {
+                                std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            // Player card total is 12
+            case 12:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
+                    // Dealer is showing a 2,3 or 7-Face or Ace
+                    case 2:
+                    case 3:
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 1:
+                    case 11:
+                        // Player should hit
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
+                        break;
+                    // Dealer is showing a 4-6
+                    case 4:
+                    case 5:
+                    case 6:
+                        // Player should stand
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][1]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            // Player card total is 13 through 16
+            case 13:
+            case 14:
+            case 15:
+            case 16:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
+                    // Dealer is showing 2-6
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                        // Player should stand
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][1]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
+                        break;
+                    // Dealer is showing 7-Face or Ace
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 1:
+                    case 11:
+                        // Player should hit
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[2][4]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_hit << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            // Player card total is 17 through 21
+            case 17:
+            case 18:
+            case 19:
+            case 20:
+            case 21:
+                // Checking the value of the card that is face up of the dealer
+                switch (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()) {
+                    // Dealer is showing any card
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 10:
+                    case 1:
+                    case 11:
+                        // Player should stand
+                        playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][1]);
+                        if (showStrategy) {
+                            std::cout << std::endl << should_stand << std::endl; time_sleep(SHORT_TIME_SLEEP); 
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+}
 
 // /*  csv_generator - Generates a CSV file for the game of a player
 // *   Input:
@@ -2758,91 +2759,73 @@ bool dealer_showing_ace_sim(std::shared_ptr<Player>& humanPlayer, std::shared_pt
 //     return std::make_tuple(new_hand, playerHand, dealerHand, shoe, hand_count);
 // }
 
-// /*  same_rank_check_sim - Checks to see if the player has the same rank in their hand and if they want to split their hand
-// *   Input:
-// *       playerHand - Hand object passed by reference that represents the players hand that is being checked for the below conditions
-// *       dealerHand - Hand object passed by reference that represents the dealers hand that is being checked against the players
-// *       shoe - Shoe object passed by reference that represents the shoe in the game that is being played with
-// *       splitChoice - Boolean value that determines if a player is going to split their hand if eligible
-// *   Algorithm:
-// *       * First check if the player is able to split their hand or not
-// *       * If player is eligible to split hand, continue to split until they are no longer eligible (see inline comments for more details)
-// *       * Otherwise, return the values and continue with the logic of the game
-// *   Output:
-// *       new_hand - Vector of Hand objects, this can either be singular or multiple depending on the checks and choices of the players hand
-// *       playerHand - Hand object that represents the players hand and variables that originally were fed into the function that are now modified
-// *       dealerHand - Hand object that represents the dealers hand with all of their variables
-// *       shoe - Shoe object that represents the shoe that is being played with by the player and dealer
-// */
-// std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> same_rank_check_sim(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& shoe, bool splitChoice) {
-//     int maxSplitHands = 5;
-//     // Original hand
-//     if (playerHand->GetPlayerHands()->GetSize() == 0) {
-//         // Check original hand for if it can split
-//         blackjack_strategy(playerHand, dealerHand, false, false);
-//         // Player can split aces
-//         if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][2])) {
-//             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][3]);
-//             // Player has chosen to split
-//             if (splitChoice && playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[3][0])) {
-//                 playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[1][1]);
-//                 // Split hand
-//                 split_hand_sim(playerHand);
-//                 // Hit hands
-//                 playerHand->GetPlayerHands()->RetrieveNode(0)->data->HitHand(shoe);
-//                 playerHand->GetPlayerHands()->RetrieveNode(-1)->data->HitHand(shoe);
-//             }
-//         }
-//         // Player can split normal hand
-//         else if (playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][3])) {
-//             playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][4]);
-//             // Player has chosen to split
-//             if (splitChoice && playerHand->GetHashTable()->Contains(playerHand->GetTableMatrix()[3][0])) {
-//                 playerHand->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[1][2]);
-//                 // Split hand
-//                 split_hand_sim(playerHand);
-//                 // Hit latest hand
-//                 playerHand->GetPlayerHands()->RetrieveNode(0)->data->HitHand(shoe);
-//                 // Check if the player can split their top most hand again
-//                 blackjack_strategy(playerHand->GetPlayerHands()->RetrieveNode(0)->data, dealerHand, false, false);
-//                 // Player is eligible to split their hand again
-//                 if (playerHand->GetHandsCurrentlyHeld() < maxSplitHands) {
-//                     same_rank_check_sim(playerHand, dealerHand, shoe, true);
-//                 }
-//             }
-//             else {
-//                 std::shared_ptr<node<std::shared_ptr<Hand>>> newHand = playerHand->GetPlayerHands()->InitNode(playerHand);
-//                 playerHand->SetPlayerHands(newHand);
-//             }
-//         }
-//         else {
-//             std::shared_ptr<node<std::shared_ptr<Hand>>> newHand = playerHand->GetPlayerHands()->InitNode(playerHand);
-//             playerHand->SetPlayerHands(newHand);
-//         }
-//     }
-//     // Hand has already been split
-//     else {
-//         blackjack_strategy(playerHand->GetPlayerHands()->RetrieveNode(0)->data, dealerHand, false, false);
-//         if (playerHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(playerHand->GetTableMatrix()[0][3])) {
-//             playerHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[3][4]);
-//             // Player has chosen to split
-//             if (splitChoice && playerHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(playerHand->GetTableMatrix()[3][0])) {
-//                 playerHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->AddToTable(playerHand->GetTableMatrix()[1][2]);
-//                 // Split hand
-//                 split_hand_sim(playerHand);
-//                 // Hit latest hand
-//                 playerHand->GetPlayerHands()->RetrieveNode(0)->data->HitHand(shoe);
-//                 // Check if the player can split their top most hand again
-//                 blackjack_strategy(playerHand->GetPlayerHands()->RetrieveNode(0)->data, dealerHand, false, false);
-//                 // Player is eligible to split their hand again
-//                 if (playerHand->GetHandsCurrentlyHeld() < maxSplitHands) {
-//                     same_rank_check_sim(playerHand, dealerHand, shoe, true);
-//                 }
-//             }
-//         }
-//     }
-//     return std::make_tuple(playerHand, dealerHand, shoe);
-// }
+/*  same_rank_check_sim - Checks to see if the player has the same rank in their hand and if they want to split their hand
+*   Input:
+*       humanPlayer - Player object that is passed by reference that represents a non dealer player
+*       dealer - Player object that is passed by reference that represents the dealer
+*       shoe - Shoe object that is passed by reference that represents the game shoe
+*       splitChoice - Boolean value that represents if a player is to split their hand
+*   Algorithm:
+*       * First check if the player is able to split their hand or not
+*       * If player is eligible to split hand, continue to split until they are no longer eligible (see inline comments for more details)
+*       * Otherwise, return the values and continue with the logic of the game
+*   Output:
+*       This function does not return any values, it modifies input parameters after logical checks for it a player can split their hand
+*/
+void same_rank_check_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& shoe, bool splitChoice) {
+    int maxSplitHands = 5;
+    // Player is less than five total hands
+    if (humanPlayer->GetCurrentHands()->GetSize() < maxSplitHands) {
+        // Check if top hand can be split
+        blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, dealer, false, false);
+        bool player_can_split_aces = humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetTableMatrix()[0][2]);
+        bool player_can_split_hand = humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetTableMatrix()[0][3]);
+        bool player_should_split = humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetTableMatrix()[3][0]);
+        // Player is eligible to split aces
+        if (player_can_split_aces && humanPlayer->GetCurrentHandsPossessed() == 1) {
+            // Player has chosen to split
+            if (player_should_split) {
+                // Split hand
+                split_hand(humanPlayer);
+                humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->HitHand(shoe);
+                humanPlayer->GetCurrentHands()->RetrieveNode(-1)->data->HitHand(shoe);
+                humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetTableMatrix()[3][3]);
+                humanPlayer->GetCurrentHands()->RetrieveNode(-1)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(-1)->data->GetTableMatrix()[3][3]);
+                humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetTableMatrix()[1][1]);
+                humanPlayer->GetCurrentHands()->RetrieveNode(-1)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(-1)->data->GetTableMatrix()[1][1]);
+                return;
+            }
+        }
+        // Player can split normal hand
+        else if (player_can_split_hand) {
+            // Player has chosen to split
+            if (player_should_split) {
+                // Split hand
+                split_hand(humanPlayer);
+                // Hit top hand
+                humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->HitHand(shoe);
+                humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetTableMatrix()[3][4]);
+                humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetTableMatrix()[1][2]);
+                // Recursive call to function
+                same_rank_check_sim(humanPlayer, dealer, shoe, true);
+            }
+        }
+        // Player cannot split their hand anymore
+        else {
+            humanPlayer->GetCurrentHands()->RetrieveNode(-1)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(-1)->data->GetTableMatrix()[3][4]);
+            humanPlayer->GetCurrentHands()->RetrieveNode(-1)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(-1)->data->GetTableMatrix()[1][2]);
+            return;
+        }
+    }
+    // Player has 5 hands
+    else {
+        humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetTableMatrix()[3][4]);
+        humanPlayer->GetCurrentHands()->RetrieveNode(-1)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(-1)->data->GetTableMatrix()[3][4]);
+        humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetTableMatrix()[1][2]);
+        humanPlayer->GetCurrentHands()->RetrieveNode(-1)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(-1)->data->GetTableMatrix()[1][2]);
+        return;
+    }
+}
 
 // /*  simulate_game - Simulates a game of blackjack for given parameters
 // *   Input:
@@ -2898,89 +2881,38 @@ bool dealer_showing_ace_sim(std::shared_ptr<Player>& humanPlayer, std::shared_pt
 //     plot(csvFile, 4);
 // }
 
-// /*  split_hand - Splits the hand of a current player and produces two new hands for the player
-// *   Input:
-// *       input - Hand object passed by reference that represents the original hand of the user
-// *   Algorithm:
-// *       * Create a vector of hands that will represent the new hands of the player
-// *       * Update the bank of the player by withdrawing money from the bank of the player
-// *       * Append one of the cards from the players original hand, copy the variables, and append the hand
-// *   Output:
-// *       split_hands - This is a vector of hands that represents the new hands of the player
-// */
-// std::vector<std::shared_ptr<Hand>> split_hand(std::shared_ptr<Hand>& input) {
-//     // Create a vector of hands for the player
-//     std::vector<std::shared_ptr<Hand>> split_hands;
-//     int handsTotal = input->GetHandsCurrentlyHeld();
-//     handsTotal++;
-//     input->SetHandsCurrentlyHeld(handsTotal);
-//     // Update the bank of the player
-//     input->UpdateBank(0, input->GetWager());
-//     // Append card from players original hand, copy the variables of the input hand, and then add the hand to the vector of new hands
-//     std::shared_ptr<node<Card>> current = input->GetPlayerCards()->GetRoot();
-//     while (current != nullptr) {
-//         std::shared_ptr<Hand> newHand(new Hand);
-//         std::shared_ptr<Card> tempCard(new Card(current->data.GetRank(), current->data.GetSuit()));
-//         std::shared_ptr<node<Card>> tempNode = newHand->GetPlayerCards()->InitNode(tempCard);
-//         newHand->AddCardToHand(tempNode);
-//         newHand->CopyVariables(input);
-//         split_hands.push_back(newHand);
-//         current = current->nextNode;
-//     }
-//     return split_hands;
-// }
-
-// /*  split_hand_sim - Splits the current hand of a player and appends the hands to the players private data member "hands"
-// *   Input:
-// *       input - Hand object that represents the hand that is going to be split
-// *   Algorithm:
-// *       * Increment the hands currently held variable by one
-// *       * Update the bank total
-// *       * Determine how the hand will be split (see inline comments)
-// *       * Copy variables of each individual hand 
-// *   Output:
-// *       This function does not return a value, it appends hands to a current hand's linked list
-// */
-// void split_hand_sim(std::shared_ptr<Hand>& input) {
-//     // Get current hands total and increment by 1
-//     int handsTotal = input->GetHandsCurrentlyHeld();
-//     handsTotal++;
-//     input->SetHandsCurrentlyHeld(handsTotal);
-//     // Update the hands bank total
-//     input->UpdateBank(0, input->GetWager());
-//     // Create new hand object
-//     std::shared_ptr<Hand> newHand(new Hand);
-//     // "hands" of "input" is not empty
-//     if (input->GetPlayerHands()->GetSize() != 0) {
-//         Card copyCard = input->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data;
-//         input->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->RemoveNode(-1);
-//         std::shared_ptr<Card> tempCard(new Card(copyCard));
-//         std::shared_ptr<node<Card>> tempCardNode = newHand->GetPlayerCards()->InitNode(tempCard);
-//         newHand->AddCardToHand(tempCardNode);
-//         std::shared_ptr<node<std::shared_ptr<Hand>>> newHandNode = input->GetPlayerHands()->InitNode(newHand);
-//         input->GetPlayerHands()->InsertNode(newHandNode, 0);
-//     }
-//     // "hands" of "input" is empty
-//     else {
-//         std::shared_ptr<node<Card>> currentCard = input->GetPlayerCards()->GetRoot();
-//         // Traverse cards in hand, append them to players private data member "hands"
-//         while (currentCard != nullptr) {
-//             std::shared_ptr<Hand> newHand(new Hand);
-//             std::shared_ptr<Card> tempCard(new Card(currentCard->data.GetRank(), currentCard->data.GetSuit()));
-//             std::shared_ptr<node<Card>> tempCardNode = newHand->GetPlayerCards()->InitNode(tempCard);
-//             newHand->AddCardToHand(tempCardNode);
-//             std::shared_ptr<node<std::shared_ptr<Hand>>> newHandNode = input->GetPlayerHands()->InitNode(newHand);
-//             input->GetPlayerHands()->InsertNode(newHandNode, 0);
-//             currentCard = currentCard->nextNode;
-//         }
-//     }
-//     // Copy Variables
-//     std::shared_ptr<node<std::shared_ptr<Hand>>> currentHand = input->GetPlayerHands()->RetrieveNode(0);
-//     while (currentHand != nullptr) {
-//         currentHand->data->CopyVariables(input);
-//         currentHand = currentHand->nextNode;
-//     }
-// }
+/*  split_hand_sim - Splits the current hand of a player and appends the hands to the players private data member "hands"
+*   Input:
+*       humanPlayer - Player object that represents the players top hand that will be split
+*   Algorithm:
+*       * Increment the hands currently held variable by one
+*       * Update the bank total
+*       * Determine how the hand will be split (see inline comments)
+*       * Copy variables of each individual hand 
+*   Output:
+*       This function does not return a value, it appends hands to a current hand's linked list
+*/
+void split_hand(std::shared_ptr<Player>& humanPlayer) {
+    // Get current hands total and increment by 1
+    humanPlayer->SetCurrentHandsPossessed();
+    // Update the hands bank total
+    humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 0);
+    // Create new hand object
+    std::shared_ptr<Hand> newHand(new Hand);
+    // Copy variables of top hand to new hand
+    newHand->CopyVariables(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data);
+    // Create copy of second card in players current hand to be split
+    Card copyCard = humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data;
+    // Remove the end card of the players current hand
+    humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RemoveNode(-1);
+    // Add removed card to new hand
+    std::shared_ptr<Card> tempCard(new Card(copyCard));
+    std::shared_ptr<node<Card>> tempCardNode = newHand->GetPlayerCards()->InitNode(tempCard);
+    newHand->AddCardToHand(tempCardNode);
+    // Add new hand to players hands
+    std::shared_ptr<node<std::shared_ptr<Hand>>> newHandNode = humanPlayer->GetCurrentHands()->InitNode(newHand);
+    humanPlayer->GetCurrentHands()->InsertNode(newHandNode, 0);
+}
 
 // /*  stats_tracker - Updates the stat trackers of a current hand
 // *   Input:
