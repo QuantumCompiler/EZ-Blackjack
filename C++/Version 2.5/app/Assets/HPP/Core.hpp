@@ -57,7 +57,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
     // Logic for if a player is dealt the same rank and only two cards are in the hand with them having not decided if they want to split or not
     if (((playerHand->GetHashTable()->Contains(playerHand->GetValuesMatrix()[0][3]) && !playerHand->GetHashTable()->Contains(playerHand->GetValuesMatrix()[4][1])) 
         || (playerHand->GetHashTable()->Contains(playerHand->GetValuesMatrix()[0][2]) && !playerHand->GetHashTable()->Contains(playerHand->GetValuesMatrix()[4][0]))) 
-        && playerHand->GetPlayerCards()->GetSize() == 2 && !splitOverride) {
+        && playerHand->GetPlayerCards()->GetSize() == 2 && !splitOverride && humanPlayer->GetCurrentHands()->GetSize() < 5) {
         // Check value of players cards
         switch (playerHand->GetCardsTotal()) {
             // Player card total is 4 (two, two) or 6 (three, three)
