@@ -3,7 +3,7 @@
 #define HAND_H
 #include "../HPP/Shoe.hpp"
 #define HASTABLESIZE 10000
-#define HASHTABLEITERATIONS 32
+#define HASHTABLEITERATIONS 31
 /*  Structure IndividualHand - Struct to resemble a playing card
 *   Data Members:
 *     Table Values:
@@ -13,8 +13,10 @@
 *       canSplitHand - String value that represents if a player is eligible to split their hand (Without Aces present)
 *       choseBuyInsurance - String value that represents if a player has chosen to buy insurance
 *       choseDoubleDown - String value that represents if a player has chosen to double down
+*       choseHitHand - String value that represents if a player has chosen to hit their hand
 *       choseSplitAces - String value that represents if a player has chosen to split Aces
 *       choseSplitHand - String value that represents if a player has chosen to split their hand (Without Aces present)
+*       choseStandHand - String value that represents if a player has chosen to stand their hand
 *       doubleDownResponse - String value that represents if a player has decided if they would like to double down or not
 *       hasBlackjack - String value that represents if a player has blackjack in their current hand
 *       hasHit - String value that represents if a player has hit on current hand or not
@@ -50,12 +52,14 @@ struct IndividualHand {
     std::string canSplitAces = "CanSplitAces";
     std::string canSplitHand = "CanSplitHand";
     std::string choseBuyInsurance = "ChoseBuyInsurance";
-    std::string choseDoubleDown = "ChoseDoubleDown";
+    std::string choseDoubleDown = "ChoseDoubleDown"; 
+    std::string choseHitHand = "ChoseHitHand";
+    std::string choseStandHand = "ChoseStandHand";
     std::string choseSplitAces = "ChoseSplitAces";
     std::string choseSplitHand = "ChoseSplitHand";
     std::string doubleDownResponse = "DoubleDownResponse";
     std::string hasBlackjack = "HasBlackjack";
-    std::string hasHit = "HasHit";
+    std::string hitHandResponse = "HitHandResponse";
     std::string paramInHand = "ParamInHand";
     std::string sameParamInHand = "SameParamInHand";
     std::string shouldDoubleDown = "ShouldDoubleDown";
@@ -65,12 +69,13 @@ struct IndividualHand {
     std::string softSeventeen = "SoftSevenTeen";
     std::string splitAcesResponse = "SplitAcesResponse";
     std::string splitHandResponse = "SplitHandResponse";
-    // Table Matrix
-    std::vector<std::vector<std::string>> tableMatrix = {
+    // Values Matrix
+    std::vector<std::vector<std::string>> valuesMatrix = {
         {canBuyInsurance, canDoubleDown, canSplitAces, canSplitHand, choseBuyInsurance},
-        {choseDoubleDown, choseSplitAces, choseSplitHand, doubleDownResponse, hasBlackjack},
-        {hasHit, paramInHand, sameParamInHand, shouldDoubleDown, shouldHit},
-        {shouldSplit, shouldStand, softSeventeen, splitAcesResponse, splitHandResponse}
+        {choseDoubleDown, choseHitHand, choseStandHand, choseSplitAces, choseSplitHand},
+        {doubleDownResponse, hasBlackjack, hitHandResponse, paramInHand, sameParamInHand},
+        {shouldDoubleDown, shouldHit, shouldSplit, shouldStand, softSeventeen},
+        {splitAcesResponse, splitHandResponse}
     };
     // Float Values
     float bankTotal;
@@ -123,7 +128,7 @@ public:
     // Getter Functions
     // Table Values
     std::shared_ptr<HashTable>& GetHashTable(); // Retrieves "hashTable"
-    std::vector<std::vector<std::string>>& GetTableMatrix(); // Retrieves "tableMatrix"
+    std::vector<std::vector<std::string>>& GetValuesMatrix(); // Retrieves "valuesMatrix"
     // Float Values
     float& GetInsuranceWager(); // Retrieves "insuranceWager"
     float& GetNet(); // Retrieves "net"

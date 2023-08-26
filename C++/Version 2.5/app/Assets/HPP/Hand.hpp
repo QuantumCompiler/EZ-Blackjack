@@ -138,8 +138,8 @@ Hand Hand::CheckBlackJack() {
         // Check if there is a card in hand that has a value of 10
         if (currentCard->data.GetCardValue() == 10) {
             // Check if there is an Ace in the hand and the hand only has 2 cards
-            if (this->GetHashTable()->Contains(this->GetTableMatrix()[2][1]) && this->GetPlayerCards()->GetSize() == 2) {
-                this->GetHashTable()->AddToTable(this->GetTableMatrix()[1][4]);
+            if (this->GetHashTable()->Contains(this->GetValuesMatrix()[2][3]) && this->GetPlayerCards()->GetSize() == 2) {
+                this->GetHashTable()->AddToTable(this->GetValuesMatrix()[2][1]);
                 break;
             }
         }
@@ -172,14 +172,14 @@ Hand Hand::CheckParamInHand(const std::string referenceParameter, const std::str
         // If the "referenceParameter" is a rank, check for a rank
         if (referenceParameter == "R") {
             if (currentCard->data.CheckCardParam(currentCard->data.GetRank(), checkingParameter)) {
-                this->GetHashTable()->AddToTable(this->GetTableMatrix()[2][1]);
+                this->GetHashTable()->AddToTable(this->GetValuesMatrix()[2][3]);
                 break;
             }
         }
         // If the "referenceParameter" is a suit, check for a suit
         else if (referenceParameter == "S") {
             if (currentCard->data.CheckCardParam(currentCard->data.GetSuit(), checkingParameter)) {
-                this->GetHashTable()->AddToTable(this->GetTableMatrix()[2][1]);
+                this->GetHashTable()->AddToTable(this->GetValuesMatrix()[2][3]);
                 break;
             }
         }
@@ -211,7 +211,7 @@ Hand Hand::CheckParamInHand(const std::string referenceParameter, const std::str
 */
 Hand Hand::CheckSameParamInHand(const std::string referenceParameter, const std::string checkingParameter) {
     std::vector<bool> tableCopy = this->GetHashTable()->GetTable();
-    this->GetHashTable()->AddToTable(this->GetTableMatrix()[2][2]);
+    this->GetHashTable()->AddToTable(this->GetValuesMatrix()[2][4]);
     // Iterate over the cards in a players hand
     if (this->GetPlayerCards()->GetSize() > 1) {
         for (int i = 1; i < this->GetPlayerCards()->GetSize(); i++) {
@@ -287,7 +287,7 @@ Hand Hand::InsurancePrompt(float& bank) {
         std::cin >> input; time_sleep(SHORT_TIME_SLEEP);
         // User has chosen to buy insurance, set insurance wager
         if (input == "y") {
-            this->GetHashTable()->AddToTable(this->GetTableMatrix()[0][4]);
+            this->GetHashTable()->AddToTable(this->GetValuesMatrix()[0][4]);
             this->SetInsuranceWager(round_input(0.5*this->GetWager()));
             bank -= this->GetInsuranceWager();
             return *this;
@@ -320,7 +320,7 @@ Hand Hand::InsurancePrompt(float& bank) {
 */
 Hand Hand::InsuranceSim(float& bank, const bool& input) {
     if (input) {
-        this->GetHashTable()->AddToTable(this->GetTableMatrix()[0][4]);
+        this->GetHashTable()->AddToTable(this->GetValuesMatrix()[0][4]);
         this->SetInsuranceWager(round_input(0.5*this->GetWager()));
         bank -= this->GetInsuranceWager();
         return *this;
@@ -346,68 +346,84 @@ Hand Hand::InsuranceSim(float& bank, const bool& input) {
 Hand Hand::ParametersCheck(std::shared_ptr<Hand>& dealerHand, const float& playerBank) {
     // Reset Parameters
     // Clear same parameter check
-    if (this->GetHashTable()->Contains(this->GetTableMatrix()[2][2])) {
-        this->GetHashTable()->RemoveElement(this->GetTableMatrix()[2][2]);
+    if (this->GetHashTable()->Contains(this->GetValuesMatrix()[2][4])) {
+        this->GetHashTable()->RemoveElement(this->GetValuesMatrix()[2][4]);
     }
     // Clear blackjack check
-    if (this->GetHashTable()->Contains(this->GetTableMatrix()[1][4])) {
-        this->GetHashTable()->RemoveElement(this->GetTableMatrix()[1][4]);
+    if (this->GetHashTable()->Contains(this->GetValuesMatrix()[2][1])) {
+        this->GetHashTable()->RemoveElement(this->GetValuesMatrix()[2][1]);
     }
     // Clear dealer blackjack
-    if (dealerHand->GetHashTable()->Contains(dealerHand->GetTableMatrix()[1][4])) {
-        dealerHand->GetHashTable()->RemoveElement(dealerHand->GetTableMatrix()[1][4]);
+    if (dealerHand->GetHashTable()->Contains(dealerHand->GetValuesMatrix()[2][1])) {
+        dealerHand->GetHashTable()->RemoveElement(dealerHand->GetValuesMatrix()[2][1]);
     }
     // Clear can split aces
-    if (this->GetHashTable()->Contains(this->GetTableMatrix()[0][2])) {
-        this->GetHashTable()->RemoveElement(this->GetTableMatrix()[0][2]);
+    if (this->GetHashTable()->Contains(this->GetValuesMatrix()[0][2])) {
+        this->GetHashTable()->RemoveElement(this->GetValuesMatrix()[0][2]);
     }
     // Clear can split hand
-    if (this->GetHashTable()->Contains(this->GetTableMatrix()[0][3])) {
-        this->GetHashTable()->RemoveElement(this->GetTableMatrix()[0][3]);
+    if (this->GetHashTable()->Contains(this->GetValuesMatrix()[0][3])) {
+        this->GetHashTable()->RemoveElement(this->GetValuesMatrix()[0][3]);
     }
     // Clear can buy insurance
-    if (this->GetHashTable()->Contains(this->GetTableMatrix()[0][0])) {
-        this->GetHashTable()->RemoveElement(this->GetTableMatrix()[0][0]);
+    if (this->GetHashTable()->Contains(this->GetValuesMatrix()[0][0])) {
+        this->GetHashTable()->RemoveElement(this->GetValuesMatrix()[0][0]);
     }
     // Clear can double down
-    if (this->GetHashTable()->Contains(this->GetTableMatrix()[0][1])) {
-        this->GetHashTable()->RemoveElement(this->GetTableMatrix()[0][1]);
+    if (this->GetHashTable()->Contains(this->GetValuesMatrix()[0][1])) {
+        this->GetHashTable()->RemoveElement(this->GetValuesMatrix()[0][1]);
     }
     // Clear soft seventeen
-    if (this->GetHashTable()->Contains(this->GetTableMatrix()[3][2])) {
-        this->GetHashTable()->RemoveElement(this->GetTableMatrix()[3][2]);
+    if (this->GetHashTable()->Contains(this->GetValuesMatrix()[3][4])) {
+        this->GetHashTable()->RemoveElement(this->GetValuesMatrix()[3][4]);
+    }
+    // Clear should double down
+    if (this->GetHashTable()->Contains(this->GetValuesMatrix()[3][0])) {
+        this->GetHashTable()->RemoveElement(this->GetValuesMatrix()[3][0]);
+    }
+    // Clear should hit
+    if (this->GetHashTable()->Contains(this->GetValuesMatrix()[3][1])) {
+        this->GetHashTable()->RemoveElement(this->GetValuesMatrix()[3][1]);
+    }
+    // Clear should split
+    if (this->GetHashTable()->Contains(this->GetValuesMatrix()[3][2])) {
+        this->GetHashTable()->RemoveElement(this->GetValuesMatrix()[3][2]);
+    }
+    // Clear should stand
+    if (this->GetHashTable()->Contains(this->GetValuesMatrix()[3][3])) {
+        this->GetHashTable()->RemoveElement(this->GetValuesMatrix()[3][3]);
     }
     this->CheckSameParamInHand("R");
     this->CheckBlackJack();
     // Dealer Checks
     dealerHand->CheckBlackJack();
     // Can Split Hand Check
-    if (this->GetHashTable()->Contains(this->GetTableMatrix()[2][2]) && this->GetPlayerCards()->GetSize() == 2) {
+    if (this->GetHashTable()->Contains(this->GetValuesMatrix()[2][4]) && this->GetPlayerCards()->GetSize() == 2) {
         // Player has enough money to split
         if (playerBank >= this->GetWager()) {
             // Checking if player has aces
             bool aces = this->GetPlayerCards()->RetrieveNode(0)->data.CheckCardParam(this->GetPlayerCards()->RetrieveNode(0)->data.GetRank(), Ranks[0]);
             // Player doesn't have Aces, can still split hand
             if (!aces) {
-                this->GetHashTable()->AddToTable(this->GetTableMatrix()[0][3]);
+                this->GetHashTable()->AddToTable(this->GetValuesMatrix()[0][3]);
             }
             // Player has Aces, can split Aces, can't split regular hand
             else {
-                this->GetHashTable()->AddToTable(this->GetTableMatrix()[0][2]);
+                this->GetHashTable()->AddToTable(this->GetValuesMatrix()[0][2]);
             }
         }
     }
     // Insurance Check
-    if (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetRank() == Ranks[0] && !this->GetHashTable()->Contains(this->GetTableMatrix()[2][0])) {
+    if (dealerHand->GetPlayerCards()->RetrieveNode(-1)->data.GetRank() == Ranks[0] && !this->GetHashTable()->Contains(this->GetValuesMatrix()[1][1])) {
         // Player has enough money to buy insurance
         if (playerBank >= 0.5*this->GetWager()) {
-            this->GetHashTable()->AddToTable(this->GetTableMatrix()[0][0]);
+            this->GetHashTable()->AddToTable(this->GetValuesMatrix()[0][0]);
         }
     }
     // Can Double Down Check
-    if (!this->GetHashTable()->Contains(this->GetTableMatrix()[2][0]) && !this->GetHashTable()->Contains(this->GetTableMatrix()[1][3])) {
+    if (!this->GetHashTable()->Contains(this->GetValuesMatrix()[1][1]) && !this->GetHashTable()->Contains(this->GetValuesMatrix()[2][0])) {
         if (playerBank >= this->GetWager() && this->GetPlayerCards()->GetSize() <= 2) {
-            this->GetHashTable()->AddToTable(this->GetTableMatrix()[0][1]);
+            this->GetHashTable()->AddToTable(this->GetValuesMatrix()[0][1]);
         }
     }
     // Soft Seventeen Check
@@ -415,7 +431,7 @@ Hand Hand::ParametersCheck(std::shared_ptr<Hand>& dealerHand, const float& playe
         std::shared_ptr<node<Card>> current = this->GetPlayerCards()->GetRoot();
         while (current != nullptr) {
             if (current->data.GetRank() == Ranks[0] && current->data.GetCardValue() == 11) {
-                this->GetHashTable()->AddToTable(this->GetTableMatrix()[3][2]);
+                this->GetHashTable()->AddToTable(this->GetValuesMatrix()[3][4]);
                 break;
             }
             current = current->nextNode;
@@ -604,9 +620,9 @@ std::shared_ptr<HashTable>& Hand::GetHashTable() {
     return individualHand->hashTable;
 }
 
-// GetTableMatrix - Retrieves the private data member "tableMatrix"
-std::vector<std::vector<std::string>>& Hand::GetTableMatrix() {
-    return individualHand->tableMatrix;
+// GetValuesMatrix - Retrieves the private data member "valuesMatrix"
+std::vector<std::vector<std::string>>& Hand::GetValuesMatrix() {
+    return individualHand->valuesMatrix;
 }
 
 // GetInsuranceWager - Retrieves the private data member "insuranceWager"
