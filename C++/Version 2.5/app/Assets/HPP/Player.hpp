@@ -110,6 +110,25 @@ Player Player::NamePrompt() {
     return *this;
 }
 
+/*  ResetPlayer - Resets parameters for a player to continue playing in the game of blackjack
+*   Input:
+*       This function does not have any input parameters
+*   Algorithm:
+*       * Reset all the hands of the current player
+*       * Remove all hands from the current player
+*       * Set the number of hands that a player possesses to be zero
+*   Output:
+*       This function returns a Player object after clearing the current hands that they are playing with
+*/
+Player Player::ResetPlayer() {
+    for (int i = 0; i < this->GetCurrentHands()->GetSize(); i++) {
+        this->GetCurrentHands()->RetrieveNode(i)->data->ResetHand();
+    }
+    this->GetCurrentHands()->ClearList();
+    this->GetCurrentHandsPossessed() = this->GetCurrentHands()->GetSize();
+    return *this;
+}
+
 /*  ShowHand - This function displays the cards that are present in a players hand
 *   Input:
 *       inputHand - Hand object that is passed by reference that represents the hand that is to be shown

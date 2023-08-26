@@ -57,6 +57,7 @@ public:
     // Class Functions
     Player BankDepositPrompt();
     Player NamePrompt();
+    Player ResetPlayer();
     Player ShowCurrentHand(std::shared_ptr<Hand>& inputHand, std::string option, const std::string dealerShow);
     Player UpdateBank(std::shared_ptr<Hand>& inputHand, const int choice);
     // Mutator Functions
