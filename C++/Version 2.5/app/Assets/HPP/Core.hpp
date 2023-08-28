@@ -11,7 +11,7 @@
 *   dealer_logic
 *   hand_comparison_logic
 *   game_logic
-*   play_game
+*   play_game / simulate_game
 */
 
 /*  blackjack_strategy - Provides a strategy for players on what is the best way to play a given hand in blackjack
@@ -866,54 +866,42 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
     }
 }
 
-// /*  csv_generator - Generates a CSV file for the game of a player
-// *   Input:
-// *       input - Hand object passed by reference that represents the hand that is going to have a csv made of it
-// *   Algorithm:
-// *       * Create a file name for the CSV file
-// *       * Generate a file with the contents of the players hand
-// *       * Close the file
-// *   Output:
-// *       fileName - After creating the csv file, this function returns the name of the file that has been created
-// */
-// std::string csv_generator(std::shared_ptr<Hand>& input) {
-//     // Create string for filename of csv
-//     std::string fileName = input->GetName() + " Results.csv";
-//     // Generate file object
-//     std::ofstream file(fileName);
-//     // File has successfully opened
-//     if (file) {
-//         // Set headers of csv file
-//         file << "Hand Number, Hand Wager, Hand Net, Hand Total, Bank Total" << std::endl;
-//         // Get roots of linked lists for statistics
-//         std::shared_ptr<node<float>> handBankNode = input->GetHandBankTotals()->GetRoot();
-//         std::shared_ptr<node<int>> handTotalNode = input->GetHandCardTotals()->GetRoot();
-//         std::shared_ptr<node<float>> handNetNode = input->GetHandNets()->GetRoot();
-//         std::shared_ptr<node<int>> handNumNode = input->GetHandPlayed()->GetRoot();
-//         std::shared_ptr<node<float>> handWagNode = input->GetHandWagers()->GetRoot();
-//         // Add data to file while the lists are not empty
-//         while (handNumNode != nullptr && handWagNode != nullptr && handNetNode != nullptr && handTotalNode != nullptr && handBankNode != nullptr) {
-//             // Generate data in rows of file
-//             file << handNumNode->data << "," << handWagNode->data << "," << handNetNode->data << "," << handTotalNode->data << "," << handBankNode->data << std::endl;
-//             handBankNode = handBankNode->nextNode;
-//             handTotalNode = handTotalNode->nextNode;
-//             handNetNode = handNetNode->nextNode;
-//             handNumNode = handNumNode->nextNode;
-//             handWagNode = handWagNode->nextNode;
-//         }
-//         // Close file
-//         file.close();
-//         // Output message that file has been successfully created
-//         progress_bar(LONG_TIME_SLEEP, "Creating CSV ", fileName + " has been successfully created.");
-//         time_sleep(MEDIUM_TIME_SLEEP); 
-//         // clear_terminal();
-//     }
-//     // File failed to open
-//     else {
-//         std::cout << "Error creating CSV File: " << fileName << std::endl;
-//     }
-//     return fileName;
-// }
+/*  csv_generator - Generates a CSV file for the game of a player
+*   Input:
+*       input - Player object passed by reference that represents the player that is going to have a csv made of it
+*   Algorithm:
+*       * Create a file name for the CSV file
+*       * Generate a file with the contents of the players hand
+*       * Close the file
+*   Output:
+*       fileName - After creating the csv file, this function returns the name of the file that has been created
+*/
+std::string csv_generator(std::shared_ptr<Player>& input) {
+    // Create string for filename of csv
+    std::string fileName = input->GetName() + " Results.csv";
+    // Generate file object
+    std::ofstream file(fileName);
+    // File has successfully opened
+    if (file) {
+        // Set headers of csv file
+        file << "Hand Number, Hand Wager, Hand Net, Hand Total, Bank Total" << std::endl;
+        for (int i = 0; i < input->GetTotalHandsPlayed()->GetSize(); i++) {
+            file << input->GetTotalHandsPlayed()->RetrieveNode(i)->data << "," << input->GetTotalHandWagers()->RetrieveNode(i)->data << "," << input->GetTotalHandNets()->RetrieveNode(i)->data << ","
+            << input->GetTotalHandCardTotals()->RetrieveNode(i)->data << "," << input->GetTotalHandBankTotals()->RetrieveNode(i)->data << std::endl;
+        }
+        // Close file
+        file.close();
+        // Output message that file has been successfully created
+        progress_bar(LONG_TIME_SLEEP, "Creating CSV ", fileName + " has been successfully created.");
+        time_sleep(MEDIUM_TIME_SLEEP); 
+        clear_terminal();
+    }
+    // File failed to open
+    else {
+        std::cout << "Error creating CSV File: " << fileName << std::endl;
+    }
+    return fileName;
+}
 
 // /*  deal_hand - Deals cards to players and shows the hands of each player after the deal
 // *   Input:
@@ -1071,58 +1059,54 @@ void deal_hand_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>
 //     return std::make_tuple(dealerHand, shoe);
 // }
 
-// /*  dealer_logic_sim - Processes the logic for how the dealer should play their current hands for a simulated hand
-// *   Input:
-// *       playerHands - Vector of Hand objects that are passed by reference that represent all of the hands of a player
-// *       dealerHand - Hand object passed by reference that represents the dealers hand
-// *       Shoe - Shoe object passed by reference that represents the shoe in the game that is being played with
-// *   Algorithm:
-// *       * Check the parameters of the dealers hand
-// *       * Check if the player's hands are all over 21
-// *           * If they aren't process the logic of a dealer playing (see inline comments)
-// *           * If they are all over 21, do not make the dealer play their hand
-// *       * Return the dealers hand and the game shoe
-// *   Output:
-// *       dealerHand - Hand object that represents the modified hand of the dealer after being played with
-// *       shoe - Shoe object that represents the modified shoe in the game
-// */
-// std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Shoe>> dealer_logic_sim(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& shoe) {
-//     // Check the parameters of the dealers hand
-//     dealerHand->ParametersCheck(dealerHand);
-//     // Check if all hands of the player are over 21
-//     bool all_over_21 = true;
-//     for (int i = 0; i < playerHand->GetPlayerHands()->GetSize(); i++) {
-//         if (playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetCardsTotal() <= 21) {
-//             all_over_21 = false;
-//             break;
-//         }
-//     }
-//     // Not all hands of player are over 21
-//     if (!all_over_21) {
-//         // Check if the dealer has an Ace in their hand
-//         dealerHand->CheckParamInHand("R", Ranks[0]);
-//         // Dealer has a hand total of seventeen or greater with no Ace in hand
-//         if (dealerHand->GetCardsTotal() >= 17 && !dealerHand->GetHashTable()->Contains(dealerHand->GetValuesMatrix()[2][3])) {}
-//         // Dealer has less than 17 or has a soft 17
-//         else if (dealerHand->GetCardsTotal() < 17 || dealerHand->GetHashTable()->Contains(dealerHand->GetValuesMatrix()[3][4])) {
-//             // Dealer must continue to play and will hit on soft seventeen
-//             while ((dealerHand->GetCardsTotal() < 17 || dealerHand->GetHashTable()->Contains(dealerHand->GetValuesMatrix()[3][4]))) {
-//                 // Dealer still has less than seventeen or possesses a soft seventeen
-//                 if (dealerHand->GetCardsTotal() < 17 || dealerHand->GetHashTable()->Contains(dealerHand->GetValuesMatrix()[3][4])) {
-//                     dealerHand->HitHand(shoe);
-//                     dealerHand->ParametersCheck(dealerHand);
-//                     continue;
-//                 }
-//                 // Dealer has 17 or higher and does not have a soft seventeen
-//                 else if (dealerHand->GetCardsTotal() >= 17 && !dealerHand->GetHashTable()->Contains(dealerHand->GetValuesMatrix()[3][4])) {
-//                     break;
-//                 }
-//             }
-//         }
-//     }
-//     // Return the dealers hand and the shoe
-//     return std::make_tuple(dealerHand, shoe);
-// }
+/*  dealer_logic_sim - Processes the logic for how the dealer should play their current hands for a simulated hand
+*   Input:
+*       humanPlayer - Player object that is passed by reference that represents a non dealer player
+*       dealer - Player object that is passed by reference that represents a dealer
+*       shoe - Shoe object passed by reference that represents the shoe in the game that is being played with
+*   Algorithm:
+*       * Check the parameters of the dealers hand
+*       * Check if the player's hands are all over 21
+*           * If they aren't process the logic of a dealer playing (see inline comments)
+*           * If they are all over 21, do not make the dealer play their hand
+*   Output:
+*       This function does not return a value, it modifies a dealer players hand and shoe after logical checks
+*/
+void dealer_logic_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& shoe) {
+    // Check the parameters of the dealers hand
+    dealer->GetCurrentHands()->RetrieveNode(0)->data->ParametersCheck(dealer->GetCurrentHands()->RetrieveNode(0)->data, humanPlayer->GetBankTotal());
+    // Check if all hands of the player are over 21
+    bool all_over_21 = true;
+    for (int i = 0; i < humanPlayer->GetCurrentHands()->GetSize(); i++) {
+        if (humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetCardsTotal() <= 21) {
+            all_over_21 = false;
+            break;
+        }
+    }
+    // Not all hands of player are over 21
+    if (!all_over_21) {
+        // Check if the dealer has an Ace in their hand
+        dealer->GetCurrentHands()->RetrieveNode(0)->data->CheckParamInHand("R", Ranks[0]);
+        // Dealer has a hand total of seventeen or greater with no Ace in hand
+        if (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() >= 17 && !dealer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(dealer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[2][3])) {}
+        // Dealer has less than 17 or has a soft 17
+        else if (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() < 17 || dealer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(dealer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[3][4])) {
+            // Dealer must continue to play and will hit on soft seventeen
+            while ((dealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() < 17 || dealer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(dealer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[3][4]))) {
+                // Dealer still has less than seventeen or possesses a soft seventeen
+                if (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() < 17 || dealer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(dealer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[3][4])) {
+                    dealer->GetCurrentHands()->RetrieveNode(0)->data->HitHand(shoe);
+                    dealer->GetCurrentHands()->RetrieveNode(0)->data->ParametersCheck(dealer->GetCurrentHands()->RetrieveNode(0)->data, humanPlayer->GetBankTotal());
+                    continue;
+                }
+                // Dealer has 17 or higher and does not have a soft seventeen
+                else if (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() >= 17 && !dealer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(dealer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[3][4])) {
+                    break;
+                }
+            }
+        }
+    }
+}
 
 // /*  dealer_showing_ace - Checks to see if the dealer is showing an Ace and if a player has blackjack or not
 // *   Input:
@@ -1442,42 +1426,36 @@ bool dealer_showing_ace_sim(std::shared_ptr<Player>& humanPlayer, std::shared_pt
 //     return std::make_tuple(playerHand, dealerHand, shoe);
 // }
 
-// /*  game_logic_sim - Processes the logic required for a single hand of blackjack amongst players and dealer
-// *   Input:
-// *       playerHand - Hand object that is passed by reference that represents the users hand that is being played with
-// *       dealerHand - Hand object that is passed by reference that represents the dealers hand that is being played with
-// *       shoe - Shoe object that is passed by reference that represents the game shoe that is being played with
-// *       handWager - Float value that represents the wager that is to be placed for a given players hand
-// *   Algorithm:
-// *       * Process the dealer_showing_ace function and return its values
-// *       * Determine if the hand must continue after dealer_showing_ace
-// *           * If it continues, process the following functions: same_rank_check, player_logic, dealer_logic, hand_comparison_logic
-// *           * If it does not continue, proceed to return the objects that have been modified
-// *       * Return the playerHand, dealerHand, and shoe objects
-// *   Output:
-// *       playerHand - Hand object that represents the modified hand object that represents the player after a hand has been played
-// *       dealerHand - Hand object that represents the modified hand object that represents the dealer after a hand has been played
-// *       shoe - Shoe object that represents the game shoe that represents the shoe after a hand has been played
-// */
-// std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> game_logic_sim(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& shoe, float handWager) {
-//     // Process the dealer_showing_ace_sim function
-//     auto dealerAce = dealer_showing_ace_sim(playerHand, dealerHand, shoe, handWager, false);
-//     // auto dealerAce = dealer_showing_ace_sim(playerHand, dealerHand, shoe);
-//     // If neither player has blackjack, continue
-//     if (std::get<3>(dealerAce)) {
-//         // Process the player_logic_sim function
-//         auto playerLogic = player_logic_sim(playerHand, dealerHand, shoe, true);
-//         // Process the dealer_logic_sim function
-//         auto dealerLogic = dealer_logic_sim(playerHand, dealerHand, shoe);
-//         // Process the hand_comparison_logic_sim function
-//         auto handLogic = hand_comparison_logic_sim(playerHand, dealerHand);
-//     }
-//     // If a player has blackjack return the player and dealer hand along with the game shoe
-//     playerHand->ResetHand();
-//     dealerHand->ResetHand();
-//     // Return the player and dealer hand and the game shoe
-//     return std::make_tuple(playerHand, dealerHand, shoe);
-// }
+/*  game_logic_sim - Processes the logic required for a single hand of blackjack amongst players and dealer
+*   Input:
+*       humanPlayer - Player object that is passed by reference that represents the user
+*       dealer - Player object that is passed by reference that represents the dealer
+*       shoe - Shoe object that is passed by reference that represents the game shoe that is being played with
+*       handWager - Float value that represents the wager that is to be placed for a given players hand
+*   Algorithm:
+*       * Process the dealer_showing_ace function and return its values
+*       * Determine if the hand must continue after dealer_showing_ace
+*           * If it continues, process the following functions: same_rank_check, player_logic, dealer_logic, hand_comparison_logic
+*           * If it does not continue, proceed to return the objects that have been modified
+*       * Return the playerHand, dealerHand, and shoe objects
+*   Output:
+*       This function does not return a value, it modifies the input parameters for a given simulated game
+*/
+void game_logic_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& shoe, float handWager) {
+    // Process the dealer_showing_ace_sim function
+    auto dealerAce = dealer_showing_ace_sim(humanPlayer, dealer, shoe, handWager, false);
+    // If neither player has blackjack, continue
+    if (dealerAce) {
+        // Process the player_logic_sim function
+        player_logic_sim(humanPlayer, dealer, shoe, true);
+        // Process the dealer_logic_sim function
+        dealer_logic_sim(humanPlayer, dealer, shoe);
+        // Process the hand_comparison_logic_sim function
+        hand_comparison_logic_sim(humanPlayer, dealer);
+    }
+    humanPlayer->ResetPlayer();
+    dealer->ResetPlayer();
+}
 
 // /*  hand_comparison_logic - Compares the hand of a player to that of the dealer and determines if they push, win, or lose
 // *   Input:
@@ -1682,69 +1660,42 @@ bool dealer_showing_ace_sim(std::shared_ptr<Player>& humanPlayer, std::shared_pt
 //     return std::make_tuple(playerHand, dealerHand);
 // }
 
-// /*  hand_comparison_logic_sim - Compares the hand of a player to that of the dealer and determines if they push, win, or lose
-// *   Input:
-// *       playerHand - Hand object that is passed by reference that represents the current hand that is being examined
-// *       dealerHand - Hand object that is passed by reference that represents the dealers hand that is being examined against for the players hand
-// *   Algorithm:
-// *       * Iterate all of the players current hands
-// *       * Copy the intrinsic values of a hand to that of the master hand
-// *       * Process the logic of the individual hand for what the outcome of the current hand is (see inline comments)
-// *       * Update the master players values
-// *       * Update the stats for the current hand
-// *       * Update the stats for the master hand if they only have one hand
-// *       * Return the player hand and dealer hand
-// *   Output:
-// *       playerHand - Hand object that represents the updated player hand after the function is done executing
-// *       dealerHand - Hand object that represents the dealers hand after the function is done executing
-// */
-// std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>> hand_comparison_logic_sim(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand) {
-//     for (int i = 0; i < playerHand->GetPlayerHands()->GetSize(); i++) {
-//         // Copy intrinsic values of a hand
-//         playerHand->GetPlayerHands()->RetrieveNode(i)->data->SetBankTotal(playerHand->GetBankTotal());
-//         playerHand->GetPlayerHands()->RetrieveNode(i)->data->SetHandsCurrentlyHeld(playerHand->GetHandsCurrentlyHeld());
-//         playerHand->GetPlayerHands()->RetrieveNode(i)->data->SetHandsPlayed(playerHand->GetHandsPlayed());
-//         playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandBankTotals() = playerHand->GetHandBankTotals();
-//         playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandCardTotals() = playerHand->GetHandCardTotals();
-//         playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandNets() = playerHand->GetHandNets();
-//         playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandPlayed() = playerHand->GetHandPlayed();
-//         playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetHandWagers() = playerHand->GetHandWagers();
-//         playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerHands() = playerHand->GetPlayerHands();
-//         // Player has a hand total of less than or equal to 21
-//         if (playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetCardsTotal() <= 21) {
-//             // Player and dealer have the same hand total
-//             if (playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetCardsTotal() == dealerHand->GetCardsTotal()) {
-//                 // Player pushes their current hand
-//                 playerHand->GetPlayerHands()->RetrieveNode(i)->data->UpdateBank(3, playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager());
-//             }
-//             // Dealer wins
-//             else if (dealerHand->GetCardsTotal() > playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetCardsTotal() && dealerHand->GetCardsTotal() <= 21) {
-//                 // Player loses their current hand
-//                 playerHand->GetPlayerHands()->RetrieveNode(i)->data->UpdateBank(2, playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager());
-//             }
-//             // Player wins
-//             else if (dealerHand->GetCardsTotal() < playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetCardsTotal() || dealerHand->GetCardsTotal() > 21) {
-//                 playerHand->GetPlayerHands()->RetrieveNode(i)->data->UpdateBank(1, playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager());
-//             }
-//         }
-//         // Player has a hand total of 21 or greater
-//         else {
-//             // Player loses their current hand
-//             playerHand->GetPlayerHands()->RetrieveNode(i)->data->UpdateBank(2, playerHand->GetPlayerHands()->RetrieveNode(i)->data->GetWager());
-//         }
-//         // Update master player hand's bank total and net value
-//         playerHand->CopyVariables(playerHand->GetPlayerHands()->RetrieveNode(i)->data);
-//         // Update the stats of the current hand for the player
-//         if (playerHand->GetPlayerHands()->GetSize() > 1) {
-//             stats_tracker(playerHand->GetPlayerHands()->RetrieveNode(i)->data);
-//         }
-//         else {
-//             stats_tracker(playerHand);
-//         }
-//     }
-//     // Return the player and dealer hand
-//     return std::make_tuple(playerHand, dealerHand);
-// }
+/*  hand_comparison_logic_sim - Compares the hand of a player to that of the dealer and determines if they push, win, or lose
+*   Input:
+*       humanPlayer - Player object that is passed by reference that resembles a non dealer player
+*       dealer - Player object that is passed by reference that resembles a dealer
+*   Algorithm:
+*       * Iterate all of the players current hands
+*       * Process the logic of the individual hand for what the outcome of the current hand is (see inline comments)
+*   Output:
+*       This function does not return a value, it modifies parameters pertaining to a player
+*/
+void hand_comparison_logic_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer) {
+    for (int i = 0; i < humanPlayer->GetCurrentHands()->GetSize(); i++) {
+        // Player has a hand total of less than or equal to 21
+        if (humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetCardsTotal() <= 21) {
+            // Player and dealer have the same hand total
+            if (humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetCardsTotal() == dealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal()) {
+                // Player pushes their current hand
+                humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, 3);
+            }
+            // Dealer wins
+            else if (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() > humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetCardsTotal() && dealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() <= 21) {
+                // Player loses their current hand
+                humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, 2);
+            }
+            // Player wins
+            else if (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() < humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetCardsTotal() || dealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() > 21) {
+                humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, 1);
+            }
+        }
+        // Player has a hand total of 21 or greater
+        else {
+            // Player loses their current hand
+            humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, 2);
+        }
+    }
+}
 
 // /*  play_game - Processes all the logic that is required for a game of blackjack to be played
 // *   Input:
@@ -2187,213 +2138,205 @@ bool dealer_showing_ace_sim(std::shared_ptr<Player>& humanPlayer, std::shared_pt
 //     return std::make_tuple(currentPlayerHand, dealerHand, shoe);
 // }
 
-// /*  player_logic_sim_logic - Processes the possible options of what a player can do on their current hand for a simulated hand
-// *   Input:
-// *       playerHand - Hand object that is passed by reference that resembles the players original hand
-// *       dealerHand - Hand object that is passed by reference that resembles the dealers hand
-// *       shoe - Shoe object that is passed by reference that resembles the current game shoe that is being played with
-// *   Algorithm:
-// *       * Process the logic of the same rank test
-// *       * Iterate over the hands of the player
-// *       * If the player has not split aces
-// *           * Process the logic of what a player can do with their hand
-// *           * See individual line comments for more detail
-// *       * If the player has split aces, simply bypass all options of hitting, standing, and doubling down
-// *       * Return all hand objects and shoe
-// *   Output:
-// *       playerHand - Returns the current player hand that is being played with
-// *       dealerHand - Returns the dealers hand
-// *       shoe - Returns the modified shoe object that is being used for the players to play with
-// */
-// std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> player_logic_sim(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& shoe, bool splitChoice) {
-//     // Process the same rank test
-//     auto same_rank_results = same_rank_check_sim(playerHand, dealerHand, shoe, splitChoice);
-//     // Iterate over the hands of the player
-//     std::shared_ptr<node<std::shared_ptr<Hand>>> currentHandNode = playerHand->GetPlayerHands()->GetRoot();
-//     while (currentHandNode != nullptr) {
-//         std::shared_ptr<Hand> currentHand = currentHandNode->data;
-//         currentHand->SetBankTotal(playerHand->GetBankTotal());
-//         // Hit the current hand of the player if it only has one card present
-//         if (currentHand->GetPlayerCards()->GetSize() == 1) {
-//             currentHand->HitHand(shoe);
-//         }
-//         // Player did not split aces
-//         if (!playerHand->GetHashTable()->Contains(playerHand->GetValuesMatrix()[1][3])) {
-//             while (currentHand->GetCardsTotal() < 21) {
-//                 currentHand->GetHashTable()->ClearHashTable();
-//                 // Check the strategy of the current hand for the player
-//                 blackjack_strategy(currentHand, dealerHand, false, true);
-//                 // Player should double down
-//                 if (currentHand->GetHashTable()->Contains(currentHand->GetValuesMatrix()[3][0])) {
-//                     currentHand->GetHashTable()->AddToTable(currentHand->GetValuesMatrix()[1][0]);
-//                     currentHand->GetHashTable()->AddToTable(currentHand->GetValuesMatrix()[2][0]);
-//                     currentHand->UpdateBank(0, currentHand->GetWager());
-//                     currentHand->SetWager(2 * currentHand->GetWager());
-//                     currentHand->HitHand(shoe);
-//                     break;
-//                 }
-//                 // Player should hit their hand
-//                 if (currentHand->GetHashTable()->Contains(currentHand->GetValuesMatrix()[3][1])) {
-//                     currentHand->GetHashTable()->AddToTable(currentHand->GetValuesMatrix()[1][1]);
-//                     currentHand->HitHand(shoe);
-//                     continue;
-//                 }
-//                 // Player should stand
-//                 if (currentHand->GetHashTable()->Contains(currentHand->GetValuesMatrix()[3][3])) {
-//                     break;
-//                 }
-//             }
-//         }
-//         // Update the bank total of that with the current hand
-//         playerHand->SetBankTotal(currentHand->GetBankTotal());
-//         currentHandNode = currentHandNode->nextNode;
-//     }
-//     // Update the bank total for all the hands to be the same
-//     for (int i = 0; i < playerHand->GetPlayerHands()->GetSize(); i++) {
-//         playerHand->GetPlayerHands()->RetrieveNode(i)->data->SetBankTotal(playerHand->GetBankTotal());
-//     }
-//     return std::make_tuple(playerHand, dealerHand, shoe);
-// }
+/*  player_logic_sim - Processes the possible options of what a player can do on their current hand for a simulated hand
+*   Input:
+*       humanPlayer - Player object that is passed by reference that resembles a non dealer player
+*       dealer - Player object that is passed by reference that resembles a dealer
+*       shoe - Shoe object that is passed by reference that resembles the current game shoe that is being played with
+*       splitChoice - Boolean value that determines if a player should
+*   Algorithm:
+*       * Process the logic of the same rank test
+*       * If the player has not split aces
+*           * Iterate over the hands of the player
+*           * Process the logic of what a player can do with their hand
+*           * See individual line comments for more detail
+*       * If the player has split aces, simply bypass all options of hitting, standing, and doubling down
+*   Output:
+*       This function does not return a value, it modifies a Player and Shoe object after processing logic
+*/
+void player_logic_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& shoe, bool splitChoice) {
+    // Process the same rank test
+    same_rank_check_sim(humanPlayer, dealer, shoe, splitChoice);
+    // Player did not split aces
+    if (!humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[1][3])) {
+        // Iterate over the hands of the player
+        for (int i = 0; i < humanPlayer->GetCurrentHands()->GetSize(); i++) {
+            // Hit the current hand of the player if it only has one card present
+            if (humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize() == 1) {
+                humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->HitHand(shoe);
+            }
+            while (humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetCardsTotal() < 21) {
+                humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->ClearHashTable();
+                // Check the strategy of the current hand for the player
+                blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, dealer, false, true);
+                // Player should double down
+                if (humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->Contains(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[3][0])) {
+                    // Add parameters to hash table
+                    humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[1][0]);
+                    humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[2][0]);
+                    // Update player bank and wager
+                    humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, 0);
+                    humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->SetWager(2 * (humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetWager() - humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetInsuranceWager()));
+                    humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->HitHand(shoe);
+                    break;
+                }
+                // Player should hit their hand
+                if (humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->Contains(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[3][1])) {
+                    // Add parameters to hash table and hit hand
+                    humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[1][1]);
+                    humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->HitHand(shoe);
+                    continue;
+                }
+                // Player should stand their hand
+                if (humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->Contains(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[3][3])) {
+                    // Add parameters to hash table
+                    humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[1][2]);
+                    break;
+                }
+            }
+        }
+    }
+}
 
-// /*  plot - Creates a bar chart of data from a csv for a given column in the csv file
-// *   Input:
-// *       file - Constant string value that is passed by reference that represents the csv file that is to be plotted
-// *       yColumn - Integer value that represents the column in the csv file that is to be plotted against 
-// *   Algorithm:
-// *       * Create plot titles
-// *       * Modify the plot titles for the respective column that is being plotted
-// *       * Create gnuplot object
-// *       * Process the logic if the file is unable to open
-// *       * Count the max number of rows in the file
-// *       * Set the plot properties
-// *       * Set the axis properties
-// *       * Send the plot command
-// *       * Read the data from the csv file
-// *       * Parse the csv file
-// *       * Skip the header of the file
-// *           * Get the corresponding x value (hand number)
-// *           * Get the corresponding y value (from specified column)
-// *       * End the data signal from gnuplot
-// *       * Close the file
-// *       * Close gnuplot
-// *   Output:
-// *       This function does not return a value, it produces a plot of values for a given
-// */
-// void plot(const std::string& file, int yColumn) {
-//     // Plot titles
-//     std::string plotTitle;
-//     std::string xAxisLabel = "Hand Number of Player";
-//     std::string yAxisLabel;
-//     std::string legendName;
-//     // Change plot titles
-//     if (yColumn == 1) {
-//         plotTitle = "Individual Hand Wagers of Player";
-//         legendName = "Hand Wager";
-//         yAxisLabel = "Hand Wager of Player";
-//     }
-//     else if (yColumn == 2) {
-//         plotTitle = "Individual Hand Nets of Player";
-//         legendName = "Hand Net";
-//         yAxisLabel = "Hand Net of Player";
-//     }
-//     else if (yColumn == 3) {
-//         plotTitle = "Individual Cards Total of Player";
-//         legendName = "Cards Total";
-//         yAxisLabel = "Hand Cards Total of Player";
-//     }
-//     else if (yColumn == 4) {
-//         plotTitle = "Individual Bank Totals of Player";
-//         legendName = "Bank Total";
-//         yAxisLabel = "Hand Bank Totals of Player";
-//     }
-//     const char* fileName = file.c_str();
-//     // Create gnuplot object
-//     FILE* plt = popen("gnuplot -persist", "w");
-//     // File failed to open
-//     if (plt == NULL) {
-//         std::cerr << "Failed to open a pipe to Gnuplot." << std::endl;
-//         return;
-//     }
-//     // Get max row value
-//     size_t xMax = row_counter(file);
-//     // Set plot properties
-//     fprintf(plt, "set boxwidth 0.25 relative\n");
-//     fprintf(plt, "set style fill solid\n");
-//     fprintf(plt, "set grid\n");
-//     fprintf(plt, "set title \"%s\"\n", plotTitle.c_str());
-//     // Set axis properties
-//     fprintf(plt, "set xlabel \"%s\"\n", xAxisLabel.c_str());
-//     fprintf(plt, "set xrange [0:%lu]\n", xMax);
-//     fprintf(plt, "set ylabel \"%s\"\n", yAxisLabel.c_str());
-//     fprintf(plt, "set yrange [0:*]\n");
-//     // Send the plot command right before sending the data
-//     fprintf(plt, "plot '-' using 1:2 with boxes title \"%s\"\n", legendName.c_str());
-//     // Read data from CSV file
-//     std::ifstream inputFile(fileName);
-//     if (!inputFile.is_open()) {
-//         std::cerr << "Failed to open the file." << std::endl;
-//         pclose(plt);
-//         return;
-//     }
-//     std::string line;
-//     int lineNumber = 0;
-//     // Parse the csv file
-//     while (std::getline(inputFile, line)) {
-//         lineNumber++;
-//         // Skip the header of the file
-//         if (lineNumber > 1) {
-//             std::istringstream iss(line);
-//             std::string value;
-//             double x, y;
-//             // Get x value (always from first column)
-//             std::getline(iss, value, ',');
-//             x = std::stod(value);
-//             // Get y value (from yColumn)
-//             for (int i = 1; i < yColumn; i++) {
-//                 std::getline(iss, value, ',');
-//             }
-//             if (std::getline(iss, value, ',')) {
-//                 y = std::stod(value);
-//                 fprintf(plt, "%f %f\n", x, y);
-//             }
-//         }
-//     }
-//     // End of data signal for Gnuplot
-//     fprintf(plt, "e\n");
-//     // Close file
-//     inputFile.close();
-//     // Close gnuplot
-//     pclose(plt);
-// }
+/*  plot - Creates a bar chart of data from a csv for a given column in the csv file
+*   Input:
+*       file - Constant string value that is passed by reference that represents the csv file that is to be plotted
+*       yColumn - Integer value that represents the column in the csv file that is to be plotted against 
+*   Algorithm:
+*       * Create plot titles
+*       * Modify the plot titles for the respective column that is being plotted
+*       * Create gnuplot object
+*       * Process the logic if the file is unable to open
+*       * Count the max number of rows in the file
+*       * Set the plot properties
+*       * Set the axis properties
+*       * Send the plot command
+*       * Read the data from the csv file
+*       * Parse the csv file
+*       * Skip the header of the file
+*           * Get the corresponding x value (hand number)
+*           * Get the corresponding y value (from specified column)
+*       * End the data signal from gnuplot
+*       * Close the file
+*       * Close gnuplot
+*   Output:
+*       This function does not return a value, it produces a plot of values for a given
+*/
+void plot(const std::string& file, int yColumn) {
+    // Plot titles
+    std::string plotTitle;
+    std::string xAxisLabel = "Hand Number of Player";
+    std::string yAxisLabel;
+    std::string legendName;
+    // Change plot titles
+    if (yColumn == 1) {
+        plotTitle = "Individual Hand Wagers of Player";
+        legendName = "Hand Wager";
+        yAxisLabel = "Hand Wager of Player";
+    }
+    else if (yColumn == 2) {
+        plotTitle = "Individual Hand Nets of Player";
+        legendName = "Hand Net";
+        yAxisLabel = "Hand Net of Player";
+    }
+    else if (yColumn == 3) {
+        plotTitle = "Individual Cards Total of Player";
+        legendName = "Cards Total";
+        yAxisLabel = "Hand Cards Total of Player";
+    }
+    else if (yColumn == 4) {
+        plotTitle = "Individual Bank Totals of Player";
+        legendName = "Bank Total";
+        yAxisLabel = "Hand Bank Totals of Player";
+    }
+    const char* fileName = file.c_str();
+    // Create gnuplot object
+    FILE* plt = popen("gnuplot -persist", "w");
+    // File failed to open
+    if (plt == NULL) {
+        std::cerr << "Failed to open a pipe to Gnuplot." << std::endl;
+        return;
+    }
+    // Get max row value
+    size_t xMax = row_counter(file);
+    // Set plot properties
+    fprintf(plt, "set boxwidth 0.25 relative\n");
+    fprintf(plt, "set style fill solid\n");
+    fprintf(plt, "set grid\n");
+    fprintf(plt, "set title \"%s\"\n", plotTitle.c_str());
+    // Set axis properties
+    fprintf(plt, "set xlabel \"%s\"\n", xAxisLabel.c_str());
+    fprintf(plt, "set xrange [0:%lu]\n", xMax);
+    fprintf(plt, "set ylabel \"%s\"\n", yAxisLabel.c_str());
+    fprintf(plt, "set yrange [0:*]\n");
+    // Send the plot command right before sending the data
+    fprintf(plt, "plot '-' using 1:2 with boxes title \"%s\"\n", legendName.c_str());
+    // Read data from CSV file
+    std::ifstream inputFile(fileName);
+    if (!inputFile.is_open()) {
+        std::cerr << "Failed to open the file." << std::endl;
+        pclose(plt);
+        return;
+    }
+    std::string line;
+    int lineNumber = 0;
+    // Parse the csv file
+    while (std::getline(inputFile, line)) {
+        lineNumber++;
+        // Skip the header of the file
+        if (lineNumber > 1) {
+            std::istringstream iss(line);
+            std::string value;
+            double x, y;
+            // Get x value (always from first column)
+            std::getline(iss, value, ',');
+            x = std::stod(value);
+            // Get y value (from yColumn)
+            for (int i = 1; i < yColumn; i++) {
+                std::getline(iss, value, ',');
+            }
+            if (std::getline(iss, value, ',')) {
+                y = std::stod(value);
+                fprintf(plt, "%f %f\n", x, y);
+            }
+        }
+    }
+    // End of data signal for Gnuplot
+    fprintf(plt, "e\n");
+    // Close file
+    inputFile.close();
+    // Close gnuplot
+    pclose(plt);
+}
 
-// /*  row_counter - Counts the number of rows for a given column in a csv file
-// *   Input:
-// *       file - Constant string value that is passed by reference that represents the csv file that is going to be parsed
-// *   Algorithm:
-// *       * Create the return value for the number of rows that are to be counted
-// *       * Open the file, output an error if it is unable to open
-// *       * Parse the csv and count the number of rows in the file
-// *       * Close the file, return the number of rows that have been calculated
-// */
-// size_t row_counter(const std::string& file) {
-//     // Create row count variable
-//     int rowCount = 0;
-//     // Open the file
-//     std::ifstream inputFile(file);
-//     if (!inputFile.is_open()) {
-//         std::cerr << "Failed to open the file." << std::endl;
-//         return 1;
-//     }
-//     // Parse the csv and count the number of rows
-//     std::string line;
-//     while (std::getline(inputFile, line)) {
-//         rowCount++;
-//     }
-//     // Close the file
-//     inputFile.close();
-//     // Return the "rowCount" variable
-//     return rowCount;
-// }
+/*  row_counter - Counts the number of rows for a given column in a csv file
+*   Input:
+*       file - Constant string value that is passed by reference that represents the csv file that is going to be parsed
+*   Algorithm:
+*       * Create the return value for the number of rows that are to be counted
+*       * Open the file, output an error if it is unable to open
+*       * Parse the csv and count the number of rows in the file
+*       * Close the file, return the number of rows that have been calculated
+*/
+size_t row_counter(const std::string& file) {
+    // Create row count variable
+    int rowCount = 0;
+    // Open the file
+    std::ifstream inputFile(file);
+    if (!inputFile.is_open()) {
+        std::cerr << "Failed to open the file." << std::endl;
+        return 1;
+    }
+    // Parse the csv and count the number of rows
+    std::string line;
+    while (std::getline(inputFile, line)) {
+        rowCount++;
+    }
+    // Close the file
+    inputFile.close();
+    // Return the "rowCount" variable
+    return rowCount;
+}
 
 // /*  same_rank_check - Checks to see if the player has the same rank in their hand and if they want to split their hand
 // *   Input:
@@ -2822,59 +2765,59 @@ void same_rank_check_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<P
     }
 }
 
-// /*  simulate_game - Simulates a game of blackjack for given parameters
-// *   Input:
-// *       There are no input parameters for this function
-// *   Algorithm:
-// *       * See inline comments
-// *   Output:
-// *       This function does not return a value, it simulates a game of blackjack
-// */
-// void simulate_game() {
-//     clear_terminal();
-//     progress_bar(LONG_TIME_SLEEP, "Loading Game", "Ready To Simulate :)");
-//     clear_terminal();
-//     // Create hand objects
-//     std::shared_ptr<Hand> humanHand(new Hand());
-//     std::shared_ptr<Hand> dealerHand(new Hand());
-//     humanHand->NameSim("Borby");
-//     dealerHand->NameSim("Dealer");
-//     float initBank = 200;
-//     humanHand->BankDepositSim(initBank);
-//     // Create shoe object
-//     std::shared_ptr<Shoe> gameShoe(new Shoe());
-//     gameShoe->SetNumOfDecks(random_int(1, 6));
-//     gameShoe->CreateShoeSim();
-//     // Remaining card count minimum
-//     int min_card_count = 13;
-//     // Set initial hand wager for player
-//     float initWager = initBank / 10;
-//     float handWager = 0;
-//     // Play until player runs out of currency
-//     while ((gameShoe->GetCardsInShoe()->GetSize() >= min_card_count && humanHand->GetBankTotal() > 0)) {
-//         // Go all in for hand wager if remaining bank total is less than initial wager
-//         if (humanHand->GetBankTotal() < initWager) {
-//             handWager = humanHand->GetBankTotal();
-//         }
-//         else {
-//             handWager = initWager;
-//         }
-//         // Process the game logic for a simulated hand
-//         auto gameLogic = game_logic_sim(humanHand, dealerHand, gameShoe, handWager);
-//         if (gameShoe->GetCardsInShoe()->GetSize() < min_card_count) {
-//             gameShoe->EmptyShoe();
-//             gameShoe->CreateShoeSim();
-//             continue;
-//         }
-//         else {
-//             continue;
-//         }
-//     }
-//     // Generate csv of statistics for a game
-//     std::string csvFile = csv_generator(humanHand);
-//     // Plot hand number and post hand bank total
-//     plot(csvFile, 4);
-// }
+/*  simulate_game - Simulates a game of blackjack for given parameters
+*   Input:
+*       There are no input parameters for this function
+*   Algorithm:
+*       * See inline comments
+*   Output:
+*       This function does not return a value, it simulates a game of blackjack
+*/
+void simulate_game_test() {
+    // Create players
+    std::shared_ptr<Player> testPlayer(new Player());
+    std::shared_ptr<Player> testDealer(new Player());
+    testPlayer->SetName("Borby");
+    testDealer->SetName("Dealer");
+    float initBank = 2000;
+    testPlayer->SetBankTotal(initBank);
+    // Create shoe object
+    std::shared_ptr<Shoe> gameShoe(new Shoe());
+    gameShoe->SetNumOfDecks(random_int(1, 6));
+    gameShoe->CreateShoeSim();
+    // Remaining card count minimum
+    int min_card_count = 13;
+    // Set initial hand wager for player
+    float initWager = initBank / 10;
+    float handWager = 0;
+    // Play until player runs out of currency
+    while ((gameShoe->GetCardsInShoe()->GetSize() >= min_card_count && testPlayer->GetBankTotal() > 0)) {
+        // Go all in for hand wager if remaining bank total is less than initial wager
+        if (testPlayer->GetBankTotal() < initWager) {
+            handWager = testPlayer->GetBankTotal();
+        }
+        else {
+            handWager = initWager;
+        }
+        // Process the game logic for a simulated hand
+        game_logic_sim(testPlayer, testDealer, gameShoe, handWager);
+        if (gameShoe->GetCardsInShoe()->GetSize() < min_card_count) {
+            gameShoe->EmptyShoe();
+            gameShoe->CreateShoeSim();
+            continue;
+        }
+        if (testPlayer->GetHandsPlayed() >= 200) {
+            break;
+        }
+        if (testPlayer->GetBankTotal() >= 5 * initBank) {
+            break;
+        }
+    }
+    // Generate csv of statistics for a game
+    std::string csvFile = csv_generator(testPlayer);
+    // Plot hand number and post hand bank total
+    plot(csvFile, 4);
+}
 
 /*  split_hand_sim - Splits the current hand of a player and appends the hands to the players private data member "hands"
 *   Input:
