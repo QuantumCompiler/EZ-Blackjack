@@ -22,7 +22,7 @@ void plot(const std::string& file, int yColumn); // Plots a bar chart from a csv
 size_t row_counter(const std::string& file);
 // std::tuple<std::vector<std::shared_ptr<Hand>>, std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>, int> same_rank_check(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& shoe); // Checks for the same rank of a player
 void same_rank_check_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& shoe, bool splitChoice); // Checks for the same rank of a player
-// void simulate_game(); // Provides a simulated game for a player
+void simulate_game(); // Provides a simulated game for a player
 void split_hand(std::shared_ptr<Player>& humanPlayer); // Splits the hand of a player for a simulated hand
 // void stats_tracker(std::shared_ptr<Hand>& input); // Updates the statistics for a game
 

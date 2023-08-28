@@ -2773,6 +2773,286 @@ void same_rank_check_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<P
 *   Output:
 *       This function does not return a value, it simulates a game of blackjack
 */
+void simulate_game() {
+    // Prompt player
+    clear_terminal();
+    progress_bar(LONG_TIME_SLEEP, "Preparing Simulation", "Ready To Simulate :)");
+    clear_terminal();
+    std::cout << "You have chosen to simulate a game of blackjack, first we must pick a name for your user." << std::endl;
+    // Create players and parameters for game
+    std::shared_ptr<Player> userPlayer(new Player);
+    std::shared_ptr<Player> dealer(new Player);
+    dealer->SetName("Dealer");
+    userPlayer->NamePrompt();
+    // Create shoe object
+    std::shared_ptr<Shoe> gameShoe(new Shoe);
+    gameShoe->CreateShoePrompt();
+    std::cout << std::endl << "Welcome " << userPlayer->GetDisplayName() << ". We will now have you place an original deposit into your bank." << std::endl; time_sleep(SHORT_TIME_SLEEP);
+    // Bank deposit
+    userPlayer->BankDepositPrompt();
+    float initBank = userPlayer->GetBankTotal();
+    // Wager deposit
+    std::cout << std::endl << "Now we must pick the minimum wager for the table. "; time_sleep(SHORT_TIME_SLEEP);
+    float minWager = 0;
+    while (true) {
+        // Prompt user for min wager
+        std::cout << "Please enter the minimum table amount: "; time_sleep(SHORT_TIME_SLEEP);
+        std::cin >> minWager; time_sleep(SHORT_TIME_SLEEP);
+        const std::type_info& result = typeid(minWager);
+        std::string checkResult = result.name();
+        // Check if value is not a float or integer
+        if (checkResult != "f" && checkResult != "i") {
+            std::cout << std::endl << color_text(31, "Invalid Response") << ". Please re-enter your submission." << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+            clear_terminal();
+            checkResult.clear();
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            continue;
+        }
+        // Check if value is a float or integer
+        else if (checkResult == "f" || checkResult == "i") {
+            if (minWager <= 0) {
+                std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, round_to_string(minWager)) << ". Please re-enter a positive value." << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+                clear_terminal();
+                checkResult.clear();
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                continue;
+            }
+            if (minWager > initBank) {
+                std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, round_to_string(minWager)) << ". Please re-enter a value less than your bank." << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+                clear_terminal();
+                checkResult.clear();
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                continue;
+            }
+            else {
+                break;
+            }
+        }
+    }
+    std::cout << std::endl << userPlayer->GetDisplayName() << " has decided to have the minimum table wager to be: " << color_text(31, round_to_string(minWager)) << std::endl; time_sleep(SHORT_TIME_SLEEP);
+    // Minimum card count for shoe
+    int minCardCount = 13;
+    // Prompt player to set wager for hand
+    std::cout << std::endl << "For this simulation, you will be betting a constant hand value each time. "; time_sleep(SHORT_TIME_SLEEP);
+    float handWager = 0;
+    while (true) {
+        // Prompt user for wager each hand
+        std::cout << "Please enter the value you'd like to bet for each hand: "; time_sleep(SHORT_TIME_SLEEP);
+        std::cin >> handWager; time_sleep(SHORT_TIME_SLEEP);
+        const std::type_info& result = typeid(handWager);
+        std::string checkResult = result.name();
+        // Check if value is not a float or integer
+        if (checkResult != "f" && checkResult != "i") {
+            std::cout << std::endl << color_text(31, "Invalid Response") << ". Please re-enter your submission." << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+            clear_terminal();
+            checkResult.clear();
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            continue;
+        }
+        // Check if value is a float or integer
+        else if (checkResult == "f" || checkResult == "i") {
+            if (handWager <= 0) {
+                std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, round_to_string(handWager)) << ". Please re-enter a positive value." << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+                clear_terminal();
+                checkResult.clear();
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                continue;
+            }
+            if (handWager > initBank) {
+                std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, round_to_string(handWager)) << ". Please re-enter a value less than your bank." << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+                clear_terminal();
+                checkResult.clear();
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                continue;
+            }
+            if (handWager < minWager) {
+                std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, round_to_string(handWager)) << ". Please re-enter a value greater than the table minimum." << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+                clear_terminal();
+                checkResult.clear();
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                continue;
+            }
+            else {
+                break;
+            }
+        }
+    }
+    std::cout << std::endl << userPlayer->GetDisplayName() << " has decided to place a consistent wager of: " << color_text(31, round_to_string(handWager)) << std::endl; time_sleep(SHORT_TIME_SLEEP);
+    // Create string response for first prompt
+    std::string brokeResponse;
+    std::cout << std::endl << "Now, we need to decide how to run this simulation. The first question is would you like to run the simulation until your player is out of currency?" << std::endl; time_sleep(SHORT_TIME_SLEEP);
+    std::cout << std::endl << "Enter (y) for yes and and anything else for no. "; time_sleep(SHORT_TIME_SLEEP);
+    std::cin >> brokeResponse;
+    // Play till broke
+    if (brokeResponse == "y" || brokeResponse == "Y") {
+        std::cout << std::endl << "You have chosen to simulate a game until your player runs out of currency." << std::endl; time_sleep(SHORT_TIME_SLEEP);
+        std::cout << std::endl << "We will now simulate a game of blackjack." << std::endl; time_sleep(LONG_TIME_SLEEP);
+        std::cout << std::endl; time_sleep(SHORT_TIME_SLEEP);
+        progress_bar(LONG_TIME_SLEEP, "Compiling Parameters", "Beginning Simulation");
+        std::cout << std::endl;
+        float origWager = handWager;
+        // Play until player runs out of currency
+        while ((gameShoe->GetCardsInShoe()->GetSize() >= minCardCount && userPlayer->GetBankTotal() > 0)) {
+            // Break for bank lower than min wager
+            if (userPlayer->GetBankTotal() < minWager) {
+                std::cout << "\rSimulation Finished. Final hands played: " << color_text(34, std::to_string(userPlayer->GetHandsPlayed())) << " Final bank total: " << userPlayer->GetDisplayBankTotal() 
+                << " Final Hands Won: " << color_text(31, std::to_string(userPlayer->GetHandsWon())) << " Final Hands Lost: " << color_text(31, std::to_string(userPlayer->GetHandsLost())) << " Final Hands Pushed: "
+                << color_text(31, std::to_string(userPlayer->GetHandsPushed())) << " Final Blackjacks: " << color_text(31, std::to_string(userPlayer->GetBlackjackHands())) << std::flush; time_sleep(5);
+                break;
+            }
+            // Set hand wager for min wager when bank is between min wager and hand wager
+            if (userPlayer->GetBankTotal() >= minWager && userPlayer->GetBankTotal() < handWager) {
+                handWager = minWager;
+            }
+            // Revert the wager back to the original wager if the bank exceeds it
+            if (userPlayer->GetBankTotal() >= origWager) {
+                handWager = origWager;
+            }
+            // Process the game logic for a simulated hand
+            game_logic_sim(userPlayer, dealer, gameShoe, handWager);
+            if (gameShoe->GetCardsInShoe()->GetSize() < minCardCount) {
+                gameShoe->EmptyShoe();
+                gameShoe->CreateShoeSim();
+                continue;
+            }
+            else {
+                std::cout << "\rSimulation running. Current hands played: " << color_text(34, std::to_string(userPlayer->GetHandsPlayed())) << " Current bank total: " << userPlayer->GetDisplayBankTotal() 
+                << " Current Hands Won: " << color_text(31, std::to_string(userPlayer->GetHandsWon())) << " Current Hands Lost: " << color_text(31, std::to_string(userPlayer->GetHandsLost())) << " Current Hands Pushed: "
+                << color_text(31, std::to_string(userPlayer->GetHandsPushed())) << " Current Blackjacks: " << color_text(31, std::to_string(userPlayer->GetBlackjackHands())) << std::flush; time_sleep(1);
+            }
+        }
+        // Generate csv of statistics for a game
+        std::string csvFile = csv_generator(userPlayer);
+        // Plot hand number and post hand bank total
+        plot(csvFile, 4);
+    }
+    // Play for other parameters
+    else {
+        std::cout << std::endl << "You have chosen to play until other parameters have been met." << std::endl; time_sleep(SHORT_TIME_SLEEP);
+        // Keep track of max number of hands played
+        std::cout << std::endl << "There are a number of ways this simulation can be ran. We can run a simulation until a certain number of hands have been played or if player reaches a desired bank amount." << std::endl; time_sleep(SHORT_TIME_SLEEP);
+        int maxHands = 0;
+        while (true) {
+            // Prompt user for max number of hands
+            std::cout << std::endl << "First, what is the max number of hands that you would like to play for? "; time_sleep(SHORT_TIME_SLEEP);
+            std::cin >> maxHands; time_sleep(SHORT_TIME_SLEEP);
+            const std::type_info& result = typeid(maxHands);
+            std::string checkResult = result.name();
+            // Check if value is not a float or integer
+            if (checkResult != "f" && checkResult != "i") {
+                std::cout << std::endl << color_text(31, "Invalid Response") << ". Please re-enter your submission." << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+                clear_terminal();
+                checkResult.clear();
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                continue;
+            }
+            // Check if value is a float or integer
+            else if (checkResult == "f" || checkResult == "i") {
+                if (handWager <= 0) {
+                    std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(32, std::to_string(maxHands)) << ". Please re-enter a positive value." << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+                    clear_terminal();
+                    checkResult.clear();
+                    std::cin.clear();
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    continue;
+                }
+                else {
+                    break;
+                }
+            }
+        }
+        std::cout << std::endl << userPlayer->GetDisplayName() << " has decided to play for a max number of " << color_text(32, std::to_string(maxHands)) << " hands." << std::endl; time_sleep(SHORT_TIME_SLEEP);
+        // Keep an eye out for a specific bank total
+        std::cout << std::endl << "Now, we can keep track of the bank total that you would like to quit playing at. If you do not want to quit playing a specific bank total, enter zero or a negative number." << std::endl; time_sleep(SHORT_TIME_SLEEP);
+        float bankTracker = 0;
+        while (true) {
+            // Prompt user for bank value to stop at
+            std::cout << std::endl << "What is the bank total that you would like to quit playing at? "; time_sleep(SHORT_TIME_SLEEP);
+            std::cin >> bankTracker; time_sleep(SHORT_TIME_SLEEP);
+            const std::type_info& result = typeid(maxHands);
+            std::string checkResult = result.name();
+            // Check if value is not a float or integer
+            if (checkResult != "f" && checkResult != "i") {
+                std::cout << std::endl << color_text(31, "Invalid Response") << ". Please re-enter your submission." << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+                clear_terminal();
+                checkResult.clear();
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                continue;
+            }
+            // Check if value is a float or integer
+            else if (checkResult == "f" || checkResult == "i") {
+                round_input(bankTracker);
+                break;
+            }
+        }
+        if (bankTracker <= 0) {
+            std::cout << std::endl << "This simulation will run until the max number of hands played has been met or if the player runs out of currency before that max number of " << color_text(32, std::to_string(maxHands)) << " hands played." << std::endl; time_sleep(SHORT_TIME_SLEEP);
+        }
+        else {
+            std::cout << std::endl << "This simulation will run until the player runs out of currency before the max number of hands has been played of " << color_text(32, std::to_string(maxHands)) << " or if the player obtains a final bank total of " << color_text(33, round_to_string(bankTracker))
+            << " before the max number of hands played of " << color_text(32, std::to_string(maxHands)) << " has been played" << std::endl; time_sleep(SHORT_TIME_SLEEP); 
+        }
+        std::cout << std::endl << "We will now simulate a game of blackjack." << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+        std::cout << std::endl; time_sleep(SHORT_TIME_SLEEP);
+        progress_bar(LONG_TIME_SLEEP, "Compiling Parameters", "Beginning Simulation");
+        std::cout << std::endl;
+        float origWager = handWager;
+        // Play until parameters are met
+        while ((gameShoe->GetCardsInShoe()->GetSize() >= minCardCount && userPlayer->GetBankTotal() > 0)) {
+            // Break for bank lower than min wager
+            if (userPlayer->GetBankTotal() < minWager) {
+                std::cout << "\rSimulation Finished. Final hands played: " << color_text(34, std::to_string(userPlayer->GetHandsPlayed())) << " Final bank total: " << userPlayer->GetDisplayBankTotal() 
+                << " Final Hands Won: " << color_text(31, std::to_string(userPlayer->GetHandsWon())) << " Final Hands Lost: " << color_text(31, std::to_string(userPlayer->GetHandsLost())) << " Final Hands Pushed: "
+                << color_text(31, std::to_string(userPlayer->GetHandsPushed())) << " Final Blackjacks: " << color_text(31, std::to_string(userPlayer->GetBlackjackHands())) << std::flush; time_sleep(5);
+                break;
+            }
+            // Set hand wager for min wager when bank is between min wager and hand wager
+            if (userPlayer->GetBankTotal() >= minWager && userPlayer->GetBankTotal() < handWager) {
+                handWager = minWager;
+            }
+            // Revert the wager back to the original wager if the bank exceeds it
+            if (userPlayer->GetBankTotal() >= origWager) {
+                handWager = origWager;
+            }
+            // Process the game logic for a simulated hand
+            game_logic_sim(userPlayer, dealer, gameShoe, handWager);
+            // Break if max number of hands has been played
+            if (userPlayer->GetHandsPlayed() == maxHands) {
+                break;
+            }
+            // Break for bank total
+            if (userPlayer->GetBankTotal() >= bankTracker) {
+                break;
+            }
+            // Re-Shuffle show
+            if (gameShoe->GetCardsInShoe()->GetSize() < minCardCount) {
+                gameShoe->EmptyShoe();
+                gameShoe->CreateShoeSim();
+                continue;
+            }
+            else {
+                std::cout << "\rSimulation running. Current hands played: " << color_text(34, std::to_string(userPlayer->GetHandsPlayed())) << " Current bank total: " << userPlayer->GetDisplayBankTotal() 
+                << " Current Hands Won: " << color_text(31, std::to_string(userPlayer->GetHandsWon())) << " Current Hands Lost: " << color_text(31, std::to_string(userPlayer->GetHandsLost())) << " Current Hands Pushed: "
+                << color_text(31, std::to_string(userPlayer->GetHandsPushed())) << " Current Blackjacks: " << color_text(31, std::to_string(userPlayer->GetBlackjackHands())) << std::flush; time_sleep(1);
+            }
+        }
+        // Generate csv of statistics for a game
+        std::string csvFile = csv_generator(userPlayer);
+        // Plot hand number and post hand bank total
+        plot(csvFile, 4);
+    }
+}
+
+
 void simulate_game_test() {
     // Create players
     std::shared_ptr<Player> testPlayer(new Player());
