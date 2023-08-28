@@ -3943,197 +3943,208 @@ TEST_F(test_x, SameRankCheck) {
     }
 }
 
-// // Player Logic check test
-// TEST_F(test_x, PlayerLogic) {
-//     for (int i = 0; i < random_int(100, 1000); i++) {
-//         std::shared_ptr<Hand> testHand(new Hand);
-//         std::shared_ptr<Hand> dealerHand(new Hand);
-//         std::shared_ptr<Shoe> testShoe(new Shoe);
-//         std::shared_ptr<Card> testCard(new Card);
-//         std::shared_ptr<node<Card>> testNode;
-//         float priorBank = 100;
-//         float handWager = 10;
-//         testHand->NameSim("Borby");
-//         dealerHand->NameSim("Dealer");
-//         testHand->BankDepositSim(priorBank);
-//         priorBank = testHand->GetBankTotal();
-//         testShoe->SetNumOfDecks(1);
-//         testShoe->CreateShoeSim();
-//         while (testShoe->GetCardsInShoe()->GetSize() >= 13) {
-//             auto dsa_result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, handWager, false);
-//             // Neither player has blackjack
-//             if (std::get<3>(dsa_result)) {
-//                 auto pls_result = player_logic_sim(testHand, dealerHand, testShoe, true);
-//                 for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
-//                     // Player doubled down
-//                     if (testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetValuesMatrix()[3][0])) {
-//                         EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetValuesMatrix()[1][0]));
-//                         EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetValuesMatrix()[2][0]));
-//                         EXPECT_EQ(testHand->GetBankTotal(), testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal());
-//                         EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 3);
-//                         EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
-//                     }
-//                     // Player hit hand
-//                     else if (testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetValuesMatrix()[3][1])) {
-//                         EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetValuesMatrix()[1][0]));
-//                         EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetValuesMatrix()[1][1]));
-//                         EXPECT_EQ(testHand->GetBankTotal(), testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal());
-//                         EXPECT_NE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
-//                         EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
-//                     }
-//                     // Player stood
-//                     else {
-//                         EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetValuesMatrix()[1][0]));
-//                         EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testHand->GetValuesMatrix()[1][1]));
-//                         EXPECT_EQ(testHand->GetBankTotal(), testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal());
-//                         EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize() >= 2);
-//                         EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
-//                     }
-//                 }
-//             }
-//             // Someone has blackjack
-//             else {
-//                 EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetValuesMatrix()[1][0]));
-//                 EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetValuesMatrix()[1][1]));
-//                 if (testHand->GetCardsTotal() == 21) {
-//                     EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetValuesMatrix()[2][1]));
-//                 }
-//                 else {
-//                     EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetValuesMatrix()[2][1]));
-//                 }
-//                 if (dealerHand->GetCardsTotal() == 21) {
-//                     EXPECT_TRUE(dealerHand->GetHashTable()->Contains(dealerHand->GetValuesMatrix()[2][1]));
-//                 }
-//                 else {
-//                     EXPECT_FALSE(dealerHand->GetHashTable()->Contains(dealerHand->GetValuesMatrix()[2][1]));
-//                 }
-//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
-//                 EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
-//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), testHand->GetWager());
-//                 EXPECT_EQ(testHand->GetBankTotal(), testHand->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal());
-//             }
-//             testHand->ResetHand();
-//             dealerHand->ResetHand();
-//             testHand->BankDepositSim(priorBank);
-//         }
-//     }
-// }
+// Player Logic check test
+TEST_F(test_x, PlayerLogic) {
+    for (int i = 0; i < random_int(100, 1000); i++) {
+        std::shared_ptr<Player> testPlayer(new Player());
+        std::shared_ptr<Player> testDealer(new Player());
+        std::shared_ptr<Shoe> testShoe(new Shoe);
+        float priorBank = 100;
+        float handWager = 10;
+        testPlayer->SetName("Borby");
+        testDealer->SetName("Dealer");
+        testPlayer->SetBankTotal(priorBank);
+        testShoe->SetNumOfDecks(1);
+        testShoe->CreateShoeSim();
+        while (testShoe->GetCardsInShoe()->GetSize() >= 13) {
+            auto dsa_result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, handWager, false);
+            // Neither player has blackjack
+            if (dsa_result) {
+                player_logic_sim(testPlayer, testDealer, testShoe, true);
+                for (int i = 0; i < testPlayer->GetCurrentHands()->GetSize(); i++) {
+                    // Player doubled down
+                    if (testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[3][0])) {
+                        EXPECT_TRUE(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[1][0]));
+                        EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[1][1]));
+                        EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[1][2]));
+                        EXPECT_TRUE(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[2][0]));
+                        EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetWager(), 2 * handWager);
+                        EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 3);
+                        EXPECT_EQ(testDealer->GetCurrentHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
+                    }
+                    // Player hit their hand
+                    else if (testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[3][1])) {
+                        EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[1][0]));
+                        EXPECT_TRUE(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[1][1]));
+                        EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[1][2]));
+                        EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetWager(), handWager);
+                        EXPECT_NE(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
+                        EXPECT_EQ(testDealer->GetCurrentHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
+                    }
+                    else if (testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[3][3])) {
+                        EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[1][0]));
+                        EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[1][1]));
+                        EXPECT_TRUE(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[1][2]));
+                        EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetWager(), handWager);
+                        EXPECT_TRUE(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize() >= 2);
+                        EXPECT_EQ(testDealer->GetCurrentHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize(), 2);
+                    }
+                }
+            }
+            // Someone has blackjack
+            else {
+                EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[1][0]));
+                EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[1][1]));
+                EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[1][2]));
+                EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[1][3]));
+                EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[1][4]));
+                if (testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() == 21) {
+                    EXPECT_TRUE(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[2][1]));
+                }
+                else {
+                    EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[2][1]));
+                }
+                if (testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() == 21) {
+                    EXPECT_TRUE(testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[2][1]));
+                }
+                else {
+                    EXPECT_FALSE(testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[2][1]));
+                }
+                EXPECT_EQ(testPlayer->GetCurrentHands()->GetSize(), 1);
+                EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
+                EXPECT_EQ(testDealer->GetCurrentHands()->GetSize(), 1);
+                EXPECT_EQ(testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
+            }
+            testPlayer->ResetPlayer();
+            testDealer->ResetPlayer();
+            testPlayer->SetBankTotal(priorBank);
+        }
+    }
+}
 
-// // Dealer logic test check
-// TEST_F(test_x, DealerLogicTest) {
-//     for (int i = 0; i < random_int(100, 1000); i++) {
-//         std::shared_ptr<Hand> testHand(new Hand);
-//         std::shared_ptr<Hand> dealerHand(new Hand);
-//         std::shared_ptr<Shoe> testShoe(new Shoe);
-//         std::shared_ptr<Card> testCard(new Card);
-//         std::shared_ptr<node<Card>> testNode;
-//         float priorBank = 100;
-//         float handWager = 10;
-//         testHand->NameSim("Borby");
-//         dealerHand->NameSim("Dealer");
-//         testHand->BankDepositSim(priorBank);
-//         priorBank = testHand->GetBankTotal();
-//         testShoe->SetNumOfDecks(1);
-//         testShoe->CreateShoeSim();
-//         while (testShoe->GetCardsInShoe()->GetSize() >= 13) {
-//             auto dsa_result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, handWager, false);
-//             // Neither player has blackjack
-//             if (std::get<3>(dsa_result)) {
-//                 EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
-//                 EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-//                 EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
-//                 EXPECT_TRUE(testHand->GetCardsTotal() < 21);
-//                 EXPECT_TRUE(dealerHand->GetCardsTotal() < 21);
-//                 auto pls_result = player_logic_sim(testHand, dealerHand, testShoe, true);
-//                 for (int i = 0; i < testHand->GetPlayerHands()->GetSize(); i++) {
-//                     EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize() >= 2);
-//                     EXPECT_EQ(testHand->GetBankTotal(), testHand->GetPlayerHands()->RetrieveNode(i)->data->GetBankTotal());
-//                 }
-//                 auto dl_result = dealer_logic_sim(testHand, dealerHand, testShoe);
-//                 EXPECT_TRUE(dealerHand->GetPlayerCards()->GetSize() >= 2);
-//             }
-//             // Someone has blackjack
-//             else {
-//                 EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetValuesMatrix()[1][0]));
-//                 EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetValuesMatrix()[1][1]));
-//                 if (testHand->GetCardsTotal() == 21) {
-//                     EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetValuesMatrix()[2][1]));
-//                 }
-//                 else {
-//                     EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetValuesMatrix()[2][1]));
-//                 }
-//                 if (dealerHand->GetCardsTotal() == 21) {
-//                     EXPECT_TRUE(dealerHand->GetHashTable()->Contains(dealerHand->GetValuesMatrix()[2][1]));
-//                 }
-//                 else {
-//                     EXPECT_FALSE(dealerHand->GetHashTable()->Contains(dealerHand->GetValuesMatrix()[2][1]));
-//                 }
-//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
-//                 EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
-//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), testHand->GetWager());
-//                 EXPECT_EQ(testHand->GetBankTotal(), testHand->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal());
-//             }
-//             testHand->ResetHand();
-//             dealerHand->ResetHand();
-//             testHand->BankDepositSim(priorBank);
-//         }
-//     }
-// }
+// Dealer logic test check
+TEST_F(test_x, DealerLogicTest) {
+    for (int i = 0; i < random_int(100, 1000); i++) {
+        std::shared_ptr<Player> testPlayer(new Player());
+        std::shared_ptr<Player> testDealer(new Player());
+        std::shared_ptr<Shoe> testShoe(new Shoe);
+        std::shared_ptr<Card> testCard(new Card);
+        std::shared_ptr<node<Card>> testNode;
+        float priorBank = 100;
+        float handWager = 10;
+        testPlayer->SetName("Borby");
+        testDealer->SetName("Dealer");
+        testPlayer->SetBankTotal(priorBank);
+        testShoe->SetNumOfDecks(1);
+        testShoe->CreateShoeSim();
+        while (testShoe->GetCardsInShoe()->GetSize() >= 13) {
+            auto dsa_result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, handWager, false);
+            // Neither player has blackjack
+            if (dsa_result) {
+                EXPECT_EQ(testPlayer->GetCurrentHands()->GetSize(), 1);
+                EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
+                EXPECT_EQ(testDealer->GetCurrentHands()->GetSize(), 1);
+                EXPECT_EQ(testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
+                EXPECT_TRUE(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() < 21);
+                EXPECT_TRUE(testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() < 21);
+                player_logic_sim(testPlayer, testDealer, testShoe, true);
+                for (int i = 0; i < testPlayer->GetCurrentHands()->GetSize(); i++) {
+                    EXPECT_TRUE(testPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize() >= 2);
+                }
+                dealer_logic_sim(testPlayer, testDealer, testShoe);
+                EXPECT_TRUE(testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize() >= 2);
+            }
+            // Someone has blackjack
+            else {
+                EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[1][0]));
+                EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[1][1]));
+                EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[1][2]));
+                EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[1][3]));
+                EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[1][4]));
+                if (testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() == 21) {
+                    EXPECT_TRUE(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[2][1]));
+                }
+                else {
+                    EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[2][1]));
+                }
+                if (testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() == 21) {
+                    EXPECT_TRUE(testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[2][1]));
+                }
+                else {
+                    EXPECT_FALSE(testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[2][1]));
+                }
+                EXPECT_EQ(testPlayer->GetCurrentHands()->GetSize(), 1);
+                EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
+                EXPECT_EQ(testDealer->GetCurrentHands()->GetSize(), 1);
+                EXPECT_EQ(testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
+            }
+            testPlayer->ResetPlayer();
+            testDealer->ResetPlayer();
+            testPlayer->SetBankTotal(priorBank);
+        }
+    }
+}
 
-// // Hand comparison logic test
-// TEST_F(test_x, HandComparisonLogic) {
-//     for (int i = 0; i < random_int(100, 1000); i++) {
-//         std::shared_ptr<Hand> testHand(new Hand);
-//         std::shared_ptr<Hand> dealerHand(new Hand);
-//         std::shared_ptr<Shoe> testShoe(new Shoe);
-//         std::shared_ptr<Card> testCard(new Card);
-//         std::shared_ptr<node<Card>> testNode;
-//         float priorBank = 100;
-//         float handWager = 10;
-//         testHand->NameSim("Borby");
-//         dealerHand->NameSim("Dealer");
-//         testHand->BankDepositSim(priorBank);
-//         priorBank = testHand->GetBankTotal();
-//         testShoe->SetNumOfDecks(1);
-//         testShoe->CreateShoeSim();
-//         while (testShoe->GetCardsInShoe()->GetSize() >= 13) {
-//             auto dsa_result = dealer_showing_ace_sim(testHand, dealerHand, testShoe, handWager, false);
-//             // Neither player has blackjack
-//             if (std::get<3>(dsa_result)) {
-//                 EXPECT_EQ(testHand->GetPlayerHands()->GetSize(), 0);
-//                 EXPECT_EQ(testHand->GetPlayerCards()->GetSize(), 2);
-//                 EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
-//                 EXPECT_TRUE(testHand->GetCardsTotal() < 21);
-//                 EXPECT_TRUE(dealerHand->GetCardsTotal() < 21);
-//                 auto pls_result = player_logic_sim(testHand, dealerHand, testShoe, true);
-//                 auto dl_result = dealer_logic_sim(testHand, dealerHand, testShoe);
-//                 auto hcl_result = hand_comparison_logic_sim(testHand, dealerHand);
-//             }
-//             // Someone has blackjack
-//             else {
-//                 EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetValuesMatrix()[1][0]));
-//                 EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetValuesMatrix()[1][1]));
-//                 if (testHand->GetCardsTotal() == 21) {
-//                     EXPECT_TRUE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetValuesMatrix()[2][1]));
-//                 }
-//                 else {
-//                     EXPECT_FALSE(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testHand->GetValuesMatrix()[2][1]));
-//                 }
-//                 if (dealerHand->GetCardsTotal() == 21) {
-//                     EXPECT_TRUE(dealerHand->GetHashTable()->Contains(dealerHand->GetValuesMatrix()[2][1]));
-//                 }
-//                 else {
-//                     EXPECT_FALSE(dealerHand->GetHashTable()->Contains(dealerHand->GetValuesMatrix()[2][1]));
-//                 }
-//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
-//                 EXPECT_EQ(dealerHand->GetPlayerCards()->GetSize(), 2);
-//                 EXPECT_EQ(testHand->GetPlayerHands()->RetrieveNode(0)->data->GetWager(), testHand->GetWager());
-//                 EXPECT_EQ(testHand->GetBankTotal(), testHand->GetPlayerHands()->RetrieveNode(0)->data->GetBankTotal());
-//             }
-//             testHand->ResetHand();
-//             dealerHand->ResetHand();
-//             testHand->BankDepositSim(priorBank);
-//             // csv_generator(testHand);
-//         }
-//     }
-// }
+// Hand comparison logic test
+TEST_F(test_x, HandComparisonLogic) {
+    for (int i = 0; i < random_int(100, 1000); i++) {
+        std::shared_ptr<Player> testPlayer(new Player());
+        std::shared_ptr<Player> testDealer(new Player());
+        std::shared_ptr<Shoe> testShoe(new Shoe);
+        float priorBank = 100;
+        float handWager = 10;
+        testPlayer->SetName("Borby");
+        testDealer->SetName("Dealer");
+        testPlayer->SetBankTotal(priorBank);
+        testShoe->SetNumOfDecks(1);
+        testShoe->CreateShoeSim();
+        while (testShoe->GetCardsInShoe()->GetSize() >= 13) {
+            auto dsa_result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, handWager, false);
+            // Neither player has blackjack
+            if (dsa_result) {
+                EXPECT_EQ(testPlayer->GetCurrentHands()->GetSize(), 1);
+                EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
+                EXPECT_EQ(testDealer->GetCurrentHands()->GetSize(), 1);
+                EXPECT_EQ(testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
+                EXPECT_TRUE(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() < 21);
+                EXPECT_TRUE(testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() < 21);
+                player_logic_sim(testPlayer, testDealer, testShoe, true);
+                dealer_logic_sim(testPlayer, testDealer, testShoe);
+                hand_comparison_logic_sim(testPlayer, testDealer);
+            }
+            // Someone has blackjack
+            else {
+                EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[1][0]));
+                EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[1][1]));
+                EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[1][2]));
+                EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[1][3]));
+                EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[1][4]));
+                if (testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() == 21) {
+                    EXPECT_TRUE(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[2][1]));
+                }
+                else {
+                    EXPECT_FALSE(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[2][1]));
+                }
+                if (testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() == 21) {
+                    EXPECT_TRUE(testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[2][1]));
+                }
+                else {
+                    EXPECT_FALSE(testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[2][1]));
+                }
+                EXPECT_EQ(testPlayer->GetCurrentHands()->GetSize(), 1);
+                EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
+                EXPECT_EQ(testDealer->GetCurrentHands()->GetSize(), 1);
+                EXPECT_EQ(testDealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
+            }
+            testPlayer->SetBankTotal(priorBank);
+            testPlayer->ResetPlayer();
+            testDealer->ResetPlayer();
+            // csv_generator(testPlayer);
+        }
+        break;
+    }
+}
+
+TEST_F(test_x, SimulatedGame) {
+    simulate_game_test();
+}
