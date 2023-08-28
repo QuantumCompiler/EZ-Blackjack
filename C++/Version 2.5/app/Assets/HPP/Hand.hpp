@@ -443,6 +443,7 @@ Hand Hand::ParametersCheck(std::shared_ptr<Hand>& dealerHand, const float& playe
 /*  PlaceWagerPrompt - Prompts the user to input a wager for their hand
 *   Input:
 *       bank - Float value that is passed by reference that represents a players bank total
+*       name - Represents the name of the player
 *   Algorithm:
 *       * Create a float value "input" and prompt the user for their wager they would like to place
 *       * Check to see if the input is valid
@@ -457,11 +458,11 @@ Hand Hand::ParametersCheck(std::shared_ptr<Hand>& dealerHand, const float& playe
 *   Output:
 *       This function returns a Hand object after setting the wager of a players hand
 */
-Hand Hand::PlaceWagerPrompt(float& bank) {
+Hand Hand::PlaceWagerPrompt(float& bank, std::string& name) {
     float input;
     while (true) {
         // Prompt user for the wager that they would like place for their hand
-        std::cout << std::endl << "Please enter a wager for this hand. Current bank total: " << color_text(33, std::to_string(round_input(bank))) << ": "; time_sleep(SHORT_TIME_SLEEP);
+        std::cout << std::endl << "Please enter a wager for this hand. Current bank total: " << color_text(33, round_to_string(bank)) << ": "; time_sleep(SHORT_TIME_SLEEP);
         std::cin >> input; time_sleep(SHORT_TIME_SLEEP);
         const std::type_info& result = typeid(input);
         std::string checkResult = result.name();
@@ -478,7 +479,7 @@ Hand Hand::PlaceWagerPrompt(float& bank) {
         else if (checkResult == "f" || checkResult == "i") {
             // User has entered a value that is less than zero, return to beginning of while loop
             if (input <= 0) {
-                std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(round_input(input))) << ". Please re-enter a positive value." << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, round_to_string(input)) << ". Please re-enter a positive value." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                 clear_terminal();
                 checkResult.clear();
                 std::cin.clear();
@@ -489,7 +490,7 @@ Hand Hand::PlaceWagerPrompt(float& bank) {
             else {
                 // User has entered a wager that is greater than their bank, return to beginning of while loop
                 if (input > bank) {
-                    std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(round_input(input))) << ". You must enter a wager that is less than or equal to your bank total "
+                    std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, round_to_string(input)) << ". You must enter a wager that is less than or equal to your bank total "
                     << color_text(33, std::to_string(round_input(bank))) << ". Please re-enter your submission." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                     clear_terminal();
                     checkResult.clear();
@@ -501,7 +502,7 @@ Hand Hand::PlaceWagerPrompt(float& bank) {
                 else {
                     this->SetWager(input);
                     bank -= this->GetWager();
-                    std::cout << std::endl << "Player has wagered: " << this->GetDisplayWager() << " with a current bank total " << color_text(33, std::to_string(round_input(bank))) << "." << std::endl; time_sleep(SHORT_TIME_SLEEP);
+                    std::cout << std::endl << name << " has wagered: " << this->GetDisplayWager() << " with a current bank total " << color_text(33, round_to_string(bank)) << "." << std::endl; time_sleep(SHORT_TIME_SLEEP);
                     return *this;
                 }
             }

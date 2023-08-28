@@ -108,7 +108,7 @@ public:
     Hand InsurancePrompt(float& bank); // Prompts a player if they would like to place an insurance wager
     Hand InsuranceSim(float& bank, const bool& input); // Places an insurance wager for a simulate hand
     Hand ParametersCheck(std::shared_ptr<Hand>& dealerHand, const float& playerBank); // Checks for certain parameters of how a player can play their hand
-    Hand PlaceWagerPrompt(float& bank); // Prompts a player for how much currency they would like to place as a wager for a hand
+    Hand PlaceWagerPrompt(float& bank, std::string& name); // Prompts a player for how much currency they would like to place as a wager for a hand
     Hand PlaceWagerSim(float& bank, const float& wager); // Places the wager for a players hand in a simulated game
     Hand ResetHand(); // Resets certain parameters for a players hand
     // Setter Functions
