@@ -1,11 +1,7 @@
 #include <gtest/gtest.h>
-#include "../app/Assets/HPP/Core.hpp"
+#include "../app/Assets/HPP/Game.hpp"
 
 class test_x : public ::testing::Test {};
-
-/////////////////////////////////////////
-// Test Helper Functions
-/////////////////////////////////////////
 
 /////////////////////////////////////////
 // HashTable Table Tests
@@ -1524,7 +1520,7 @@ TEST_F(test_x, DealerShowingAce) {
         {
             // Player chose to buy insurance
             {
-                auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, true);
+                auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, true);
                 EXPECT_EQ(testPlayer->GetTotalHandWagers()->RetrieveNode(0)->data, playerWager + testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager());
                 EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0.5 * playerWager);
                 EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetNet(), playerWager);
@@ -1542,7 +1538,7 @@ TEST_F(test_x, DealerShowingAce) {
             // Player chose to not buy insurance
             testShoe->CopyShoe(copyShoe);
             {
-                auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, false);
+                auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, false);
                 EXPECT_EQ(testPlayer->GetTotalHandWagers()->RetrieveNode(0)->data, playerWager);
                 EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0);
                 EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetNet(), 0);
@@ -1569,7 +1565,7 @@ TEST_F(test_x, DealerShowingAce) {
                 playerWager = 70;
                 while (playerWager <= priorBank) {
                     testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, true);
+                    auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, true);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager(), playerWager);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetNet(), 0);
@@ -1592,7 +1588,7 @@ TEST_F(test_x, DealerShowingAce) {
                 playerWager = 70;
                 while (playerWager <= priorBank) {
                     testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, false);
+                    auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, false);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager(), playerWager);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetNet(), 0);
@@ -1634,7 +1630,7 @@ TEST_F(test_x, DealerShowingAce) {
         {
             // Player chose to buy insurance
             {
-                auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, true);
+                auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, true);
                 EXPECT_EQ(testPlayer->GetTotalHandWagers()->RetrieveNode(0)->data, playerWager + testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager());
                 EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0.5 * playerWager);
                 EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetNet(), 0);
@@ -1652,7 +1648,7 @@ TEST_F(test_x, DealerShowingAce) {
             // Player chose to not buy insurance
             testShoe->CopyShoe(copyShoe);
             {
-                auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, false);
+                auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, false);
                 EXPECT_EQ(testPlayer->GetTotalHandWagers()->RetrieveNode(0)->data, playerWager + testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager());
                 EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0);
                 EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetNet(), -testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager());
@@ -1676,7 +1672,7 @@ TEST_F(test_x, DealerShowingAce) {
                 playerWager = 70;
                 while (playerWager <= priorBank) {
                     testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, true);
+                    auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, true);
                     EXPECT_EQ(testPlayer->GetTotalHandWagers()->RetrieveNode(0)->data, playerWager + testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager());
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetNet(), -testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager());
@@ -1699,7 +1695,7 @@ TEST_F(test_x, DealerShowingAce) {
                 playerWager = 70;
                 while (playerWager <= priorBank) {
                     testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, false);
+                    auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, false);
                     EXPECT_EQ(testPlayer->GetTotalHandWagers()->RetrieveNode(0)->data, playerWager + testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager());
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetNet(), -testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager());
@@ -1741,7 +1737,7 @@ TEST_F(test_x, DealerShowingAce) {
         {
             // Player chose to buy insurance
             {
-                auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, true);
+                auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, true);
                 EXPECT_EQ(testPlayer->GetTotalHandWagers()->RetrieveNode(0)->data, playerWager + testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager());
                 EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0.5 * playerWager);
                 EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetNet(), testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager() - testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager());
@@ -1759,7 +1755,7 @@ TEST_F(test_x, DealerShowingAce) {
             // Player chose to not buy insurance
             testShoe->CopyShoe(copyShoe);
             {
-                auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, false);
+                auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, false);
                 EXPECT_EQ(testPlayer->GetTotalHandWagers()->RetrieveNode(0)->data, playerWager + testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager());
                 EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0);
                 EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetNet(), 1.5 * testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager());
@@ -1783,7 +1779,7 @@ TEST_F(test_x, DealerShowingAce) {
                 playerWager = 70;
                 while (playerWager <= priorBank) {
                     testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, true);
+                    auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, true);
                     EXPECT_EQ(testPlayer->GetTotalHandWagers()->RetrieveNode(0)->data, playerWager + testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager());
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetNet(), 1.5 * testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager());
@@ -1806,7 +1802,7 @@ TEST_F(test_x, DealerShowingAce) {
                 playerWager = 70;
                 while (playerWager <= priorBank) {
                     testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, false);
+                    auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, false);
                     EXPECT_EQ(testPlayer->GetTotalHandWagers()->RetrieveNode(0)->data, playerWager + testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager());
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetNet(), 1.5 * testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager());
@@ -1848,7 +1844,7 @@ TEST_F(test_x, DealerShowingAce) {
         {
             // Player chose to buy insurance
             {
-                auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, true);
+                auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, true);
                 EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager(), playerWager);
                 EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0.5 * playerWager);
                 EXPECT_TRUE(result);
@@ -1864,7 +1860,7 @@ TEST_F(test_x, DealerShowingAce) {
             // Player chose to not buy insurance
             testShoe->CopyShoe(copyShoe);
             {
-                auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, false);
+                auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, false);
                 EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager(), playerWager);
                 EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0);
                 EXPECT_TRUE(result);
@@ -1886,7 +1882,7 @@ TEST_F(test_x, DealerShowingAce) {
                 playerWager = 70;
                 while (playerWager <= priorBank) {
                     testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, true);
+                    auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, true);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager(), playerWager);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0);
                     EXPECT_TRUE(result);
@@ -1907,7 +1903,7 @@ TEST_F(test_x, DealerShowingAce) {
                 playerWager = 70;
                 while (playerWager <= priorBank) {
                     testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, false);
+                    auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, false);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager(), playerWager);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0);
                     EXPECT_TRUE(result);
@@ -1951,7 +1947,7 @@ TEST_F(test_x, DealerShowingAce) {
                 playerWager = 10;
                 while (playerWager <= priorBank) {
                     testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, true);
+                    auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, true);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager(), playerWager);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetNet(), 0);
@@ -1973,7 +1969,7 @@ TEST_F(test_x, DealerShowingAce) {
                 playerWager = 10;
                 while (playerWager <= priorBank) {
                     testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, false);
+                    auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, false);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager(), playerWager);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetNet(), 0);
@@ -2017,7 +2013,7 @@ TEST_F(test_x, DealerShowingAce) {
                 playerWager = 10;
                 while (playerWager <= priorBank) {
                     testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, true);
+                    auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, true);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager(), playerWager);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetNet(), -testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager());
@@ -2039,7 +2035,7 @@ TEST_F(test_x, DealerShowingAce) {
                 playerWager = 10;
                 while (playerWager <= priorBank) {
                     testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, false);
+                    auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, false);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager(), playerWager);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetNet(), -testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager());
@@ -2083,7 +2079,7 @@ TEST_F(test_x, DealerShowingAce) {
                 playerWager = 10;
                 while (playerWager <= priorBank) {
                     testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, true);
+                    auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, true);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager(), playerWager);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetNet(), 1.5 * testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager());
@@ -2105,7 +2101,7 @@ TEST_F(test_x, DealerShowingAce) {
                 playerWager = 10;
                 while (playerWager <= priorBank) {
                     testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, false);
+                    auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, false);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager(), playerWager);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetNet(), 1.5 * testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager());
@@ -2149,7 +2145,7 @@ TEST_F(test_x, DealerShowingAce) {
                 playerWager = 10;
                 while (playerWager <= priorBank) {
                     testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, true);
+                    auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, true);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager(), playerWager);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetNet(), 0);
@@ -2171,7 +2167,7 @@ TEST_F(test_x, DealerShowingAce) {
                 playerWager = 10;
                 while (playerWager <= priorBank) {
                     testShoe->CopyShoe(copyShoe);
-                    auto result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, playerWager, false);
+                    auto result = blackjack_check_sim(testPlayer, testDealer, testShoe, playerWager, false);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetWager(), playerWager);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetInsuranceWager(), 0);
                     EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetNet(), 0);
@@ -3957,9 +3953,9 @@ TEST_F(test_x, PlayerLogic) {
         testShoe->SetNumOfDecks(1);
         testShoe->CreateShoeSim();
         while (testShoe->GetCardsInShoe()->GetSize() >= 13) {
-            auto dsa_result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, handWager, false);
+            auto bjc_result = blackjack_check_sim(testPlayer, testDealer, testShoe, handWager, false);
             // Neither player has blackjack
-            if (dsa_result) {
+            if (bjc_result) {
                 player_logic_sim(testPlayer, testDealer, testShoe, true);
                 for (int i = 0; i < testPlayer->GetCurrentHands()->GetSize(); i++) {
                     // Player doubled down
@@ -4038,9 +4034,9 @@ TEST_F(test_x, DealerLogicTest) {
         testShoe->SetNumOfDecks(1);
         testShoe->CreateShoeSim();
         while (testShoe->GetCardsInShoe()->GetSize() >= 13) {
-            auto dsa_result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, handWager, false);
+            auto bjc_result = blackjack_check_sim(testPlayer, testDealer, testShoe, handWager, false);
             // Neither player has blackjack
-            if (dsa_result) {
+            if (bjc_result) {
                 EXPECT_EQ(testPlayer->GetCurrentHands()->GetSize(), 1);
                 EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
                 EXPECT_EQ(testDealer->GetCurrentHands()->GetSize(), 1);
@@ -4099,9 +4095,9 @@ TEST_F(test_x, HandComparisonLogic) {
         testShoe->SetNumOfDecks(1);
         testShoe->CreateShoeSim();
         while (testShoe->GetCardsInShoe()->GetSize() >= 13) {
-            auto dsa_result = dealer_showing_ace_sim(testPlayer, testDealer, testShoe, handWager, false);
+            auto bjc_result = blackjack_check_sim(testPlayer, testDealer, testShoe, handWager, false);
             // Neither player has blackjack
-            if (dsa_result) {
+            if (bjc_result) {
                 EXPECT_EQ(testPlayer->GetCurrentHands()->GetSize(), 1);
                 EXPECT_EQ(testPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize(), 2);
                 EXPECT_EQ(testDealer->GetCurrentHands()->GetSize(), 1);
@@ -4142,9 +4138,4 @@ TEST_F(test_x, HandComparisonLogic) {
         }
         break;
     }
-}
-
-// Tests a simulated game
-TEST_F(test_x, SimulatedGame) {
-    simulate_game_test();
 }
