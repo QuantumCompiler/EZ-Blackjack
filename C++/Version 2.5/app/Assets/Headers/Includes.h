@@ -2,9 +2,9 @@
 #ifndef INCLUDES_H
 #define INCLUDES_H
 
-#define SHORT_TIME_SLEEP 500
-#define MEDIUM_TIME_SLEEP 2500
-#define LONG_TIME_SLEEP 5000
+#define SHORT_TIME_SLEEP 250
+#define MEDIUM_TIME_SLEEP 1500
+#define LONG_TIME_SLEEP 3000
 
 #include <algorithm>
 #include <array>
