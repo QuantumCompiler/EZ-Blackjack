@@ -103,10 +103,12 @@ Player Player::BankDepositPrompt() {
 Player Player::NamePrompt() {
     std::string input;
     // Prompt user for their name
-    std::cout << std::endl << "Please enter a name for your player: "; time_sleep(SHORT_TIME_SLEEP);
+    std::string namePrompt = "Please enter a name for your player: ";
+    std::cout << std::endl << namePrompt; time_sleep(SHORT_TIME_SLEEP);
     std::getline(std::cin, input); time_sleep(SHORT_TIME_SLEEP);
     // Set the players name to "input"
     this->SetName(input);
+    // std::cout << "\033[1A\r" << std::string(namePrompt.length() + input.length(), ' ') << "\r";
     return *this;
 }
 
@@ -155,12 +157,12 @@ Player Player::ShowCurrentHand(std::shared_ptr<Hand>& inputHand, std::string opt
     }
     // Modify the string values
     std::string optionMod = color_text(34, option);
-    std::string handTotalMod = color_text(36, "Hand Total");
+    std::string handTotalMod = color_text(35, "Hand Total");
     // The player is not the dealer
     if (this->GetName() != "Dealer") {
         this->SetBankTotal(this->GetBankTotal());
         // Modify more string values
-        std::string handWager = color_text(32, "Hand Wager");
+        std::string handWager = color_text(31, "Hand Wager");
         std::string bankTotal = color_text(33, "Bank Total");
         std::cout << this->GetDisplayName() << "'s " << optionMod << " hand: [";
         // Iterate through the cards in players hand
@@ -180,7 +182,7 @@ Player Player::ShowCurrentHand(std::shared_ptr<Hand>& inputHand, std::string opt
     else if (this->GetName() == "Dealer") {
         // Dealer is hiding a card
         if (dealerShow.empty()) {
-            std::string backCardMod = color_text(36, std::to_string(inputHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()));
+            std::string backCardMod = color_text(35, std::to_string(inputHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()));
             std::cout << this->GetDisplayName() << "'s " << optionMod << " hand : [Hidden, " << inputHand->GetPlayerCards()->RetrieveNode(-1)->data << "] " << handTotalMod << ": " << backCardMod << std::endl; time_sleep(SHORT_TIME_SLEEP);
         }
         // Dealer is showing both cards
