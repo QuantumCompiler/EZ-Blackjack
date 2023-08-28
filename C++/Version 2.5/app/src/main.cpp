@@ -1,7 +1,6 @@
-#include "../Assets/HPP/Core.hpp"
+#include "../Assets/HPP/Game.hpp"
 
 int main() {
-    simulate_game();
-    // simulate_game_test();
+    play_game();
     return 0;
 }
