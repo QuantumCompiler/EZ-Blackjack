@@ -4139,12 +4139,12 @@ TEST_F(test_x, HandComparisonLogic) {
             testPlayer->SetBankTotal(priorBank);
             testPlayer->ResetPlayer();
             testDealer->ResetPlayer();
-            // csv_generator(testPlayer);
         }
         break;
     }
 }
 
+// Tests a simulated game
 TEST_F(test_x, SimulatedGame) {
     simulate_game_test();
 }
