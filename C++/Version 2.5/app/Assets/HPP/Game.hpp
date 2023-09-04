@@ -36,12 +36,12 @@ void play_game() {
     // Set the names of the player
     humanPlayer->NamePrompt();
     dealer->SetName("Dealer");
-    // Deposit currency into players bank
-    humanPlayer->BankDepositPrompt();
-    float origBank = humanPlayer->GetBankTotal();
     // Create Shoe object
     std::shared_ptr<Shoe> gameShoe(new Shoe);
     gameShoe->CreateShoePrompt();
+    // Deposit currency into players bank
+    humanPlayer->BankDepositPrompt();
+    // float origBank = humanPlayer->GetBankTotal();
     deal_hand(humanPlayer, dealer, gameShoe);
 //     // Card count minimum
 //     int min_card_count = 13;
