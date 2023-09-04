@@ -49,11 +49,9 @@ Shoe Shoe::CopyShoe(const std::shared_ptr<Shoe> input) {
 *   Algorithm:
 *       * We first check to see if gameDeck.numOfDecks is zero, if it is, we then require an input from the player
 *       * We then prompt the user to enter the number of decks they would like to play with
-*       * If the response is not an integer value (i.e. The first character is not a digit), then we prompt the player
-*         and have them re-enter the number of decks that they would like to play with
-*       * If the response is an integer, then we check for if it is greater than zero
-*           * If the response is less than or equal to zero, we have the player re-enter their selection for the number
-*             of decks that they would like to play with
+*       * Check for valid input
+*           * If the input is valid, correctly output the prompt for the number of decks and cards
+*           * If the input is invalid, restart the loop
 *       * If the previous checks pass, we exit the while loop and then assemble the shoe with the double nested for-loop
 *       * After the deck has been assembled, we invoke the "Shuffle" function to shuffle the deck
 *   Output:
@@ -69,45 +67,24 @@ Shoe Shoe::CreateShoePrompt() {
     while(needInput) {
         int input;
         // Prompt player for the number of decks that they would like to play with
-        std::cout << std::endl << "Please enter the number of decks you would like to play with: "; time_sleep(SHORT_TIME_SLEEP);
-        std::cin >> input; time_sleep(SHORT_TIME_SLEEP);
-        const std::type_info& result = typeid(input);
-        std::string checkResult = result.name();
-        // Check that the result is an integer, if it isn't, require a response again
-        if (checkResult != "i") {
-            std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(input)) << ". Please re-enter your submission." << std::endl; time_sleep(SHORT_TIME_SLEEP);
-            clear_terminal();
-            checkResult.clear();
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            continue;
-        }
-        // The result is an integer
-        else if (checkResult == "i") {
-            // Result is less than zero, require user to re-enter prompt
-            if (input <= 0) {
-                std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(input)) << ". Please re-enter a positive value." << std::endl; time_sleep(SHORT_TIME_SLEEP);
-                clear_terminal();
-                checkResult.clear();
-                std::cin.clear();
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                continue;
-            }
+        std::cout << std::endl; animate_text("Please enter the number of decks you would like to play with: ", PRINT_LINE_SLEEP);
+        std::cin >> input;
+        // Check for a valid input
+        if (input_validation(input)) {
             // Result is a positive integer, set "input" to "numOfDecks"
-            else {
-                this->SetNumOfDecks(input);
-                // Prompt for multiple decks
-                if (this->GetNumOfDecks() > 1) {
-                    std::cout << std::endl << "This shoe will be comprised of " << color_text(31, std::to_string(input)) << " decks of cards. " << color_text(31, std::to_string(input * 52))
-                    << " cards total." << std::endl; time_sleep(SHORT_TIME_SLEEP);
-                }
-                // Prompt for singular deck
-                else {
-                    std::cout << std::endl << "This shoe will be comprised of " << color_text(31, std::to_string(input)) << " deck of cards. " << color_text(31, std::to_string(input * 52))
-                    << " cards total." << std::endl; time_sleep(SHORT_TIME_SLEEP);
-                }
-                break;
+            this->SetNumOfDecks(input);
+            // Prompt for multiple decks
+            if (this->GetNumOfDecks() > 1) {
+                std::cout << std::endl; animate_text("This shoe will be comprised of " + color_text(31, std::to_string(input)) + " decks, " + color_text(31, std::to_string(input * 52)) + " cards total.", PRINT_LINE_SLEEP); std::cout << std::endl;
             }
+            // Prompt for singular deck
+            else {
+                std::cout << std::endl; animate_text("This shoe will be comprised of " + color_text(31, std::to_string(input)) + " deck of cards, " + color_text(31, std::to_string(input * 52)) + " cards total.", PRINT_LINE_SLEEP); std::cout << std::endl;
+            }
+            break;
+        }
+        else {
+            continue;
         }
     }
     // Construct the deck of cards
