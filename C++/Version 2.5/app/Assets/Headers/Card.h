@@ -31,6 +31,7 @@ public:
         os << currentCard.GetDisplayRank() << " of " << currentCard.GetDisplaySuit();
         return os;
     }
+    std::string PrintCard();
     // Setter Functions
     void SetCardValue(std::shared_ptr<PlayingCard> inputCard); // Mutates "cardValue"
     void SetDisplayCardValue(std::shared_ptr<PlayingCard> inputCard); // Mutates "displayCardValue"

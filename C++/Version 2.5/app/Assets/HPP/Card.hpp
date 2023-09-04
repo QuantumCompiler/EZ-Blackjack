@@ -38,6 +38,19 @@ bool Card::CheckCardParam(const std::string checkingParam, const std::string fee
     return checkingParam == feedingParam;
 }
 
+/*  PrintCard - Returns a string value with the rank and suit of a card
+*   Input:
+*       There are no input parameters for this function
+*   Algorithm:
+*       Generate a string of the display rank and suit of a card and return it
+*   Output:
+*       ret - String value that represents the display rank and suit of a card
+*/
+std::string Card::PrintCard() {
+    std::string ret = this->GetDisplayRank() + " of " + this->GetDisplaySuit();
+    return ret;
+}
+
 // ----- ----- ----- ----- ----- ----- ----- Setter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 // SetCardValue - Mutates the private data member "cardValue" by assigning it to a cards correct value
 void Card::SetCardValue(std::shared_ptr<PlayingCard> inputCard) {
