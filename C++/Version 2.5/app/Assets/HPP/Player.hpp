@@ -45,49 +45,29 @@ Player::~Player() {}
 *       This function does not have any input parameters
 *   Algorithm:
 *       * First create a float value that represents the bank total of a player prior to depositing
-*       * Enter an error catching block that will help us determine if a player has entered a correct value for a bank total
-*           * If the value entered is not a float, then we output an error message and clear the inputs
-*           * If the value entered is a float or an integer
-*               * We check to see if it is less than or equal to zero, if it is, we output an error message and require another input
-*               * If it is greater than zero, then we set the private data member "bankTotal" to the "input" with SetBankTotal
+*       * Check for valid input
+*           * If the input is valid, set the input to the bank total
+*           * If the input is not valid, restart the loop
 *       * We then initialize some values for the statistics tracking of the player
 *   Output:
 *       This function returns a Hand object after depositing currency into a players bank
 */
 Player Player::BankDepositPrompt() {
-    float input;
     while (true) {
+        float input;
         // Prompt user for deposit
-        std::cout << std::endl << "Please enter the amount you'd like to deposit into your bank: "; time_sleep(SHORT_TIME_SLEEP);
-        std::cin >> input; time_sleep(SHORT_TIME_SLEEP);
-        const std::type_info& result = typeid(input);
-        std::string checkResult = result.name();
-        // Check if value is not a float or integer
-        if (checkResult != "f" && checkResult != "i") {
-            std::cout << std::endl << color_text(31, "Invalid Response") << ". Please re-enter your submission." << std::endl; time_sleep(SHORT_TIME_SLEEP);
-            clear_terminal();
-            checkResult.clear();
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cout << std::endl; animate_text("Please enter the amount you'd like to deposit into your bank: ", PRINT_LINE_SLEEP);
+        std::cin >> input;
+        // Check for valid input
+        if (input_validation(input)) {
+            this->SetBankTotal(input);
+            break;
+        }
+        else {
             continue;
         }
-        // Check if value is a float or integer
-        else if (checkResult == "f" || checkResult == "i") {
-            if (input <= 0) {
-                std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, std::to_string(round_input(input))) << ". Please re-enter a positive value." << std::endl; time_sleep(SHORT_TIME_SLEEP);
-                clear_terminal();
-                checkResult.clear();
-                std::cin.clear();
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                continue;
-            }
-            else {
-                this->SetBankTotal(input);
-                break;
-            }
-        }
     }
-    std::cout << std::endl << this->GetDisplayName() << " has decided to start with: " << this->GetDisplayBankTotal() << std::endl; time_sleep(SHORT_TIME_SLEEP);
+    std::cout << std::endl; animate_text(this->GetDisplayName() + " has decided to start with: " + this->GetDisplayBankTotal() + " in their bank.", PRINT_LINE_SLEEP); std::cout << std::endl;
     return *this;
 }
 
@@ -103,9 +83,8 @@ Player Player::BankDepositPrompt() {
 Player Player::NamePrompt() {
     std::string input;
     // Prompt user for their name
-    std::string namePrompt = "Please enter a name for your player: ";
-    std::cout << std::endl << namePrompt; time_sleep(SHORT_TIME_SLEEP);
-    std::getline(std::cin, input); time_sleep(SHORT_TIME_SLEEP);
+    std::cout << std::endl; animate_text("Pleas enter a name for you player: ", PRINT_LINE_SLEEP);
+    std::getline(std::cin, input);
     // Set the players name to "input"
     this->SetName(input);
     // std::cout << "\033[1A\r" << std::string(namePrompt.length() + input.length(), ' ') << "\r";
@@ -164,48 +143,48 @@ Player Player::ShowCurrentHand(std::shared_ptr<Hand>& inputHand, std::string opt
         // Modify more string values
         std::string handWager = color_text(31, "Hand Wager");
         std::string bankTotal = color_text(33, "Bank Total");
-        std::cout << this->GetDisplayName() << "'s " << optionMod << " hand: [";
+        animate_text(this->GetDisplayName() + "'s " + optionMod + " hand: [", PRINT_LINE_SLEEP / 2);
         // Iterate through the cards in players hand
         for (int i = 0; i < inputHand->GetPlayerCards()->GetSize(); i++) {
             if (i == inputHand->GetPlayerCards()->GetSize() - 1) {
-                std::cout << inputHand->GetPlayerCards()->RetrieveNode(i)->data << "] ";
+                animate_text(inputHand->GetPlayerCards()->RetrieveNode(i)->data.PrintCard() + "] ", PRINT_LINE_SLEEP / 2);
             }
             else {
-                std::cout << inputHand->GetPlayerCards()->RetrieveNode(i)->data << " , ";
+                animate_text(inputHand->GetPlayerCards()->RetrieveNode(i)->data.PrintCard() + " , ", PRINT_LINE_SLEEP / 2);
             }
         }
         // Add hand total and display players hand parameters
         inputHand->AddHandTotal();
-        std::cout << handTotalMod << ": " << inputHand->GetDisplayCardsTotal() << " , " << handWager << ": " << inputHand->GetDisplayWager() << " , " << bankTotal << ": " << this->GetDisplayBankTotal() << std::endl; time_sleep(SHORT_TIME_SLEEP);
+        animate_text(handTotalMod + ": " + inputHand->GetDisplayCardsTotal() + " , " + handWager + ": " + inputHand->GetDisplayWager() + " , " + bankTotal + ": " + this->GetDisplayBankTotal(), PRINT_LINE_SLEEP / 2); std::cout << std::endl;
     }
     // The player is the dealer
     else if (this->GetName() == "Dealer") {
         // Dealer is hiding a card
         if (dealerShow.empty()) {
             std::string backCardMod = color_text(35, std::to_string(inputHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()));
-            std::cout << this->GetDisplayName() << "'s " << optionMod << " hand : [Hidden, " << inputHand->GetPlayerCards()->RetrieveNode(-1)->data << "] " << handTotalMod << ": " << backCardMod << std::endl; time_sleep(SHORT_TIME_SLEEP);
+            animate_text(this->GetDisplayName() + "'s " + optionMod + " hand : [Hidden, " + inputHand->GetPlayerCards()->RetrieveNode(-1)->data.PrintCard() + "] " + handTotalMod + ": " + backCardMod, PRINT_LINE_SLEEP / 2); std::cout << std::endl;
         }
         // Dealer is showing both cards
         else {
             if (dealerShow != "cards") {
-                std::cout << this->GetDisplayName() << "'s " << optionMod << " hand: [";
+                animate_text(this->GetDisplayName() + "'s " + optionMod + " hand: [", PRINT_LINE_SLEEP / 2);
             }
             // Specialized display of cards
             else {
-                std::cout << "[";
+                animate_text("[", PRINT_LINE_SLEEP / 2);
             }
             // Iterate through the cards in dealers hand
             for (int i = 0; i < inputHand->GetPlayerCards()->GetSize(); i++) {
                 if (i == inputHand->GetPlayerCards()->GetSize() - 1) {
-                    std::cout << inputHand->GetPlayerCards()->RetrieveNode(i)->data << "] ";
+                    animate_text(inputHand->GetPlayerCards()->RetrieveNode(i)->data.PrintCard() + "] ", PRINT_LINE_SLEEP / 2);
                 }
                 else {
-                    std::cout << inputHand->GetPlayerCards()->RetrieveNode(i)->data << " , ";
+                    animate_text(inputHand->GetPlayerCards()->RetrieveNode(i)->data.PrintCard() + " , ", PRINT_LINE_SLEEP / 2);
                 }
             }
             // Add hand total and display players hand parameters
             inputHand->AddHandTotal();
-            std::cout << handTotalMod << ": " << inputHand->GetDisplayCardsTotal() << std::endl; time_sleep(SHORT_TIME_SLEEP);
+            animate_text(handTotalMod + ": " + inputHand->GetDisplayCardsTotal(), PRINT_LINE_SLEEP); std::cout << std::endl;
         }
     }
     return *this;
