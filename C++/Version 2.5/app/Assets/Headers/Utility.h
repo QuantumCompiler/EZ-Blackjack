@@ -3,8 +3,10 @@
 #define UTILITY_H
 #include "../HPP/LinkedList.hpp"
 
+void animate_text(const std::string& text, int delay); // Animates text display in the terminal
 void clear_terminal(); // Clears a terminal
 std::string color_text(const int codeInput, const std::string textInput); // Colors input text
+template <typename arbitrary> bool input_validation(arbitrary& input);
 void progress_bar(const long input, const std::string loadingMessage, const std::string finishedMessage); // Progress bar animation
 int random_int(const int lowerBound, const int upperBound); // Generates random integer in a range
 float round_input(float input); // Founds a float input

@@ -4,6 +4,24 @@
 std::string Suits[4] = {"Clubs", "Diamonds", "Hearts", "Spades"};
 std::string Ranks[13] = {"Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"};
 // ---- ---- ---- ---- ---- ---- ---- ---- ---- Class Independent Methods ---- ---- ---- ---- ---- ---- ---- ---- //
+/*  animate_text - Animates text display by displaying text of a string character by character
+*   Input:
+*       text - Constant string value passed by reference that represents the text that is to be displayed to the terminal
+*       delay - Integer value that represents the delay for showing a new character in the string
+*   Algorithm:
+*       * Iterate through the string of text, display each character of text one at a time
+*       * Sleep the terminal
+*   Output:
+*       This function does not return a value, it displays text character by character of a string
+*/
+void animate_text(const std::string& text, int delay) {
+    // Iterate through the characters of a string
+    for (char c : text) {
+        std::cout << c << std::flush;
+        time_sleep(delay);
+    }
+}
+
 /*  clear_terminal - Clears the terminal of a machine
 *   Input:
 *       * This function does not have any input parameters
@@ -74,6 +92,44 @@ std::string color_text(const int codeInput, const std::string textInput) {
         break;
     }
     return code + textInput + "\033[0m";
+}
+
+/*  input_validation - Checks for if a value that has been entered is positive or not
+*   Input:
+*       input - Arbitrary data type that is passed by reference to check if the value is valid
+*   Algorithm:
+*       * First check if the the input is non-numeric, if it is, output the first message and clear the input and return false
+*       * Next check if the value is less than zero, if it is, output the corresponding correct message and return false
+*       * Return true if otherwise
+*   Output:
+*       This function returns a boolean value depending on whether or not certain conditions pass
+*/
+template <typename arbitrary> bool input_validation(arbitrary& input) {
+    // If a non-numeric value was entered or the stream got into a bad state.
+    if (std::cin.fail()) {
+        std::cout << std::endl; animate_text(color_text(31, "Invalid Response") + ". Please re-enter your submission.", PRINT_LINE_SLEEP / 2); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+        clear_terminal();
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        return false;
+    }
+    // Check for valid input
+    if (input <= 0) {
+        // Value is zero
+        if (input == 0) {
+            std::cout << std::endl; animate_text(color_text(31, "Invalid Response") + ". Please re-enter your submission.", PRINT_LINE_SLEEP / 2); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+        } 
+        // Value is negative
+        else {
+            std::cout << std::endl; animate_text(color_text(31, "Invalid Response") + " of " + color_text(31, round_to_string(input)) + ". Please enter a positive value.", PRINT_LINE_SLEEP / 2); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+        }
+        clear_terminal();
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        return false;
+    }
+    // Return true if the prior tests fail
+    else {return true;}
 }
 
 /*  progress_bar - This function provides a loading bar animation for a given amount of time
