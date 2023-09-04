@@ -913,7 +913,6 @@ void deal_hand(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& de
     // Have player place wager
     humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->PlaceWagerPrompt(humanPlayer->GetBankTotal(), humanPlayer->GetDisplayName());
     // Deal cards to players
-    // Deal cards to players
     for (int i = 0; i < 4; i++) {
         if (i % 2 == 0) {
             humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->HitHand(inputShoe);
@@ -923,8 +922,7 @@ void deal_hand(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& de
         }
     }
     // Show hands of player
-
-    std::cout << std::endl << "Here are the initial hands of each player: " << std::endl << std::endl; time_sleep(SHORT_TIME_SLEEP);
+    std::cout << std::endl; animate_text("Here are the initial hands of each player: ", PRINT_LINE_SLEEP); std::cout << std::endl;
     humanPlayer->ShowCurrentHand(humanHand, "Initial", "");
     dealer->ShowCurrentHand(dealerHand, "Initial", "");
     humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->ParametersCheck(dealerHand, humanPlayer->GetBankTotal());
