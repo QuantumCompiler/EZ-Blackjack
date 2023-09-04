@@ -447,65 +447,38 @@ Hand Hand::ParametersCheck(std::shared_ptr<Hand>& dealerHand, const float& playe
 *   Algorithm:
 *       * Create a float value "input" and prompt the user for their wager they would like to place
 *       * Check to see if the input is valid
-*       * If the input is not a float or an integer
-*           * Throw an error, return to the beginning of the while loop while clearing inputs
-*       * If the input is a float or an integer
-*           * Check to see if the value entered is greater than zero
-*               * If it is not, throw an error, return to the beginning of the while loop clearing inputs
-*               * If it is, check to see if the input is greater than the bank total
-*                   * If it is, then throw an error, return to the beginning of the while loop clearing inputs
-*                   * If it is not, set the private data member "wager" to "input" with "SetWager"
+*           * If the input is valid and less than the current bank total, set the wager of the current hand to input
+*           * If not, restart the while loop
+*       * If not, restart the while loop
 *   Output:
 *       This function returns a Hand object after setting the wager of a players hand
 */
 Hand Hand::PlaceWagerPrompt(float& bank, std::string& name) {
-    float input;
     while (true) {
+        float input;
         // Prompt user for the wager that they would like place for their hand
-        std::cout << std::endl << "Please enter a wager for this hand. Current bank total: " << color_text(33, round_to_string(bank)) << ": "; time_sleep(SHORT_TIME_SLEEP);
-        std::cin >> input; time_sleep(SHORT_TIME_SLEEP);
-        const std::type_info& result = typeid(input);
-        std::string checkResult = result.name();
-        // Check if the input is not a float or integer
-        if (checkResult != "f" && checkResult != "i") {
-            std::cout << std::endl << color_text(31, "Invalid Response") << ". Please re-enter your submission." << std::endl; time_sleep(SHORT_TIME_SLEEP);
-            clear_terminal();
-            checkResult.clear();
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            continue;
-        }
-        // Check if a the input is a float or an integer
-        else if (checkResult == "f" || checkResult == "i") {
-            // User has entered a value that is less than zero, return to beginning of while loop
-            if (input <= 0) {
-                std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, round_to_string(input)) << ". Please re-enter a positive value." << std::endl; time_sleep(SHORT_TIME_SLEEP);
+        std::cout << std::endl; animate_text("Please enter a wager for this hand. Current bank total: " + color_text(33, round_to_string(bank)) + ": ", PRINT_LINE_SLEEP);
+        std::cin >> input;
+        // Check for a valid input
+        if (input_validation(input)) {
+            // User has entered a wager that is greater than their bank, return to beginning of while loop
+            if (input > bank) {
+                std::cout << std::endl; animate_text(color_text(31, "Invalid Response") + " of " + color_text(31, round_to_string(input)) + ". Enter a wager that is less than or equal to your bank total of " 
+                + color_text(33, round_to_string(bank)) + ".", PRINT_LINE_SLEEP / 2); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
                 clear_terminal();
-                checkResult.clear();
-                std::cin.clear();
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 continue;
             }
-            // User has entered a value that is greater than zero
+            // User has entered a valid input for a wager, set the private data member "wager" to "input"
             else {
-                // User has entered a wager that is greater than their bank, return to beginning of while loop
-                if (input > bank) {
-                    std::cout << std::endl << color_text(31, "Invalid Response") << " of " << color_text(31, round_to_string(input)) << ". You must enter a wager that is less than or equal to your bank total "
-                    << color_text(33, std::to_string(round_input(bank))) << ". Please re-enter your submission." << std::endl; time_sleep(SHORT_TIME_SLEEP);
-                    clear_terminal();
-                    checkResult.clear();
-                    std::cin.clear();
-                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                    continue;
-                }
-                // User has entered a valid input for a wager, set the private data member "wager" to "input"
-                else {
-                    this->SetWager(input);
-                    bank -= this->GetWager();
-                    std::cout << std::endl << name << " has wagered: " << this->GetDisplayWager() << " with a current bank total " << color_text(33, round_to_string(bank)) << "." << std::endl; time_sleep(SHORT_TIME_SLEEP);
-                    return *this;
-                }
+                this->SetWager(input);
+                bank -= this->GetWager();
+                std::cout << std::endl; animate_text(name + " has wagered: " + this->GetDisplayWager() + " with a current bank total of " + color_text(33, round_to_string(bank)) + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+                return *this;
             }
+        }
+        else {
+            continue;
         }
     }
 }
