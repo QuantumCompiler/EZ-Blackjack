@@ -268,6 +268,7 @@ Hand Hand::HitHand(std::shared_ptr<Shoe>& input) {
 /*  InsurancePrompt - Prompts a player if they would like to buy insurance
 *   Input:
 *       bank - Float value that is passed by reference that represents a players bank
+*       name - Name of player this hand represents
 *   Algorithm:
 *       * Create a string and prompt the user if they would like to buy insurance
 *       * Check to see if the input is yes or no
@@ -279,26 +280,28 @@ Hand Hand::HitHand(std::shared_ptr<Shoe>& input) {
 *   Output:
 *       This function returns a Hand object after prompting the user about buying insurance
 */
-Hand Hand::InsurancePrompt(float& bank) {
-    std::string input;
+Hand Hand::InsurancePrompt(float& bank, std::string& name) {
     while (true) {
         // Prompt user for insurance
-        std::cout << std::endl << "Would you like to buy insurance? Insurance pays (2:1). (y/n): "; time_sleep(SHORT_TIME_SLEEP);
-        std::cin >> input; time_sleep(SHORT_TIME_SLEEP);
+        std::string input;
+        std::cout << std::endl; animate_text("The " + color_text(31, "Dealer") + " is showing an Ace, would you like to buy insurance? " + color_text(32, "Yes (y)") + " or " + color_text(32, "no (n)") + "? ", PRINT_LINE_SLEEP);
+        std::cin >> input;
         // User has chosen to buy insurance, set insurance wager
         if (input == "y") {
             this->GetHashTable()->AddToTable(this->GetValuesMatrix()[0][4]);
             this->SetInsuranceWager(round_input(0.5*this->GetWager()));
             bank -= this->GetInsuranceWager();
+            std::cout << std::endl; animate_text(name + " has chosen to buy insurance. Their insurance wager is " + this->GetDisplayInsuranceWager() + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
             return *this;
         }
         // User has chosen to not buy insurance, do not take insurance wager
         else if (input == "n") {
+            std::cout << std::endl; animate_text(name + " has chosen to not buy insurance.", PRINT_LINE_SLEEP); std::cout << std::endl;
             return *this;
         }
         // Player did not enter a valid input for a response
         else {
-            std::cout << std::endl << color_text(31, "Invalid Response") << ". Please re-enter your insurance decision." << std::endl;
+            std::cout << std::endl; animate_text(color_text(31, "Invalid Response") + ". Please re-enter your insurance decision.", PRINT_LINE_SLEEP);
             input.clear();
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -573,7 +576,7 @@ void Hand::SetDisplayInsuranceWager() {
 
 // SetDisplayNet - Mutates the private data member "displayNet" by assigning it to "input"
 void Hand::SetDisplayNet() {
-    std::string modified_input = color_text(33, round_to_string(GetNet()));
+    std::string modified_input = color_text(31, round_to_string(GetNet()));
     individualHand->displayNet = modified_input;
 }
 

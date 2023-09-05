@@ -105,7 +105,7 @@ public:
     Hand CheckSameParamInHand(const std::string referenceParameter, const std::string checkingParameter = ""); // Checks if a player has the same parameter in their hand
     Hand CopyVariables(std::shared_ptr<Hand>& input);
     Hand HitHand(std::shared_ptr<Shoe>& input); // Adds a card to a players hand from a shoe
-    Hand InsurancePrompt(float& bank); // Prompts a player if they would like to place an insurance wager
+    Hand InsurancePrompt(float& bank, std::string& name); // Prompts a player if they would like to place an insurance wager
     Hand InsuranceSim(float& bank, const bool& input); // Places an insurance wager for a simulate hand
     Hand ParametersCheck(std::shared_ptr<Hand>& dealerHand, const float& playerBank); // Checks for certain parameters of how a player can play their hand
     Hand PlaceWagerPrompt(float& bank, std::string& name); // Prompts a player for how much currency they would like to place as a wager for a hand
