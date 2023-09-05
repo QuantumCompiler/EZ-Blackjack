@@ -39,10 +39,14 @@ void play_game() {
     // Create Shoe object
     std::shared_ptr<Shoe> gameShoe(new Shoe);
     gameShoe->CreateShoePrompt();
+    // Rigged Shoe Check
+    std::shared_ptr<Card> riggedCard;
+    std::shared_ptr<node<Card>> riggedNode;
     // Deposit currency into players bank
     humanPlayer->BankDepositPrompt();
     // float origBank = humanPlayer->GetBankTotal();
-    deal_hand(humanPlayer, dealer, gameShoe);
+    blackjack_check(humanPlayer, dealer, gameShoe);
+    same_rank_check(humanPlayer, dealer, gameShoe);
 //     // Card count minimum
 //     int min_card_count = 13;
 //     // Play game while the cards in the shoe is greater than 13 and the users bank total is greater than 0
