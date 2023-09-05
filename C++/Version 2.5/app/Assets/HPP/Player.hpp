@@ -134,15 +134,22 @@ Player Player::ShowCurrentHand(std::shared_ptr<Hand>& inputHand, std::string opt
     if (option.empty()) {
         option = "current";
     }
+    // Get wager without insurance
+    float origWager = inputHand->GetWager() - inputHand->GetInsuranceWager();
+    std::string origWagerVal = color_text(31, round_to_string(origWager));
     // Modify the string values
+    std::string finalHandTotal (color_text(35, "Final Hand Total"));
+    std::string handTotal = color_text(35, "Current Hand Total");
     std::string optionMod = color_text(34, option);
-    std::string handTotalMod = color_text(35, "Hand Total");
     // The player is not the dealer
     if (this->GetName() != "Dealer") {
         this->SetBankTotal(this->GetBankTotal());
         // Modify more string values
+        std::string bankTotal = color_text(33, "Current Bank Total");
+        std::string finalBankTotal = color_text(33, "Final Bank Total");
         std::string handWager = color_text(31, "Hand Wager");
-        std::string bankTotal = color_text(33, "Bank Total");
+        std::string handNet = color_text(31, "Hand Net");
+        std::string insuranceWager = color_text(31, "Insurance Wager");
         animate_text(this->GetDisplayName() + "'s " + optionMod + " hand: [", PRINT_LINE_SLEEP / 2);
         // Iterate through the cards in players hand
         for (int i = 0; i < inputHand->GetPlayerCards()->GetSize(); i++) {
@@ -155,14 +162,30 @@ Player Player::ShowCurrentHand(std::shared_ptr<Hand>& inputHand, std::string opt
         }
         // Add hand total and display players hand parameters
         inputHand->AddHandTotal();
-        animate_text(handTotalMod + ": " + inputHand->GetDisplayCardsTotal() + " , " + handWager + ": " + inputHand->GetDisplayWager() + " , " + bankTotal + ": " + this->GetDisplayBankTotal(), PRINT_LINE_SLEEP / 2); std::cout << std::endl;
+        if (option == "Final") {
+            if (inputHand->GetInsuranceWager() > 0) {
+                animate_text(finalHandTotal + ": " + inputHand->GetDisplayCardsTotal() + " , " + handWager + ": " + origWagerVal + " , " + insuranceWager + ": " + inputHand->GetDisplayInsuranceWager() + " , " + handNet + ": " + inputHand->GetDisplayNet() 
+                + " , " + finalBankTotal + ": " + this->GetDisplayBankTotal(), PRINT_LINE_SLEEP / 2); std::cout << std::endl;
+            }
+            else {
+                animate_text(finalHandTotal + ": " + inputHand->GetDisplayCardsTotal() + " , " + handWager + ": " + inputHand->GetDisplayWager() + " , " + handNet + ": " + inputHand->GetDisplayNet() + " , " + finalBankTotal + ": " + this->GetDisplayBankTotal(), PRINT_LINE_SLEEP / 2); std::cout << std::endl;
+            }
+        }
+        else {
+            if (inputHand->GetInsuranceWager() > 0) {
+                animate_text(handTotal + ": " + inputHand->GetDisplayCardsTotal() + " , " + handWager + ": " + inputHand->GetDisplayWager() + " , " + insuranceWager + ": " + inputHand->GetDisplayInsuranceWager() + " , " + bankTotal + ": " + this->GetDisplayBankTotal(), PRINT_LINE_SLEEP / 2); std::cout << std::endl;
+            }
+            else {
+                animate_text(handTotal + ": " + inputHand->GetDisplayCardsTotal() + " , " + handWager + ": " + inputHand->GetDisplayWager() + " , " + bankTotal + ": " + this->GetDisplayBankTotal(), PRINT_LINE_SLEEP / 2); std::cout << std::endl;
+            }
+        }
     }
     // The player is the dealer
     else if (this->GetName() == "Dealer") {
         // Dealer is hiding a card
         if (dealerShow.empty()) {
-            std::string backCardMod = color_text(35, std::to_string(inputHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()));
-            animate_text(this->GetDisplayName() + "'s " + optionMod + " hand : [Hidden, " + inputHand->GetPlayerCards()->RetrieveNode(-1)->data.PrintCard() + "] " + handTotalMod + ": " + backCardMod, PRINT_LINE_SLEEP / 2); std::cout << std::endl;
+            std::string backCard = color_text(35, std::to_string(inputHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()));
+            animate_text(this->GetDisplayName() + "'s " + optionMod + " hand : [Hidden, " + inputHand->GetPlayerCards()->RetrieveNode(-1)->data.PrintCard() + "] " + handTotal + ": " + backCard, PRINT_LINE_SLEEP / 2); std::cout << std::endl;
         }
         // Dealer is showing both cards
         else {
@@ -184,7 +207,12 @@ Player Player::ShowCurrentHand(std::shared_ptr<Hand>& inputHand, std::string opt
             }
             // Add hand total and display players hand parameters
             inputHand->AddHandTotal();
-            animate_text(handTotalMod + ": " + inputHand->GetDisplayCardsTotal(), PRINT_LINE_SLEEP); std::cout << std::endl;
+            if (option == "Final") {
+                animate_text(finalHandTotal + ": " + inputHand->GetDisplayCardsTotal(), PRINT_LINE_SLEEP / 2); std::cout << std::endl;
+            }
+            else {
+                animate_text(handTotal + ": " + inputHand->GetDisplayCardsTotal(), PRINT_LINE_SLEEP / 2); std::cout << std::endl;
+            }
         }
     }
     return *this;
