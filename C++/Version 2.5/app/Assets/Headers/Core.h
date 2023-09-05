@@ -15,7 +15,7 @@
 *   game_logic / simulate_logic
 */
 
-// std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>, bool> blackjack_check(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& inputShoe); // Checks if a dealer is showing an Ace
+bool blackjack_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& inputShoe); // Checks if a dealer is showing an Ace
 bool blackjack_check_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& inputShoe, const float playerWager, const bool buyInsurance); // Checks if a dealer is showing an Ace
 void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Hand>& playerHand, std::shared_ptr<Player>& dealer, bool showStrategy, bool splitOverride); // Strategy for how to play blackjack
 std::string csv_generator(std::shared_ptr<Player>& input); // Generates a csv of the statistics for a game
@@ -31,7 +31,7 @@ void hand_comparison_logic_sim(std::shared_ptr<Player>& humanPlayer, std::shared
 void player_logic_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& shoe, bool splitChoice); // Processes logic of player
 void plot(const std::string& file, int yColumn); // Plots a bar chart from a csv file
 size_t row_counter(const std::string& file);
-// std::tuple<std::vector<std::shared_ptr<Hand>>, std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>, int> same_rank_check(std::shared_ptr<Hand>& playerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Shoe>& shoe); // Checks for the same rank of a player
+void same_rank_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& shoe); // Checks for the same rank of a player
 void same_rank_check_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& shoe, bool splitChoice); // Checks for the same rank of a player
 void split_hand(std::shared_ptr<Player>& humanPlayer); // Splits the hand of a player for a simulated hand
 
