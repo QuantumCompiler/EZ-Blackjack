@@ -1672,287 +1672,160 @@ void hand_comparison_logic_sim(std::shared_ptr<Player>& humanPlayer, std::shared
     }
 }
 
-// /*  player_logic - Processes the possible options of what a player can do on their current hand
-// *   Input:
-// *       currentPlayerHand - Hand object that is passed by reference to be the current hand that is being played with
-// *       dealerHand - Hand object that is passed by reference that resembles the dealers hand
-// *       masterPlayerHand - Hand object that is passed by reference that resembles the players original hand
-// *       shoe - Shoe object that is passed by reference that resembles the current game shoe that is being played with
-// *       hand_counter - Integer value that represents the current hand of a player out of their total hands
-// *   Algorithm:
-// *       * Check the parameters of the current hand
-// *       * If the player has not split aces
-// *           * Create a label indicating what hand is being played with
-// *           * Process the logic of what a player can do with their hand
-// *           * Prompt the player if they would like to hit, stand, or double down, given that they can double down
-// *           * Proceed to process the logic of how the player has played and if they can continue to play their current hand
-// *           * See individual line comments for more detail
-// *       * If the player has split aces, simply bypass all options of hitting, standing, and doubling down
-// *       * Return all hand objects and shoe
-// *   Output:
-// *       currentPlayerHand - Returns the current player hand that is being played with
-// *       dealerHand - Returns the dealers hand
-// *       shoe - Returns the modified shoe object that is being used for the players to play with
-// */
-// std::tuple<std::shared_ptr<Hand>, std::shared_ptr<Hand>, std::shared_ptr<Shoe>> player_logic(std::shared_ptr<Hand>& currentPlayerHand, std::shared_ptr<Hand>& dealerHand, std::shared_ptr<Hand>& masterPlayerHand, std::shared_ptr<Shoe>& shoe, int& hand_counter) {
-//     // Check the parameters of the given hand
-//     currentPlayerHand->ParametersCheck(dealerHand);
-//     // Player did not split Aces
-//     if (!masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetValuesMatrix()[1][3])) {
-//         // Correctly label the current hand of the player
-//         std::string response;
-//         std::string hand_tracker;
-//         if (hand_counter == 1) {
-//             hand_tracker = "first";
-//         }
-//         else if (hand_counter == 2) {
-//             hand_tracker = "second";
-//         }
-//         else if (hand_counter == 3) {
-//             hand_tracker = "third";
-//         }
-//         else if (hand_counter == 4) {
-//             hand_tracker = "fourth";
-//         }
-//         else if (hand_counter == 5) {
-//             hand_tracker = "fifth";
-//         }
-//         else {
-//             hand_tracker = "current";
-//         }
-//         if (hand_counter > 1) {
-//             currentPlayerHand->HitHand(shoe);
-//         }
-//         // Process the logic of if a player needs to be prompted for what they should do in a hand
-//         while ((response != "h" && response != "s" && response != "d") && currentPlayerHand->GetCardsTotal() < 21) {
-//             // Prompts for if the player has not hit their current hand yet
-//             if (!currentPlayerHand->GetHashTable()->Contains(currentPlayerHand->GetValuesMatrix()[1][1])) {
-//                 // Player is playing a split hand
-//                 if (masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetValuesMatrix()[1][4])) {
-//                     // Show current hand of player and dealer hand
-//                     std::cout << std::endl << "Here are the initial hands of each player for hand " << std::to_string(hand_counter) << ":" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                     currentPlayerHand->ShowHand("initial " + hand_tracker);
-//                     dealerHand->ShowHand("initial");
-//                     // Player can double down their current split hand
-//                     if (currentPlayerHand->GetHashTable()->Contains(currentPlayerHand->GetValuesMatrix()[0][1])) {
-//                         // Prompt player what they would like to do
-//                         std::cout << std::endl << "Would you like to hit, stand, or double down for hand " << std::to_string(hand_counter) << "?" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         blackjack_strategy(currentPlayerHand, dealerHand, true, false);
-//                         std::cout << std::endl << "Enter (h) to hit, (s) to stand, and (d) to double down for " << std::to_string(hand_counter) << ": "; time_sleep(SHORT_TIME_SLEEP);
-//                     }
-//                     // Player can't double down their current split hand
-//                     else {
-//                         // Prompt player what they would like to do
-//                         std::cout << std::endl << "Would you like to hit or stand for hand " << std::to_string(hand_counter) << "?" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         blackjack_strategy(currentPlayerHand, dealerHand, true, false);
-//                         std::cout << std::endl << "Enter (h) to hit and (s) to stand for " << std::to_string(hand_counter) << ": "; time_sleep(SHORT_TIME_SLEEP);
-//                     }
-//                     std::cin >> response;
-//                     std::cout << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                 }
-//                 // Player is not playing a split hand
-//                 else {
-//                     // Player can double down their current hand
-//                     if (currentPlayerHand->GetHashTable()->Contains(currentPlayerHand->GetValuesMatrix()[0][1])) {
-//                         // Prompt player what they would like to do
-//                         std::cout << std::endl << "Would you like to hit, stand, or double down?" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         blackjack_strategy(currentPlayerHand, dealerHand, true, false);
-//                         std::cout << std::endl << "Enter (h) to hit, (s) to stand, and (d) to double down: "; time_sleep(SHORT_TIME_SLEEP);
-//                     }
-//                     // Player can't double down their current hand
-//                     else {
-//                         // Prompt player what they would like to do
-//                         std::cout << std::endl << "Would you like to hit or stand?" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         blackjack_strategy(currentPlayerHand, dealerHand, true, false);
-//                         std::cout << std::endl << "Enter (h) to hit and (s) to stand: "; time_sleep(SHORT_TIME_SLEEP);
-//                     }
-//                     std::cin >> response;
-//                     std::cout << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                 }          
-//             }
-//             // Player has hit their current hand
-//             else {
-//                 // Show hand of current player in their split hands
-//                 if (masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetValuesMatrix()[1][4])) {
-//                     currentPlayerHand->ShowHand("current " + hand_tracker);
-//                 }
-//                 // Show hand of current player
-//                 else {
-//                     currentPlayerHand->ShowHand("current");
-//                 }
-//                 // Show dealer hand
-//                 dealerHand->ShowHand("initial");
-//                 // Prompt player what they would like to do
-//                 std::cout << std::endl << "Would you like to hit (h) or stand (s)?" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                 blackjack_strategy(currentPlayerHand, dealerHand, true, false);
-//                 std::cout << std::endl << "Enter (h) to hit and (s) to stand: "; time_sleep(SHORT_TIME_SLEEP);
-//                 std::cin >> response;
-//                 std::cout << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//             }
-//             // Player has chosen to hit their hand
-//             if (response == "h") {
-//                 // Set has hit to be true and hit the current hand
-//                 currentPlayerHand->GetHashTable()->AddToTable(currentPlayerHand->GetValuesMatrix()[1][1]);
-//                 currentPlayerHand->HitHand(shoe);
-//                 // Player has busted their current hand
-//                 if (currentPlayerHand->GetCardsTotal() > 21) {
-//                     // Tell player they have busted on their current hand
-//                     std::cout << currentPlayerHand->GetDisplayName() << " has chosen to hit and busted. Final hand total: " << currentPlayerHand->GetDisplayCardsTotal() << "." << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                     // Show hand of current split hand and hide dealers hand
-//                     if (masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetValuesMatrix()[1][4])) {
-//                         std::cout << std::endl << "Here is " << currentPlayerHand->GetDisplayName() << "'s final hand for hand " << std::to_string(hand_counter)
-//                         << " and the " << dealerHand->GetDisplayName() << "'s current hand:" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         currentPlayerHand->ShowHand("final " + hand_tracker);
-//                         dealerHand->ShowHand("current");
-//                     }
-//                     // Show hand of current hand and show dealer hand
-//                     else {
-//                         std::cout << std::endl << "Here is the final hand for " << currentPlayerHand->GetDisplayName() << " and the final hand of the " << dealerHand->GetDisplayName() << ":" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         currentPlayerHand->ShowHand("initial");
-//                         dealerHand->ShowHand("final", "show");
-//                     }
-//                     break;
-//                 }
-//                 // Player has a hand total of less than 21
-//                 else if (currentPlayerHand->GetCardsTotal() < 21) {
-//                     // Tell player they have hit their current hand
-//                     std::cout << currentPlayerHand->GetDisplayName() << " has chosen to hit. Current hand total: " << currentPlayerHand->GetDisplayCardsTotal() << "." << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                     // Prompt for if this is a split hand
-//                     if (masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetValuesMatrix()[1][4])) {
-//                         std::cout << std::endl << "Here are the current hands of each player for hand " << std::to_string(hand_counter) << ":" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                     }
-//                     // Prompt for if this is a singular hand
-//                     else {
-//                         std::cout << std::endl << "Here are the current hands of each player:" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                     }
-//                 }
-//                 // Players current hand is 21
-//                 else if (currentPlayerHand->GetCardsTotal() == 21) {
-//                     // Tell player they have achieved 21
-//                     std::cout << currentPlayerHand->GetDisplayName() << " has chosen to hit. Final hand total: " << currentPlayerHand->GetDisplayCardsTotal() << "." << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                     // Show hand of current split hand
-//                     if (masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetValuesMatrix()[1][4])) {
-//                         std::cout << std::endl << "Here is " << masterPlayerHand->GetDisplayName() << "'s final hand for hand " << std::to_string(hand_counter) << " and the " 
-//                         << dealerHand->GetDisplayName() << "'s current hand:" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         currentPlayerHand->ShowHand("final " + hand_tracker);
-//                         dealerHand->ShowHand("current", "");
-//                     }
-//                     // Show hand of singular hand
-//                     else {
-//                         std::cout << std::endl << "Here is the final hand for " << currentPlayerHand->GetDisplayName() << " and the initial hand of the " 
-//                         << dealerHand->GetDisplayName() << ":" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         currentPlayerHand->ShowHand("final");
-//                         dealerHand->ShowHand("initial", "show");
-//                     }
-//                 }
-//                 response.clear();
-//             }
-//             // Player has chosen to stay on their current hand
-//             else if (response == "s") {
-//                 // Tell player they have chosen to stay
-//                 std::cout << currentPlayerHand->GetDisplayName() << " has chosen to stand. Final hand total: " << currentPlayerHand->GetDisplayCardsTotal() << "." << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                 // Show hands of current hand in split hands
-//                 if (masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetValuesMatrix()[1][4])) {
-//                     std::cout << std::endl << "Here is " << currentPlayerHand->GetDisplayName() << "'s final hand for hand " << std::to_string(hand_counter)
-//                     << " and the " << dealerHand->GetDisplayName() << "'s current hand:" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                     currentPlayerHand->ShowHand("final " + hand_tracker);
-//                     dealerHand->ShowHand("current" , "");
-//                 }
-//                 // Show hand of singular hand
-//                 else {
-//                     std::cout << std::endl << "Here is the final hand for " << currentPlayerHand->GetDisplayName() << " and the initial hand of the " 
-//                     << dealerHand->GetDisplayName() << ":" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                     currentPlayerHand->ShowHand("final");
-//                     dealerHand->ShowHand("initial" , "show");
-//                 }
-//                 break;
-//             }
-//             // Player has chosen to double down
-//             else if (response == "d") {
-//                 // Player can double down
-//                 if (currentPlayerHand->GetHashTable()->Contains(currentPlayerHand->GetValuesMatrix()[0][1])) {
-//                     // Update bank totals of player and hit hand
-//                     currentPlayerHand->GetHashTable()->AddToTable(currentPlayerHand->GetValuesMatrix()[1][0]);
-//                     currentPlayerHand->UpdateBank(0, currentPlayerHand->GetWager());
-//                     currentPlayerHand->SetWager(2 * currentPlayerHand->GetWager());
-//                     currentPlayerHand->HitHand(shoe);
-//                     // Player has busted
-//                     if (currentPlayerHand->GetCardsTotal() > 21) {
-//                         // Tell player they have busted on their current hand
-//                         std::cout << currentPlayerHand->GetDisplayName() << " has doubled down and busted. Final hand total: " << currentPlayerHand->GetDisplayCardsTotal() << "." << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                         // Show current hand of split hand
-//                         if (masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetValuesMatrix()[1][4])) {
-//                             std::cout << std::endl << "Here is " << currentPlayerHand->GetDisplayName() << "'s final hand for hand " << std::to_string(hand_counter)
-//                             << " and the " << dealerHand->GetDisplayName() << "'s current hand:" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             currentPlayerHand->ShowHand("final " + hand_tracker);
-//                             dealerHand->ShowHand("current");
-//                         }
-//                         // Show singular hand
-//                         else if (!masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetValuesMatrix()[1][4])) {
-//                             std::cout << std::endl << "Here is the final hand for " << currentPlayerHand->GetDisplayName() << " and the final hand of the " 
-//                             << dealerHand->GetDisplayName() << ":" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             currentPlayerHand->ShowHand("final");
-//                             dealerHand->ShowHand("final", "show");
-//                         }
-//                         else
-//                         break;
-//                     }
-//                     // Player has reached 21
-//                     else if (currentPlayerHand->GetCardsTotal() <= 21) {
-//                         // Tell player they have reached 21
-//                         std::cout << currentPlayerHand->GetDisplayName() << " has doubled down. Final hand total: " << currentPlayerHand->GetDisplayCardsTotal() << "." << std::endl; 
-//                         // Show current hand of split hand
-//                         if (masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetValuesMatrix()[1][4])) {
-//                             std::cout << std::endl << "Here is " << currentPlayerHand->GetDisplayName() << "'s final hand for hand " << std::to_string(hand_counter) << " and the " 
-//                             << dealerHand->GetDisplayName() << "'s current hand:" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             currentPlayerHand->ShowHand("final " + hand_tracker);
-//                             dealerHand->ShowHand("current");
-//                         }
-//                         // Show singular hand
-//                         else {
-//                             std::cout << std::endl << "Here is the final hand for " << currentPlayerHand->GetDisplayName() << " and the initial hand of the " 
-//                             << dealerHand->GetDisplayName() << ":" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                             currentPlayerHand->ShowHand("final");
-//                             dealerHand->ShowHand("initial", "show");
-//                         }
-//                         break;
-//                     }
-//                 }
-//                 // Player cannot double down
-//                 else {
-//                     // Tell player they cannot double down, return to choices for player
-//                     std::cout << "Your current bank total of " << currentPlayerHand->GetDisplayBankTotal() << " is not greater than your wager of "
-//                     << currentPlayerHand->GetDisplayWager() << ". You cannot double down." << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                     response.clear();
-//                     continue;
-//                 }
-//             }
-//             // Player has entered and incorrect value for a choice
-//             else if (response != "h" && response != "s" && response != "d") {
-//                 if (!masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetValuesMatrix()[1][4])) {
-//                     std::cout << color_text(31, "Invalid choice") << "." << std::endl; 
-//                 }
-//                 else {
-//                     std::cout << color_text(31, "Invalid choice") << "." << std::endl << std::endl; 
-//                 }        
-//                 response.clear();
-//                 continue;
-//             }
-//         }
-//         if (currentPlayerHand->GetCardsTotal() == 21 && masterPlayerHand->GetHashTable()->Contains(masterPlayerHand->GetValuesMatrix()[1][4])) {
-//             std::cout << std::endl << currentPlayerHand->GetDisplayName() << " has gotten " << currentPlayerHand->GetDisplayCardsTotal() << "! You no longer need to play this hand: Your final hand is:" << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//             currentPlayerHand->ShowHand("final " + hand_tracker);
-//         }
-//         // Copy variables of current hand to master hand
-//         masterPlayerHand->CopyVariables(currentPlayerHand);
-//     }
-//     // Player has chosen to split aces
-//     else {
-//         masterPlayerHand->CopyVariables(currentPlayerHand);
-//     }
-//     // Return hands of player
-//     return std::make_tuple(currentPlayerHand, dealerHand, shoe);
-// }
+/*  player_logic - Processes the possible options of what a player can do on their current hand
+*   Input:
+*       humanPlayer - Player object that is passed by reference to resemble a non dealer player
+*       dealer - Player object that is passed by reference to resemble a dealer
+*       shoe - Shoe object that is passed by reference that resembles the current game shoe that is being played with
+*   Algorithm:
+*       * Check the parameters of the current hand
+*       * If the player has not split aces
+*           * Create a label indicating what hand is being played with
+*           * Process the logic of what a player can do with their hand
+*           * Prompt the player if they would like to hit, stand, or double down, given that they can double down
+*           * Proceed to process the logic of how the player has played and if they can continue to play their current hand
+*           * See individual line comments for more detail
+*       * If the player has split aces, simply bypass all options of hitting, standing, and doubling down
+*       * Return all hand objects and shoe
+*   Output:
+*       
+*/
+void player_logic(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& shoe) {
+    // Process the same rank test
+    same_rank_check(humanPlayer, dealer, shoe);
+    // Player did not split aces
+    if (!humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[1][3])) {
+        // Iterate over the hands of the player
+        for (int i = 0; i < humanPlayer->GetCurrentHands()->GetSize(); i++) {
+            // Hit the current hand of the player if it only has one card present
+            if (humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetPlayerCards()->GetSize() == 1) {
+                humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->HitHand(shoe);
+            }
+            // Clear hash table
+            humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->ClearHashTable();
+            bool invalidInput = false;
+            while (humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetCardsTotal() < 21) {
+                // Check parameters
+                humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->ParametersCheck(dealer->GetCurrentHands()->RetrieveNode(0)->data, humanPlayer->GetBankTotal());
+                bool canDoubleDown = humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->Contains(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[0][1]);
+                bool hasHit = humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->Contains(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[1][1]);
+                // Show current hand if multiple hands or if player has hit
+                if (humanPlayer->GetCurrentHands()->GetSize() > 1 || hasHit || invalidInput) {
+                    std::cout << std::endl; animate_text("Here is your current hand and the " + dealer->GetDisplayName() + "'s current hand:", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, "current", "");
+                    dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "initial", "");
+                }
+                // Prompt player for what they would like to do
+                std::string response;
+                // Player can double down
+                if (canDoubleDown) {
+                    std::cout << std::endl; animate_text("Would you like to " + color_text(32, "Hit") + ", " + color_text(32, "Stand") + ", or " + color_text(32, "Double Down") + " on your current hand?", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, dealer, true, true);
+                    std::cout << std::endl; animate_text("Enter " + color_text(32, "(h)") + " to " + color_text(32, "hit") + ", " + color_text(32, "(s)") + " to " + color_text(32, "stand") + ", or " + color_text(32, "(d)") + " to " + color_text(32, "double down") + ": ", PRINT_LINE_SLEEP);
+                }
+                // Player cannot double down
+                else {
+                    std::cout << std::endl; animate_text("Would you like to " + color_text(32, "Hit") + " or " + color_text(32, "Stand") + " on your current hand?", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, dealer, true, true);
+                    std::cout << std::endl; animate_text("Enter " + color_text(32, "(h)") + " to " + color_text(32, "hit") + " or " + color_text(32, "(s)") + " to " + color_text(32, "stand") + ": ", PRINT_LINE_SLEEP);
+                }
+                std::cin >> response;
+                // Player chose to stand
+                if (response == "s") {
+                    humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[1][2]);
+                    std::cout << std::endl; animate_text("You have chosen to " + color_text(32, "stand") + " on your current hand. Here is your final hand and the " + dealer->GetDisplayName() + "'s current hand:", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    // Multiple hands
+                    humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, "final", "");
+                    if (humanPlayer->GetCurrentHands()->GetSize() > 1) {
+                        dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "initial", "");
+                    }
+                    // Single hand
+                    else {
+                        dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "initial", "Show");
+                    }
+                    break;
+                }
+                else if (response == "h") {
+                    humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[1][1]);
+                    std::cout << std::endl; animate_text("You have chosen to " + color_text(32, "hit") + " your current hand.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->HitHand(shoe);
+                    invalidInput = false;
+                    continue;
+                }
+                else if (response == "d" && canDoubleDown) {
+                    humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[1][0]);
+                    humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[2][0]);
+                    std::cout << std::endl; animate_text("You have chosen to " + color_text(32, "double down") + " on your current hand.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, 0);
+                    humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->SetWager(2 * (humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetWager() - humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetInsuranceWager()));
+                    humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->HitHand(shoe);
+                    break;
+                }
+                else if (response == "d" && !canDoubleDown) {
+                    std::cout << std::endl; animate_text("You " + color_text(31, "cannot double down") + " on your current hand. Please re-enter a valid choice.", PRINT_LINE_SLEEP); time_sleep(MEDIUM_TIME_SLEEP);
+                    invalidInput = true;
+                    clear_terminal();
+                    continue;
+                }
+                else {
+                    std::cout << std::endl; animate_text("Please re-enter a valid choice.", PRINT_LINE_SLEEP); time_sleep(MEDIUM_TIME_SLEEP);
+                    invalidInput = true;
+                    clear_terminal();
+                    continue;
+                }
+            }
+            // Display results if player busts or if they hit 21
+            if (humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetCardsTotal() >= 21) {
+                bool hitHand = humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->Contains(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[1][1]);
+                bool doubledDown = humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->Contains(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[2][0]);
+                // Player has 21
+                if (humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetCardsTotal() == 21) {
+                    if (hitHand) {
+                        std::cout << std::endl; animate_text("You have " + color_text(32, "hit") + " your current hand and obtained " + color_text(35, "21"), PRINT_LINE_SLEEP); std::cout << std::endl;
+                    }
+                    else if (doubledDown) {
+                        std::cout << std::endl; animate_text("You have " + color_text(32, "doubled down") + " on your current hand and obtained " + color_text(35, "21"), PRINT_LINE_SLEEP); std::cout << std::endl;
+                    }
+                }
+                // Player busted
+                else {
+                    if (hitHand) {
+                        std::cout << std::endl; animate_text("You have " + color_text(32, "hit") + " your current hand and " + color_text(35, "busted") + " with a final value of " + humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetDisplayCardsTotal() 
+                        + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    }
+                    else if (doubledDown) {
+                        std::cout << std::endl; animate_text("You have " + color_text(32, "doubled down") + " on your current hand and " + color_text(35, "busted") + " with a final value of " + humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetDisplayCardsTotal() 
+                        + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    }
+                }
+                std::cout << std::endl; animate_text("Here is your final hand and the " + dealer->GetDisplayName() + "'s current hand:", PRINT_LINE_SLEEP); std::cout << std::endl;
+                humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, "final", "");
+                // Multiple hands
+                if (humanPlayer->GetCurrentHands()->GetSize() > 1) {
+                    dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "initial", "");
+                }
+                // Single hand
+                else {
+                    dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "initial", "Show");
+                }
+            }
+            // Player doubled down and had less than 21
+            if (humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetCardsTotal() < 21) {
+                std::cout << std::endl; animate_text("You have " + color_text(32, "doubled down") + " on your current hand and obtained " + humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetDisplayCardsTotal() + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; animate_text("Here is your final hand and the " + dealer->GetDisplayName() + "'s current hand:", PRINT_LINE_SLEEP); std::cout << std::endl;
+                humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, "final", "");
+                // Multiple hands
+                if (humanPlayer->GetCurrentHands()->GetSize() > 1) {
+                    dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "initial", "");
+                }
+                // Single hand
+                else {
+                    dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "initial", "Show");
+                }
+            }
+        }
+    }
+}
 
 /*  player_logic_sim - Processes the possible options of what a player can do on their current hand for a simulated hand
 *   Input:
@@ -2183,8 +2056,9 @@ void same_rank_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Playe
         // Player is eligible to split aces
         if (player_can_split_aces && humanPlayer->GetCurrentHandsPossessed() == 1) {
             // Prompt player if they would like to split their hand
-            std::cout << std::endl; animate_text("You currently have the same rank of " + humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() + " in your hand. You may only split Ace's once."
-            + " Would you like to split your hand? " + color_text(32, "Yes (y)") + " or " + color_text(32, "no (n)") + "? ", PRINT_LINE_SLEEP);
+            std::cout << std::endl; animate_text("You currently have the same rank of " + humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() + " in your hand. You may only split Ace's once.", PRINT_LINE_SLEEP); std::cout << std::endl;
+            blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, dealer, true, false);
+            std::cout << std::endl; animate_text("Would you like to split your hand? " + color_text(32, "Yes (y)") + " or " + color_text(32, "no (n)") + "? ", PRINT_LINE_SLEEP);
             std::string response;
             std::cin >> response;
             // Player has chosen to split
@@ -2293,7 +2167,7 @@ void same_rank_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Playe
                 }
             }
             // Player did not pull the same rank again
-            else if (humanPlayer->GetCurrentHands()->GetSize() < maxSplitHands && !notEnoughBank)  {
+            else if ((humanPlayer->GetCurrentHands()->GetSize() > 1) && (humanPlayer->GetCurrentHands()->GetSize() < maxSplitHands) && !notEnoughBank)  {
                 std::cout << std::endl; animate_text("You did not pull the same rank of " + humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() + " again. You cannot split your hand again.", PRINT_LINE_SLEEP); std::cout << std::endl;
             }
         }
