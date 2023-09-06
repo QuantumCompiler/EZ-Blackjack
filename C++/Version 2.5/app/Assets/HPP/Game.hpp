@@ -46,7 +46,7 @@ void play_game() {
     humanPlayer->BankDepositPrompt();
     // float origBank = humanPlayer->GetBankTotal();
     blackjack_check(humanPlayer, dealer, gameShoe);
-    same_rank_check(humanPlayer, dealer, gameShoe);
+    player_logic(humanPlayer, dealer, gameShoe);
 //     // Card count minimum
 //     int min_card_count = 13;
 //     // Play game while the cards in the shoe is greater than 13 and the users bank total is greater than 0
