@@ -45,125 +45,122 @@ void play_game() {
     // Deposit currency into players bank
     humanPlayer->BankDepositPrompt();
     // float origBank = humanPlayer->GetBankTotal();
-    blackjack_check(humanPlayer, dealer, gameShoe);
-    player_logic(humanPlayer, dealer, gameShoe);
-//     // Card count minimum
-//     int min_card_count = 13;
-//     // Play game while the cards in the shoe is greater than 13 and the users bank total is greater than 0
-//     while (gameShoe->GetCardsInShoe()->GetSize() >= min_card_count && humanHand->GetBankTotal() > 0) {
-//         // Process the game_logic function
-//         auto gameLogic = game_logic(humanHand, dealerHand, gameShoe);
-//         humanHand->CopyVariables(std::get<0>(gameLogic));
-//         dealerHand->CopyVariables(std::get<1>(gameLogic));
-//         gameShoe = std::get<2>(gameLogic);
-//         bool continue_playing = false;
-//         // Continue playing if the player has a bank total of greater than zero
-//         if (humanHand->GetBankTotal() > 0) {
-//             std::string cont_play;
-//             // Prompt the player if they want to continue playing, force them to enter either y or n
-//             while (true) {
-//                 std::cout << std::endl << "Would you like to continue playing? (y/n): "; time_sleep(SHORT_TIME_SLEEP);
-//                 std::cin >> cont_play; time_sleep(SHORT_TIME_SLEEP);
-//                 // Player has chosen to continue playing
-//                 if (cont_play == "y") {
-//                     // Ample enough cards left in shoe to continue playing
-//                     if (gameShoe->GetCardsInShoe()->GetSize() >= min_card_count) {
-//                         std::cout << std::endl; progress_bar(LONG_TIME_SLEEP, std::to_string(gameShoe->GetCardsInShoe()->GetSize()) + " cards left in shoe.", "Dealing new hands.");
-//                         clear_terminal();
-//                         break;
-//                     }
-//                     // Shoe must be reshuffled
-//                     else {
-//                         std::cout << std::endl; progress_bar(LONG_TIME_SLEEP, std::to_string(gameShoe->GetCardsInShoe()->GetSize()) + " cards left in shoe.", "Shuffling a new shoe.");
-//                         gameShoe->EmptyShoe();
-//                         gameShoe->SetNumOfDecks(gameShoe->GetNumOfDecks());
-//                         gameShoe->CreateShoePrompt();
-//                         clear_terminal();
-//                         break;
-//                     }
-//                 }
-//                 // Player has chosen to stop playing
-//                 else if (cont_play == "n") {
-//                     std::cout << std::endl << humanHand->GetDisplayName() << " has chosen to quit playing. Final bank total: " << humanHand->GetDisplayBankTotal() << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                     std::cout << std::endl << "Thank you for playing " << humanHand->GetDisplayName() << "!" << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
-//                     clear_terminal();
-//                     break;
-//                 }
-//                 // Player has entered an incorrect response to the prompt
-//                 else {
-//                     clear_terminal();
-//                     cont_play.clear();
-//                     continue;
-//                 }
-//             }
-//             // Set "continue_playing" to true if the player has chosen to continue playing
-//             if (cont_play == "y") {
-//                 continue_playing = true;
-//             }
-//             // Set "continue_playing" to false if the player has chosen to stop playing
-//             else {
-//                 cont_play = false;
-//             }
-//         }
-//         // Player has run out of currency in their bank
-//         else {
-//             std::string redeposit;
-//             std::cout << std::endl << humanHand->GetDisplayName() << " has run out of currency in their bank." << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//             // Prompt the player if they want to re-deposit currency into their bank, require them to enter y or n
-//             while (true) {
-//                 std::cout << std::endl << "Would you like to deposit more currency into your bank? (y/n): "; time_sleep(SHORT_TIME_SLEEP);
-//                 std::cin >> redeposit; time_sleep(SHORT_TIME_SLEEP);
-//                 // Player has chosen to re-deposit currency into their bank
-//                 if (redeposit == "y") {
-//                     humanHand->BankDepositPrompt(); time_sleep(MEDIUM_TIME_SLEEP);
-//                     // Proceed with same shoe if greater than minimum card count
-//                     if (gameShoe->GetCardsInShoe()->GetSize() >= min_card_count) {
-//                         std::cout << std::endl; progress_bar(LONG_TIME_SLEEP, std::to_string(gameShoe->GetCardsInShoe()->GetSize()) + " cards left in shoe.", "Dealing new hands.");
-//                     }
-//                     // Create new shoe if the current card count in the shoe is less than "min_card_count"
-//                     else {
-//                         std::cout << std::endl; progress_bar(LONG_TIME_SLEEP, std::to_string(gameShoe->GetCardsInShoe()->GetSize()) + " cards left in shoe.", "Shuffling a new shoe.");
-//                         gameShoe->EmptyShoe();
-//                         gameShoe->SetNumOfDecks(gameShoe->GetNumOfDecks());
-//                         gameShoe->CreateShoePrompt();
-//                     }
-//                     clear_terminal();
-//                     break;
-//                 }
-//                 // Player has chosen not to re-deposit currency into their bank
-//                 else if (redeposit == "n") {
-//                     std::cout << std::endl << humanHand->GetDisplayName() << " has chosen to not redeposit more currency into their bank. Game over." << std::endl; time_sleep(SHORT_TIME_SLEEP);
-//                     std::cout << std::endl << "Thank you for playing " << humanHand->GetDisplayName() << "!" << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
-//                     clear_terminal();
-//                     break;
-//                 }
-//                 // Player has entered an incorrect response to the prompt
-//                 else {
-//                     clear_terminal();
-//                     redeposit.clear();
-//                     continue;;
-//                 }
-//             }
-//             // Set "continue_playing" to true if the player has chosen to re-deposit currency
-//             if (redeposit == "y") {
-//                 continue_playing = true;
-//             }
-//             // Set "continue_playing" to false if the player has chosen not to re-deposit currency
-//             else {
-//                 continue_playing = false;
-//             }
-//         }
-//         // End the while loop if "continue_playing" has been set to false
-//         if (!continue_playing) {
-//             break;
-//         }
-//         // Continue the while loop if "continue_playing" has been set to true
-//         else {
-//             continue;
-//         }
-//     }
-//     std::string csvFile = csv_generator(humanHand);
-//     plot(csvFile, 4);
+    // Card count minimum
+    int min_card_count = 13;
+    // Play game while the cards in the shoe is greater than 13 and the users bank total is greater than 0
+    while (gameShoe->GetCardsInShoe()->GetSize() >= min_card_count && humanPlayer->GetBankTotal() > 0) {
+        // Process the game_logic function
+        game_logic(humanPlayer, dealer, gameShoe);
+        bool continue_playing = false;
+        // Continue playing if the player has a bank total of greater than zero
+        if (humanPlayer->GetBankTotal() > 0) {
+            std::string cont_play;
+            // Prompt the player if they want to continue playing, force them to enter either y or n
+            while (true) {
+                std::cout << std::endl; animate_text("Would you like to continue playing? " + color_text(32, "Yes (y)") + " or " + color_text(32, "no (n)") + ": ", PRINT_LINE_SLEEP);
+                std::cin >> cont_play;
+                // Player has chosen to continue playing
+                if (cont_play == "y") {
+                    // Ample enough cards left in shoe to continue playing
+                    if (gameShoe->GetCardsInShoe()->GetSize() >= min_card_count) {
+                        std::cout << std::endl; progress_bar(LONG_TIME_SLEEP, std::to_string(gameShoe->GetCardsInShoe()->GetSize()) + " cards left in shoe.", "Dealing new hands.");
+                        clear_terminal();
+                        break;
+                    }
+                    // Shoe must be reshuffled
+                    else {
+                        std::cout << std::endl; progress_bar(LONG_TIME_SLEEP, std::to_string(gameShoe->GetCardsInShoe()->GetSize()) + " cards left in shoe.", "Shuffling a new shoe.");
+                        gameShoe->EmptyShoe();
+                        gameShoe->SetNumOfDecks(gameShoe->GetNumOfDecks());
+                        gameShoe->CreateShoePrompt();
+                        clear_terminal();
+                        break;
+                    }
+                }
+                // Player has chosen to stop playing
+                else if (cont_play == "n") {
+                    std::cout << std::endl; animate_text(humanPlayer->GetDisplayName() + " has chosen to quit playing. Final bank total: " + humanPlayer->GetDisplayBankTotal() + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    std::cout << std::endl; animate_text("Thank you for playing " + humanPlayer->GetDisplayName() + "!", PRINT_LINE_SLEEP); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+                    clear_terminal();
+                    break;
+                }
+                // Player has entered an incorrect response to the prompt
+                else {
+                    std::cout << std::endl; animate_text("Please enter a valid response.",PRINT_LINE_SLEEP); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+                    clear_terminal();
+                    cont_play.clear();
+                    continue;
+                }
+            }
+            // Set "continue_playing" to true if the player has chosen to continue playing
+            if (cont_play == "y") {
+                continue_playing = true;
+            }
+            // Set "continue_playing" to false if the player has chosen to stop playing
+            else {
+                cont_play = false;
+            }
+        }
+        // Player has run out of currency in their bank
+        else {
+            std::string redeposit;
+            std::cout << std::endl; animate_text(humanPlayer->GetDisplayName() + " has run out of currency in their bank.",PRINT_LINE_SLEEP); std::cout << std::endl;
+            // Prompt the player if they want to re-deposit currency into their bank, require them to enter y or n
+            while (true) {
+                std::cout << std::endl; animate_text("Would you like to deposit more currency into your bank? " + color_text(32, "Yes (y)") + " or " + color_text(32, "no (n)") + ": ",PRINT_LINE_SLEEP);
+                std::cin >> redeposit;
+                // Player has chosen to re-deposit currency into their bank
+                if (redeposit == "y") {
+                    humanPlayer->BankDepositPrompt();
+                    // Proceed with same shoe if greater than minimum card count
+                    if (gameShoe->GetCardsInShoe()->GetSize() >= min_card_count) {
+                        std::cout << std::endl; progress_bar(LONG_TIME_SLEEP, std::to_string(gameShoe->GetCardsInShoe()->GetSize()) + " cards left in shoe.", "Dealing new hands.");
+                    }
+                    // Create new shoe if the current card count in the shoe is less than "min_card_count"
+                    else {
+                        std::cout << std::endl; progress_bar(LONG_TIME_SLEEP, std::to_string(gameShoe->GetCardsInShoe()->GetSize()) + " cards left in shoe.", "Shuffling a new shoe.");
+                        gameShoe->EmptyShoe();
+                        gameShoe->SetNumOfDecks(gameShoe->GetNumOfDecks());
+                        gameShoe->CreateShoePrompt();
+                    }
+                    clear_terminal();
+                    break;
+                }
+                // Player has chosen not to re-deposit currency into their bank
+                else if (redeposit == "n") {
+                    std::cout << std::endl; animate_text(humanPlayer->GetDisplayName() + " has chosen to not redeposit more currency into their bank. Game over. " + humanPlayer->GetDisplayBankTotal() + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    std::cout << std::endl; animate_text("Thank you for playing " + humanPlayer->GetDisplayName() + "!", PRINT_LINE_SLEEP); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+                    clear_terminal();
+                    break;
+                }
+                // Player has entered an incorrect response to the prompt
+                else {
+                    std::cout << std::endl; animate_text("Please enter a valid response.",PRINT_LINE_SLEEP); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+                    clear_terminal();
+                    redeposit.clear();
+                    continue;;
+                }
+            }
+            // Set "continue_playing" to true if the player has chosen to re-deposit currency
+            if (redeposit == "y") {
+                continue_playing = true;
+            }
+            // Set "continue_playing" to false if the player has chosen not to re-deposit currency
+            else {
+                continue_playing = false;
+            }
+        }
+        // End the while loop if "continue_playing" has been set to false
+        if (!continue_playing) {
+            break;
+        }
+        // Continue the while loop if "continue_playing" has been set to true
+        else {
+            continue;
+        }
+    }
+    std::string csvFile = csv_generator(humanPlayer);
+    plot(csvFile, 4);
 }
 
 // /*  simulate_game - Simulates a game of blackjack for given parameters
