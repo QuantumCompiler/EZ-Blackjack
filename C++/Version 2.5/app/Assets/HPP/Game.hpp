@@ -1,7 +1,222 @@
 // ----- ----- ----- ----- ----- ----- ----- Includes ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 #include "../Headers/Game.h"
 
-/*  play_game - Processes all the logic that is required for a game of blackjack to be played
+/*  blackjack - Greets a user with choices of game modes to play in the program
+*   Input:
+*       This function does not have any input parameters
+*   Algorithm:
+*       * Prompt the user with an intro
+*       * Present the options to the user
+*       * Handle cases for certain response (see inline comments)
+*   Output:
+*       This function does not return an output, it directs traffic for what type of game mode is to be chosen for blackjack
+*/
+void blackjack() {
+    // Clear terminal
+    clear_terminal(); 
+    time_sleep(MEDIUM_TIME_SLEEP);
+    // String objects
+    std::string Blackjack = color_text(32, "Blackjack");
+    std::string RelativiBit = color_text(32, "RelativiBit");
+    std::string PlayBlackjack = color_text(31, "play");
+    std::string SimulateBlackjack = color_text(31, "simulate");
+    // Intro greeting
+    rolling_text("Welcome to " + Blackjack + " by " + RelativiBit + "."  ,PRINT_LINE_SLEEP); std::cout << std::endl;
+    // Display choices
+    std::cout << std::endl; rolling_text("Would you like to " + PlayBlackjack + " or " + SimulateBlackjack + " " + Blackjack + "?", PRINT_LINE_SLEEP); std::cout << std::endl;
+    for (int i = 0; i < 2; i++) {
+        if (i == 0) {
+            std::cout << std::endl; rolling_text("Enter " + color_text(31, "[P]lay") + " to " + PlayBlackjack + " " + Blackjack + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+        }
+        else {
+            rolling_text("Enter " + color_text(31, "[S]imulate") + " to " + SimulateBlackjack + " " + Blackjack + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+        }
+    }
+    // Get response from user
+    std::string response;
+    std::vector<std::string> choices = {"P", "p", "S", "s"};
+    bool valid = false;
+    while (!valid) {
+        // Prompt user for choices
+        std::cout << std::endl; rolling_text("Enter your response: ", PRINT_LINE_SLEEP);
+        std::cin >> response;
+        // Check if response is in available choices
+        for (int i = 0; i < choices.size(); i++) {
+            if (response != choices[i]) {
+                continue;
+            }
+            else if (response == choices[i]) {
+                valid = true;
+                // User has decided to Play blackjack
+                if (response == "P" || response == "p") {
+                    std::cout << std::endl; rolling_text("You have chosen to " + PlayBlackjack + " " + Blackjack + ". We will now explain the options of this " + Blackjack + " game.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    // Call game_options
+                    game_options();
+                }
+                // User has chosen to simulate blackjack
+                else if (response == "S" || response == "s") {
+                    std::cout << std::endl; rolling_text("You have chosen to " + SimulateBlackjack + " " + Blackjack + ". We will now explain the options of for simulating.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                }
+                break;
+            }
+        }
+        // User has entered an invalid choice
+        if(!valid) {
+            std::cout << std::endl; rolling_text(color_text(31, "Invalid Response") + ". Please re-enter your response.", PRINT_LINE_SLEEP); std::cout << std::endl;
+            response.clear();
+        }
+    }
+}
+
+/*  blackjack_rules - Tells a player the rules to blackjack
+*   Input:
+*       This function does not have any input parameters
+*   Algorithm:
+*       * See inline comments for more details
+*   Output:
+*       This function does not return a value
+*/
+void blackjack_rules() {
+    clear_terminal();
+    // Strings
+    std::string Blackjack = color_text(32, "Blackjack");
+    std::string Objective = color_text(31, "Objective:");
+    std::string CardValues = color_text(31, "Card Values:");
+    std::string GamePlay = color_text(31, "Gameplay:");
+    std::string AdditionalOptions = color_text(31, "Additional Options:");
+    // Prompt player that rules are coming
+    std::cout << std::endl; rolling_text("Here are the rules to " + Blackjack + ".", SPRINT_LINE_SLEEP); std::cout << std::endl;
+    std::cout << std::endl; 
+    // Objective of game
+    rolling_text(Objective, SPRINT_LINE_SLEEP); std::cout << std::endl;
+    std::cout << std::endl; rolling_text("The main goal of blackjack is to beat the dealer by having a hand value as close to 21 as possible without exceeding it. If your hand goes over 21, you 'bust' and lose the game.", SPRINT_LINE_SLEEP); std::cout << std::endl;
+    std::cout << std::endl;
+    // Card values of game
+    rolling_text(CardValues, SPRINT_LINE_SLEEP); std::cout << std::endl;
+    std::cout << std::endl;
+    rolling_text(color_text(31, "1:") + " Number cards (2-10) are worth their face value.", SPRINT_LINE_SLEEP); std::cout << std::endl;
+    rolling_text(color_text(31, "2:") + " Face cards (Jack, Queen, King) are each worth 10 points.", SPRINT_LINE_SLEEP); std::cout << std::endl;
+    rolling_text(color_text(31, "3:") + " Aces can be worth either 1 point or 11 points, depending on which value benefits your hand more.", SPRINT_LINE_SLEEP); std::cout << std::endl;
+    std::cout << std::endl;
+    // Gameplay
+    rolling_text(GamePlay, SPRINT_LINE_SLEEP); std::cout << std::endl;
+    std::cout << std::endl;
+    rolling_text(color_text(31, "1:") + " You and the dealer are both dealt two cards. One of the dealer's cards is face-up, while the other is face-down (known as the 'hole' card).", SPRINT_LINE_SLEEP); std::cout << std::endl;
+    rolling_text(color_text(31, "2:") + " You can choose to 'hit' (take another card) or 'stand' (keep your current hand). You can continue to hit until you're satisfied with your hand or until you bust.", SPRINT_LINE_SLEEP); std::cout << std::endl;
+    rolling_text(color_text(31, "3:") + " After all players stand, reach 21, or bust, the dealer reveals their hole card.", SPRINT_LINE_SLEEP); std::cout << std::endl;
+    rolling_text(color_text(31, "4:") + " The dealer must hit until their hand totals 17 or more. However, the dealer must hit on a 'soft 17' (a hand with an Ace counted as 11).", SPRINT_LINE_SLEEP); std::cout << std::endl;
+    rolling_text(color_text(31, "5:") + " The player with a hand value closest to 21 without busting wins. If you and the dealer tie with the same value, it's a 'push,' and you get your bet back.", SPRINT_LINE_SLEEP); std::cout << std::endl;
+    rolling_text(color_text(31, "6:") + " If you're dealt an Ace and a 10-value card (10, Jack, Queen, King) as your initial two cards, you have a 'blackjack,' which usually pays out at a higher rate (3:2) compared to a regular win.", SPRINT_LINE_SLEEP); std::cout << std::endl;
+    std::cout << std::endl;
+    // Additional Options
+    rolling_text(AdditionalOptions, SPRINT_LINE_SLEEP); std::cout << std::endl;
+    std::cout << std::endl;
+    rolling_text(color_text(31, "1:") + " Split - If your initial two cards are of the same rank (e.g., two 7s), you can choose to split them into two separate hands and continue playing each hand independently.", SPRINT_LINE_SLEEP); std::cout << std::endl;
+    rolling_text(color_text(31, "2:") + " Double Down - After receiving your first two cards, you can choose to double your initial bet and receive only one more card. This is a risky but potentially rewarding move.", SPRINT_LINE_SLEEP); std::cout << std::endl;
+    rolling_text(color_text(31, "3:") + " Insurance - Insurance is an optional side bet made when the dealer's face-up card is an Ace, offering a 2:1 payout if the dealer has a blackjack but generally considered less favorable for players in the long run.", SPRINT_LINE_SLEEP); std::cout << std::endl;
+    std::string cont;
+    while (cont.empty()) {
+        std::cout << std::endl; rolling_text("Press a key to continue to the game options: ", PRINT_LINE_SLEEP);
+        std::cin >> cont;
+        clear_terminal();
+    }
+}
+
+/*  game_options - Gives a player a set of options for what type of blackjack game that they would like to play
+*   Input:
+*       This function does not have any input parameters
+*   Algorithm:
+*       * Prompt the player for if they would like to see the rules
+*/
+void game_options() {
+    // Strings
+    std::string Blackjack = color_text(32, "Blackjack");
+    // Prompt player to see the rules
+    std::cout << std::endl; rolling_text("Would you like to see the rules for " + Blackjack + "?", PRINT_LINE_SLEEP); std::cout << std::endl;
+    for (int i = 0; i < 2; i++) {
+        if (i == 0) {
+            std::cout << std::endl; rolling_text("Enter " + color_text(32, "[Y]es") + " for yes.", PRINT_LINE_SLEEP); std::cout << std::endl;
+        }
+        else {
+            rolling_text("Enter " + color_text(31, "[N]o") + " for no.", PRINT_LINE_SLEEP); std::cout << std::endl;
+        }
+    }
+    // Get response from player
+    std::string rulesResponse;
+    std::vector<std::string> rulesChoices = {"Y", "y", "N", "n"};
+    bool rules = false;
+    while (!rules) {
+        // Prompt user for choices
+        std::cout << std::endl; rolling_text("Enter your response: ", PRINT_LINE_SLEEP);
+        std::cin >> rulesResponse;
+        // Check if response is in available choices
+        for (int i = 0; i < rulesChoices.size(); i++) {
+            if (rulesResponse != rulesChoices[i]) {
+                continue;
+            }
+            else if (rulesResponse == rulesChoices[i]) {
+                rules = true;
+                // Player wants to see the rules
+                if (rulesResponse == "Y" || rulesResponse == "y") {
+                    blackjack_rules();
+                }
+                else {
+                    clear_terminal();
+                }
+                break;
+            }
+        }
+        // User has entered an invalid choice
+        if(!rules) {
+            std::cout << std::endl; rolling_text(color_text(31, "Invalid Response") + ". Please re-enter your response.", PRINT_LINE_SLEEP); std::cout << std::endl;
+            rulesResponse.clear();
+        }
+    }
+    rolling_text("We will now present you with the current game modes that you can play.", PRINT_LINE_SLEEP); std::cout << std::endl;
+    // Present game mode options
+    for (int i = 0; i < 2; i++) {
+        if (i == 0) {
+            std::cout << std::endl; rolling_text(color_text(31, "[1]:") + " Single player versus the dealer.", PRINT_LINE_SLEEP); std::cout << std::endl;
+        }
+        else {
+            std::cout << std::endl;
+        }
+    }
+    // Game mode selection
+    std::string modeResponse;
+    std::vector<std::string> modeChoices = {"1"};
+    bool modes = false;
+    while (!modes) {
+        // Prompt user for choices
+        std::cout << std::endl; rolling_text("Enter your response: ", PRINT_LINE_SLEEP);
+        std::cin >> modeResponse;
+        // Check if response is in available choices
+        for (int i = 0; i < modeChoices.size(); i++) {
+            if (modeResponse != modeChoices[i]) {
+                continue;
+            }
+            else if (modeResponse == modeChoices[i]) {
+                modes = true;
+                // Player wants to play single player versus the dealer
+                if (modeResponse == "1") {
+                    std::cout << std::endl; rolling_text("You have chosen to play " + color_text(31, "Single player versus the dealer") + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    std::cout << std::endl;
+                    progress_bar(LONG_TIME_SLEEP, "Preparing single player versus dealer game.", "Ready to play.");
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    single_player_versus_dealer();
+                }
+                break;
+            }
+        }
+        // User has entered an invalid choice
+        if(!modes) {
+            std::cout << std::endl; rolling_text(color_text(31, "Invalid Response") + ". Please re-enter your response.", PRINT_LINE_SLEEP); std::cout << std::endl;
+            rulesResponse.clear();
+        }
+    }
+}
+
+/*  single_player_versus_dealer - Processes all the logic that is required for a game of blackjack to be played
 *   Input:
 *       This function does not have any input parameters
 *   Algorithm:
@@ -26,9 +241,7 @@
 *   Output:
 *       This function does not return a value
 */
-void play_game() {
-    clear_terminal();
-    progress_bar(LONG_TIME_SLEEP, "Loading Game", "Ready To Play :)");
+void single_player_versus_dealer() {
     clear_terminal();
     // Create Player objects
     std::shared_ptr<Player> humanPlayer(new Player());
@@ -57,7 +270,7 @@ void play_game() {
             std::string cont_play;
             // Prompt the player if they want to continue playing, force them to enter either y or n
             while (true) {
-                std::cout << std::endl; animate_text("Would you like to continue playing? " + color_text(32, "Yes (y)") + " or " + color_text(32, "no (n)") + ": ", PRINT_LINE_SLEEP);
+                std::cout << std::endl; rolling_text("Would you like to continue playing? " + color_text(32, "Yes (y)") + " or " + color_text(32, "no (n)") + ": ", PRINT_LINE_SLEEP);
                 std::cin >> cont_play;
                 // Player has chosen to continue playing
                 if (cont_play == "y") {
@@ -79,14 +292,14 @@ void play_game() {
                 }
                 // Player has chosen to stop playing
                 else if (cont_play == "n") {
-                    std::cout << std::endl; animate_text(humanPlayer->GetDisplayName() + " has chosen to quit playing. Final bank total: " + humanPlayer->GetDisplayBankTotal() + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
-                    std::cout << std::endl; animate_text("Thank you for playing " + humanPlayer->GetDisplayName() + "!", PRINT_LINE_SLEEP); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+                    std::cout << std::endl; rolling_text(humanPlayer->GetDisplayName() + " has chosen to quit playing. Final bank total: " + humanPlayer->GetDisplayBankTotal() + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    std::cout << std::endl; rolling_text("Thank you for playing " + humanPlayer->GetDisplayName() + "!", PRINT_LINE_SLEEP); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
                     clear_terminal();
                     break;
                 }
                 // Player has entered an incorrect response to the prompt
                 else {
-                    std::cout << std::endl; animate_text("Please enter a valid response.",PRINT_LINE_SLEEP); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+                    std::cout << std::endl; rolling_text("Please enter a valid response.",PRINT_LINE_SLEEP); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
                     clear_terminal();
                     cont_play.clear();
                     continue;
@@ -104,10 +317,10 @@ void play_game() {
         // Player has run out of currency in their bank
         else {
             std::string redeposit;
-            std::cout << std::endl; animate_text(humanPlayer->GetDisplayName() + " has run out of currency in their bank.",PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text(humanPlayer->GetDisplayName() + " has run out of currency in their bank.",PRINT_LINE_SLEEP); std::cout << std::endl;
             // Prompt the player if they want to re-deposit currency into their bank, require them to enter y or n
             while (true) {
-                std::cout << std::endl; animate_text("Would you like to deposit more currency into your bank? " + color_text(32, "Yes (y)") + " or " + color_text(32, "no (n)") + ": ",PRINT_LINE_SLEEP);
+                std::cout << std::endl; rolling_text("Would you like to deposit more currency into your bank? " + color_text(32, "Yes (y)") + " or " + color_text(32, "no (n)") + ": ",PRINT_LINE_SLEEP);
                 std::cin >> redeposit;
                 // Player has chosen to re-deposit currency into their bank
                 if (redeposit == "y") {
@@ -128,14 +341,14 @@ void play_game() {
                 }
                 // Player has chosen not to re-deposit currency into their bank
                 else if (redeposit == "n") {
-                    std::cout << std::endl; animate_text(humanPlayer->GetDisplayName() + " has chosen to not redeposit more currency into their bank. Game over. " + humanPlayer->GetDisplayBankTotal() + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
-                    std::cout << std::endl; animate_text("Thank you for playing " + humanPlayer->GetDisplayName() + "!", PRINT_LINE_SLEEP); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+                    std::cout << std::endl; rolling_text(humanPlayer->GetDisplayName() + " has chosen to not redeposit more currency into their bank. Game over. " + humanPlayer->GetDisplayBankTotal() + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    std::cout << std::endl; rolling_text("Thank you for playing " + humanPlayer->GetDisplayName() + "!", PRINT_LINE_SLEEP); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
                     clear_terminal();
                     break;
                 }
                 // Player has entered an incorrect response to the prompt
                 else {
-                    std::cout << std::endl; animate_text("Please enter a valid response.",PRINT_LINE_SLEEP); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+                    std::cout << std::endl; rolling_text("Please enter a valid response.",PRINT_LINE_SLEEP); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
                     clear_terminal();
                     redeposit.clear();
                     continue;;
