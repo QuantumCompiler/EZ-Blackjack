@@ -33,67 +33,67 @@ bool blackjack_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Playe
         // Both players have blackjack, hand ends
         if (dealer_has_blackjack && player_has_blackjack) {
             if (player_bought_insurance) {
-                std::cout << std::endl; animate_text("Both players have blackjack. " + humanPlayer->GetDisplayName() + " wins insurance and pushes their original wager.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text("Both players have blackjack. " + humanPlayer->GetDisplayName() + " wins insurance and pushes their original wager.", PRINT_LINE_SLEEP); std::cout << std::endl;
                 humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 8);
             }
             else {
-                std::cout << std::endl; animate_text("Both players have blackjack. " + humanPlayer->GetDisplayName() + " pushes their original wager.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text("Both players have blackjack. " + humanPlayer->GetDisplayName() + " pushes their original wager.", PRINT_LINE_SLEEP); std::cout << std::endl;
                 humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 3);
             }
-            std::cout << std::endl; animate_text("Here are the final hands of the players:", PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text("Here are the final hands of the players:", PRINT_LINE_SLEEP); std::cout << std::endl;
             humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "");
             dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "Show");
             // Stat tracker
             std::string statTracker = color_text(36, "Hands Played: " + std::to_string(humanPlayer->GetHandsPlayed())) + " , " + color_text(32, "Hands Won: " + std::to_string(humanPlayer->GetHandsWon())) + " , " + color_text(31, "Hands Lost: " 
             + std::to_string(humanPlayer->GetHandsLost())) + " , " + color_text(33, "Hands Pushed: " + std::to_string(humanPlayer->GetHandsPushed())) + " , " + color_text(35, "Blackjacks: " + std::to_string(humanPlayer->GetBlackjackHands())) + ".";
-            std::cout << std::endl; animate_text(humanPlayer->GetDisplayName() + " has pushed this hand. " + statTracker, PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text(humanPlayer->GetDisplayName() + " has pushed this hand. " + statTracker, PRINT_LINE_SLEEP); std::cout << std::endl;
             return false;
         }
         // Dealer has blackjack, player does not, hand ends
         else if (dealer_has_blackjack && !player_has_blackjack) {
             if (player_bought_insurance) {
-                std::cout << std::endl; animate_text(dealer->GetDisplayName() + " has blackjack and " + humanPlayer->GetDisplayName() + " does not. " + humanPlayer->GetDisplayName() + " wins insurance and loses their original wager.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text(dealer->GetDisplayName() + " has blackjack and " + humanPlayer->GetDisplayName() + " does not. " + humanPlayer->GetDisplayName() + " wins insurance and loses their original wager.", PRINT_LINE_SLEEP); std::cout << std::endl;
                 humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 6);
             }
             else {
-                std::cout << std::endl; animate_text(dealer->GetDisplayName() + " has blackjack and " + humanPlayer->GetDisplayName() + " does not. " + humanPlayer->GetDisplayName() + " loses their original wager.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text(dealer->GetDisplayName() + " has blackjack and " + humanPlayer->GetDisplayName() + " does not. " + humanPlayer->GetDisplayName() + " loses their original wager.", PRINT_LINE_SLEEP); std::cout << std::endl;
                 humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 2);
             }
-            std::cout << std::endl; animate_text("Here are the final hands of the players:", PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text("Here are the final hands of the players:", PRINT_LINE_SLEEP); std::cout << std::endl;
             humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "");
             dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "Show");
             // Stat tracker
             std::string statTracker = color_text(36, "Hands Played: " + std::to_string(humanPlayer->GetHandsPlayed())) + " , " + color_text(32, "Hands Won: " + std::to_string(humanPlayer->GetHandsWon())) + " , " + color_text(31, "Hands Lost: " 
             + std::to_string(humanPlayer->GetHandsLost())) + " , " + color_text(33, "Hands Pushed: " + std::to_string(humanPlayer->GetHandsPushed())) + " , " + color_text(35, "Blackjacks: " + std::to_string(humanPlayer->GetBlackjackHands())) + ".";
-            std::cout << std::endl; animate_text(humanPlayer->GetDisplayName() + " has lost this hand. " + statTracker, PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text(humanPlayer->GetDisplayName() + " has lost this hand. " + statTracker, PRINT_LINE_SLEEP); std::cout << std::endl;
             return false;
         }
         // Dealer does not have blackjack, player does, hand ends
         else if (!dealer_has_blackjack && player_has_blackjack) {
             if (player_bought_insurance) {
-                std::cout << std::endl; animate_text(humanPlayer->GetDisplayName() + " has blackjack and " + dealer->GetDisplayName() + " does not. " + humanPlayer->GetDisplayName() + " loses insurance and wins their original wager.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text(humanPlayer->GetDisplayName() + " has blackjack and " + dealer->GetDisplayName() + " does not. " + humanPlayer->GetDisplayName() + " loses insurance and wins their original wager.", PRINT_LINE_SLEEP); std::cout << std::endl;
                 humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 9);
             }
             else {
-                std::cout << std::endl; animate_text(humanPlayer->GetDisplayName() + " has blackjack and " + dealer->GetDisplayName() + " does not. " + humanPlayer->GetDisplayName() + " wins their original wager.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text(humanPlayer->GetDisplayName() + " has blackjack and " + dealer->GetDisplayName() + " does not. " + humanPlayer->GetDisplayName() + " wins their original wager.", PRINT_LINE_SLEEP); std::cout << std::endl;
                 humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 4);
             }
-            std::cout << std::endl; animate_text("Here are the final hands of the players:", PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text("Here are the final hands of the players:", PRINT_LINE_SLEEP); std::cout << std::endl;
             humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "");
             dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "Show");
             // Stat tracker
             std::string statTracker = color_text(36, "Hands Played: " + std::to_string(humanPlayer->GetHandsPlayed())) + " , " + color_text(32, "Hands Won: " + std::to_string(humanPlayer->GetHandsWon())) + " , " + color_text(31, "Hands Lost: " 
             + std::to_string(humanPlayer->GetHandsLost())) + " , " + color_text(33, "Hands Pushed: " + std::to_string(humanPlayer->GetHandsPushed())) + " , " + color_text(35, "Blackjacks: " + std::to_string(humanPlayer->GetBlackjackHands())) + ".";
-            std::cout << std::endl; animate_text(humanPlayer->GetDisplayName() + " has won this hand. " + statTracker, PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text(humanPlayer->GetDisplayName() + " has won this hand. " + statTracker, PRINT_LINE_SLEEP); std::cout << std::endl;
             return false;
         }
         // Neither player has blackjack, hand continues
         else {
             if (player_bought_insurance) {
-                std::cout << std::endl; animate_text("Neither player has blackjack. " + humanPlayer->GetDisplayName() + " loses insurance.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text("Neither player has blackjack. " + humanPlayer->GetDisplayName() + " loses insurance.", PRINT_LINE_SLEEP); std::cout << std::endl;
             }
             else {
-                std::cout << std::endl; animate_text("Neither player has blackjack.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text("Neither player has blackjack.", PRINT_LINE_SLEEP); std::cout << std::endl;
             }
             return true;
         }
@@ -102,45 +102,45 @@ bool blackjack_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Playe
     else {
         // Dealer is showing an Ace but the player does not have enough currency to buy insurance
         if (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data.CheckCardParam(dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(-1)->data.GetRank(), Ranks[0])) {
-            std::cout << std::endl; animate_text("The " + dealer->GetDisplayName() + " is showing an Ace but " + humanPlayer->GetDisplayName() + " does not have enough currency to purchase insurance.", PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text("The " + dealer->GetDisplayName() + " is showing an Ace but " + humanPlayer->GetDisplayName() + " does not have enough currency to purchase insurance.", PRINT_LINE_SLEEP); std::cout << std::endl;
         }
         // Both players have blackjack, hand ends
         if (dealer_has_blackjack && player_has_blackjack) {
-            std::cout << std::endl; animate_text("Both players have blackjack. " + humanPlayer->GetDisplayName() + " pushes their original wager.", PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text("Both players have blackjack. " + humanPlayer->GetDisplayName() + " pushes their original wager.", PRINT_LINE_SLEEP); std::cout << std::endl;
             humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 3);
-            std::cout << std::endl; animate_text("Here are the final hands of the players:", PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text("Here are the final hands of the players:", PRINT_LINE_SLEEP); std::cout << std::endl;
             humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "");
             dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "Show");
             // Stat tracker
             std::string statTracker = color_text(36, "Hands Played: " + std::to_string(humanPlayer->GetHandsPlayed())) + " , " + color_text(32, "Hands Won: " + std::to_string(humanPlayer->GetHandsWon())) + " , " + color_text(31, "Hands Lost: " 
             + std::to_string(humanPlayer->GetHandsLost())) + " , " + color_text(33, "Hands Pushed: " + std::to_string(humanPlayer->GetHandsPushed())) + " , " + color_text(35, "Blackjacks: " + std::to_string(humanPlayer->GetBlackjackHands())) + ".";
-            std::cout << std::endl; animate_text(humanPlayer->GetDisplayName() + " has pushed this hand. " + statTracker, PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text(humanPlayer->GetDisplayName() + " has pushed this hand. " + statTracker, PRINT_LINE_SLEEP); std::cout << std::endl;
             return false;
         }
         // Dealer has blackjack, player does not, hand ends
         else if (dealer_has_blackjack && !player_has_blackjack) {
-            std::cout << std::endl; animate_text(dealer->GetDisplayName() + " has blackjack and " + humanPlayer->GetDisplayName() + " does not. " + humanPlayer->GetDisplayName() + " loses their original wager.", PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text(dealer->GetDisplayName() + " has blackjack and " + humanPlayer->GetDisplayName() + " does not. " + humanPlayer->GetDisplayName() + " loses their original wager.", PRINT_LINE_SLEEP); std::cout << std::endl;
             humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 2);
-            std::cout << std::endl; animate_text("Here are the final hands of the players:", PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text("Here are the final hands of the players:", PRINT_LINE_SLEEP); std::cout << std::endl;
             humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "");
             dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "Show");
             // Stat tracker
             std::string statTracker = color_text(36, "Hands Played: " + std::to_string(humanPlayer->GetHandsPlayed())) + " , " + color_text(32, "Hands Won: " + std::to_string(humanPlayer->GetHandsWon())) + " , " + color_text(31, "Hands Lost: " 
             + std::to_string(humanPlayer->GetHandsLost())) + " , " + color_text(33, "Hands Pushed: " + std::to_string(humanPlayer->GetHandsPushed())) + " , " + color_text(35, "Blackjacks: " + std::to_string(humanPlayer->GetBlackjackHands())) + ".";
-            std::cout << std::endl; animate_text(humanPlayer->GetDisplayName() + " has lost this hand. " + statTracker, PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text(humanPlayer->GetDisplayName() + " has lost this hand. " + statTracker, PRINT_LINE_SLEEP); std::cout << std::endl;
             return false;
         }
         // Dealer does not have blackjack, player does, hand ends
         else if (!dealer_has_blackjack && player_has_blackjack) {
-            std::cout << std::endl; animate_text(humanPlayer->GetDisplayName() + " has blackjack and " + dealer->GetDisplayName() + " does not. " + humanPlayer->GetDisplayName() + " wins their original wager.", PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text(humanPlayer->GetDisplayName() + " has blackjack and " + dealer->GetDisplayName() + " does not. " + humanPlayer->GetDisplayName() + " wins their original wager.", PRINT_LINE_SLEEP); std::cout << std::endl;
             humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, 4);
-            std::cout << std::endl; animate_text("Here are the final hands of the players:", PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text("Here are the final hands of the players:", PRINT_LINE_SLEEP); std::cout << std::endl;
             humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "");
             dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "Show");
             // Stat tracker
             std::string statTracker = color_text(36, "Hands Played: " + std::to_string(humanPlayer->GetHandsPlayed())) + " , " + color_text(32, "Hands Won: " + std::to_string(humanPlayer->GetHandsWon())) + " , " + color_text(31, "Hands Lost: " 
             + std::to_string(humanPlayer->GetHandsLost())) + " , " + color_text(33, "Hands Pushed: " + std::to_string(humanPlayer->GetHandsPushed())) + " , " + color_text(35, "Blackjacks: " + std::to_string(humanPlayer->GetBlackjackHands())) + ".";
-            std::cout << std::endl; animate_text(humanPlayer->GetDisplayName() + " has won this hand. " + statTracker, PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text(humanPlayer->GetDisplayName() + " has won this hand. " + statTracker, PRINT_LINE_SLEEP); std::cout << std::endl;
             return false;
         }
         // Neither player has blackjack, hand continues
@@ -301,7 +301,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][2]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_split_or_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_split_or_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                         }
                         break;
                     // Dealer is showing a 4, 5, 6 or 7
@@ -312,7 +312,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should split
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][2]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_split, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_split, PRINT_LINE_SLEEP); std::cout << std::endl;
                         }
                         break;
                     case 8:
@@ -323,7 +323,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should hit
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                         }
                         break;
                     default:
@@ -341,7 +341,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][2]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_split_or_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_split_or_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                         }
                         break;
                     case 2:
@@ -356,7 +356,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should hit
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                         }
                         break;
                     default:
@@ -374,7 +374,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should hit
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                         }
                         break;
                     // Otherwise
@@ -391,14 +391,14 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][0]);
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                             if (showStrategy) {
-                                std::cout << std::endl; animate_text(should_double_down_or_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                                std::cout << std::endl; rolling_text(should_double_down_or_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                             }
                         }
                         // Player cannot double down
                         else {
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                             if (showStrategy) {
-                                std::cout << std::endl; animate_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                                std::cout << std::endl; rolling_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                             }
                         }
                         break;
@@ -427,7 +427,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                             // Player should split
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][2]);
                             if (showStrategy) {
-                                std::cout << std::endl; animate_text(should_split, PRINT_LINE_SLEEP); std::cout << std::endl;
+                                std::cout << std::endl; rolling_text(should_split, PRINT_LINE_SLEEP); std::cout << std::endl;
                             }
                             break;
                         default:
@@ -444,7 +444,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][2]);
                             if (showStrategy) {
-                                std::cout << std::endl; animate_text(should_split_or_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                                std::cout << std::endl; rolling_text(should_split_or_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                             }
                             break;
                         case 2:
@@ -455,7 +455,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                             // Player should split
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][2]);
                             if (showStrategy) {
-                                std::cout << std::endl; animate_text(should_split, PRINT_LINE_SLEEP); std::cout << std::endl;
+                                std::cout << std::endl; rolling_text(should_split, PRINT_LINE_SLEEP); std::cout << std::endl;
                             }
                             break;
                         case 8:
@@ -466,7 +466,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                             // Player should hit
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                             if (showStrategy) {
-                                std::cout << std::endl; animate_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                                std::cout << std::endl; rolling_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                             }
                             break;
                         default:
@@ -484,7 +484,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][2]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_split_or_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_split_or_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                         }
                         break;
                     // Dealer is showing a 2 - 7
@@ -497,7 +497,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should split
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][2]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_split, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_split, PRINT_LINE_SLEEP); std::cout << std::endl;
                         }
                         break;
                     // Otherwise
@@ -508,7 +508,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should hit
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                         }
                         break;
                     default:
@@ -534,7 +534,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should split
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][2]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_split, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_split, PRINT_LINE_SLEEP); std::cout << std::endl;
                         }          
                         break;
                     default:
@@ -553,7 +553,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should stand
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][3]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_stand, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_stand, PRINT_LINE_SLEEP); std::cout << std::endl;
                         }
                         break;
                     // Otherwise
@@ -567,7 +567,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should split
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][2]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_split, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_split, PRINT_LINE_SLEEP); std::cout << std::endl;
                         }
                         break;
                     default:
@@ -593,7 +593,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should stand
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][3]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_stand, PRINT_LINE_SLEEP); std::cout << std::endl; 
+                            std::cout << std::endl; rolling_text(should_stand, PRINT_LINE_SLEEP); std::cout << std::endl; 
                         }
                         break;
                     default:
@@ -622,7 +622,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][0]);
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                             if (showStrategy) {
-                                std::cout << std::endl; animate_text(should_double_down_or_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                                std::cout << std::endl; rolling_text(should_double_down_or_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                             }
                         }
                         // Player cannot double down
@@ -630,7 +630,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                             // Player should hit
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                             if (showStrategy) {
-                                std::cout << std::endl; animate_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                                std::cout << std::endl; rolling_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                             }
                         }
                         break;
@@ -647,7 +647,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should hit
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                         }
                         break;
                     default:
@@ -669,7 +669,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][0]);
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                             if (showStrategy) {
-                                std::cout << std::endl; animate_text(should_double_down_or_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                                std::cout << std::endl; rolling_text(should_double_down_or_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                             }
                         }
                         // Player cannot double down
@@ -677,7 +677,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                             // Player should hit
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                             if (showStrategy) {
-                                std::cout << std::endl; animate_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                                std::cout << std::endl; rolling_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                             }
                         }              
                         break;
@@ -693,7 +693,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should hit
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                         }
                         break;
                     default:
@@ -715,7 +715,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][0]);
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                             if (showStrategy) {
-                                std::cout << std::endl; animate_text(should_double_down_or_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                                std::cout << std::endl; rolling_text(should_double_down_or_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                             }
                         }
                         // Player cannot double down
@@ -723,7 +723,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                             // Player should hit
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                             if (showStrategy) {
-                                std::cout << std::endl; animate_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                                std::cout << std::endl; rolling_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                             }
                         }
                         break;
@@ -738,7 +738,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should hit
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                         }
                         break;
                     default:
@@ -756,7 +756,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should stand
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][3]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_stand, PRINT_LINE_SLEEP); std::cout << std::endl; 
+                            std::cout << std::endl; rolling_text(should_stand, PRINT_LINE_SLEEP); std::cout << std::endl; 
                         }
                         break;
                     // Dealer is showing a 3, 4, 5, or 6
@@ -770,14 +770,14 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][0]);
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][3]);
                             if (showStrategy) {
-                                std::cout << std::endl; animate_text(should_double_down_or_stand, PRINT_LINE_SLEEP); std::cout << std::endl;
+                                std::cout << std::endl; rolling_text(should_double_down_or_stand, PRINT_LINE_SLEEP); std::cout << std::endl;
                             }
                         }
                         else {
                             // Player should stand
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][3]);
                             if (showStrategy) {
-                                std::cout << std::endl; animate_text(should_stand, PRINT_LINE_SLEEP); std::cout << std::endl;
+                                std::cout << std::endl; rolling_text(should_stand, PRINT_LINE_SLEEP); std::cout << std::endl;
                             }
                         }
                         break;
@@ -789,7 +789,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should hit
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                         }
                         break;
                     default:
@@ -817,7 +817,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should stand
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][3]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_stand, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_stand, PRINT_LINE_SLEEP); std::cout << std::endl;
                         } 
                         break;
                     default:
@@ -855,7 +855,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should hit
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                         }
                         break;
                     default:
@@ -878,7 +878,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][0]);
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                             if (showStrategy) {
-                                std::cout << std::endl; animate_text(should_double_down_or_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                                std::cout << std::endl; rolling_text(should_double_down_or_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                             }
                         }
                         // Player cannot double down
@@ -886,7 +886,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                             // Player should hit
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                             if (showStrategy) {
-                                std::cout << std::endl; animate_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                                std::cout << std::endl; rolling_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                             }
                         }
                         break;
@@ -900,7 +900,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should hit
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                         }
                         break;
                     default:
@@ -926,7 +926,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][0]);
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                             if (showStrategy) {
-                                std::cout << std::endl; animate_text(should_double_down_or_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                                std::cout << std::endl; rolling_text(should_double_down_or_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                             }
                         }
                         // Player cannot double down
@@ -934,7 +934,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                             // Player should hit
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                             if (showStrategy) {
-                                std::cout << std::endl; animate_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                                std::cout << std::endl; rolling_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                             }
                         }
                         break;
@@ -945,7 +945,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should hit
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                         }
                         break;
                     default:
@@ -974,7 +974,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][0]);
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                             if (showStrategy) {
-                                std::cout << std::endl; animate_text(should_double_down_or_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                                std::cout << std::endl; rolling_text(should_double_down_or_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                             }
                         }
                         // Player cannot double down
@@ -982,7 +982,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                             // Player should hit
                             playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                             if (showStrategy) {
-                                std::cout << std::endl; animate_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                                std::cout << std::endl; rolling_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                             }
                         }
                         break;
@@ -1006,7 +1006,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should hit
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                         }
                         break;
                     // Dealer is showing a 4-6
@@ -1016,7 +1016,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should stand
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][3]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_stand, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_stand, PRINT_LINE_SLEEP); std::cout << std::endl;
                         }
                         break;
                     default:
@@ -1039,7 +1039,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should stand
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][3]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_stand, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_stand, PRINT_LINE_SLEEP); std::cout << std::endl;
                         }
                         break;
                     // Dealer is showing 7-Face or Ace
@@ -1052,7 +1052,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should hit
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][1]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
+                            std::cout << std::endl; rolling_text(should_hit, PRINT_LINE_SLEEP); std::cout << std::endl;
                         }
                         break;
                     default:
@@ -1082,7 +1082,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
                         // Player should stand
                         playerHand->GetHashTable()->AddToTable(playerHand->GetValuesMatrix()[3][3]);
                         if (showStrategy) {
-                            std::cout << std::endl; animate_text(should_stand, PRINT_LINE_SLEEP); std::cout << std::endl; 
+                            std::cout << std::endl; rolling_text(should_stand, PRINT_LINE_SLEEP); std::cout << std::endl; 
                         }
                         break;
                     default:
@@ -1164,7 +1164,7 @@ void deal_hand(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& de
         }
     }
     // Show hands of player
-    std::cout << std::endl; animate_text("Here are the initial hands of each player: ", PRINT_LINE_SLEEP); std::cout << std::endl;
+    std::cout << std::endl; rolling_text("Here are the initial hands of each player: ", PRINT_LINE_SLEEP); std::cout << std::endl;
     humanPlayer->ShowCurrentHand(humanHand, "Initial", "");
     dealer->ShowCurrentHand(dealerHand, "Initial", "");
     humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->ParametersCheck(dealerHand, humanPlayer->GetBankTotal());
@@ -1247,18 +1247,18 @@ void dealer_logic(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>&
         bool hasSoftSeventeen = dealer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(dealer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[3][4]);
         // Dealer has a hand total of seventeen or greater with no Ace in hand
         if ((dealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() >= 17 && !hasAceInHand) || (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() > 17)) {
-            std::cout << std::endl; animate_text("The " + dealer->GetDisplayName() + " does not need to play their hand with a final hand total of " + dealer->GetCurrentHands()->RetrieveNode(0)->data->GetDisplayCardsTotal() + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text("The " + dealer->GetDisplayName() + " does not need to play their hand with a final hand total of " + dealer->GetCurrentHands()->RetrieveNode(0)->data->GetDisplayCardsTotal() + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
         }
         // Dealer has less than 17 or has a soft 17
         else if (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() < 17 || hasSoftSeventeen) {
-            std::cout << std::endl; animate_text("The " + dealer->GetDisplayName() + " will now play their hand.",PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text("The " + dealer->GetDisplayName() + " will now play their hand.",PRINT_LINE_SLEEP); std::cout << std::endl;
             // Dealer must continue to play and will hit on soft seventeen
             while (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() < 17 || hasSoftSeventeen) {
                 hasSoftSeventeen = dealer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(dealer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[3][4]);
                 // Dealer still has less than seventeen or possesses a soft seventeen
                 if (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() < 17 || hasSoftSeventeen) {
                     dealer->GetCurrentHands()->RetrieveNode(0)->data->HitHand(shoe);
-                    animate_text(dealer->GetDisplayName() + " hits hand: ",PRINT_LINE_SLEEP / 2); dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "current", "cards"); std::cout << std::endl;
+                    rolling_text(dealer->GetDisplayName() + " hits hand: ",SPRINT_LINE_SLEEP); dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "current", "cards"); std::cout << std::endl;
                     dealer->GetCurrentHands()->RetrieveNode(0)->data->ParametersCheck(dealer->GetCurrentHands()->RetrieveNode(0)->data, humanPlayer->GetBankTotal());
                     continue;
                 }
@@ -1273,7 +1273,7 @@ void dealer_logic(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>&
     }
     // All hands are over 21
     else {
-        std::cout << std::endl; animate_text("The " + humanPlayer->GetDisplayName() + " has busted on all of their hands. " + dealer->GetDisplayName() + " does not need to play their hand.", PRINT_LINE_SLEEP); std::cout << std::endl;
+        std::cout << std::endl; rolling_text("The " + humanPlayer->GetDisplayName() + " has busted on all of their hands. " + dealer->GetDisplayName() + " does not need to play their hand.", PRINT_LINE_SLEEP); std::cout << std::endl;
     }
 }
 
@@ -1421,57 +1421,57 @@ void hand_comparison_logic(std::shared_ptr<Player>& humanPlayer, std::shared_ptr
             if (humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetCardsTotal() == dealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal()) {
                 // Player pushes their current hand
                 humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, 3);
-                std::cout << std::endl; animate_text("Both players have the same final hand total of " + humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetDisplayCardsTotal() + ". ",PRINT_LINE_SLEEP); std::cout << std::endl;
-                std::cout << std::endl; animate_text("Here are the final hands of each player:", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text("Both players have the same final hand total of " + humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetDisplayCardsTotal() + ". ",PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text("Here are the final hands of each player:", PRINT_LINE_SLEEP); std::cout << std::endl;
                 humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, "Final", "");
                 dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "Show");
                 std::string statTracker = color_text(36, "Hands Played: " + std::to_string(humanPlayer->GetHandsPlayed())) + " , " + color_text(32, "Hands Won: " + std::to_string(humanPlayer->GetHandsWon())) + " , " + color_text(31, "Hands Lost: " 
                 + std::to_string(humanPlayer->GetHandsLost())) + " , " + color_text(33, "Hands Pushed: " + std::to_string(humanPlayer->GetHandsPushed())) + " , " + color_text(35, "Blackjacks: " + std::to_string(humanPlayer->GetBlackjackHands())) + ".";
-                std::cout << std::endl; animate_text(humanPlayer->GetDisplayName() + " has pushed this hand. " + statTracker, PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text(humanPlayer->GetDisplayName() + " has pushed this hand. " + statTracker, PRINT_LINE_SLEEP); std::cout << std::endl;
             }
             // Dealer wins
             else if (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() > humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetCardsTotal() && dealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() <= 21) {
                 // Player loses their current hand
                 humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, 2);
-                std::cout << std::endl; animate_text(humanPlayer->GetDisplayName() + " has a lesser final hand total of " + humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetDisplayCardsTotal() + " compared to that of the " 
+                std::cout << std::endl; rolling_text(humanPlayer->GetDisplayName() + " has a lesser final hand total of " + humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetDisplayCardsTotal() + " compared to that of the " 
                 + dealer->GetDisplayName() + "'s final hand total of " + dealer->GetCurrentHands()->RetrieveNode(0)->data->GetDisplayCardsTotal() + ".",PRINT_LINE_SLEEP); std::cout << std::endl;
-                std::cout << std::endl; animate_text("Here are the final hands of each player:", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text("Here are the final hands of each player:", PRINT_LINE_SLEEP); std::cout << std::endl;
                 humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, "Final", "");
                 dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "Show");
                 std::string statTracker = color_text(36, "Hands Played: " + std::to_string(humanPlayer->GetHandsPlayed())) + " , " + color_text(32, "Hands Won: " + std::to_string(humanPlayer->GetHandsWon())) + " , " + color_text(31, "Hands Lost: " 
                 + std::to_string(humanPlayer->GetHandsLost())) + " , " + color_text(33, "Hands Pushed: " + std::to_string(humanPlayer->GetHandsPushed())) + " , " + color_text(35, "Blackjacks: " + std::to_string(humanPlayer->GetBlackjackHands())) + ".";
-                std::cout << std::endl; animate_text(humanPlayer->GetDisplayName() + " has lost this hand. " + statTracker, PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text(humanPlayer->GetDisplayName() + " has lost this hand. " + statTracker, PRINT_LINE_SLEEP); std::cout << std::endl;
             }
             // Player wins
             else if (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() < humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetCardsTotal() || dealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() > 21) {
                 // Player wins their current hand
                 humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, 1);
                 if (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() > 21) {
-                    std::cout << std::endl; animate_text("The " + dealer->GetDisplayName() + " has busted and " + humanPlayer->GetDisplayName() + " did not.",PRINT_LINE_SLEEP); std::cout << std::endl;
+                    std::cout << std::endl; rolling_text("The " + dealer->GetDisplayName() + " has busted and " + humanPlayer->GetDisplayName() + " did not.",PRINT_LINE_SLEEP); std::cout << std::endl;
                 }
                 else {
-                    std::cout << std::endl; animate_text(humanPlayer->GetDisplayName() + " has a greater final hand total of " + humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetDisplayCardsTotal() + " compared to that of the " 
+                    std::cout << std::endl; rolling_text(humanPlayer->GetDisplayName() + " has a greater final hand total of " + humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetDisplayCardsTotal() + " compared to that of the " 
                     + dealer->GetDisplayName() + "'s final hand total of " + dealer->GetCurrentHands()->RetrieveNode(0)->data->GetDisplayCardsTotal() + ".",PRINT_LINE_SLEEP); std::cout << std::endl;
                 }
-                std::cout << std::endl; animate_text("Here are the final hands of each player:", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text("Here are the final hands of each player:", PRINT_LINE_SLEEP); std::cout << std::endl;
                 humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, "Final", "");
                 dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "Show");
                 std::string statTracker = color_text(36, "Hands Played: " + std::to_string(humanPlayer->GetHandsPlayed())) + " , " + color_text(32, "Hands Won: " + std::to_string(humanPlayer->GetHandsWon())) + " , " + color_text(31, "Hands Lost: " 
                 + std::to_string(humanPlayer->GetHandsLost())) + " , " + color_text(33, "Hands Pushed: " + std::to_string(humanPlayer->GetHandsPushed())) + " , " + color_text(35, "Blackjacks: " + std::to_string(humanPlayer->GetBlackjackHands())) + ".";
-                std::cout << std::endl; animate_text(humanPlayer->GetDisplayName() + " has won this hand. " + statTracker, PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text(humanPlayer->GetDisplayName() + " has won this hand. " + statTracker, PRINT_LINE_SLEEP); std::cout << std::endl;
             }
         }
         // Player has a hand total of 21 or greater
         else {
             // Player loses their current hand
             humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, 2);
-            std::cout << std::endl; animate_text(humanPlayer->GetDisplayName() + " has busted with a final hand total of " + humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetDisplayCardsTotal() + ".",PRINT_LINE_SLEEP); std::cout << std::endl;
-            std::cout << std::endl; animate_text("Here are the final hands of each player:", PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text(humanPlayer->GetDisplayName() + " has busted with a final hand total of " + humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetDisplayCardsTotal() + ".",PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text("Here are the final hands of each player:", PRINT_LINE_SLEEP); std::cout << std::endl;
             humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, "Final", "");
             dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "Show");
             std::string statTracker = color_text(36, "Hands Played: " + std::to_string(humanPlayer->GetHandsPlayed())) + " , " + color_text(32, "Hands Won: " + std::to_string(humanPlayer->GetHandsWon())) + " , " + color_text(31, "Hands Lost: " 
             + std::to_string(humanPlayer->GetHandsLost())) + " , " + color_text(33, "Hands Pushed: " + std::to_string(humanPlayer->GetHandsPushed())) + " , " + color_text(35, "Blackjacks: " + std::to_string(humanPlayer->GetBlackjackHands())) + ".";
-            std::cout << std::endl; animate_text(humanPlayer->GetDisplayName() + " has lost this hand. " + statTracker, PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text(humanPlayer->GetDisplayName() + " has lost this hand. " + statTracker, PRINT_LINE_SLEEP); std::cout << std::endl;
         }
     }
 }
@@ -1552,7 +1552,7 @@ void player_logic(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>&
                 bool hasHit = humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->Contains(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[1][1]);
                 // Show current hand if multiple hands or if player has hit
                 if (humanPlayer->GetCurrentHands()->GetSize() > 1 || hasHit || invalidInput) {
-                    std::cout << std::endl; animate_text("Here is your current hand and the " + dealer->GetDisplayName() + "'s current hand:", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    std::cout << std::endl; rolling_text("Here is your current hand and the " + dealer->GetDisplayName() + "'s current hand:", PRINT_LINE_SLEEP); std::cout << std::endl;
                     humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, "current", "");
                     dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "initial", "");
                 }
@@ -1560,21 +1560,21 @@ void player_logic(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>&
                 std::string response;
                 // Player can double down
                 if (canDoubleDown) {
-                    std::cout << std::endl; animate_text("Would you like to " + color_text(32, "Hit") + ", " + color_text(32, "Stand") + ", or " + color_text(32, "Double Down") + " on your current hand?", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    std::cout << std::endl; rolling_text("Would you like to " + color_text(32, "Hit") + ", " + color_text(32, "Stand") + ", or " + color_text(32, "Double Down") + " on your current hand?", PRINT_LINE_SLEEP); std::cout << std::endl;
                     blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, dealer, true, true);
-                    std::cout << std::endl; animate_text("Enter " + color_text(32, "(h)") + " to " + color_text(32, "hit") + ", " + color_text(32, "(s)") + " to " + color_text(32, "stand") + ", or " + color_text(32, "(d)") + " to " + color_text(32, "double down") + ": ", PRINT_LINE_SLEEP);
+                    std::cout << std::endl; rolling_text("Enter " + color_text(32, "(h)") + " to " + color_text(32, "hit") + ", " + color_text(32, "(s)") + " to " + color_text(32, "stand") + ", or " + color_text(32, "(d)") + " to " + color_text(32, "double down") + ": ", PRINT_LINE_SLEEP);
                 }
                 // Player cannot double down
                 else {
-                    std::cout << std::endl; animate_text("Would you like to " + color_text(32, "Hit") + " or " + color_text(32, "Stand") + " on your current hand?", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    std::cout << std::endl; rolling_text("Would you like to " + color_text(32, "Hit") + " or " + color_text(32, "Stand") + " on your current hand?", PRINT_LINE_SLEEP); std::cout << std::endl;
                     blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, dealer, true, true);
-                    std::cout << std::endl; animate_text("Enter " + color_text(32, "(h)") + " to " + color_text(32, "hit") + " or " + color_text(32, "(s)") + " to " + color_text(32, "stand") + ": ", PRINT_LINE_SLEEP);
+                    std::cout << std::endl; rolling_text("Enter " + color_text(32, "(h)") + " to " + color_text(32, "hit") + " or " + color_text(32, "(s)") + " to " + color_text(32, "stand") + ": ", PRINT_LINE_SLEEP);
                 }
                 std::cin >> response;
                 // Player chose to stand
                 if (response == "s") {
                     humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[1][2]);
-                    std::cout << std::endl; animate_text("You have chosen to " + color_text(32, "stand") + " on your current hand. Here is your final hand and the " + dealer->GetDisplayName() + "'s current hand:", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    std::cout << std::endl; rolling_text("You have chosen to " + color_text(32, "stand") + " on your current hand. Here is your final hand and the " + dealer->GetDisplayName() + "'s current hand:", PRINT_LINE_SLEEP); std::cout << std::endl;
                     // Multiple hands
                     humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, "final", "");
                     if (humanPlayer->GetCurrentHands()->GetSize() > 1) {
@@ -1588,7 +1588,7 @@ void player_logic(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>&
                 }
                 else if (response == "h") {
                     humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[1][1]);
-                    std::cout << std::endl; animate_text("You have chosen to " + color_text(32, "hit") + " your current hand.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    std::cout << std::endl; rolling_text("You have chosen to " + color_text(32, "hit") + " your current hand.", PRINT_LINE_SLEEP); std::cout << std::endl;
                     humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->HitHand(shoe);
                     invalidInput = false;
                     continue;
@@ -1596,20 +1596,20 @@ void player_logic(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>&
                 else if (response == "d" && canDoubleDown) {
                     humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[1][0]);
                     humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[2][0]);
-                    std::cout << std::endl; animate_text("You have chosen to " + color_text(32, "double down") + " on your current hand.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    std::cout << std::endl; rolling_text("You have chosen to " + color_text(32, "double down") + " on your current hand.", PRINT_LINE_SLEEP); std::cout << std::endl;
                     humanPlayer->UpdateBank(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, 0);
                     humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->SetWager(2 * (humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetWager() - humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetInsuranceWager()));
                     humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->HitHand(shoe);
                     break;
                 }
                 else if (response == "d" && !canDoubleDown) {
-                    std::cout << std::endl; animate_text("You " + color_text(31, "cannot double down") + " on your current hand. Please re-enter a valid choice.", PRINT_LINE_SLEEP); time_sleep(MEDIUM_TIME_SLEEP);
+                    std::cout << std::endl; rolling_text("You " + color_text(31, "cannot double down") + " on your current hand. Please re-enter a valid choice.", PRINT_LINE_SLEEP); time_sleep(MEDIUM_TIME_SLEEP);
                     invalidInput = true;
                     clear_terminal();
                     continue;
                 }
                 else {
-                    std::cout << std::endl; animate_text("Please re-enter a valid choice.", PRINT_LINE_SLEEP); time_sleep(MEDIUM_TIME_SLEEP);
+                    std::cout << std::endl; rolling_text("Please re-enter a valid choice.", PRINT_LINE_SLEEP); time_sleep(MEDIUM_TIME_SLEEP);
                     invalidInput = true;
                     clear_terminal();
                     continue;
@@ -1622,24 +1622,24 @@ void player_logic(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>&
                 // Player has 21
                 if (humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetCardsTotal() == 21) {
                     if (hitHand) {
-                        std::cout << std::endl; animate_text("You have " + color_text(32, "hit") + " your current hand and obtained " + color_text(35, "21") + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+                        std::cout << std::endl; rolling_text("You have " + color_text(32, "hit") + " your current hand and obtained " + color_text(35, "21") + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
                     }
                     else if (doubledDown) {
-                        std::cout << std::endl; animate_text("You have " + color_text(32, "doubled down") + " on your current hand and obtained " + color_text(35, "21") + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+                        std::cout << std::endl; rolling_text("You have " + color_text(32, "doubled down") + " on your current hand and obtained " + color_text(35, "21") + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
                     }
                 }
                 // Player busted
                 else {
                     if (hitHand) {
-                        std::cout << std::endl; animate_text("You have " + color_text(32, "hit") + " your current hand and " + color_text(35, "busted") + " with a final value of " + humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetDisplayCardsTotal() 
+                        std::cout << std::endl; rolling_text("You have " + color_text(32, "hit") + " your current hand and " + color_text(35, "busted") + " with a final value of " + humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetDisplayCardsTotal() 
                         + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
                     }
                     else if (doubledDown) {
-                        std::cout << std::endl; animate_text("You have " + color_text(32, "doubled down") + " on your current hand and " + color_text(35, "busted") + " with a final value of " + humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetDisplayCardsTotal() 
+                        std::cout << std::endl; rolling_text("You have " + color_text(32, "doubled down") + " on your current hand and " + color_text(35, "busted") + " with a final value of " + humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetDisplayCardsTotal() 
                         + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
                     }
                 }
-                std::cout << std::endl; animate_text("Here is your final hand and the " + dealer->GetDisplayName() + "'s current hand:", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text("Here is your final hand and the " + dealer->GetDisplayName() + "'s current hand:", PRINT_LINE_SLEEP); std::cout << std::endl;
                 humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, "final", "");
                 // Multiple hands
                 if (humanPlayer->GetCurrentHands()->GetSize() > 1) {
@@ -1652,8 +1652,8 @@ void player_logic(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>&
             }
             // Player doubled down and had less than 21
             if (humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetCardsTotal() < 21 && doubledDown) {
-                std::cout << std::endl; animate_text("You have " + color_text(32, "doubled down") + " on your current hand and obtained " + humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetDisplayCardsTotal() + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
-                std::cout << std::endl; animate_text("Here is your final hand and the " + dealer->GetDisplayName() + "'s current hand:", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text("You have " + color_text(32, "doubled down") + " on your current hand and obtained " + humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetDisplayCardsTotal() + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text("Here is your final hand and the " + dealer->GetDisplayName() + "'s current hand:", PRINT_LINE_SLEEP); std::cout << std::endl;
                 humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, "final", "");
                 // Multiple hands
                 if (humanPlayer->GetCurrentHands()->GetSize() > 1) {
@@ -1898,14 +1898,14 @@ void same_rank_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Playe
         // Player is eligible to split aces
         if (player_can_split_aces && humanPlayer->GetCurrentHandsPossessed() == 1) {
             // Prompt player if they would like to split their hand
-            std::cout << std::endl; animate_text("You currently have the same rank of " + humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() + " in your hand. You may only split Ace's once.", PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text("You currently have the same rank of " + humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() + " in your hand. You may only split Ace's once.", PRINT_LINE_SLEEP); std::cout << std::endl;
             blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, dealer, true, false);
-            std::cout << std::endl; animate_text("Would you like to split your hand? " + color_text(32, "Yes (y)") + " or " + color_text(32, "no (n)") + "? ", PRINT_LINE_SLEEP);
+            std::cout << std::endl; rolling_text("Would you like to split your hand? " + color_text(32, "Yes (y)") + " or " + color_text(32, "no (n)") + "? ", PRINT_LINE_SLEEP);
             std::string response;
             std::cin >> response;
             // Player has chosen to split
             if (response == "y") {
-                std::cout << std::endl; animate_text("You have chosen to split your Aces.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text("You have chosen to split your Aces.", PRINT_LINE_SLEEP); std::cout << std::endl;
                 // Split hand
                 split_hand(humanPlayer);
                 humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->HitHand(shoe);
@@ -1918,7 +1918,7 @@ void same_rank_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Playe
                     humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data->GetValuesMatrix()[1][3]);
                 }
                 // Display hands of players
-                std::cout << std::endl; animate_text("Here are the current hands of each player.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text("Here are the current hands of each player.", PRINT_LINE_SLEEP); std::cout << std::endl;
                 for (int i = 0; i < humanPlayer->GetCurrentHands()->GetSize(); i++) {
                     humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, "Final", "");
                 }
@@ -1927,10 +1927,10 @@ void same_rank_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Playe
             }
             // Player has chosen to not split
             else {
-                std::cout << std::endl; animate_text("You have chosen to not split your Aces. The hand will continue.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text("You have chosen to not split your Aces. The hand will continue.", PRINT_LINE_SLEEP); std::cout << std::endl;
                 humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->AddToTable(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[4][0]);
                 // Display hands of players
-                std::cout << std::endl; animate_text("Here are the current hands of each player.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text("Here are the current hands of each player.", PRINT_LINE_SLEEP); std::cout << std::endl;
                 for (int i = 0; i < humanPlayer->GetCurrentHands()->GetSize(); i++) {
                     humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, "initial", "");
                 }
@@ -1944,36 +1944,36 @@ void same_rank_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Playe
             // This the original hand dealt to player
             if (humanPlayer->GetCurrentHands()->GetSize() == 1) {
                 // Prompt player
-                std::cout << std::endl; animate_text("You have the same rank of " + humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() 
+                std::cout << std::endl; rolling_text("You have the same rank of " + humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() 
                 + " in your hand. You can split up to " + std::to_string(maxSplitHands - 1) + " times.", PRINT_LINE_SLEEP); std::cout << std::endl;
                 blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, dealer, true, false);
-                std::cout << std::endl; animate_text("Would you like to split your hand? " + color_text(32, "Yes (y)") + " or " + color_text(32, "no (n)") + "? ", PRINT_LINE_SLEEP);
+                std::cout << std::endl; rolling_text("Would you like to split your hand? " + color_text(32, "Yes (y)") + " or " + color_text(32, "no (n)") + "? ", PRINT_LINE_SLEEP);
             }
             // This is another hand where they have pulled the same rank
             else {
                 // Prompt player
-                std::cout << std::endl; animate_text("You have the same rank of " + humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() + " again in your current hand. Total times split: " 
+                std::cout << std::endl; rolling_text("You have the same rank of " + humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() + " again in your current hand. Total times split: " 
                 + std::to_string(humanPlayer->GetCurrentHands()->GetSize() - 1), PRINT_LINE_SLEEP); std::cout << std::endl;
                 blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, dealer, true, false);
-                std::cout << std::endl; animate_text("Would you like to split your hand again? " + color_text(32, "Yes (y)") + " or " + color_text(32, "no (n)") + "? ", PRINT_LINE_SLEEP);
+                std::cout << std::endl; rolling_text("Would you like to split your hand again? " + color_text(32, "Yes (y)") + " or " + color_text(32, "no (n)") + "? ", PRINT_LINE_SLEEP);
             }
             std::cin >> response;
             // Player has chosen to split
             if (response == "y") {
                 // For single hand
                 if (humanPlayer->GetCurrentHands()->GetSize() == 1) {
-                    std::cout << std::endl; animate_text("You have chosen to split your hand.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    std::cout << std::endl; rolling_text("You have chosen to split your hand.", PRINT_LINE_SLEEP); std::cout << std::endl;
                 }
                 // This is for another hand
                 else {
-                    std::cout << std::endl; animate_text("You have chosen to split your current hand again.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    std::cout << std::endl; rolling_text("You have chosen to split your current hand again.", PRINT_LINE_SLEEP); std::cout << std::endl;
                 }
                 // Split hand
                 split_hand(humanPlayer);
                 // Hit top hand
                 humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->HitHand(shoe);
                 // Display hands of players
-                std::cout << std::endl; animate_text("Here are the current hands of each player.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text("Here are the current hands of each player.", PRINT_LINE_SLEEP); std::cout << std::endl;
                 for (int i = 0; i < humanPlayer->GetCurrentHands()->GetSize(); i++) {
                     humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, "current", "");
                 }
@@ -1984,33 +1984,33 @@ void same_rank_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Playe
             else {
                 // For single hand
                 if (humanPlayer->GetCurrentHands()->GetSize() == 1) {
-                    std::cout << std::endl; animate_text("You have chosen to not split your hand.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    std::cout << std::endl; rolling_text("You have chosen to not split your hand.", PRINT_LINE_SLEEP); std::cout << std::endl;
                 }
                 // This is for another hand
                 else {
-                    std::cout << std::endl; animate_text("You have chosen to not split your current hand again.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    std::cout << std::endl; rolling_text("You have chosen to not split your current hand again.", PRINT_LINE_SLEEP); std::cout << std::endl;
                 }
             }
         }
         else {
             // Player has reached max hand count
             if (humanPlayer->GetCurrentHands()->GetSize() == maxSplitHands) {
-                std::cout << std::endl; animate_text("You have reached the max number of hands. You cannot split again.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text("You have reached the max number of hands. You cannot split again.", PRINT_LINE_SLEEP); std::cout << std::endl;
             }
             // Player does not have enough currency in bank left to split again
             else if (humanPlayer->GetCurrentHands()->GetSize() < maxSplitHands && notEnoughBank) {
                 if (same_rank_in_hand && humanPlayer->GetCurrentHands()->GetSize() > 1) {
-                    std::cout << std::endl; animate_text("Your current bank total of " + humanPlayer->GetDisplayBankTotal() + " is not greater than the required wager of " 
+                    std::cout << std::endl; rolling_text("Your current bank total of " + humanPlayer->GetDisplayBankTotal() + " is not greater than the required wager of " 
                     + humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetDisplayWager() + " to split again. You cannot split again.", PRINT_LINE_SLEEP); std::cout << std::endl;
                 }
                 else if (same_rank_in_hand) {
-                    std::cout << std::endl; animate_text("Your current bank total of " + humanPlayer->GetDisplayBankTotal() + " is not greater than the required wager of " 
+                    std::cout << std::endl; rolling_text("Your current bank total of " + humanPlayer->GetDisplayBankTotal() + " is not greater than the required wager of " 
                     + humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetDisplayWager() + " to split. You cannot split.", PRINT_LINE_SLEEP); std::cout << std::endl;
                 }
             }
             // Player did not pull the same rank again
             else if ((humanPlayer->GetCurrentHands()->GetSize() > 1) && (humanPlayer->GetCurrentHands()->GetSize() < maxSplitHands) && !notEnoughBank)  {
-                std::cout << std::endl; animate_text("You did not pull the same rank of " + humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() + " again. You cannot split your hand again.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text("You did not pull the same rank of " + humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() + " again. You cannot split your hand again.", PRINT_LINE_SLEEP); std::cout << std::endl;
             }
         }
     }
