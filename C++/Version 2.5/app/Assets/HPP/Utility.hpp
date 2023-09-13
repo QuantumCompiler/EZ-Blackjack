@@ -4,23 +4,6 @@
 std::string Suits[4] = {"Clubs", "Diamonds", "Hearts", "Spades"};
 std::string Ranks[13] = {"Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"};
 // ---- ---- ---- ---- ---- ---- ---- ---- ---- Class Independent Methods ---- ---- ---- ---- ---- ---- ---- ---- //
-/*  animate_text - Animates text display by displaying text of a string character by character
-*   Input:
-*       text - Constant string value passed by reference that represents the text that is to be displayed to the terminal
-*       delay - Integer value that represents the delay for showing a new character in the string
-*   Algorithm:
-*       * Iterate through the string of text, display each character of text one at a time
-*       * Sleep the terminal
-*   Output:
-*       This function does not return a value, it displays text character by character of a string
-*/
-void animate_text(const std::string& text, int delay) {
-    // Iterate through the characters of a string
-    for (char c : text) {
-        std::cout << c << std::flush;
-        time_sleep(delay);
-    }
-}
 
 /*  clear_terminal - Clears the terminal of a machine
 *   Input:
@@ -107,7 +90,7 @@ std::string color_text(const int codeInput, const std::string textInput) {
 template <typename arbitrary> bool input_validation(arbitrary& input) {
     // If a non-numeric value was entered or the stream got into a bad state.
     if (std::cin.fail()) {
-        std::cout << std::endl; animate_text(color_text(31, "Invalid Response") + ". Please re-enter your submission.", PRINT_LINE_SLEEP / 2); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+        std::cout << std::endl; rolling_text(color_text(31, "Invalid Response") + ". Please re-enter your submission.", SPRINT_LINE_SLEEP); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
         clear_terminal();
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -117,11 +100,11 @@ template <typename arbitrary> bool input_validation(arbitrary& input) {
     if (input <= 0) {
         // Value is zero
         if (input == 0) {
-            std::cout << std::endl; animate_text(color_text(31, "Invalid Response") + ". Please re-enter your submission.", PRINT_LINE_SLEEP / 2); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+            std::cout << std::endl; rolling_text(color_text(31, "Invalid Response") + ". Please re-enter your submission.", SPRINT_LINE_SLEEP); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
         } 
         // Value is negative
         else {
-            std::cout << std::endl; animate_text(color_text(31, "Invalid Response") + " of " + color_text(31, round_to_string(input)) + ". Please enter a positive value.", PRINT_LINE_SLEEP / 2); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+            std::cout << std::endl; rolling_text(color_text(31, "Invalid Response") + " of " + color_text(31, round_to_string(input)) + ". Please enter a positive value.", SPRINT_LINE_SLEEP); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
         }
         clear_terminal();
         std::cin.clear();
@@ -188,6 +171,24 @@ int random_int(const int lowerBound, const int upperBound) {
     std::uniform_int_distribution<int> dist(lowerBound, upperBound);
     int ret = dist(gen);
     return ret;
+}
+
+/*  rolling_text - Animates text display by displaying text of a string character by character
+*   Input:
+*       text - Constant string value passed by reference that represents the text that is to be displayed to the terminal
+*       delay - Integer value that represents the delay for showing a new character in the string
+*   Algorithm:
+*       * Iterate through the string of text, display each character of text one at a time
+*       * Sleep the terminal
+*   Output:
+*       This function does not return a value, it displays text character by character of a string
+*/
+void rolling_text(const std::string& text, int delay) {
+    // Iterate through the characters of a string
+    for (char c : text) {
+        std::cout << c << std::flush;
+        time_sleep(delay);
+    }
 }
 
 /*  round_input - This function rounds a float value to two digits to resemble a currency value
