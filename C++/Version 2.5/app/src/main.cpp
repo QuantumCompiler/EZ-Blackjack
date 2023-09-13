@@ -1,6 +1,6 @@
 #include "../Assets/HPP/Game.hpp"
 
 int main() {
-    play_game();
+    blackjack();
     return 0;
 }
