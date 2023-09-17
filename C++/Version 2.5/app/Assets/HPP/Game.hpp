@@ -309,7 +309,7 @@ void simulate_options() {
     std::cout << std::endl; rolling_text("We will now present you with the first level of options for simulating a game of " + Blackjack + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
     for (int i = 0; i < 1; i++) {
         if (i == 0) {
-            std::cout << std::endl; rolling_text(color_text(31, "[1]:") + " Single player versus the dealer with perfect " + Blackjack + " strategy.", PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text(color_text(31, "[1]:") + " Single player versus the dealer with perfect " + Blackjack + " strategy and a constant wager.", PRINT_LINE_SLEEP); std::cout << std::endl;
         }
     }
     // Game mode selection

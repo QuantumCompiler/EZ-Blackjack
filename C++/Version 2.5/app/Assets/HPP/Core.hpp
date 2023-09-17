@@ -1128,7 +1128,7 @@ std::string csv_generator(std::shared_ptr<Player>& input, std::string fileName) 
     else {
         std::cout << "Error creating CSV File: " << fileName << std::endl;
     }
-    status_bar(1.0, "CSV Created");
+    status_bar(1.0, "CSV Created"); std::cout << std::endl;
     return fileName;
 }
 
@@ -1811,6 +1811,7 @@ void plot(const std::string& file, int yColumn) {
     std::string line;
     int lineNumber = 0;
     // Parse the csv file
+    std::cout << std::endl;
     while (std::getline(inputFile, line)) {
         lineNumber++;
         // Skip the header of the file
@@ -1833,6 +1834,7 @@ void plot(const std::string& file, int yColumn) {
         float progress = static_cast<float>(lineNumber - 1) / (xMax - 1);
         status_bar(progress, "Plotting Data");
     }
+    std::cout << std::endl; std::cout << std::endl;
     status_bar(1.0, "Data Plotted");
     // End of data signal for Gnuplot
     fprintf(plt, "e\n");
