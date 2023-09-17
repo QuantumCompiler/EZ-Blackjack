@@ -1098,6 +1098,7 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
 /*  csv_generator - Generates a CSV file for the game of a player
 *   Input:
 *       input - Player object passed by reference that represents the player that is going to have a csv made of it
+*       fileName - File name for CSV file
 *   Algorithm:
 *       * Create a file name for the CSV file
 *       * Generate a file with the contents of the players hand
@@ -1105,9 +1106,8 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
 *   Output:
 *       fileName - After creating the csv file, this function returns the name of the file that has been created
 */
-std::string csv_generator(std::shared_ptr<Player>& input) {
-    // Create string for filename of csv
-    std::string fileName = input->GetName() + " Results.csv";
+std::string csv_generator(std::shared_ptr<Player>& input, std::string fileName) {
+    fileName += ".csv";
     // Generate file object
     std::ofstream file(fileName);
     // File has successfully opened
@@ -1115,20 +1115,20 @@ std::string csv_generator(std::shared_ptr<Player>& input) {
         // Set headers of csv file
         file << "Hand Number, Hand Wager, Hand Net, Hand Total, Bank Total" << std::endl;
         for (int i = 0; i < input->GetTotalHandsPlayed()->GetSize(); i++) {
+            float progress = static_cast<float>(i) / input->GetTotalHandsPlayed()->GetSize();
             file << input->GetTotalHandsPlayed()->RetrieveNode(i)->data << "," << input->GetTotalHandWagers()->RetrieveNode(i)->data << "," << input->GetTotalHandNets()->RetrieveNode(i)->data << ","
             << input->GetTotalHandCardTotals()->RetrieveNode(i)->data << "," << input->GetTotalHandBankTotals()->RetrieveNode(i)->data << std::endl;
+            status_bar(progress, "Creating CSV");
         }
         // Close file
         file.close();
-        // Output message that file has been successfully created
-        progress_bar(LONG_TIME_SLEEP, "Creating CSV ", fileName + " has been successfully created.");
-        time_sleep(MEDIUM_TIME_SLEEP); 
         clear_terminal();
     }
     // File failed to open
     else {
         std::cout << "Error creating CSV File: " << fileName << std::endl;
     }
+    status_bar(1.0, "CSV Created");
     return fileName;
 }
 
@@ -1830,7 +1830,10 @@ void plot(const std::string& file, int yColumn) {
                 fprintf(plt, "%f %f\n", x, y);
             }
         }
+        float progress = static_cast<float>(lineNumber - 1) / (xMax - 1);
+        status_bar(progress, "Plotting Data");
     }
+    status_bar(1.0, "Data Plotted");
     // End of data signal for Gnuplot
     fprintf(plt, "e\n");
     // Close file
@@ -2090,6 +2093,47 @@ void same_rank_check_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<P
     }
 }
 
+/*  Prompts a player if they would like to save the results from a game / simulation
+*   Input:
+*       fileName - String value that is passed by reference to represent the name of the file to be kept or deleted
+*   Algorithm:
+*       * Create response for the prompt
+*       * Create boolean value to determine if a valid input has been input
+*       * Process the logic for the choice
+*   Output:
+*       This function does not return a value
+*/
+void save_results(std::string& fileName) {
+    std::string filePrompt;
+    bool valid = false;
+    // Prompt player if they would like to delete the current file
+    while (!valid) {
+        std::cout << std::endl; rolling_text("Would you like to keep the CSV file for the results of your game?", PRINT_LINE_SLEEP); std::cout << std::endl;
+        std::cout << std::endl; rolling_text("Enter " + color_text(31, "[Y]es") + " to keep your results and " + color_text(31, "[N]o") + " to delete them: ", PRINT_LINE_SLEEP);
+        std::cin >> filePrompt;
+        // Player has chosen to keep files
+        if (filePrompt == "Y" || filePrompt == "y") {
+            valid = true;
+            std::cout << std::endl; rolling_text("Results have been saved in the current program's directory.", PRINT_LINE_SLEEP); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+            clear_terminal();
+        }
+        // Player has chosen to delete files
+        else if (filePrompt == "N" || filePrompt == "n") {
+            std::remove(fileName.c_str());
+            valid = true;
+            std::cout << std::endl; rolling_text("Results have been deleted.", PRINT_LINE_SLEEP); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+            clear_terminal();
+        }
+        // Invalid response
+        else {
+            std::cout << std::endl; rolling_text(color_text(31, "Invalid Response") + ". Please re-enter your choice.", PRINT_LINE_SLEEP); std::cout << std::endl;
+            filePrompt.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            continue;
+        }
+    }
+}
+
 
 /*  split_hand_sim - Splits the current hand of a player and appends the hands to the players private data member "hands"
 *   Input:
@@ -2123,33 +2167,3 @@ void split_hand(std::shared_ptr<Player>& humanPlayer) {
     std::shared_ptr<node<std::shared_ptr<Hand>>> newHandNode = humanPlayer->GetCurrentHands()->InitNode(newHand);
     humanPlayer->GetCurrentHands()->InsertNode(newHandNode, 0);
 }
-
-// /*  stats_tracker - Updates the stat trackers of a current hand
-// *   Input:
-// *       input - Hand object passed by reference who's stats are being updated
-// *   Algorithm:
-// *       * Update hands bank total
-// *       * Update hands cards total
-// *       * Update hands nets total
-// *       * Update hands played total
-// *       * Update hands wagers total
-// *   Output:
-// *       This function does not return a value
-// */
-// void stats_tracker(std::shared_ptr<Hand>& input) {
-//     // Update hands bank total
-//     std::shared_ptr<node<float>> bankNode = input->GetHandBankTotals()->InitNode(input->GetBankTotal());
-//     input->SetHandBankTotals(bankNode);
-//     // Update hands cards total
-//     std::shared_ptr<node<int>> cardsTotalNode = input->GetHandCardTotals()->InitNode(input->GetCardsTotal());
-//     input->SetHandCardTotals(cardsTotalNode);
-//     // Update hands nets total
-//     std::shared_ptr<node<float>> netsTotalNode = input->GetHandNets()->InitNode(input->GetNet());
-//     input->SetHandNets(netsTotalNode);
-//     // Update hands played total
-//     std::shared_ptr<node<int>> handsPlayedNode = input->GetHandPlayed()->InitNode(input->GetHandsPlayed());
-//     input->SetHandPlayed(handsPlayedNode);
-//     // Update hands wagers total
-//     std::shared_ptr<node<float>> handWagerNode = input->GetHandWagers()->InitNode(input->GetWager());
-//     input->SetHandWagers(handWagerNode);
-// }

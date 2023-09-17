@@ -219,6 +219,23 @@ std::string round_to_string(const float input) {
     return return_string;
 }
 
+void status_bar(float progressPercentage, const std::string& loadingMessage) {
+    int progressLength = 30;
+    int progress = static_cast<int>(progressPercentage * progressLength);
+    int randomLoad = random_int(31,31);
+    std::cout << color_text(randomLoad, "[");
+    for (int i = 0; i < progress; i++) {
+        std::cout << color_text(randomLoad, "=");
+    }
+    // Add ">" only if it's not the end of the bar
+    if (progress < progressLength) {
+        std::cout << color_text(randomLoad, ">");
+    }
+    std::cout << std::string(progressLength - progress, ' ') << color_text(randomLoad, "]");
+    std::cout << " " << color_text(randomLoad, std::to_string(static_cast<int>(progressPercentage * 100))) << color_text(randomLoad, "%") + " " + color_text(randomLoad, loadingMessage) + "\033[K\r";
+    std::cout.flush();
+}
+
 /*  time_sleep - This function causes the console to sleep for a given amount of time
 *   Input:
 *       input - Constant long value that resembles the time in milliseconds to have the console sleep

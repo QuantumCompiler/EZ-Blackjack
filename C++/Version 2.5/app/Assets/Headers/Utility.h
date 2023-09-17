@@ -11,6 +11,7 @@ int random_int(const int lowerBound, const int upperBound); // Generates random 
 void rolling_text(const std::string& text, int delay); // Animates text display in the terminal
 float round_input(float input); // Founds a float input
 std::string round_to_string(const float input); // Rounds a float and generates a string
+void status_bar(float progressPercentage, const std::string& loadingMessage);
 void time_sleep(const long input); // Sleeps the console for a specified time
 
 #endif
