@@ -219,20 +219,37 @@ std::string round_to_string(const float input) {
     return return_string;
 }
 
+/*  status_bar - Dynamically calculates the status of a specific operation
+*   Input:
+*       progressPercentage - Float value that represents the progress of a current operation
+*       loadingMessage - String value that is passed by reference to represent the loading message that is displayed for a given operation
+*   Algorithm:
+*       * Set the length of the progress bar
+*       * Calculate the current progress of an operation
+*       * Print bar to console
+*       * Output message with current status
+*   Output:
+*       This function does not return a value
+*/
 void status_bar(float progressPercentage, const std::string& loadingMessage) {
-    int progressLength = 30;
+    // Length of progress bar
+    int progressLength = 25;
+    // Calculate progress out of 100
     int progress = static_cast<int>(progressPercentage * progressLength);
-    int randomLoad = random_int(31,31);
-    std::cout << color_text(randomLoad, "[");
+    // Print elements to console
+    std::cout << color_text(32, "[");
+    // Print "=" for the current progress length
     for (int i = 0; i < progress; i++) {
-        std::cout << color_text(randomLoad, "=");
+        std::cout << color_text(32, "=");
     }
     // Add ">" only if it's not the end of the bar
     if (progress < progressLength) {
-        std::cout << color_text(randomLoad, ">");
+        std::cout << color_text(32, ">");
     }
-    std::cout << std::string(progressLength - progress, ' ') << color_text(randomLoad, "]");
-    std::cout << " " << color_text(randomLoad, std::to_string(static_cast<int>(progressPercentage * 100))) << color_text(randomLoad, "%") + " " + color_text(randomLoad, loadingMessage) + "\033[K\r";
+    // Print end brace
+    std::cout << std::string(progressLength - progress, ' ') << color_text(32, "]");
+    // Print message at end of list
+    std::cout << " " << color_text(32, std::to_string(static_cast<int>(progressPercentage * 100))) << color_text(32, "%") + " " + color_text(32, loadingMessage) + "\033[K\r";
     std::cout.flush();
 }
 
