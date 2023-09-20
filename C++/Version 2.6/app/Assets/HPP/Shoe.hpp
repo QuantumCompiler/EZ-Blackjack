@@ -134,6 +134,7 @@ Shoe Shoe::CreateShoeSim() {
 *   Algorithm:
 *       * Pop a node from the linked list using "PopNode()"
 *       * Create a card object with the information from this node
+*       * Update the running count of the shoe
 *       * Return the card object
 *   Output:
 *       This function returns a Card object that is pulled from one of two possible vectors
@@ -142,6 +143,7 @@ std::shared_ptr<Card> Shoe::Draw() {
     if (this->GetCardsInShoe()->GetSize() > 0) {
         std::shared_ptr<node<Card>> card = this->GetCardsInShoe()->PopNode();
         std::shared_ptr<Card> ret(new Card(card->data.GetRank(), card->data.GetSuit()));
+        this->SetRunningCount(ret);
         return ret;
     }
     else {
@@ -205,13 +207,33 @@ void Shoe::SetNumOfDecks(const int input) {
     deck->numOfDecks = input;
 }
 
-// // ----- ----- ----- ----- ----- ----- ----- Getter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
-// GetCardsInShoe - Retrieves the private data member "cards"
-std::shared_ptr<LinkedList<Card>>& Shoe::GetCardsInShoe() {
-    return deck->cards;
+// SetRunningCount - Mutates the private data member "runningCount" by assigning it to "input"
+void Shoe::SetRunningCount(std::shared_ptr<Card> input) {
+    deck->runningCount += input->GetCountValue();
+    this->SetDisplayRunningCount();
+}
+
+void Shoe::SetDisplayRunningCount() {
+    deck->displayRunningCount = color_text(31, std::to_string(deck->runningCount));
+}
+
+// ----- ----- ----- ----- ----- ----- ----- Getter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
+// GetDisplayRunningCount - Retrieves the private data member "displayRunningCount"
+std::string& Shoe::GetDisplayRunningCount() {
+    return deck->displayRunningCount;
 }
 
 // GetNumOfDecks - Retrieves the private data member "numOfDecks"
 int& Shoe::GetNumOfDecks() {
     return deck->numOfDecks;
+}
+
+// GetRunningCount - Retrieves the private data member "runningCount"
+int& Shoe::GetRunningCount() {
+    return deck->runningCount;
+}
+
+// GetCardsInShoe - Retrieves the private data member "cards"
+std::shared_ptr<LinkedList<Card>>& Shoe::GetCardsInShoe() {
+    return deck->cards;
 }
