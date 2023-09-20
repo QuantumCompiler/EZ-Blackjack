@@ -34,6 +34,7 @@
 *       net - Float value that represents the net of a hand that has been played
 *       wager - Float value that represents the wager that is placed on a hand that is being played
 *     Integer Values:
+*       cardsCount - Integer value that represents the card count of a current players hand
 *       cardsTotal - Integer value that represents the total value of a players hand of cards
 *     String Values:
 *       displayCardsTotal - String value that represents the modified private data member "cardsTotal"
@@ -83,6 +84,7 @@ struct IndividualHand {
     float net;
     float wager;
     // Integer Values
+    int cardsCount;
     int cardsTotal;
     // Strings
     std::string displayCardsTotal;
@@ -117,6 +119,7 @@ public:
     void SetNet(const float& input); // Mutates "net"
     void SetWager(const float& input); // Mutates "wager"
     // Integer Values
+    void SetCardsCount(const int& input); // Mutates "cardsCount"
     void SetCardsTotal(const int& input); // Mutates "cardsTotal"
     // String Values
     void SetDisplayCardsTotal(); // Mutates "displayCardsTotal"
@@ -134,6 +137,7 @@ public:
     float& GetNet(); // Retrieves "net"
     float& GetWager(); // Retrieves "wager"
     // Integer Values
+    int& GetCardsCount(); // Retrieves "cardsCount"
     int& GetCardsTotal(); // Retrieves "cardsTotal"
     // String Values
     std::string& GetDisplayCardsTotal(); // Retrieves "displayCardsTotal"

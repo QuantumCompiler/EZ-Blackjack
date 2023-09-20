@@ -22,6 +22,7 @@ Hand::Hand() {
     this->SetNet(0);
     this->SetWager(0);
     // Integer Values Initialization
+    this->SetCardsCount(0);
     this->SetCardsTotal(0);
     this->GetDisplayCardsTotal().clear();
     this->GetDisplayInsuranceWager().clear();
@@ -254,6 +255,7 @@ Hand Hand::CopyVariables(std::shared_ptr<Hand>& input) {
 *       input - Shoe object that is passed by reference where a Card object is being pulled from
 *   Algorithm:
 *       * Call AddCardToHand() to add a card to the current players hand
+*       * Calculate the count for a players hand
 *   Output:
 *       This function returns a Hand object after adding a card to it
 */
@@ -262,6 +264,11 @@ Hand Hand::HitHand(std::shared_ptr<Shoe>& input) {
     std::shared_ptr<Card> drawnCard = input->Draw();
     std::shared_ptr<node<Card>> cardNode = this->GetPlayerCards()->InitNode(drawnCard);
     this->AddCardToHand(cardNode);
+    int handCount = 0;
+    for (int i = 0; i < this->GetPlayerCards()->GetSize(); i++) {
+        handCount += this->GetPlayerCards()->RetrieveNode(i)->data.GetCountValue();
+    }
+    this->SetCardsCount(handCount);
     return *this;
 }
 
@@ -523,6 +530,7 @@ Hand Hand::ResetHand() {
     this->SetNet(0.00);
     this->SetWager(0.00);
     // Integer Values
+    this->SetCardsCount(0);
     this->SetCardsTotal(0);
     // String Values
     this->GetDisplayCardsTotal().clear();
@@ -554,6 +562,11 @@ void Hand::SetWager(const float& input) {
     float rounded_input = round_input(input);
     individualHand->wager = rounded_input;
     this->SetDisplayWager();
+}
+
+// SetCardsCount - Mutates the private data member "cardsCount" by assigning it to "input"
+void Hand::SetCardsCount(const int& input) {
+    individualHand->cardsCount = input;
 }
 
 // SetCardsTotal - Mutates the private data member "cardsTotal" by assigning it to "input"
@@ -615,6 +628,11 @@ float& Hand::GetNet() {
 // GetWager - Retrieves the private data member "wager"
 float& Hand::GetWager() {
     return individualHand->wager;
+}
+
+// GetCardsCount - Retrieves the private data member "cardsCount"
+int& Hand::GetCardsCount() {
+    return individualHand->cardsCount;
 }
 
 // GetCardsTotal - Retrieves the private data member "cardsTotal"
