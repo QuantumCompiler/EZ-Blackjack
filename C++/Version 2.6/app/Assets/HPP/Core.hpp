@@ -1095,6 +1095,19 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
     }
 }
 
+void card_count_strategy(std::shared_ptr<Shoe>& inputShoe, std::shared_ptr<Player>& dealer, bool dealerHiding, bool showStrategy) {
+    int currentCount = inputShoe->GetRunningCount();
+    // Dealer is currently hiding one of their cards
+    if (dealerHiding) {
+        currentCount -= dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetCountValue();
+    }
+    std::string count = color_text(31, std::to_string(currentCount));
+    // Show strategy
+    if (showStrategy) {
+        std::cout << std::endl; rolling_text("The current count of this shoe is " + count + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+    }
+}
+
 /*  csv_generator - Generates a CSV file for the game of a player
 *   Input:
 *       input - Player object passed by reference that represents the player that is going to have a csv made of it
@@ -1275,6 +1288,7 @@ void dealer_logic(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>&
     else {
         std::cout << std::endl; rolling_text("The " + humanPlayer->GetDisplayName() + " has busted on all of their hands. " + dealer->GetDisplayName() + " does not need to play their hand.", PRINT_LINE_SLEEP); std::cout << std::endl;
     }
+    card_count_strategy(shoe, dealer, false, true);
 }
 
 /*  dealer_logic_sim - Processes the logic for how the dealer should play their current hands for a simulated hand
@@ -1562,12 +1576,14 @@ void player_logic(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>&
                 if (canDoubleDown) {
                     std::cout << std::endl; rolling_text("Would you like to " + color_text(32, "Hit") + ", " + color_text(32, "Stand") + ", or " + color_text(32, "Double Down") + " on your current hand?", PRINT_LINE_SLEEP); std::cout << std::endl;
                     blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, dealer, true, true);
+                    card_count_strategy(shoe, dealer, true, true);
                     std::cout << std::endl; rolling_text("Enter " + color_text(32, "(h)") + " to " + color_text(32, "hit") + ", " + color_text(32, "(s)") + " to " + color_text(32, "stand") + ", or " + color_text(32, "(d)") + " to " + color_text(32, "double down") + ": ", PRINT_LINE_SLEEP);
                 }
                 // Player cannot double down
                 else {
                     std::cout << std::endl; rolling_text("Would you like to " + color_text(32, "Hit") + " or " + color_text(32, "Stand") + " on your current hand?", PRINT_LINE_SLEEP); std::cout << std::endl;
                     blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, dealer, true, true);
+                    card_count_strategy(shoe, dealer, true, true);
                     std::cout << std::endl; rolling_text("Enter " + color_text(32, "(h)") + " to " + color_text(32, "hit") + " or " + color_text(32, "(s)") + " to " + color_text(32, "stand") + ": ", PRINT_LINE_SLEEP);
                 }
                 std::cin >> response;
@@ -1905,6 +1921,7 @@ void same_rank_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Playe
             // Prompt player if they would like to split their hand
             std::cout << std::endl; rolling_text("You currently have the same rank of " + humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() + " in your hand. You may only split Ace's once.", PRINT_LINE_SLEEP); std::cout << std::endl;
             blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, dealer, true, false);
+            card_count_strategy(shoe, dealer, true, true);
             std::cout << std::endl; rolling_text("Would you like to split your hand? " + color_text(32, "Yes (y)") + " or " + color_text(32, "no (n)") + "? ", PRINT_LINE_SLEEP);
             std::string response;
             std::cin >> response;
@@ -1952,6 +1969,7 @@ void same_rank_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Playe
                 std::cout << std::endl; rolling_text("You have the same rank of " + humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() 
                 + " in your hand. You can split up to " + std::to_string(maxSplitHands - 1) + " times.", PRINT_LINE_SLEEP); std::cout << std::endl;
                 blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, dealer, true, false);
+                card_count_strategy(shoe, dealer, true, true);
                 std::cout << std::endl; rolling_text("Would you like to split your hand? " + color_text(32, "Yes (y)") + " or " + color_text(32, "no (n)") + "? ", PRINT_LINE_SLEEP);
             }
             // This is another hand where they have pulled the same rank
@@ -1960,6 +1978,7 @@ void same_rank_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Playe
                 std::cout << std::endl; rolling_text("You have the same rank of " + humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() + " again in your current hand. Total times split: " 
                 + std::to_string(humanPlayer->GetCurrentHands()->GetSize() - 1), PRINT_LINE_SLEEP); std::cout << std::endl;
                 blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, dealer, true, false);
+                card_count_strategy(shoe, dealer, true, true);
                 std::cout << std::endl; rolling_text("Would you like to split your hand again? " + color_text(32, "Yes (y)") + " or " + color_text(32, "no (n)") + "? ", PRINT_LINE_SLEEP);
             }
             std::cin >> response;
