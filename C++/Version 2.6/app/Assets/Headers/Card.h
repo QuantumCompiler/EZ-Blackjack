@@ -5,6 +5,7 @@
 /*  Structure PlayingCard - Struct to resemble a playing card
 *   Data Members:
 *       cardValue - Integer value that represents the value of a card
+*       countValue - Integer value that represents the count value for a rank of a card
 *       displayCardValue - String value that represents a modified version of the "cardValue" data member
 *       displayRank - String value that represents a modified version of the "rank" data member
 *       displaySuit - String value that represents a modified version of the "suit" data member
@@ -13,6 +14,7 @@
 */
 struct PlayingCard {
     int cardValue;
+    int countValue;
     std::string displayCardValue;
     std::string displayRank;
     std::string displaySuit;
@@ -34,12 +36,14 @@ public:
     std::string PrintCard();
     // Setter Functions
     void SetCardValue(std::shared_ptr<PlayingCard> inputCard); // Mutates "cardValue"
+    void SetCountValue(std::shared_ptr<PlayingCard> inputCard); // Mutates "countValue"
     void SetDisplayCardValue(std::shared_ptr<PlayingCard> inputCard); // Mutates "displayCardValue"
     void SetDisplayRank(std::shared_ptr<PlayingCard> inputCard); // Mutates "displayRank"
     void SetDisplaySuit(std::shared_ptr<PlayingCard> inputCard); // Mutates "displaySuit"
     void SetNewCardValue(const int input); // Mutates "cardValue"
     // Getter Functions
     int& GetCardValue(); // Retrieves "cardValue"
+    int& GetCountValue(); // Retrieves "countValue"
     std::string& GetDisplayCardValue(); // Retrieves "displayCardValue"
     std::string& GetDisplayRank(); // Retrieves "displayRank"
     std::string& GetDisplaySuit(); // Retrieves "displaySuit"

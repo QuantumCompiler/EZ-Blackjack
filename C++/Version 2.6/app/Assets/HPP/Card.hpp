@@ -9,14 +9,14 @@
 *       Create a card object on the heap
 *       card->rank is set to inputRank
 *       card->suit is set to inputSuit
-*       SetCardValue, SetDisplayRank, SetDisplaySuit, SetDisplayCardValue functions are called to mutate private
-*       data members
+*       SetCardValue, SetCountValue, SetDisplayRank, SetDisplaySuit, SetDisplayCardValue functions are called to mutate private data members
 */
 Card::Card(const std::string inputRank, const std::string inputSuit) {
     card = std::make_shared<PlayingCard>();
     card->rank = inputRank;
     card->suit = inputSuit;
     SetCardValue(card);
+    SetCountValue(card);
     SetDisplayRank(card);
     SetDisplaySuit(card);
     SetDisplayCardValue(card);
@@ -52,7 +52,7 @@ std::string Card::PrintCard() {
 }
 
 // ----- ----- ----- ----- ----- ----- ----- Setter Functions ----- ----- ----- ----- ----- ----- ----- ----- ----- //
-// SetCardValue - Mutates the private data member "cardValue" by assigning it to a cards correct value
+// SetCardValue - Mutates the private data member "cardValue" by assigning it to a ranks correct value
 void Card::SetCardValue(std::shared_ptr<PlayingCard> inputCard) {
     // Iterate through all possible ranks of cards
     for (int i = 0; i < 13; i++) {
@@ -79,6 +79,41 @@ void Card::SetCardValue(std::shared_ptr<PlayingCard> inputCard) {
             case 11:
             case 12:
                 card->cardValue = 10;
+            default:
+                break;
+            }
+        }
+    }
+}
+
+// SetCountValue - Mutates the private data member "countValue" by assigning it to a ranks correct value
+void Card::SetCountValue(std::shared_ptr<PlayingCard> inputCard) {
+    // Iterate through all possible ranks of cards
+    for (int i = 0; i < 13; i++) {
+        if (CheckCardParam(inputCard->rank, Ranks[i])) {
+            switch (i) {
+            // Set count value to +1
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+                card->countValue = 1;
+                break;
+            // Set count value to 0
+            case 6:
+            case 7:
+            case 8:
+                card->countValue = 0;
+                break;
+            // Set count value to -1
+            case 0:
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+                card->countValue = -1;
+                break;
             default:
                 break;
             }
@@ -131,6 +166,11 @@ void Card::SetNewCardValue(const int input) {
 // GetCardValue - Retrieves the private data member "cardValue"
 int& Card::GetCardValue() {
     return card->cardValue;
+}
+
+// GetCountValue - Retrieves the private data member "countValue"
+int& Card::GetCountValue() {
+    return card->countValue;
 }
 
 // GetDisplayCardValue - Retrieves the private data member "displayCardValue"
