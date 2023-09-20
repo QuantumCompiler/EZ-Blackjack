@@ -1,6 +1,7 @@
 #include "../Assets/HPP/Game.hpp"
 
 int main() {
-    blackjack();
+    // blackjack();
+    single_player_versus_dealer();
     return 0;
 }
