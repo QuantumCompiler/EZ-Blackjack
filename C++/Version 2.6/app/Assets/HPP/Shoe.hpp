@@ -39,6 +39,7 @@ Shoe Shoe::CopyShoe(const std::shared_ptr<Shoe> input) {
     }
     // Copy the number of decks value
     this->SetNumOfDecks(input->GetNumOfDecks());
+    this->GetRunningCount() = input->GetRunningCount();
     // Return the shoe
     return *this;
 }
@@ -160,7 +161,8 @@ std::shared_ptr<Card> Shoe::Draw() {
 *       This function does not return a value, but it modifies the data structure elements
 */
 void Shoe::EmptyShoe() {
-    GetCardsInShoe()->ClearList();
+    this->GetCardsInShoe()->ClearList();
+    this->GetRunningCount() = 0;
 }
 
 /*  Shuffle - This function shuffles the cards that are in a shoe
