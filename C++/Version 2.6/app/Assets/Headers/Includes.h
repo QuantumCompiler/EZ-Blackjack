@@ -5,7 +5,7 @@
 #define SHORT_TIME_SLEEP 500
 #define MEDIUM_TIME_SLEEP 1500
 #define LONG_TIME_SLEEP 3000
-#define PRINT_LINE_SLEEP 20
+#define PRINT_LINE_SLEEP 0
 #define SPRINT_LINE_SLEEP PRINT_LINE_SLEEP / 2
 
 #include <algorithm>
