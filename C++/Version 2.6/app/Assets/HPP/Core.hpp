@@ -5,7 +5,7 @@
 *   Input:
 *       humanPlayer - Player object that is passed by reference to resemble a non dealer player
 *       dealer - Player object that is passed by reference to resemble a dealer
-*       inputShoe - Shoe object passed by reference that represents the shoe that is being played with
+*       shoe - Shoe object passed by reference that represents the shoe that is being played with
 *   Algorithm:
 *       * Deal hands to the players with the "deal_hand" function
 *       * Proceed to check if the player is able to buy insurance (This is done with the "ParametersCheck" function in "deal_hand")
@@ -18,9 +18,9 @@
 *       * Return values at the end of the if else statements
 *   Output:
 */
-bool blackjack_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& inputShoe) {
+bool blackjack_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& shoe) {
     // Deal hands to player
-    deal_hand(humanPlayer, dealer, inputShoe);
+    deal_hand(humanPlayer, dealer, shoe);
     // Define boolean values
     bool player_can_buy_insurance = humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[0][0]);
     bool dealer_has_blackjack = dealer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(dealer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[2][1]);
@@ -43,6 +43,7 @@ bool blackjack_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Playe
             std::cout << std::endl; rolling_text("Here are the final hands of the players:", PRINT_LINE_SLEEP); std::cout << std::endl;
             humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "");
             dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "Show");
+            card_count_strategy(humanPlayer, dealer, shoe, showCountingStrategy, false);
             // Stat tracker
             std::string statTracker = color_text(36, "Hands Played: " + std::to_string(humanPlayer->GetHandsPlayed())) + " , " + color_text(32, "Hands Won: " + std::to_string(humanPlayer->GetHandsWon())) + " , " + color_text(31, "Hands Lost: " 
             + std::to_string(humanPlayer->GetHandsLost())) + " , " + color_text(33, "Hands Pushed: " + std::to_string(humanPlayer->GetHandsPushed())) + " , " + color_text(35, "Blackjacks: " + std::to_string(humanPlayer->GetBlackjackHands())) + ".";
@@ -62,6 +63,7 @@ bool blackjack_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Playe
             std::cout << std::endl; rolling_text("Here are the final hands of the players:", PRINT_LINE_SLEEP); std::cout << std::endl;
             humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "");
             dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "Show");
+            card_count_strategy(humanPlayer, dealer, shoe, showCountingStrategy, false);
             // Stat tracker
             std::string statTracker = color_text(36, "Hands Played: " + std::to_string(humanPlayer->GetHandsPlayed())) + " , " + color_text(32, "Hands Won: " + std::to_string(humanPlayer->GetHandsWon())) + " , " + color_text(31, "Hands Lost: " 
             + std::to_string(humanPlayer->GetHandsLost())) + " , " + color_text(33, "Hands Pushed: " + std::to_string(humanPlayer->GetHandsPushed())) + " , " + color_text(35, "Blackjacks: " + std::to_string(humanPlayer->GetBlackjackHands())) + ".";
@@ -81,6 +83,7 @@ bool blackjack_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Playe
             std::cout << std::endl; rolling_text("Here are the final hands of the players:", PRINT_LINE_SLEEP); std::cout << std::endl;
             humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "");
             dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "Show");
+            card_count_strategy(humanPlayer, dealer, shoe, showCountingStrategy, false);
             // Stat tracker
             std::string statTracker = color_text(36, "Hands Played: " + std::to_string(humanPlayer->GetHandsPlayed())) + " , " + color_text(32, "Hands Won: " + std::to_string(humanPlayer->GetHandsWon())) + " , " + color_text(31, "Hands Lost: " 
             + std::to_string(humanPlayer->GetHandsLost())) + " , " + color_text(33, "Hands Pushed: " + std::to_string(humanPlayer->GetHandsPushed())) + " , " + color_text(35, "Blackjacks: " + std::to_string(humanPlayer->GetBlackjackHands())) + ".";
@@ -111,6 +114,7 @@ bool blackjack_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Playe
             std::cout << std::endl; rolling_text("Here are the final hands of the players:", PRINT_LINE_SLEEP); std::cout << std::endl;
             humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "");
             dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "Show");
+            card_count_strategy(humanPlayer, dealer, shoe, showCountingStrategy, false);
             // Stat tracker
             std::string statTracker = color_text(36, "Hands Played: " + std::to_string(humanPlayer->GetHandsPlayed())) + " , " + color_text(32, "Hands Won: " + std::to_string(humanPlayer->GetHandsWon())) + " , " + color_text(31, "Hands Lost: " 
             + std::to_string(humanPlayer->GetHandsLost())) + " , " + color_text(33, "Hands Pushed: " + std::to_string(humanPlayer->GetHandsPushed())) + " , " + color_text(35, "Blackjacks: " + std::to_string(humanPlayer->GetBlackjackHands())) + ".";
@@ -124,6 +128,7 @@ bool blackjack_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Playe
             std::cout << std::endl; rolling_text("Here are the final hands of the players:", PRINT_LINE_SLEEP); std::cout << std::endl;
             humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "");
             dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "Show");
+            card_count_strategy(humanPlayer, dealer, shoe, showCountingStrategy, false);
             // Stat tracker
             std::string statTracker = color_text(36, "Hands Played: " + std::to_string(humanPlayer->GetHandsPlayed())) + " , " + color_text(32, "Hands Won: " + std::to_string(humanPlayer->GetHandsWon())) + " , " + color_text(31, "Hands Lost: " 
             + std::to_string(humanPlayer->GetHandsLost())) + " , " + color_text(33, "Hands Pushed: " + std::to_string(humanPlayer->GetHandsPushed())) + " , " + color_text(35, "Blackjacks: " + std::to_string(humanPlayer->GetBlackjackHands())) + ".";
@@ -137,6 +142,7 @@ bool blackjack_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Playe
             std::cout << std::endl; rolling_text("Here are the final hands of the players:", PRINT_LINE_SLEEP); std::cout << std::endl;
             humanPlayer->ShowCurrentHand(humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "");
             dealer->ShowCurrentHand(dealer->GetCurrentHands()->RetrieveNode(0)->data, "Final", "Show");
+            card_count_strategy(humanPlayer, dealer, shoe, showCountingStrategy, false);
             // Stat tracker
             std::string statTracker = color_text(36, "Hands Played: " + std::to_string(humanPlayer->GetHandsPlayed())) + " , " + color_text(32, "Hands Won: " + std::to_string(humanPlayer->GetHandsWon())) + " , " + color_text(31, "Hands Lost: " 
             + std::to_string(humanPlayer->GetHandsLost())) + " , " + color_text(33, "Hands Pushed: " + std::to_string(humanPlayer->GetHandsPushed())) + " , " + color_text(35, "Blackjacks: " + std::to_string(humanPlayer->GetBlackjackHands())) + ".";
@@ -154,7 +160,7 @@ bool blackjack_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Playe
 *   Input:
 *       playerHand - Hand object passed by reference that represents the user's hand
 *       dealerHand - Hand object passed by reference that represents the dealer's hand
-*       inputShoe - Shoe object passed by reference that represents the shoe that is being played with
+*       shoe - Shoe object passed by reference that represents the shoe that is being played with
 *       playerWager - Float value that represents the player wager that is to be placed
 *       buyInsurance - Boolean value that represents if insurance is to be purchased if possible
 *   Algorithm:
@@ -162,9 +168,9 @@ bool blackjack_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Playe
 *   Output:
 *       hand_continue - Boolean value that represents if a hand is to be continued
 */
-bool blackjack_check_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& inputShoe, const float playerWager, const bool buyInsurance) {
+bool blackjack_check_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& shoe, const float playerWager, const bool buyInsurance) {
     // Deal hands to player
-    deal_hand_sim(humanPlayer, dealer, inputShoe, playerWager);
+    deal_hand_sim(humanPlayer, dealer, shoe, playerWager);
     // Define "hand_continue" boolean value to true
     bool hand_continue = true;
     // Define other boolean value
@@ -1095,16 +1101,69 @@ void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Ha
     }
 }
 
-void card_count_strategy(std::shared_ptr<Shoe>& inputShoe, std::shared_ptr<Player>& dealer, bool dealerHiding, bool showStrategy) {
-    int currentCount = inputShoe->GetRunningCount();
+/*  card_count_strategy - Shows a player the current count of a shoe in blackjack
+*   Input:
+*       humanPlayer - Player object that is passed by reference that represents a human player in a game
+*       dealer - Player object that is passed by reference that represents the dealer in a game
+*       shoe - Shoe object that is passed by reference that represents the current shoe of a game
+*       showStrategy - Boolean value that indicates if a player wishes to be shown the count of a shoe
+*       dealerHiding - Boolean value that indicates if a dealer is currently concealing one of their cards
+*   Algorithm:
+*       * Create a copy of the shoe
+*       * Modify the copy if the dealer is currently concealing a card
+*       * Create a styled output to console of the count
+*       * Show the strategy if a player has chosen to
+*   Output:
+*       This function does not return a value
+*/
+void card_count_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& shoe, bool showStrategy, bool dealerHiding) {
+    // Create a copy of the running count of a shoe
+    int currentCount = shoe->GetRunningCount();
     // Dealer is currently hiding one of their cards
     if (dealerHiding) {
         currentCount -= dealer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetCountValue();
     }
+    // Create a colored string of the running count of a shoe
     std::string count = color_text(31, std::to_string(currentCount));
+    // Process logic of count
+    bool lowCard = false;
+    bool medianCard = false;
+    bool highCard = false;
+    // Low Card 
+    if (currentCount <= 0) {
+        lowCard = true;
+        medianCard = false;
+        highCard = false;
+    }
+    // Median Card
+    else if (currentCount > 0 && currentCount <= 4) {
+        lowCard = false;
+        medianCard = true;
+        highCard = false;
+    }
+    // High Card
+    else if (currentCount > 4) {
+        lowCard = false;
+        medianCard = false;
+        highCard = true;
+    }
     // Show strategy
     if (showStrategy) {
-        std::cout << std::endl; rolling_text("The current count of this shoe is " + count + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+        // Show count before bet if hand is empty
+        if (humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->GetSize() == 0) {
+            if (lowCard) {
+                std::cout << std::endl; rolling_text("The current count of this shoe is " + count + "." + " It is recommended to wager a small amount.", PRINT_LINE_SLEEP); std::cout << std::endl;
+            }
+            if (medianCard) {
+                std::cout << std::endl; rolling_text("The current count of this shoe is " + count + "." + " It is recommended to wager a modest amount.", PRINT_LINE_SLEEP); std::cout << std::endl;
+            }
+            if (highCard) {
+                std::cout << std::endl; rolling_text("The current count of this shoe is " + count + "." + " It is recommended to wager a large amount.", PRINT_LINE_SLEEP); std::cout << std::endl;
+            }
+        }
+        else {
+            std::cout << std::endl; rolling_text("The current count of this shoe is " + count + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+        }
     }
 }
 
@@ -1149,7 +1208,7 @@ std::string csv_generator(std::shared_ptr<Player>& input, std::string fileName) 
 *   Input:
 *       humanPlayer - Player object that is passed by reference that resembles a non dealer player
 *       dealer - Player object that resembles a dealer in a blackjack game
-*       inputShoe - Shoe object that is passed by reference that resembles a shoe used in game
+*       shoe - Shoe object that is passed by reference that resembles a shoe used in game
 *   Algorithm:
 *       * Request the player place a wager for the hand
 *       * Deal cards to a player and dealer
@@ -1158,22 +1217,24 @@ std::string csv_generator(std::shared_ptr<Player>& input, std::string fileName) 
 *   Output:
 *       This function does not return any values, it modifies input parameters
 */
-void deal_hand(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& inputShoe) {
+void deal_hand(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& shoe) {
     // Create hands for players
     std::shared_ptr<Hand> humanHand(new Hand());
     std::shared_ptr<Hand> dealerHand(new Hand());
     // Add hands to players
     humanPlayer->SetCurrentHands(humanHand);
     dealer->SetCurrentHands(dealerHand);
+    // Show count of shoe if requested
+    card_count_strategy(humanPlayer, dealer, shoe, showCountingStrategy, false);
     // Have player place wager
     humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->PlaceWagerPrompt(humanPlayer->GetBankTotal(), humanPlayer->GetDisplayName());
     // Deal cards to players
     for (int i = 0; i < 4; i++) {
         if (i % 2 == 0) {
-            humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->HitHand(inputShoe);
+            humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->HitHand(shoe);
         }
         else if (i % 2 == 1) {
-            dealer->GetCurrentHands()->RetrieveNode(0)->data->HitHand(inputShoe);
+            dealer->GetCurrentHands()->RetrieveNode(0)->data->HitHand(shoe);
         }
     }
     // Show hands of player
@@ -1189,7 +1250,7 @@ void deal_hand(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& de
 *   Input:
 *       humanPlayer - Player object that is passed by reference that represents a human player in a simulated game
 *       dealer - Player object that is passed by reference that represents a dealer in a simulated game
-*       inputShoe - Shoe object passed by reference that represents the show of of the game
+*       shoe - Shoe object passed by reference that represents the show of of the game
 *       playerWager - Wafer that is to be placed for the player
 *   Algorithm:
 *       * Create hands for the players
@@ -1200,7 +1261,7 @@ void deal_hand(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& de
 *   Output:
 *       This function does not return any values
 */
-void deal_hand_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& inputShoe, const float& playerWager) {
+void deal_hand_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& shoe, const float& playerWager) {
     // Create hands for players
     std::shared_ptr<Hand> humanHand(new Hand());
     std::shared_ptr<Hand> dealerHand(new Hand());
@@ -1212,10 +1273,10 @@ void deal_hand_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>
     // Deal cards to players
     for (int i = 0; i < 4; i++) {
         if (i % 2 == 0) {
-            humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->HitHand(inputShoe);
+            humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->HitHand(shoe);
         }
         else if (i % 2 == 1) {
-            dealer->GetCurrentHands()->RetrieveNode(0)->data->HitHand(inputShoe);
+            dealer->GetCurrentHands()->RetrieveNode(0)->data->HitHand(shoe);
         }
     }
     // Check parameters of players
@@ -1264,7 +1325,7 @@ void dealer_logic(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>&
         }
         // Dealer has less than 17 or has a soft 17
         else if (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() < 17 || hasSoftSeventeen) {
-            std::cout << std::endl; rolling_text("The " + dealer->GetDisplayName() + " will now play their hand.",PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text("The " + dealer->GetDisplayName() + " will now play their hand.",PRINT_LINE_SLEEP); std::cout << std::endl; std::cout << std::endl;
             // Dealer must continue to play and will hit on soft seventeen
             while (dealer->GetCurrentHands()->RetrieveNode(0)->data->GetCardsTotal() < 17 || hasSoftSeventeen) {
                 hasSoftSeventeen = dealer->GetCurrentHands()->RetrieveNode(0)->data->GetHashTable()->Contains(dealer->GetCurrentHands()->RetrieveNode(0)->data->GetValuesMatrix()[3][4]);
@@ -1288,7 +1349,6 @@ void dealer_logic(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>&
     else {
         std::cout << std::endl; rolling_text("The " + humanPlayer->GetDisplayName() + " has busted on all of their hands. " + dealer->GetDisplayName() + " does not need to play their hand.", PRINT_LINE_SLEEP); std::cout << std::endl;
     }
-    card_count_strategy(shoe, dealer, false, true);
 }
 
 /*  dealer_logic_sim - Processes the logic for how the dealer should play their current hands for a simulated hand
@@ -1368,6 +1428,7 @@ void game_logic(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& d
         dealer_logic(humanPlayer, dealer, shoe);
         // Process the hand_comparison_logic function
         hand_comparison_logic(humanPlayer, dealer);
+        card_count_strategy(humanPlayer, dealer, shoe, showCountingStrategy, false);
     }
     humanPlayer->ResetPlayer();
     dealer->ResetPlayer();
@@ -1575,15 +1636,15 @@ void player_logic(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>&
                 // Player can double down
                 if (canDoubleDown) {
                     std::cout << std::endl; rolling_text("Would you like to " + color_text(32, "Hit") + ", " + color_text(32, "Stand") + ", or " + color_text(32, "Double Down") + " on your current hand?", PRINT_LINE_SLEEP); std::cout << std::endl;
-                    blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, dealer, true, true);
-                    card_count_strategy(shoe, dealer, true, true);
+                    blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, dealer, showBlackjackStrategy, true);
+                    card_count_strategy(humanPlayer, dealer, shoe, showCountingStrategy, true);
                     std::cout << std::endl; rolling_text("Enter " + color_text(32, "(h)") + " to " + color_text(32, "hit") + ", " + color_text(32, "(s)") + " to " + color_text(32, "stand") + ", or " + color_text(32, "(d)") + " to " + color_text(32, "double down") + ": ", PRINT_LINE_SLEEP);
                 }
                 // Player cannot double down
                 else {
                     std::cout << std::endl; rolling_text("Would you like to " + color_text(32, "Hit") + " or " + color_text(32, "Stand") + " on your current hand?", PRINT_LINE_SLEEP); std::cout << std::endl;
-                    blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, dealer, true, true);
-                    card_count_strategy(shoe, dealer, true, true);
+                    blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(i)->data, dealer, showBlackjackStrategy, true);
+                    card_count_strategy(humanPlayer, dealer, shoe, showCountingStrategy, true);
                     std::cout << std::endl; rolling_text("Enter " + color_text(32, "(h)") + " to " + color_text(32, "hit") + " or " + color_text(32, "(s)") + " to " + color_text(32, "stand") + ": ", PRINT_LINE_SLEEP);
                 }
                 std::cin >> response;
@@ -1920,8 +1981,8 @@ void same_rank_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Playe
         if (player_can_split_aces && humanPlayer->GetCurrentHandsPossessed() == 1) {
             // Prompt player if they would like to split their hand
             std::cout << std::endl; rolling_text("You currently have the same rank of " + humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() + " in your hand. You may only split Ace's once.", PRINT_LINE_SLEEP); std::cout << std::endl;
-            blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, dealer, true, false);
-            card_count_strategy(shoe, dealer, true, true);
+            blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, dealer, showBlackjackStrategy, false);
+            card_count_strategy(humanPlayer, dealer, shoe, showCountingStrategy, true);
             std::cout << std::endl; rolling_text("Would you like to split your hand? " + color_text(32, "Yes (y)") + " or " + color_text(32, "no (n)") + "? ", PRINT_LINE_SLEEP);
             std::string response;
             std::cin >> response;
@@ -1968,8 +2029,8 @@ void same_rank_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Playe
                 // Prompt player
                 std::cout << std::endl; rolling_text("You have the same rank of " + humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() 
                 + " in your hand. You can split up to " + std::to_string(maxSplitHands - 1) + " times.", PRINT_LINE_SLEEP); std::cout << std::endl;
-                blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, dealer, true, false);
-                card_count_strategy(shoe, dealer, true, true);
+                blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, dealer, showBlackjackStrategy, false);
+                card_count_strategy(humanPlayer, dealer, shoe, showCountingStrategy, true);
                 std::cout << std::endl; rolling_text("Would you like to split your hand? " + color_text(32, "Yes (y)") + " or " + color_text(32, "no (n)") + "? ", PRINT_LINE_SLEEP);
             }
             // This is another hand where they have pulled the same rank
@@ -1977,8 +2038,8 @@ void same_rank_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Playe
                 // Prompt player
                 std::cout << std::endl; rolling_text("You have the same rank of " + humanPlayer->GetCurrentHands()->RetrieveNode(0)->data->GetPlayerCards()->RetrieveNode(0)->data.GetDisplayRank() + " again in your current hand. Total times split: " 
                 + std::to_string(humanPlayer->GetCurrentHands()->GetSize() - 1), PRINT_LINE_SLEEP); std::cout << std::endl;
-                blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, dealer, true, false);
-                card_count_strategy(shoe, dealer, true, true);
+                blackjack_strategy(humanPlayer, humanPlayer->GetCurrentHands()->RetrieveNode(0)->data, dealer, showBlackjackStrategy, false);
+                card_count_strategy(humanPlayer, dealer, shoe, showCountingStrategy, true);
                 std::cout << std::endl; rolling_text("Would you like to split your hand again? " + color_text(32, "Yes (y)") + " or " + color_text(32, "no (n)") + "? ", PRINT_LINE_SLEEP);
             }
             std::cin >> response;

@@ -15,13 +15,13 @@
 *   game_logic / simulate_logic
 */
 
-bool blackjack_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& inputShoe); // Checks if a dealer is showing an Ace
-bool blackjack_check_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& inputShoe, const float playerWager, const bool buyInsurance); // Checks if a dealer is showing an Ace
+bool blackjack_check(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& shoe); // Checks if a dealer is showing an Ace
+bool blackjack_check_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& shoe, const float playerWager, const bool buyInsurance); // Checks if a dealer is showing an Ace
 void blackjack_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Hand>& playerHand, std::shared_ptr<Player>& dealer, bool showStrategy, bool splitOverride); // Strategy for how to play blackjack
-void card_count_strategy(std::shared_ptr<Shoe>& inputShoe, std::shared_ptr<Player>& dealer, bool dealerHiding, bool showStrategy); // Strategy for card counting
+void card_count_strategy(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& shoe, bool showStrategy, bool dealerHiding); // Strategy for card counting
 std::string csv_generator(std::shared_ptr<Player>& input, std::string fileName); // Generates a csv of the statistics for a game
-void deal_hand(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& inputShoe); // Deals a hand to a player and dealer
-void deal_hand_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& inputShoe, const float& playerWager); // Deals a hand to a player and dealer in a simulated game
+void deal_hand(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& shoe); // Deals a hand to a player and dealer
+void deal_hand_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& shoe, const float& playerWager); // Deals a hand to a player and dealer in a simulated game
 void dealer_logic(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& shoe); // Processes logic of dealer
 void dealer_logic_sim(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& shoe); // Processes logic of dealer for simulated hand
 void game_logic(std::shared_ptr<Player>& humanPlayer, std::shared_ptr<Player>& dealer, std::shared_ptr<Shoe>& shoe); // Processes the overall logic of a hand played
