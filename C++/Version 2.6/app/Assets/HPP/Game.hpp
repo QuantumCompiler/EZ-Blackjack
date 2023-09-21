@@ -174,7 +174,72 @@ void game_options() {
             rulesResponse.clear();
         }
     }
-    rolling_text("We will now present you with the current game modes that you can play.", PRINT_LINE_SLEEP); std::cout << std::endl;
+    rolling_text("This program offers an option to show players what the best strategy of playing a hand would be. Here are the current options for offering hints in this program:", PRINT_LINE_SLEEP); std::cout << std::endl;
+    // Present hint options
+    for (int i = 0; i < 2; i++) {
+        if (i == 0) {
+            std::cout << std::endl; rolling_text(color_text(31, "[1]: ") + color_text(32, "Common Blackjack Strategy") + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+        }
+        else if (i == 1) {
+            rolling_text(color_text(31, "[2]: ") + color_text(32, "Card Counting Strategy") + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+        }
+    }
+    // Strategy selection
+    std::string strategyResponse;
+    std::vector<std::string> strategyChoices = {"0", "1", "2", "1-2", "1,2"};
+    bool strategies = false;
+    std::cout << std::endl; rolling_text("To select a singular strategy, just enter the given number:", PRINT_LINE_SLEEP); std::cout << std::endl;
+    std::cout << std::endl; rolling_text("To opt out of seeing any strategies, enter " + color_text(31, "[0]") + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+    rolling_text("To select a range of strategies, enter the number followed by a " + color_text(31, "[-]") + " with the other number.", PRINT_LINE_SLEEP); std::cout << std::endl;
+    rolling_text("To select individual strategies, enter the number followed by a " + color_text(31, "[,]") + " with the other number.", PRINT_LINE_SLEEP); std::cout << std::endl;
+    while (!strategies) {
+        // Prompt player for response
+        std::cout << std::endl; rolling_text("Enter your response: ", PRINT_LINE_SLEEP);
+        std::cin >> strategyResponse;
+        // Just show 
+        for (int i = 0; i < strategyChoices.size(); i++) {
+            if (strategyResponse != strategyChoices[i]) {
+                continue;
+            }
+            else if (strategyResponse == strategyChoices[i]) {
+                strategies = true;
+                // Show no strategies
+                if (strategyResponse == "0") {
+                    showBlackjackStrategy = false;
+                    showCountingStrategy = false;
+                    std::cout << std::endl; rolling_text("You have chosen to show no strategies.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    break;
+                }
+                // Show just blackjack
+                else if (strategyResponse == "1") {
+                    showBlackjackStrategy = true;
+                    showCountingStrategy = false;
+                    std::cout << std::endl; rolling_text("You have chosen just to show the " + color_text(32, "Common Blackjack Strategy") + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    break;
+                }
+                // Show just card counting
+                else if (strategyResponse == "2") {
+                    showBlackjackStrategy = false;
+                    showCountingStrategy = true;
+                    std::cout << std::endl; rolling_text("You have chosen just to show the " + color_text(32, "Card Counting Strategy") + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    break;
+                }
+                // Show blackjack and card counting
+                else if (strategyResponse == "1-2" || strategyResponse == "1,2") {
+                    showBlackjackStrategy = true;
+                    showCountingStrategy = true;
+                    std::cout << std::endl; rolling_text("You have chosen to show the " + color_text(31, "Common Blackjack Strategy") + " and " + color_text(31, "Card Counting Strategy") + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+                    break;
+                }
+            }
+            // User has entered an invalid response
+            if (!strategies) {
+                std::cout << std::endl; rolling_text(color_text(31, "Invalid Response") + ". Please re-enter your response.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                strategyResponse.clear();
+            }
+        }
+    }
+    std::cout << std::endl; rolling_text("We will now present you with the current game modes that you can play.", PRINT_LINE_SLEEP); std::cout << std::endl;
     // Present game mode options
     for (int i = 0; i < 1; i++) {
         if (i == 0) {
