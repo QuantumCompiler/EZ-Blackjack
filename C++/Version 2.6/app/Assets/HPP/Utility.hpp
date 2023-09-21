@@ -1,8 +1,10 @@
 // ----- ----- ----- ----- ----- ----- ----- Includes ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 #include "../Headers/Utility.h"
-// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- Suit and Rank Arrays ---- ---- ---- ---- ---- ---- ---- ---- ---- ----  //
+// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- Global Variables ---- ---- ---- ---- ---- ---- ---- ---- ---- ----  //
 std::string Suits[4] = {"Clubs", "Diamonds", "Hearts", "Spades"};
 std::string Ranks[13] = {"Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"};
+bool showBlackjackStrategy = true;
+bool showCountingStrategy = true;
 // ---- ---- ---- ---- ---- ---- ---- ---- ---- Class Independent Methods ---- ---- ---- ---- ---- ---- ---- ---- //
 
 /*  clear_terminal - Clears the terminal of a machine
