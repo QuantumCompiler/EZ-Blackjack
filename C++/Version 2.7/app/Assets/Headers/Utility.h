@@ -5,6 +5,7 @@
 
 void clear_terminal(); // Clears a terminal
 std::string color_text(const int codeInput, const std::string textInput); // Colors input text
+void fibonacci_sequence(long firstVal, long secondVal, int n, std::vector<long>& inputVector); // Fibonacci sequence that returns a vector of values
 template <typename arbitrary> bool input_validation(arbitrary& input);
 void progress_bar(const long input, const std::string loadingMessage, const std::string finishedMessage); // Progress bar animation
 int random_int(const int lowerBound, const int upperBound); // Generates random integer in a range

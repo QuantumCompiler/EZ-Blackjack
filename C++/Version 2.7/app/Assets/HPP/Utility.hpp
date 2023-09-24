@@ -90,6 +90,50 @@ std::string color_text(const int codeInput, const std::string textInput) {
     return code + textInput + "\033[0m";
 }
 
+/*  fibonacci_sequence - Calculates a fibonacci sequence for a given n times
+*   Input:
+*       firstVal - Long value that represents the first value of a new fibonacci number
+*       secondVal - Long value that represents the second value of a new fibonacci number
+*       n - Integer value that represents the times that the sequence will run
+*       inputVector - Vector of long numbers that is passed by reference to represents the fibonacci sequence
+*   Algorithm:
+*       * Grab the initial value of n
+*       * Break the recursion when n <= 0
+*           * Add the initial values to the vector if n is originally <= 0
+*       * Calculate new fibonacci number
+*       * Process how the numbers are to be added to the vector (see inline comments)
+*       * Recursive call if n > 0
+*   Output:
+*       This function does not return a value, it modifies the input parameter inputVector
+*/
+void fibonacci_sequence(long firstVal, long secondVal, int n, std::vector<long>& inputVector) {
+    // Get the initial value of n
+    static int initialN = n;
+    // Break the recursion
+    if (n <= 0) {
+        // Add the initial two values if the times ran is less than 0
+        if (initialN <= 0) {
+            inputVector.push_back(firstVal);
+            inputVector.push_back(secondVal);
+        }
+        return;
+    }
+    // Calculate new fibonacci number
+    long fib = firstVal + secondVal;
+    // Add values to vector for initial iteration
+    if (n == initialN) {
+        inputVector.push_back(firstVal);
+        inputVector.push_back(secondVal);
+        inputVector.push_back(fib);
+    }
+    // Add the new number to the back of the vector otherwise
+    else { 
+        inputVector.push_back(fib);
+    }
+    // Recursive call
+    fibonacci_sequence(secondVal, fib, n - 1, inputVector);
+}
+
 /*  input_validation - Checks for if a value that has been entered is positive or not
 *   Input:
 *       input - Arbitrary data type that is passed by reference to check if the value is valid
