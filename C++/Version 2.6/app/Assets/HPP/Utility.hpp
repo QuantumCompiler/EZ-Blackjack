@@ -3,8 +3,19 @@
 // ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- Global Variables ---- ---- ---- ---- ---- ---- ---- ---- ---- ----  //
 std::string Suits[4] = {"Clubs", "Diamonds", "Hearts", "Spades"};
 std::string Ranks[13] = {"Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"};
+// Global Booleans
 bool showBlackjackStrategy = true;
 bool showCountingStrategy = true;
+// Global Integers
+int lowCardCountTracker = -4;
+int medCardCountTracker = 4;
+int highCardCountTracker = 5;
+// Global Longs
+long shortTimeSleep = 500;
+long mediumTimeSleep = 3 * shortTimeSleep;
+long longTimeSleep = 2 * mediumTimeSleep;
+long printLineSleep = 15;
+long sprintLineSleep = printLineSleep / 3;
 // ---- ---- ---- ---- ---- ---- ---- ---- ---- Class Independent Methods ---- ---- ---- ---- ---- ---- ---- ---- //
 
 /*  clear_terminal - Clears the terminal of a machine
@@ -92,7 +103,7 @@ std::string color_text(const int codeInput, const std::string textInput) {
 template <typename arbitrary> bool input_validation(arbitrary& input) {
     // If a non-numeric value was entered or the stream got into a bad state.
     if (std::cin.fail()) {
-        std::cout << std::endl; rolling_text(color_text(31, "Invalid Response") + ". Please re-enter your submission.", SPRINT_LINE_SLEEP); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+        std::cout << std::endl; rolling_text(color_text(31, "Invalid Response") + ". Please re-enter your submission.", sprintLineSleep); std::cout << std::endl; time_sleep(mediumTimeSleep);
         clear_terminal();
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -102,11 +113,11 @@ template <typename arbitrary> bool input_validation(arbitrary& input) {
     if (input <= 0) {
         // Value is zero
         if (input == 0) {
-            std::cout << std::endl; rolling_text(color_text(31, "Invalid Response") + ". Please re-enter your submission.", SPRINT_LINE_SLEEP); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+            std::cout << std::endl; rolling_text(color_text(31, "Invalid Response") + ". Please re-enter your submission.", sprintLineSleep); std::cout << std::endl; time_sleep(mediumTimeSleep);
         } 
         // Value is negative
         else {
-            std::cout << std::endl; rolling_text(color_text(31, "Invalid Response") + " of " + color_text(31, round_to_string(input)) + ". Please enter a positive value.", SPRINT_LINE_SLEEP); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+            std::cout << std::endl; rolling_text(color_text(31, "Invalid Response") + " of " + color_text(31, round_to_string(input)) + ". Please enter a positive value.", sprintLineSleep); std::cout << std::endl; time_sleep(mediumTimeSleep);
         }
         clear_terminal();
         std::cin.clear();

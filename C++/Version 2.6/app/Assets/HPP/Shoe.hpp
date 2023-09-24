@@ -68,7 +68,7 @@ Shoe Shoe::CreateShoePrompt() {
     while(needInput) {
         int input;
         // Prompt player for the number of decks that they would like to play with
-        std::cout << std::endl; rolling_text("Please enter the number of decks you would like to play with: ", PRINT_LINE_SLEEP);
+        std::cout << std::endl; rolling_text("Please enter the number of decks you would like to play with: ", printLineSleep);
         std::cin >> input;
         // Check for a valid input
         if (input_validation(input)) {
@@ -76,11 +76,11 @@ Shoe Shoe::CreateShoePrompt() {
             this->SetNumOfDecks(input);
             // Prompt for multiple decks
             if (this->GetNumOfDecks() > 1) {
-                std::cout << std::endl; rolling_text("This shoe will be comprised of " + color_text(31, std::to_string(input)) + " decks, " + color_text(31, std::to_string(input * 52)) + " cards total.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text("This shoe will be comprised of " + color_text(31, std::to_string(input)) + " decks, " + color_text(31, std::to_string(input * 52)) + " cards total.", printLineSleep); std::cout << std::endl;
             }
             // Prompt for singular deck
             else {
-                std::cout << std::endl; rolling_text("This shoe will be comprised of " + color_text(31, std::to_string(input)) + " deck of cards, " + color_text(31, std::to_string(input * 52)) + " cards total.", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text("This shoe will be comprised of " + color_text(31, std::to_string(input)) + " deck of cards, " + color_text(31, std::to_string(input * 52)) + " cards total.", printLineSleep); std::cout << std::endl;
             }
             break;
         }

@@ -56,7 +56,7 @@ Player Player::BankDepositPrompt() {
     while (true) {
         float input;
         // Prompt user for deposit
-        std::cout << std::endl; rolling_text("Please enter the amount you'd like to deposit into your bank: ", PRINT_LINE_SLEEP);
+        std::cout << std::endl; rolling_text("Please enter the amount you'd like to deposit into your bank: ", printLineSleep);
         std::cin >> input;
         // Check for valid input
         if (input_validation(input)) {
@@ -67,7 +67,7 @@ Player Player::BankDepositPrompt() {
             continue;
         }
     }
-    std::cout << std::endl; rolling_text(this->GetDisplayName() + " has decided to start with: " + this->GetDisplayBankTotal() + " in their bank.", PRINT_LINE_SLEEP); std::cout << std::endl;
+    std::cout << std::endl; rolling_text(this->GetDisplayName() + " has decided to start with: " + this->GetDisplayBankTotal() + " in their bank.", printLineSleep); std::cout << std::endl;
     return *this;
 }
 
@@ -83,7 +83,7 @@ Player Player::BankDepositPrompt() {
 Player Player::NamePrompt() {
     std::string input;
     // Prompt user for their name
-    std::cout << std::endl; rolling_text("Pleas enter a name for you player: ", PRINT_LINE_SLEEP);
+    std::cout << std::endl; rolling_text("Pleas enter a name for you player: ", printLineSleep);
     std::getline(std::cin, input);
     // Set the players name to "input"
     this->SetName(input);
@@ -150,14 +150,14 @@ Player Player::ShowCurrentHand(std::shared_ptr<Hand>& inputHand, std::string opt
         std::string handWager = color_text(31, "Hand Wager");
         std::string handNet = color_text(31, "Hand Net");
         std::string insuranceWager = color_text(31, "Insurance Wager");
-        rolling_text(this->GetDisplayName() + "'s " + optionMod + " hand: [", SPRINT_LINE_SLEEP);
+        rolling_text(this->GetDisplayName() + "'s " + optionMod + " hand: [", sprintLineSleep);
         // Iterate through the cards in players hand
         for (int i = 0; i < inputHand->GetPlayerCards()->GetSize(); i++) {
             if (i == inputHand->GetPlayerCards()->GetSize() - 1) {
-                rolling_text(inputHand->GetPlayerCards()->RetrieveNode(i)->data.PrintCard() + "] ", SPRINT_LINE_SLEEP);
+                rolling_text(inputHand->GetPlayerCards()->RetrieveNode(i)->data.PrintCard() + "] ", sprintLineSleep);
             }
             else {
-                rolling_text(inputHand->GetPlayerCards()->RetrieveNode(i)->data.PrintCard() + " , ", SPRINT_LINE_SLEEP);
+                rolling_text(inputHand->GetPlayerCards()->RetrieveNode(i)->data.PrintCard() + " , ", sprintLineSleep);
             }
         }
         // Add hand total and display players hand parameters
@@ -165,18 +165,18 @@ Player Player::ShowCurrentHand(std::shared_ptr<Hand>& inputHand, std::string opt
         if (option == "Final") {
             if (inputHand->GetInsuranceWager() > 0) {
                 rolling_text(finalHandTotal + ": " + inputHand->GetDisplayCardsTotal() + " , " + handWager + ": " + origWagerVal + " , " + insuranceWager + ": " + inputHand->GetDisplayInsuranceWager() + " , " + handNet + ": " + inputHand->GetDisplayNet() 
-                + " , " + finalBankTotal + ": " + this->GetDisplayBankTotal(), SPRINT_LINE_SLEEP); std::cout << std::endl;
+                + " , " + finalBankTotal + ": " + this->GetDisplayBankTotal(), sprintLineSleep); std::cout << std::endl;
             }
             else {
-                rolling_text(finalHandTotal + ": " + inputHand->GetDisplayCardsTotal() + " , " + handWager + ": " + inputHand->GetDisplayWager() + " , " + handNet + ": " + inputHand->GetDisplayNet() + " , " + finalBankTotal + ": " + this->GetDisplayBankTotal(), SPRINT_LINE_SLEEP); std::cout << std::endl;
+                rolling_text(finalHandTotal + ": " + inputHand->GetDisplayCardsTotal() + " , " + handWager + ": " + inputHand->GetDisplayWager() + " , " + handNet + ": " + inputHand->GetDisplayNet() + " , " + finalBankTotal + ": " + this->GetDisplayBankTotal(), sprintLineSleep); std::cout << std::endl;
             }
         }
         else {
             if (inputHand->GetInsuranceWager() > 0) {
-                rolling_text(handTotal + ": " + inputHand->GetDisplayCardsTotal() + " , " + handWager + ": " + inputHand->GetDisplayWager() + " , " + insuranceWager + ": " + inputHand->GetDisplayInsuranceWager() + " , " + bankTotal + ": " + this->GetDisplayBankTotal(), SPRINT_LINE_SLEEP); std::cout << std::endl;
+                rolling_text(handTotal + ": " + inputHand->GetDisplayCardsTotal() + " , " + handWager + ": " + inputHand->GetDisplayWager() + " , " + insuranceWager + ": " + inputHand->GetDisplayInsuranceWager() + " , " + bankTotal + ": " + this->GetDisplayBankTotal(), sprintLineSleep); std::cout << std::endl;
             }
             else {
-                rolling_text(handTotal + ": " + inputHand->GetDisplayCardsTotal() + " , " + handWager + ": " + inputHand->GetDisplayWager() + " , " + bankTotal + ": " + this->GetDisplayBankTotal(), SPRINT_LINE_SLEEP); std::cout << std::endl;
+                rolling_text(handTotal + ": " + inputHand->GetDisplayCardsTotal() + " , " + handWager + ": " + inputHand->GetDisplayWager() + " , " + bankTotal + ": " + this->GetDisplayBankTotal(), sprintLineSleep); std::cout << std::endl;
             }
         }
     }
@@ -185,33 +185,33 @@ Player Player::ShowCurrentHand(std::shared_ptr<Hand>& inputHand, std::string opt
         // Dealer is hiding a card
         if (dealerShow.empty()) {
             std::string backCard = color_text(35, std::to_string(inputHand->GetPlayerCards()->RetrieveNode(-1)->data.GetCardValue()));
-            rolling_text(this->GetDisplayName() + "'s " + optionMod + " hand : [Hidden, " + inputHand->GetPlayerCards()->RetrieveNode(-1)->data.PrintCard() + "] " + handTotal + ": " + backCard, SPRINT_LINE_SLEEP); std::cout << std::endl;
+            rolling_text(this->GetDisplayName() + "'s " + optionMod + " hand : [Hidden, " + inputHand->GetPlayerCards()->RetrieveNode(-1)->data.PrintCard() + "] " + handTotal + ": " + backCard, sprintLineSleep); std::cout << std::endl;
         }
         // Dealer is showing both cards
         else {
             if (dealerShow != "cards") {
-                rolling_text(this->GetDisplayName() + "'s " + optionMod + " hand: [", SPRINT_LINE_SLEEP);
+                rolling_text(this->GetDisplayName() + "'s " + optionMod + " hand: [", sprintLineSleep);
             }
             // Specialized display of cards
             else {
-                rolling_text("[", SPRINT_LINE_SLEEP);
+                rolling_text("[", sprintLineSleep);
             }
             // Iterate through the cards in dealers hand
             for (int i = 0; i < inputHand->GetPlayerCards()->GetSize(); i++) {
                 if (i == inputHand->GetPlayerCards()->GetSize() - 1) {
-                    rolling_text(inputHand->GetPlayerCards()->RetrieveNode(i)->data.PrintCard() + "] ", SPRINT_LINE_SLEEP);
+                    rolling_text(inputHand->GetPlayerCards()->RetrieveNode(i)->data.PrintCard() + "] ", sprintLineSleep);
                 }
                 else {
-                    rolling_text(inputHand->GetPlayerCards()->RetrieveNode(i)->data.PrintCard() + " , ", SPRINT_LINE_SLEEP);
+                    rolling_text(inputHand->GetPlayerCards()->RetrieveNode(i)->data.PrintCard() + " , ", sprintLineSleep);
                 }
             }
             // Add hand total and display players hand parameters
             inputHand->AddHandTotal();
             if (option == "Final") {
-                rolling_text(finalHandTotal + ": " + inputHand->GetDisplayCardsTotal(), SPRINT_LINE_SLEEP); std::cout << std::endl;
+                rolling_text(finalHandTotal + ": " + inputHand->GetDisplayCardsTotal(), sprintLineSleep); std::cout << std::endl;
             }
             else {
-                rolling_text(handTotal + ": " + inputHand->GetDisplayCardsTotal(), SPRINT_LINE_SLEEP); std::cout << std::endl;
+                rolling_text(handTotal + ": " + inputHand->GetDisplayCardsTotal(), sprintLineSleep); std::cout << std::endl;
             }
         }
     }

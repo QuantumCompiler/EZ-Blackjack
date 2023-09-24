@@ -291,24 +291,24 @@ Hand Hand::InsurancePrompt(float& bank, std::string& name) {
     while (true) {
         // Prompt user for insurance
         std::string input;
-        std::cout << std::endl; rolling_text("The " + color_text(31, "Dealer") + " is showing an Ace, would you like to buy insurance? " + color_text(32, "Yes (y)") + " or " + color_text(32, "no (n)") + "? ", PRINT_LINE_SLEEP);
+        std::cout << std::endl; rolling_text("The " + color_text(31, "Dealer") + " is showing an Ace, would you like to buy insurance? " + color_text(32, "Yes (y)") + " or " + color_text(32, "no (n)") + "? ", printLineSleep);
         std::cin >> input;
         // User has chosen to buy insurance, set insurance wager
         if (input == "y") {
             this->GetHashTable()->AddToTable(this->GetValuesMatrix()[0][4]);
             this->SetInsuranceWager(round_input(0.5*this->GetWager()));
             bank -= this->GetInsuranceWager();
-            std::cout << std::endl; rolling_text(name + " has chosen to buy insurance. Their insurance wager is " + this->GetDisplayInsuranceWager() + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text(name + " has chosen to buy insurance. Their insurance wager is " + this->GetDisplayInsuranceWager() + ".", printLineSleep); std::cout << std::endl;
             return *this;
         }
         // User has chosen to not buy insurance, do not take insurance wager
         else if (input == "n") {
-            std::cout << std::endl; rolling_text(name + " has chosen to not buy insurance.", PRINT_LINE_SLEEP); std::cout << std::endl;
+            std::cout << std::endl; rolling_text(name + " has chosen to not buy insurance.", printLineSleep); std::cout << std::endl;
             return *this;
         }
         // Player did not enter a valid input for a response
         else {
-            std::cout << std::endl; rolling_text(color_text(31, "Invalid Response") + ". Please re-enter your insurance decision.", PRINT_LINE_SLEEP);
+            std::cout << std::endl; rolling_text(color_text(31, "Invalid Response") + ". Please re-enter your insurance decision.", printLineSleep);
             input.clear();
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -467,14 +467,14 @@ Hand Hand::PlaceWagerPrompt(float& bank, std::string& name) {
     while (true) {
         float input;
         // Prompt user for the wager that they would like place for their hand
-        std::cout << std::endl; rolling_text("Please enter a wager for this hand. Current bank total: " + color_text(33, round_to_string(bank)) + ": ", PRINT_LINE_SLEEP);
+        std::cout << std::endl; rolling_text("Please enter a wager for this hand. Current bank total: " + color_text(33, round_to_string(bank)) + ": ", printLineSleep);
         std::cin >> input;
         // Check for a valid input
         if (input_validation(input)) {
             // User has entered a wager that is greater than their bank, return to beginning of while loop
             if (input > bank) {
                 std::cout << std::endl; rolling_text(color_text(31, "Invalid Response") + " of " + color_text(31, round_to_string(input)) + ". Enter a wager that is less than or equal to your bank total of " 
-                + color_text(33, round_to_string(bank)) + ".", SPRINT_LINE_SLEEP); std::cout << std::endl; time_sleep(MEDIUM_TIME_SLEEP);
+                + color_text(33, round_to_string(bank)) + ".", sprintLineSleep); std::cout << std::endl; time_sleep(mediumTimeSleep);
                 clear_terminal();
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 continue;
@@ -483,7 +483,7 @@ Hand Hand::PlaceWagerPrompt(float& bank, std::string& name) {
             else {
                 this->SetWager(input);
                 bank -= this->GetWager();
-                std::cout << std::endl; rolling_text(name + " has wagered: " + this->GetDisplayWager() + " with a current bank total of " + color_text(33, round_to_string(bank)) + ".", PRINT_LINE_SLEEP); std::cout << std::endl;
+                std::cout << std::endl; rolling_text(name + " has wagered: " + this->GetDisplayWager() + " with a current bank total of " + color_text(33, round_to_string(bank)) + ".", printLineSleep); std::cout << std::endl;
                 return *this;
             }
         }
