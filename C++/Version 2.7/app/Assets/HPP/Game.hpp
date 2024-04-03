@@ -17,11 +17,11 @@ void blackjack() {
     time_sleep(mediumTimeSleep);
     // String objects
     std::string Blackjack = color_text(32, "Blackjack");
-    std::string RelativiBit = color_text(32, "RelativiBit");
+    std::string QuantumCompiler = color_text(32, "QuantumCompiler");
     std::string PlayBlackjack = color_text(31, "play");
     std::string SimulateBlackjack = color_text(31, "simulate");
     // Intro greeting
-    rolling_text("Welcome to " + Blackjack + " by " + RelativiBit + ", Version " + color_text(32, "2.7") + "."  ,printLineSleep); std::cout << std::endl;
+    rolling_text("Welcome to " + Blackjack + " by " + QuantumCompiler + ", Version " + color_text(32, "2.7") + "."  ,printLineSleep); std::cout << std::endl;
     // Display choices
     std::cout << std::endl; rolling_text("Would you like to " + PlayBlackjack + " or " + SimulateBlackjack + " " + Blackjack + "?", printLineSleep); std::cout << std::endl;
     for (int i = 0; i < 2; i++) {
